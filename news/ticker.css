@@ -3,7 +3,6 @@
    CSS Style - RTL / Responsive / Modern
    ============================================ */
 
-/* ----- reset & base ----- */
 * {
     margin: 0;
     padding: 0;
@@ -26,7 +25,6 @@
     transition: all 0.3s ease;
 }
 
-/* ----- برچسب اخبار فوری ----- */
 .ticker-label {
     background: linear-gradient(145deg, #dc2626, #b91c1c);
     color: #fff;
@@ -47,7 +45,6 @@
     letter-spacing: 0.3px;
 }
 
-/* ----- نقطه چشمک‌زن ----- */
 .blink-dot {
     display: inline-block;
     width: 10px;
@@ -64,7 +61,6 @@
     50% { opacity: 0.3; transform: scale(0.8); }
 }
 
-/* ----- نوار اخبار ----- */
 .ticker-container {
     flex: 1;
     overflow: hidden;
@@ -73,7 +69,6 @@
     background: #fafafa;
 }
 
-/* Fade دو طرف */
 .ticker-container::before,
 .ticker-container::after {
     content: '';
@@ -95,7 +90,6 @@
     background: linear-gradient(to right, transparent, #fafafa 90%);
 }
 
-/* ----- مسیر حرکت ----- */
 .ticker-track {
     display: flex;
     align-items: center;
@@ -109,7 +103,6 @@
     position: relative;
 }
 
-/* ----- هر خبر ----- */
 .ticker-item {
     display: flex;
     align-items: center;
@@ -125,7 +118,6 @@
     position: relative;
 }
 
-/* بولت (نقطه) بین اخبار */
 .ticker-item::before {
     content: "•";
     color: #dc2626;
@@ -139,18 +131,15 @@
     display: none;
 }
 
-/* ----- Hover حرفه‌ای ----- */
 .ticker-item:hover {
     color: #dc2626;
     transform: scale(1.04);
 }
 
-/* توقف حرکت هنگام Hover روی کل نوار */
 .ticker-wrapper:hover .ticker-track {
     animation-play-state: paused !important;
 }
 
-/* ----- خبر ویژه (breaking) ----- */
 .ticker-item.breaking .breaking-icon {
     display: inline;
 }
@@ -161,14 +150,12 @@
     margin-left: 4px;
 }
 
-/* ----- حالت بارگذاری ----- */
 .ticker-loading {
     padding: 0 24px;
     color: #888;
     font-size: 14px;
 }
 
-/* ----- پیام خطا ----- */
 .ticker-error {
     padding: 0 24px;
     color: #dc2626;
@@ -176,9 +163,7 @@
     font-weight: 500;
 }
 
-/* ============================================
-   DARK MODE (اختیاری)
-   ============================================ */
+/* ===== DARK MODE ===== */
 @media (prefers-color-scheme: dark) {
     .ticker-wrapper {
         background: #1e1e1e;
@@ -211,11 +196,7 @@
     }
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-
-/* تبلت */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 992px) {
     .ticker-wrapper {
         max-width: 96%;
@@ -244,7 +225,6 @@
     }
 }
 
-/* موبایل */
 @media (max-width: 576px) {
     .ticker-wrapper {
         flex-wrap: wrap;
@@ -293,7 +273,6 @@
     }
 }
 
-/* موبایل خیلی کوچک */
 @media (max-width: 380px) {
     .ticker-label {
         font-size: 11px;
@@ -322,34 +301,25 @@
     }
 }
 
-/* ============================================
-   دسترس‌پذیری - Keyboard Navigation
-   ============================================ */
+/* ===== ACCESSIBILITY ===== */
 .ticker-item:focus-visible {
     outline: 3px solid #dc2626;
     outline-offset: 2px;
     border-radius: 4px;
 }
 
-/* جلوگیری از درگ */
 .ticker-track {
     -webkit-user-drag: none;
     user-drag: none;
 }
 
-/* ============================================
-   حالت بدون Fade (در config قابل غیرفعال‌سازی)
-   ============================================ */
 .ticker-wrapper.no-fade .ticker-container::before,
 .ticker-wrapper.no-fade .ticker-container::after {
     display: none !important;
 }
 
-/* ============================================
-   حالت بدون چشمک‌زن (در config قابل غیرفعال‌سازی)
-   ============================================ */
 .ticker-wrapper.no-blink .blink-dot {
     animation: none !important;
     opacity: 1 !important;
     box-shadow: none !important;
-}
+       }

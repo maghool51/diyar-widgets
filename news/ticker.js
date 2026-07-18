@@ -193,10 +193,13 @@ function renderNews(data){
 
 
     // تکرار برای حرکت بی نهایت
-
-  ticker.innerHTML =
-html + html + html;
-
+ticker.innerHTML =
+`
+<div class="ticker-track">
+${html}
+${html}
+</div>
+`;
 }
 
 

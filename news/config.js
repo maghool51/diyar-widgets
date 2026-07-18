@@ -1,50 +1,39 @@
-/**
- * ============================================
- * Diyar Widgets News Ticker v2.0
- * فایل تنظیمات - Config
- * ============================================
- * 
- * @version 2.0.0
- * @author Diyar Widgets
- * @license MIT
- * 
- * برای تغییر تنظیمات، مقادیر زیر را ویرایش کنید.
- * ============================================
- */
-
 window.TICKER_CONFIG = {
-    // ========== نسخه ==========
     version: '2.0.0',
 
-    // ========== منابع اخبار ==========
+    // ===== منبع اصلی =====
+    // از پروژه diyar-news در GitHub Pages
     primarySource: 'https://maghool51.github.io/diyar-news/news.json',
+    
+    // ===== منبع پشتیبان =====
+    // فایل محلی در همین پروژه (diyar-widgets)
     fallbackSource: './news.json',
 
-    // ========== زمان‌ها (میلی‌ثانیه) ==========
-    cacheExpiry: 300000,      // ۵ دقیقه
-    updateInterval: 300000,   // ۵ دقیقه
+    // ===== زمان‌ها =====
+    cacheExpiry: 300000,
+    updateInterval: 300000,
 
-    // ========== سرعت حرکت (پیکسل بر ثانیه) ==========
+    // ===== سرعت =====
     baseSpeed: 35,
     minSpeed: 20,
     maxSpeed: 60,
 
-    // ========== ظاهر ==========
+    // ===== ظاهر =====
     labelText: 'اخبار فوری',
     tickerHeight: 50,
     fontSize: 14.5,
     itemGap: 24,
 
-    // ========== ویژگی‌ها ==========
+    // ===== ویژگی‌ها =====
     enableFade: true,
     enableBlink: true,
     enableHover: true,
 
-    // ========== مدیریت خطا ==========
+    // ===== مدیریت خطا =====
     requestTimeout: 10000,
     retryCount: 3,
     retryDelay: 2000,
 
-    // ========== دیباگ ==========
-    debug: false
+    // ===== دیباگ =====
+    debug: true
 };

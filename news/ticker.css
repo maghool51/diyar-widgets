@@ -1,289 +1,355 @@
-/* ==================================
-   Diyar Widgets - News Ticker
-   ticker.css
-   ================================== */
+/* ============================================
+   Diyar Widgets News Ticker v2.0
+   CSS Style - RTL / Responsive / Modern
+   ============================================ */
 
-
-:root{
-
-    --green:#0b8f45;
-    --green-dark:#05652f;
-    --red:#d62828;
-    --white:#ffffff;
-    --text:#222;
-    --shadow:0 4px 15px rgba(0,0,0,.15);
-
+/* ----- reset & base ----- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-
-/* Reset */
-
-*{
-
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-
+.ticker-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    direction: rtl;
+    font-family: 'Tahoma', 'Segoe UI', 'IranSans', sans-serif;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
 }
 
-
-
-body{
-
-    background:transparent;
-
-    font-family:
-    Tahoma,
-    Arial,
-    "B Nazanin",
-    sans-serif;
-
+/* ----- برچسب اخبار فوری ----- */
+.ticker-label {
+    background: linear-gradient(145deg, #dc2626, #b91c1c);
+    color: #fff;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+    min-height: 50px;
 }
 
-
-
-/* Main */
-
-.ticker-wrapper{
-
-    width:100%;
-
-    height:48px;
-
-    display:flex;
-
-    align-items:center;
-
-    direction:rtl;
-
-    background:#fff;
-
-    border-radius:12px;
-
-    overflow:hidden;
-
-    box-shadow:var(--shadow);
-
+.label-text {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.3px;
 }
 
-
-
-/* Label */
-
-.ticker-label{
-
-    flex:0 0 auto;
-
-    height:100%;
-
-    min-width:120px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-
-    background:
-    linear-gradient(
-        135deg,
-        var(--red),
-        #ff5252
-    );
-
-
-    color:#fff;
-
-    font-size:16px;
-
-    font-weight:bold;
-
-    white-space:nowrap;
-
-    z-index:2;
-
+/* ----- نقطه چشمک‌زن ----- */
+.blink-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255, 50, 50, 0.7);
+    animation: blink 1.2s ease-in-out infinite;
+    flex-shrink: 0;
 }
 
-
-
-/* Moving Area */
-
-.ticker{
-
-    height:100%;
-
-    width:100%;
-
-    overflow:hidden;
-
-    position:relative;
-
+@keyframes blink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.8); }
 }
 
-
-
-/* Moving Track */
-
-.ticker-track{
-
-    height:100%;
-
-    display:flex;
-
-    align-items:center;
-
-    width:max-content;
-
-    white-space:nowrap;
-
-    animation:
-    tickerMove 45s linear infinite;
-
-    will-change:transform;
-
+/* ----- نوار اخبار ----- */
+.ticker-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    height: 50px;
+    background: #fafafa;
 }
 
-
-
-/* Pause */
-
-.ticker-wrapper:hover .ticker-track{
-
-    animation-play-state:paused;
-
+/* Fade دو طرف */
+.ticker-container::before,
+.ticker-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 60px;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
 }
 
-
-
-
-/* News Link */
-
-.ticker-item{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    margin-left:45px;
-
-    color:var(--text);
-
-    text-decoration:none;
-
-    font-size:15px;
-
-    font-weight:500;
-
-    transition:.2s;
-
+.ticker-container::before {
+    left: 0;
+    background: linear-gradient(to left, transparent, #fafafa 90%);
 }
 
-
-
-.ticker-item:hover{
-
-    color:var(--green);
-
+.ticker-container::after {
+    right: 0;
+    background: linear-gradient(to right, transparent, #fafafa 90%);
 }
 
-
-
-/* Bullet */
-
-.ticker-item::before{
-
-    content:"●";
-
-    color:var(--green);
-
-    margin-left:10px;
-
-    font-size:12px;
-
+/* ----- مسیر حرکت ----- */
+.ticker-track {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    gap: 0;
+    will-change: transform;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+    transition: none;
+    position: relative;
 }
 
+/* ----- هر خبر ----- */
+.ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 24px;
+    white-space: nowrap;
+    font-size: 14.5px;
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+    flex-shrink: 0;
+    height: 100%;
+    position: relative;
+}
 
+/* بولت (نقطه) بین اخبار */
+.ticker-item::before {
+    content: "•";
+    color: #dc2626;
+    font-size: 20px;
+    margin-left: 16px;
+    opacity: 0.6;
+    font-weight: 700;
+}
 
-/* Infinite Animation */
+.ticker-item:first-child::before {
+    display: none;
+}
 
-@keyframes tickerMove{
+/* ----- Hover حرفه‌ای ----- */
+.ticker-item:hover {
+    color: #dc2626;
+    transform: scale(1.04);
+}
 
+/* توقف حرکت هنگام Hover روی کل نوار */
+.ticker-wrapper:hover .ticker-track {
+    animation-play-state: paused !important;
+}
 
-    from{
+/* ----- خبر ویژه (breaking) ----- */
+.ticker-item.breaking .breaking-icon {
+    display: inline;
+}
 
-        transform:translateX(0);
+.breaking-icon {
+    display: none;
+    font-size: 16px;
+    margin-left: 4px;
+}
 
+/* ----- حالت بارگذاری ----- */
+.ticker-loading {
+    padding: 0 24px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* ----- پیام خطا ----- */
+.ticker-error {
+    padding: 0 24px;
+    color: #dc2626;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ============================================
+   DARK MODE (اختیاری)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+    .ticker-wrapper {
+        background: #1e1e1e;
+        border-color: #333;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     }
 
-
-    to{
-
-        transform:translateX(50%);
-
+    .ticker-container {
+        background: #1a1a1a;
     }
 
+    .ticker-container::before {
+        background: linear-gradient(to left, transparent, #1a1a1a 90%);
+    }
 
+    .ticker-container::after {
+        background: linear-gradient(to right, transparent, #1a1a1a 90%);
+    }
+
+    .ticker-item {
+        color: #e8e8e8;
+    }
+
+    .ticker-item:hover {
+        color: #ff6b6b;
+    }
+
+    .ticker-loading {
+        color: #aaa;
+    }
 }
 
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
-
-
-/* Mobile */
-
-@media(max-width:600px){
-
-
-    .ticker-wrapper{
-
-        height:42px;
-
-        border-radius:8px;
-
+/* تبلت */
+@media (max-width: 992px) {
+    .ticker-wrapper {
+        max-width: 96%;
+        margin: 12px auto;
+        border-radius: 10px;
     }
 
-
-    .ticker-label{
-
-        min-width:90px;
-
-        font-size:13px;
-
+    .ticker-label {
+        font-size: 13px;
+        padding: 8px 14px;
+        min-height: 44px;
     }
 
-
-    .ticker-item{
-
-        font-size:13px;
-
-        margin-left:25px;
-
+    .ticker-container {
+        height: 44px;
     }
 
+    .ticker-item {
+        font-size: 13px;
+        padding: 0 16px;
+    }
 
+    .ticker-container::before,
+    .ticker-container::after {
+        width: 40px;
+    }
 }
 
-
-
-/* Small Mobile */
-
-@media(max-width:380px){
-
-
-    .ticker-label{
-
-        min-width:75px;
-
-        font-size:12px;
-
+/* موبایل */
+@media (max-width: 576px) {
+    .ticker-wrapper {
+        flex-wrap: wrap;
+        border-radius: 8px;
+        margin: 8px auto;
     }
 
-
-    .ticker-item{
-
-        font-size:12px;
-
+    .ticker-label {
+        width: 100%;
+        justify-content: center;
+        font-size: 12px;
+        padding: 6px 12px;
+        min-height: 38px;
+        border-radius: 8px 8px 0 0;
     }
 
+    .ticker-container {
+        height: 40px;
+        width: 100%;
+        border-radius: 0 0 8px 8px;
+    }
 
+    .ticker-item {
+        font-size: 12px;
+        padding: 0 12px;
+        gap: 4px;
+    }
+
+    .ticker-item::before {
+        font-size: 16px;
+        margin-left: 10px;
+    }
+
+    .ticker-container::before,
+    .ticker-container::after {
+        width: 30px;
+    }
+
+    .blink-dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .breaking-icon {
+        font-size: 13px;
+    }
+}
+
+/* موبایل خیلی کوچک */
+@media (max-width: 380px) {
+    .ticker-label {
+        font-size: 11px;
+        padding: 4px 8px;
+        min-height: 34px;
+        gap: 5px;
+    }
+
+    .ticker-container {
+        height: 36px;
+    }
+
+    .ticker-item {
+        font-size: 11px;
+        padding: 0 8px;
+    }
+
+    .ticker-item::before {
+        font-size: 13px;
+        margin-left: 6px;
+    }
+
+    .ticker-container::before,
+    .ticker-container::after {
+        width: 20px;
+    }
+}
+
+/* ============================================
+   دسترس‌پذیری - Keyboard Navigation
+   ============================================ */
+.ticker-item:focus-visible {
+    outline: 3px solid #dc2626;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* جلوگیری از درگ */
+.ticker-track {
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+/* ============================================
+   حالت بدون Fade (در config قابل غیرفعال‌سازی)
+   ============================================ */
+.ticker-wrapper.no-fade .ticker-container::before,
+.ticker-wrapper.no-fade .ticker-container::after {
+    display: none !important;
+}
+
+/* ============================================
+   حالت بدون چشمک‌زن (در config قابل غیرفعال‌سازی)
+   ============================================ */
+.ticker-wrapper.no-blink .blink-dot {
+    animation: none !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
 }

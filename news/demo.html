@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نمایش و راهنما - Diyar News Ticker v2.0</title>
+    <link rel="stylesheet" href="ticker.css">
+    <style>
+        body {
+            font-family: 'Tahoma', 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 { color: #dc2626; margin-bottom: 10px; }
+        .badge {
+            display: inline-block;
+            background: #dc2626;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 30px 0;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 10px;
+            border-right: 4px solid #dc2626;
+        }
+        .feature h3 { margin: 0 0 8px 0; font-size: 14px; color: #1a1a1a; }
+        .feature p { margin: 0; font-size: 13px; color: #666; }
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+        .code-box .comment { color: #6a9955; }
+        .code-box .string { color: #ce9178; }
+        .code-box .keyword { color: #569cd6; }
+        hr { border: 0; border-top: 2px dashed #e9ecef; margin: 30px 0; }
+        .btn {
+            display: inline-block;
+            background: #dc2626;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover { background: #b91c1c; }
+        .btn-gray { background: #6c757d; }
+        .btn-gray:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- هدر -->
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+            <div>
+                <h1>📰 Diyar Widgets News Ticker</h1>
+                <p style="color:#666;font-size:14px;">نسخه 2.0 - ویجت خبری حرفه‌ای، سریع و مستقل</p>
+            </div>
+            <span class="badge">v2.0.0</span>
+        </div>
+
+        <!-- نمایش تیکر -->
+        <div style="margin:30px 0;">
+            <div class="ticker-wrapper" role="region" aria-label="نوار اخبار فوری">
+                <div class="ticker-label">
+                    <span class="blink-dot" aria-hidden="true"></span>
+                    <span class="label-text">اخبار فوری</span>
+                </div>
+                <div class="ticker-container">
+                    <div class="ticker-track" id="tickerTrack">
+                        <div class="ticker-loading">⏳ در حال بارگذاری اخبار...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- ویژگی‌ها -->
+        <h2>✨ ویژگی‌های کلیدی</h2>
+        <div class="features">
+            <div class="feature"><h3>🚀 کاملاً مستقل</h3><p>بدون وابستگی به کتابخانه‌های خارجی</p></div>
+            <div class="feature"><h3>📱 واکنش‌گرا</h3><p>سازگار با تمام دستگاه‌ها</p></div>
+            <div class="feature"><h3>🔄 بروزرسانی خودکار</h3><p>هر ۵ دقیقه بدون رفرش صفحه</p></div>
+            <div class="feature"><h3>💾 کش هوشمند</h3><p>ذخیره در localStorage با تاریخ انقضا</p></div>
+            <div class="feature"><h3>🔒 امنیت بالا</h3><p>جلوگیری از XSS و HTML Injection</p></div>
+            <div class="feature"><h3>🌙 حالت شب</h3><p>پشتیبانی از Dark Mode</p></div>
+            <div class="feature"><h3>🎯 سرعت هوشمند</h3><p>محاسبه خودکار سرعت حرکت</p></div>
+            <div class="feature"><h3>📊 بهینه‌سازی</h3><p>مصرف کم CPU و RAM</p></div>
+        </div>
+
+        <hr>
+
+        <!-- راهنمای نصب -->
+        <h2>📦 نصب و راه‌اندازی</h2>
+        
+        <h3>روش ۱: استفاده از iframe</h3>
+        <div class="code-box">
+            <span class="comment">&lt;!-- کافی است این کد را در سایت خود قرار دهید --&gt;</span><br>
+            &lt;iframe src=<span class="string">"https://maghool51.github.io/diyar-widgets/news/"</span> <br>
+            &nbsp;&nbsp;width=<span class="string">"100%"</span> height=<span class="string">"60"</span> <br>
+            &nbsp;&nbsp;frameborder=<span class="string">"0"</span> scrolling=<span class="string">"no"</span> <br>
+            &nbsp;&nbsp;allow=<span class="string">"autoplay"</span>&gt;<br>
+            &lt;/iframe&gt;
+        </div>
+
+        <h3>روش ۲: استفاده در GitHub Pages</h3>
+        <div class="code-box">
+            <span class="comment"># ۱. فایل‌ها را در ریپازیتوری خود قرار دهید</span><br>
+            <span class="comment"># ۲. GitHub Pages را فعال کنید</span><br>
+            <span class="comment"># ۳. آدرس زیر را باز کنید</span><br>
+            https://<span class="string">YOUR-USERNAME</span>.github.io/<span class="string">REPO-NAME</span>/news/
+        </div>
+
+        <h3>روش ۳: استفاده در Blogfa</h3>
+        <div class="code-box">
+            <span class="comment">&lt;!-- در قالب Blogfa قرار دهید --&gt;</span><br>
+            &lt;iframe src=<span class="string">"https://maghool51.github.io/diyar-widgets/news/"</span><br>
+            &nbsp;&nbsp;width=<span class="string">"100%"</span> height=<span class="string">"60"</span><br>
+            &nbsp;&nbsp;frameborder=<span class="string">"0"</span> scrolling=<span class="string">"no"</span>&gt;<br>
+            &lt;/iframe&gt;
+        </div>
+
+        <hr>
+
+        <!-- تنظیمات -->
+        <h2>⚙️ تنظیمات</h2>
+        <p>فایل <code>config.js</code> را ویرایش کنید:</p>
+        <div class="code-box">
+            window.TICKER_CONFIG = {<br>
+            &nbsp;&nbsp;<span class="comment">// منبع اخبار</span><br>
+            &nbsp;&nbsp;primarySource: <span class="string">'https://your-domain.com/news.json'</span>,<br>
+            &nbsp;&nbsp;<span class="comment">// سرعت حرکت (پیکسل بر ثانیه)</span><br>
+            &nbsp;&nbsp;baseSpeed: <span class="string">35</span>,<br>
+            &nbsp;&nbsp;<span class="comment">// زمان بروزرسانی (میلی‌ثانیه)</span><br>
+            &nbsp;&nbsp;updateInterval: <span class="string">300000</span>,<br>
+            &nbsp;&nbsp;<span class="comment">// متن برچسب</span><br>
+            &nbsp;&nbsp;labelText: <span class="string">'اخبار فوری'</span><br>
+            };
+        </div>
+
+        <hr>
+
+        <!-- لینک‌ها -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="https://github.com/maghool51/diyar-widgets" target="_blank" rel="noopener noreferrer" class="btn">🐙 GitHub</a>
+            <a href="https://maghool51.github.io/diyar-widgets/news/" target="_blank" rel="noopener noreferrer" class="btn btn-gray">🌐 مشاهده ویجت</a>
+        </div>
+
+        <hr>
+        <p style="text-align:center;color:#6c757d;font-size:13px;">
+            ساخته شده با ❤️ توسط Diyar Widgets &bull; نسخه 2.0.0 &bull; 
+            <a href="https://github.com/maghool51/diyar-widgets/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" style="color:#dc2626;">MIT License</a>
+        </p>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="ticker.js"></script>
+</body>
+</html>

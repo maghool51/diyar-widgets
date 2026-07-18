@@ -1,12 +1,279 @@
-body{
-    margin:0;
-    font-family:tahoma,Arial,sans-serif;
-    background:transparent;
+/* ================================
+   Diyar Widgets - News Ticker
+   ticker.css
+   ================================ */
+
+
+:root{
+
+    --green:#0b8f45;
+    --green-dark:#05652f;
+    --red:#d62828;
+    --white:#ffffff;
+    --text:#222;
+    --shadow:0 4px 15px rgba(0,0,0,.15);
+
 }
 
-.ticker{
+
+/* Reset */
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+
+body{
+
+    background:transparent;
+    font-family:
+        Tahoma,
+        Arial,
+        "B Nazanin",
+        sans-serif;
+
+}
+
+
+/* Main Container */
+
+.ticker-wrapper{
+
     width:100%;
-    height:46px;
-    background:#b00000;
-    color:#fff;
+    height:48px;
+
+    display:flex;
+    align-items:center;
+
+    direction:rtl;
+
+    background:#fff;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+}
+
+
+/* News Label */
+
+.ticker-label{
+
+    flex:0 0 auto;
+
+    height:100%;
+
+    min-width:120px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+
+    background:
+    linear-gradient(
+        135deg,
+        var(--red),
+        #ff5252
+    );
+
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    white-space:nowrap;
+
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+
+/* Moving Area */
+
+.ticker-area{
+
+    flex:1;
+
+    overflow:hidden;
+
+    height:100%;
+
+    position:relative;
+
+}
+
+
+/* Ticker Track */
+
+.ticker{
+
+    height:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    white-space:nowrap;
+
+    width:max-content;
+
+    animation:
+
+    tickerMove 35s linear infinite;
+
+
+}
+
+
+/* Stop animation on hover */
+
+.ticker-wrapper:hover .ticker{
+
+    animation-play-state:paused;
+
+}
+
+
+
+/* News Items */
+
+.ticker-item{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    margin-left:40px;
+
+    color:var(--text);
+
+    text-decoration:none;
+
+    font-size:15px;
+
+    font-weight:500;
+
+    transition:.2s;
+
+
+}
+
+
+.ticker-item:hover{
+
+    color:var(--green);
+
+}
+
+
+
+/* Bullet */
+
+.ticker-item::before{
+
+    content:"●";
+
+    color:var(--green);
+
+    margin-left:10px;
+
+    font-size:12px;
+
+}
+
+
+
+/* Infinite Movement */
+
+@keyframes tickerMove{
+
+
+    from{
+
+        transform:translateX(0);
+
+    }
+
+
+    to{
+
+        transform:translateX(50%);
+
+    }
+
+
+}
+
+
+
+/* Mobile */
+
+@media(max-width:600px){
+
+
+    .ticker-wrapper{
+
+        height:42px;
+
+        border-radius:8px;
+
+    }
+
+
+    .ticker-label{
+
+        min-width:90px;
+
+        font-size:13px;
+
+    }
+
+
+    .ticker-item{
+
+        font-size:13px;
+
+        margin-left:25px;
+
+    }
+
+
+}
+
+
+
+/* Very small screens */
+
+@media(max-width:380px){
+
+
+    .ticker-label{
+
+        min-width:75px;
+
+        font-size:12px;
+
+    }
+
+
+    .ticker-item{
+
+        font-size:12px;
+
+    }
+
+
 }

@@ -1,37 +1,79 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>دیار ویجت | نیوزتیکر</title>
-
-<link rel="stylesheet" href="ticker.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اخبار فوری - Diyar Widgets News Ticker v2.0</title>
+    
+    <!-- Meta Tags برای SEO و GitHub Pages -->
+    <meta name="description" content="ویجت خبری حرفه‌ای و مستقل برای نمایش آخرین اخبار">
+    <meta name="author" content="Diyar Widgets">
+    <meta property="og:title" content="Diyar News Ticker v2.0">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://YOUR-USERNAME.github.io/REPO-NAME/">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="ticker.css">
 </head>
-
 <body>
+    <!-- ============================================
+         نیوزتیکر - قابل استفاده در هر جای صفحه
+         ============================================ -->
+    <div class="ticker-wrapper" role="region" aria-label="نوار اخبار فوری">
+        <!-- برچسب -->
+        <div class="ticker-label">
+            <span class="blink-dot"></span>
+            <span class="label-text">اخبار فوری</span>
+        </div>
+        
+        <!-- نوار -->
+        <div class="ticker-container">
+            <div class="ticker-track" id="tickerTrack">
+                <div class="ticker-loading">⏳ در حال بارگذاری اخبار...</div>
+            </div>
+        </div>
+    </div>
 
-<div class="ticker-wrapper">
+    <!-- ============================================
+         اسکریپت‌ها
+         ============================================ -->
+    <!-- تنظیمات (اختیاری) -->
+    <script src="config.js"></script>
+    <!-- هسته اصلی -->
+    <script src="ticker.js"></script>
 
-<div class="ticker-label">
-اخبار فوری
-</div>
+    <!-- ============================================
+         راهنمای نصب برای کاربران
+         ============================================ -->
+    <div style="max-width:1200px;margin:40px auto;padding:20px;font-family:Tahoma;direction:rtl;background:#f8f9fa;border-radius:12px;border:1px solid #e9ecef;">
+        <h2 style="color:#dc2626;">📰 دیوار نیوزتیکر v2.0</h2>
+        <p style="color:#495057;line-height:1.8;">
+            ✅ کاملاً مستقل و بدون وابستگی<br>
+            ✅ سازگار با GitHub Pages، Blogfa و iframe<br>
+            ✅ کش هوشمند و بروزرسانی خودکار<br>
+            ✅ واکنش‌گرا (Responsive) و مناسب موبایل<br>
+            ✅ دارای حالت شب (Dark Mode)<br>
+            ✅ امن در برابر XSS و HTML Injection
+        </p>
+        <hr style="margin:20px 0;border:0;border-top:2px dashed #dee2e6;">
+        <p style="color:#6c757d;font-size:13px;">
+            🔗 منبع اخبار: 
+            <a href="https://maghool51.github.io/diyar-news/news.json" target="_blank" style="color:#dc2626;">
+                maghool51.github.io/diyar-news/news.json
+            </a>
+            <br>
+            📦 برای تغییر منبع، فایل <code>config.js</code> را ویرایش کنید.
+        </p>
+    </div>
 
-<div class="ticker-area">
-
-<div id="ticker" class="ticker">
-در حال دریافت اخبار...
-</div>
-
-</div>
-
-</div>
-
-<script src="ticker.js"></script>
-
+    <!-- ============================================
+         فوتر
+         ============================================ -->
+    <footer style="text-align:center;padding:20px;color:#6c757d;font-size:13px;font-family:Tahoma;">
+        Diyar Widgets News Ticker v2.0 &bull; 
+        <a href="https://github.com/YOUR-USERNAME/REPO-NAME" target="_blank" style="color:#dc2626;text-decoration:none;">
+            GitHub Repository
+        </a>
+    </footer>
 </body>
-
 </html>

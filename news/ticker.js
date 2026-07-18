@@ -194,9 +194,8 @@ function renderNews(data){
 
     // تکرار برای حرکت بی نهایت
 
-    ticker.innerHTML =
-    html + html;
-
+  ticker.innerHTML =
+html + html + html;
 
 }
 

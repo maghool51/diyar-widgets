@@ -1,38 +1,36 @@
 /**
  * ============================================
  * Diyar Widgets News Ticker v2.0
- * Config File - تنظیمات کاربر
+ * Config File - تنظیمات مخصوص GitHub Pages
  * ============================================
- * 
- * این فایل اختیاری است. در صورت وجود، تنظیمات
- * آن بر پیش‌فرض‌ها اعمال می‌شود.
  */
 
 window.TICKER_CONFIG = {
     // ---------- منابع ----------
+    // برای GitHub Pages از آدرس کامل استفاده کنید
     primarySource: 'https://maghool51.github.io/diyar-news/news.json',
-    fallbackSource: './news.json',
+    fallbackSource: './news.json',  // فایل محلی در همین ریپازیتوری
     
-    // ---------- زمان‌ها (به میلی‌ثانیه) ----------
+    // ---------- زمان‌ها (میلی‌ثانیه) ----------
     cacheExpiry: 300000,      // ۵ دقیقه
     updateInterval: 300000,   // ۵ دقیقه
     
-    // ---------- سرعت حرکت ----------
-    baseSpeed: 45,            // پیکسل بر ثانیه
+    // ---------- سرعت ----------
+    baseSpeed: 45,
     minSpeed: 25,
     maxSpeed: 80,
     
     // ---------- ظاهر ----------
     labelText: 'اخبار فوری',
-    tickerHeight: 50,         // پیکسل
-    fontSize: 14.5,           // پیکسل
-    itemGap: 24,              // فاصله بین اخبار (پیکسل)
+    tickerHeight: 50,
+    fontSize: 14.5,
+    itemGap: 24,
     
-    // ---------- فعال/غیرفعال کردن ویژگی‌ها ----------
+    // ---------- ویژگی‌ها ----------
     enableFade: true,
     enableBlink: true,
     enableHover: true,
     
-    // ---------- حالت دیباگ ----------
+    // ---------- دیباگ (برای تولید خاموش کنید) ----------
     debug: false
 };

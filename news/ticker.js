@@ -4,8 +4,6 @@
    ================================== */
 
 
-// آدرس فایل اخبار در مخزن اصلی دیار نیوز
-
 const MAIN_NEWS_URL =
 "https://maghool51.github.io/diyar-news/news.json";
 
@@ -14,11 +12,12 @@ const BACKUP_NEWS_URL =
 "./news.json";
 
 
-// تنظیمات
+const CACHE_KEY =
+"diyar_news_cache";
 
-const CACHE_KEY = "diyar_news_cache";
 
-const CACHE_TIME = 5 * 60 * 1000; // 5 دقیقه
+const CACHE_TIME =
+5 * 60 * 1000;
 
 
 const ticker =
@@ -32,7 +31,6 @@ document.getElementById("ticker");
 async function loadNews(){
 
     try{
-
 
         const response =
         await fetch(
@@ -60,6 +58,7 @@ async function loadNews(){
 
     }
 
+
     catch(error){
 
 
@@ -77,6 +76,13 @@ async function loadNews(){
             );
 
 
+            if(!response.ok){
+
+                throw new Error();
+
+            }
+
+
             const data =
             await response.json();
 
@@ -92,7 +98,6 @@ async function loadNews(){
 
             const cached =
             getCache(true);
-
 
 
             if(cached){
@@ -114,18 +119,87 @@ async function loadNews(){
 
     }
 
-
 }
 
 
-    // کپی برای حرکت بی نهایت
+
+
+
+
+// نمایش اخبار
+
+function renderNews(data){
+
+
+
+    // پشتیبانی از ساختارهای مختلف JSON
+
+    if(data.news && Array.isArray(data.news)){
+
+        data =
+        data.news;
+
+    }
+
+
+
+    if(!Array.isArray(data) || data.length===0){
+
+        ticker.innerHTML =
+        "خبری موجود نیست";
+
+        return;
+
+    }
+
+
+
+    let html="";
+
+
+
+    data.forEach(item=>{
+
+
+        const title =
+        item.title ||
+        item.headline ||
+        "خبر بدون عنوان";
+
+
+        const link =
+        item.link ||
+        item.url ||
+        "#";
+
+
+
+        html += `
+
+        <a class="ticker-item"
+           href="${link}"
+           target="_blank"
+           rel="noopener">
+
+           ${title}
+
+        </a>
+
+        `;
+
+
+    });
+
+
+
+    // تکرار برای حرکت بی نهایت
 
     ticker.innerHTML =
     html + html;
 
 
-
 }
+
 
 
 
@@ -162,6 +236,7 @@ function saveCache(data){
 
 
 
+
 // خواندن کش
 
 function getCache(force=false){
@@ -171,7 +246,6 @@ function getCache(force=false){
     localStorage.getItem(
         CACHE_KEY
     );
-
 
 
     if(!saved){

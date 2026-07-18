@@ -6,8 +6,12 @@
 
 // آدرس فایل اخبار در مخزن اصلی دیار نیوز
 
-const NEWS_URL =
+const MAIN_NEWS_URL =
 "https://maghool51.github.io/diyar-news/news.json";
+
+
+const BACKUP_NEWS_URL =
+"./news.json";
 
 
 // تنظیمات
@@ -27,51 +31,31 @@ document.getElementById("ticker");
 
 async function loadNews(){
 
-
     try{
-
-
-        const cached =
-        getCache();
-
-
-        if(cached){
-
-
-            renderNews(cached);
-
-
-        }
-
 
 
         const response =
         await fetch(
-            NEWS_URL + "?v=" + Date.now()
+            MAIN_NEWS_URL + "?v=" + Date.now()
         );
-
 
 
         if(!response.ok){
 
             throw new Error(
-                "خطا در دریافت اخبار"
+                "main source error"
             );
 
         }
-
 
 
         const data =
         await response.json();
 
 
-
         saveCache(data);
 
-
         renderNews(data);
-
 
 
     }
@@ -79,25 +63,51 @@ async function loadNews(){
     catch(error){
 
 
-        console.log(error);
+        console.log(
+            "استفاده از منبع پشتیبان"
+        );
 
 
-
-        const cached =
-        getCache(true);
+        try{
 
 
+            const response =
+            await fetch(
+                BACKUP_NEWS_URL
+            );
 
-        if(cached){
 
-            renderNews(cached);
+            const data =
+            await response.json();
+
+
+            renderNews(data);
+
 
         }
 
-        else{
 
-            ticker.innerHTML =
-            "⚠️ دریافت اخبار امکان‌پذیر نیست";
+        catch(e){
+
+
+            const cached =
+            getCache(true);
+
+
+
+            if(cached){
+
+                renderNews(cached);
+
+            }
+
+            else{
+
+                ticker.innerHTML =
+                "⚠️ اخبار در دسترس نیست";
+
+            }
+
 
         }
 
@@ -106,62 +116,6 @@ async function loadNews(){
 
 
 }
-
-
-
-
-
-// نمایش اخبار
-
-function renderNews(data){
-
-
-    if(!Array.isArray(data) || data.length===0){
-
-
-        ticker.innerHTML =
-        "خبری موجود نیست";
-
-
-        return;
-
-    }
-
-
-
-    let html="";
-
-
-
-    data.forEach(item=>{
-
-
-        const title =
-        item.title || "خبر بدون عنوان";
-
-
-
-        const link =
-        item.link || "#";
-
-
-
-        html += `
-
-        <a class="ticker-item"
-           href="${link}"
-           target="_blank"
-           rel="noopener">
-
-           ${title}
-
-        </a>
-
-        `;
-
-
-    });
-
 
 
     // کپی برای حرکت بی نهایت

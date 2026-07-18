@@ -1,10 +1,59 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
+
 <head>
+
 <meta charset="UTF-8">
-<title>News Widget</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>دیار ویجت | نیوزتیکر</title>
+
+<link rel="stylesheet" href="ticker.css">
+
 </head>
+
 <body>
-در حال آماده‌سازی نیوزتیکر...
+
+<div class="ticker">
+
+    <div class="ticker-header">
+
+        <div class="live-dot"></div>
+
+        <div class="ticker-title">
+            خبر فوری
+        </div>
+
+    </div>
+
+    <div class="ticker-wrapper">
+
+        <div class="fade-left"></div>
+
+        <div class="fade-right"></div>
+
+        <div id="tickerTrack" class="ticker-track">
+
+            <div class="loading">
+                در حال دریافت اخبار...
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="ticker-time">
+
+        <span id="updateTime">
+            --:--
+        </span>
+
+    </div>
+
+</div>
+
+<script src="ticker.js"></script>
+
 </body>
+
 </html>

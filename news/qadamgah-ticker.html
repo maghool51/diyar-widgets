@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نوار خبری دیار قدمگاه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f2c2e;
+    --ink-2: #133435;
+    --gold: #c9a227;
+    --gold-soft: #e8c766;
+    --paper: #f5f1e6;
+    --muted: #9fc4bc;
+    --live-red: #d9432d;
+    --bar-height: 46px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: "Vazirmatn", -apple-system, "Segoe UI", Tahoma, sans-serif;
+  }
+
+  /* ---------------- Ticker bar shell ---------------- */
+  .qg-ticker {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    height: var(--bar-height);
+    width: 100%;
+    direction: rtl;
+    background: var(--ink);
+    border-top: 2px solid var(--gold);
+    border-bottom: 1px solid rgba(232,199,102,0.25);
+    overflow: hidden;
+    isolation: isolate;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+
+  /* Channel-ID / logo box, like a real news-network bug */
+  .qg-brand {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    background: linear-gradient(180deg, var(--gold-soft), var(--gold));
+    color: var(--ink);
+    font-weight: 800;
+    font-size: 14px;
+    white-space: nowrap;
+    position: relative;
+    z-index: 2;
+  }
+  .qg-brand::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: -14px;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    background: inherit;
+    clip-path: polygon(0 0, 40% 0, 100% 50%, 40% 100%, 0 100%);
+  }
+  .qg-brand svg { flex: 0 0 auto; width: 22px; height: 22px; }
+
+  /* LIVE badge */
+  .qg-live {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    background: var(--live-red);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+  }
+  .qg-live .qg-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    animation: qg-blink 1.2s ease-in-out infinite;
+  }
+  @keyframes qg-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+
+  /* Scrolling viewport */
+  .qg-viewport {
+    position: relative;
+    flex: 1 1 auto;
+    height: 100%;
+    overflow: hidden;
+    min-width: 0;
+    background:
+      linear-gradient(90deg, var(--ink) 0%, transparent 4%, transparent 96%, var(--ink) 100%);
+  }
+  .qg-track {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    will-change: transform;
+    transform: translate3d(0,0,0);
+  }
+  .qg-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 34px 0 0;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--paper);
+  }
+  .qg-item .qg-sep {
+    color: var(--gold);
+    opacity: 0.7;
+  }
+  .qg-item a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .qg-item a:hover { color: var(--gold-soft); text-decoration: underline; text-underline-offset: 3px; }
+
+  .qg-dot-breaking {
+    flex: 0 0 auto;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--live-red);
+    box-shadow: 0 0 0 0 rgba(217,67,45,0.55);
+  }
+  .qg-item[data-breaking="true"] .qg-dot-breaking {
+    animation: qg-blink-light 1.3s ease-in-out infinite;
+  }
+  @keyframes qg-blink-light {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(217,67,45,0.55); }
+    50% { opacity: 0.35; box-shadow: 0 0 5px 4px rgba(217,67,45,0.3); }
+  }
+  .qg-item .qg-cat {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .qg-status {
+    padding: 0 16px;
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  /* Clock box on the far side */
+  .qg-clock {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    font-size: 12.5px;
+    color: var(--gold-soft);
+    font-weight: 600;
+    white-space: nowrap;
+    border-inline-start: 1px solid rgba(232,199,102,0.2);
+  }
+
+  @media (max-width: 640px) {
+    :root { --bar-height: 40px; }
+    .qg-brand span.qg-brand-text { display: none; }
+    .qg-clock { display: none; }
+    .qg-live { padding: 0 10px; font-size: 11px; }
+    .qg-item { font-size: 13px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .qg-live-dot, .qg-dot-breaking { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="qg-ticker" id="qg-ticker" role="marquee" aria-label="نوار خبری دیار قدمگاه">
+    <div class="qg-brand">
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M20 8 C13 8 10 14 10 19 C10 25.5 14.5 30 20 33.5 C25.5 30 30 25.5 30 19 C30 14 27 8 20 8 Z"
+              fill="none" stroke="#0f2c2e" stroke-width="2.2" stroke-linejoin="round"/>
+        <circle cx="20" cy="18.5" r="3" fill="#0f2c2e"/>
+      </svg>
+      <span class="qg-brand-text">دیار قدمگاه</span>
+    </div>
+    <div class="qg-live"><span class="qg-live-dot" aria-hidden="true"></span> زنده</div>
+    <div class="qg-viewport">
+      <div class="qg-track" id="qg-track"></div>
+    </div>
+    <div class="qg-clock" id="qg-clock">—</div>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+
+  const CONFIG = {
+    primarySource: "https://cdn.jsdelivr.net/gh/maghool51/diyar-news@main/news.json",
+    fallbackSource: "https://cdn.jsdelivr.net/gh/maghool51/diyar-widgets@main/news/news.json",
+    cacheKey: "diyar_qadamgah_ticker_cache",
+    cacheTTL: 5 * 60 * 1000,
+    requestTimeout: 8000,
+    updateInterval: 60 * 1000,
+    speed: 55,          // px/sec
+    maxItems: 25
+  };
+
+  const root = document.getElementById("qg-ticker");
+  const track = document.getElementById("qg-track");
+  const viewport = root.querySelector(".qg-viewport");
+  const clockEl = document.getElementById("qg-clock");
+
+  let news = [];
+  let paused = false;
+  let offsetX = 0;
+  let trackWidth = 0;
+  let rafId = null;
+  let lastTime = null;
+
+  function escapeHTML(str) {
+    if (str == null) return "";
+    return String(str).replace(/[&<>"']/g, (ch) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[ch]));
+  }
+
+  function sanitizeURL(url) {
+    if (typeof url !== "string" || url.trim() === "") return "#";
+    try {
+      const resolved = new URL(url.trim(), window.location.href);
+      if (resolved.protocol === "http:" || resolved.protocol === "https:") return resolved.href;
+      return "#";
+    } catch { return "#"; }
+  }
+
+  function toPersianRelativeTime(dateInput) {
+    if (!dateInput) return "";
+    const date = new Date(dateInput);
+    if (Number.isNaN(date.getTime())) return "";
+    const diffSec = Math.round((Date.now() - date.getTime()) / 1000);
+    if (typeof Intl !== "undefined" && Intl.RelativeTimeFormat) {
+      try {
+        const rtf = new Intl.RelativeTimeFormat("fa", { numeric: "auto" });
+        const abs = Math.abs(diffSec);
+        if (abs < 60) return rtf.format(-Math.round(diffSec), "second");
+        if (abs < 3600) return rtf.format(-Math.round(diffSec / 60), "minute");
+        if (abs < 86400) return rtf.format(-Math.round(diffSec / 3600), "hour");
+        return rtf.format(-Math.round(diffSec / 86400), "day");
+      } catch {}
+    }
+    return "";
+  }
+
+  function normalizeItem(item) {
+    return {
+      title: item.title || "",
+      link: sanitizeURL(item.link),
+      category: item.category || "",
+      breaking: !!item.breaking,
+      time: item.time || toPersianRelativeTime(item.date) || ""
+    };
+  }
+
+  async function fetchWithTimeout(url) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), CONFIG.requestTimeout);
+    try {
+      const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data || !Array.isArray(data.news)) throw new Error("Invalid news JSON");
+      return data;
+    } finally { clearTimeout(timer); }
+  }
+
+  function writeCache(data) {
+    try { localStorage.setItem(CONFIG.cacheKey, JSON.stringify({ ts: Date.now(), data })); } catch {}
+  }
+  function readCache() {
+    try {
+      const raw = localStorage.getItem(CONFIG.cacheKey);
+      if (!raw) return null;
+      const payload = JSON.parse(raw);
+      if (!payload || Date.now() - payload.ts > CONFIG.cacheTTL) return null;
+      return payload.data;
+    } catch { return null; }
+  }
+
+  async function loadNews() {
+    try {
+      const data = await fetchWithTimeout(CONFIG.primarySource);
+      writeCache(data);
+      return data;
+    } catch {}
+    try {
+      const data = await fetchWithTimeout(CONFIG.fallbackSource);
+      writeCache(data);
+      return data;
+    } catch {}
+    return readCache();
+  }
+
+  function renderStatus(msg) {
+    track.innerHTML = `<span class="qg-status">${escapeHTML(msg)}</span>`;
+  }
+
+  function renderItems() {
+    const items = news.length ? news : [];
+    const loopList = items.length ? [...items, ...items] : [];
+    const frag = document.createDocumentFragment();
+
+    loopList.forEach((item) => {
+      const el = document.createElement("span");
+      el.className = "qg-item";
+      if (item.breaking) el.setAttribute("data-breaking", "true");
+
+      const dot = document.createElement("span");
+      dot.className = "qg-dot-breaking";
+      el.appendChild(dot);
+
+      if (item.category) {
+        const cat = document.createElement("span");
+        cat.className = "qg-cat";
+        cat.textContent = item.category;
+        el.appendChild(cat);
+
+        const sep = document.createElement("span");
+        sep.className = "qg-sep";
+        sep.textContent = "|";
+        el.appendChild(sep);
+      }
+
+      const a = document.createElement("a");
+      a.href = item.link;
+      if (item.link !== "#" && new URL(item.link, window.location.href).origin !== window.location.origin) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      a.textContent = item.title;
+      el.appendChild(a);
+
+      frag.appendChild(el);
+    });
+
+    track.innerHTML = "";
+    track.appendChild(frag);
+  }
+
+  function measure() {
+    trackWidth = track.scrollWidth / 2 || 0;
+  }
+
+  function startAnimation() {
+    if (rafId) cancelAnimationFrame(rafId);
+    if (!trackWidth) return;
+    lastTime = null;
+    const step = (time) => {
+      if (lastTime == null) lastTime = time;
+      const dt = (time - lastTime) / 1000;
+      lastTime = time;
+      if (!paused) {
+        offsetX += CONFIG.speed * dt;
+        if (offsetX >= trackWidth) offsetX -= trackWidth;
+        track.style.transform = `translate3d(${-offsetX}px, 0, 0)`;
+      }
+      rafId = requestAnimationFrame(step);
+    };
+    rafId = requestAnimationFrame(step);
+  }
+
+  function updateClock() {
+    const now = new Date();
+    clockEl.textContent = now.toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  async function refresh() {
+    const data = await loadNews();
+    if (!data || !Array.isArray(data.news) || !data.news.length) {
+      renderStatus("در حال حاضر خبری برای نمایش وجود ندارد.");
+      return;
+    }
+    news = data.news.map(normalizeItem).slice(0, CONFIG.maxItems);
+    renderItems();
+    requestAnimationFrame(() => { measure(); startAnimation(); });
+  }
+
+  root.addEventListener("mouseenter", () => { paused = true; });
+  root.addEventListener("mouseleave", () => { paused = false; });
+  root.addEventListener("touchstart", () => { paused = true; }, { passive: true });
+  root.addEventListener("touchend", () => { setTimeout(() => { paused = false; }, 300); }, { passive: true });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { if (rafId) cancelAnimationFrame(rafId); rafId = null; }
+    else startAnimation();
+  });
+  window.addEventListener("resize", () => measure(), { passive: true });
+
+  updateClock();
+  setInterval(updateClock, 30 * 1000);
+  refresh();
+  setInterval(refresh, CONFIG.updateInterval);
+})();
+</script>
+</body>
+</html>

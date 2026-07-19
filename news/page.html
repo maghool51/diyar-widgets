@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دیار قدمگاه — آخرین اخبار</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f2c2e;
+    --ink-2: #133435;
+    --ink-3: #163c3e;
+    --gold: #c9a227;
+    --gold-soft: #e8c766;
+    --paper: #f5f1e6;
+    --muted: #8fb2aa;
+    --muted-2: #5f8580;
+    --line: rgba(245, 241, 230, 0.10);
+    --line-strong: rgba(245, 241, 230, 0.18);
+    --danger: #c9603a;
+    --radius: 10px;
+    --maxw: 760px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "Vazirmatn", -apple-system, "Segoe UI", Tahoma, sans-serif;
+    direction: rtl;
+  }
+
+  body {
+    background:
+      radial-gradient(1200px 500px at 15% -10%, rgba(201,162,39,0.10), transparent 60%),
+      radial-gradient(900px 400px at 100% 0%, rgba(143,178,170,0.08), transparent 55%),
+      var(--ink);
+    min-height: 100vh;
+  }
+
+  a { color: inherit; }
+
+  /* ---------------- Header ---------------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(15, 44, 46, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-mark {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+  }
+  .brand-name {
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: 0.2px;
+    color: var(--paper);
+    line-height: 1;
+  }
+  .brand-name b {
+    color: var(--gold-soft);
+    font-weight: 900;
+  }
+  .header-meta {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* ---------------- Hero ---------------- */
+  .hero {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 40px 20px 0;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--gold-soft);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-bottom: 14px;
+  }
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 0 rgba(201,162,39,0.5);
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(201,162,39,0.5); }
+    50% { opacity: 0.5; box-shadow: 0 0 5px 4px rgba(201,162,39,0.25); }
+  }
+  h1.title {
+    margin: 0;
+    font-size: clamp(32px, 6vw, 48px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--paper);
+  }
+  .subtitle {
+    margin: 10px 0 0;
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 52ch;
+  }
+  .subtitle strong { color: var(--gold-soft); font-weight: 700; }
+
+  /* ---------------- Footpath divider (signature element) ---------------- */
+  .footpath {
+    max-width: var(--maxw);
+    margin: 28px auto 8px;
+    padding: 0 20px;
+  }
+  .footpath svg { display: block; width: 100%; height: 28px; }
+  .footpath circle { fill: var(--gold); opacity: 0.55; }
+  .footpath circle:nth-child(odd) { opacity: 0.9; }
+
+  /* ---------------- News list ---------------- */
+  main {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 8px 20px 60px;
+  }
+
+  .list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 2px 14px;
+    border-bottom: 1px solid var(--line-strong);
+    margin-bottom: 4px;
+  }
+  .list-toolbar .count {
+    font-size: 12.5px;
+    color: var(--muted-2);
+  }
+  .refresh-btn {
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--gold-soft);
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .refresh-btn:hover { background: rgba(232,199,102,0.08); border-color: var(--gold); }
+  .refresh-btn:active { transform: translateY(1px); }
+  .refresh-btn[disabled] { opacity: 0.5; cursor: default; }
+
+  ul.headlines {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  ul.headlines li {
+    border-bottom: 1px solid var(--line);
+  }
+  ul.headlines li:last-child { border-bottom: none; }
+
+  .headline-row {
+    display: block;
+    padding: 16px 2px;
+    text-decoration: none;
+  }
+  .headline-top {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: rgba(201,162,39,0.14);
+    color: var(--gold-soft);
+    border: 1px solid rgba(201,162,39,0.28);
+    white-space: nowrap;
+  }
+  .headline-title {
+    font-size: 16.5px;
+    font-weight: 600;
+    color: var(--paper);
+    line-height: 1.6;
+    transition: color 0.15s ease;
+  }
+  .headline-row:hover .headline-title {
+    color: var(--gold-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .headline-meta {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted-2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .headline-meta .dot { opacity: 0.6; }
+
+  /* ---------------- Status / loading / error ---------------- */
+  .status-box {
+    padding: 40px 2px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.9;
+  }
+  .status-box .err { color: var(--danger); }
+
+  .skeleton-row {
+    padding: 16px 2px;
+    border-bottom: 1px solid var(--line);
+  }
+  .skeleton-line {
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--ink-2) 25%, var(--ink-3) 37%, var(--ink-2) 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.6s ease infinite;
+  }
+  @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+  .skeleton-line.tag-like { width: 60px; height: 16px; border-radius: 999px; margin-bottom: 10px; }
+  .skeleton-line.title-like { width: 100%; margin-bottom: 8px; }
+  .skeleton-line.title-like.short { width: 70%; }
+  .skeleton-line.meta-like { width: 120px; height: 10px; }
+
+  footer {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--muted-2);
+  }
+  footer a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+
+  @media (max-width: 480px) {
+    .header-inner { padding: 14px 16px; }
+    .hero { padding: 30px 16px 0; }
+    main { padding: 8px 16px 48px; }
+    .footpath { padding: 0 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot, .skeleton-line { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="20" cy="20" r="19" fill="#163c3e" stroke="#c9a227" stroke-width="1.4"/>
+          <path d="M20 8 C13 8 10 14 10 19 C10 25.5 14.5 30 20 33.5 C25.5 30 30 25.5 30 19 C30 14 27 8 20 8 Z"
+                fill="none" stroke="#e8c766" stroke-width="1.6" stroke-linejoin="round"/>
+          <circle cx="20" cy="18.5" r="3.1" fill="#e8c766"/>
+        </svg>
+        <span class="brand-name"><b>دیار</b> قدمگاه</span>
+      </div>
+      <div class="header-meta" id="header-meta">در حال بارگذاری…</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span> بروزرسانی زنده</div>
+    <h1 class="title">آخرین اخبار</h1>
+    <p class="subtitle">گزیده‌ی سرخط‌های لحظه‌به‌لحظه از منابع خبری معتبر، ویژه‌ی همراهان <strong>دیار قدمگاه</strong>.</p>
+  </section>
+
+  <div class="footpath" aria-hidden="true">
+    <svg viewBox="0 0 720 28" preserveAspectRatio="none">
+      <circle cx="20" cy="18" r="2.6"></circle>
+      <circle cx="46" cy="10" r="2.2"></circle>
+      <circle cx="74" cy="20" r="2.6"></circle>
+      <circle cx="102" cy="9" r="2.1"></circle>
+      <circle cx="132" cy="19" r="2.6"></circle>
+      <circle cx="160" cy="8" r="2.1"></circle>
+      <circle cx="190" cy="20" r="2.6"></circle>
+      <circle cx="220" cy="9" r="2.1"></circle>
+      <circle cx="250" cy="19" r="2.6"></circle>
+      <circle cx="280" cy="8" r="2.1"></circle>
+      <circle cx="310" cy="20" r="2.6"></circle>
+      <circle cx="340" cy="9" r="2.1"></circle>
+      <circle cx="370" cy="19" r="2.6"></circle>
+      <circle cx="400" cy="8" r="2.1"></circle>
+      <circle cx="430" cy="20" r="2.6"></circle>
+      <circle cx="460" cy="9" r="2.1"></circle>
+      <circle cx="490" cy="19" r="2.6"></circle>
+      <circle cx="520" cy="8" r="2.1"></circle>
+      <circle cx="550" cy="20" r="2.6"></circle>
+      <circle cx="580" cy="9" r="2.1"></circle>
+      <circle cx="610" cy="19" r="2.6"></circle>
+      <circle cx="640" cy="8" r="2.1"></circle>
+      <circle cx="670" cy="20" r="2.6"></circle>
+      <circle cx="698" cy="9" r="2.1"></circle>
+    </svg>
+  </div>
+
+  <main>
+    <div class="list-toolbar">
+      <span class="count" id="news-count">—</span>
+      <button class="refresh-btn" id="refresh-btn" type="button">بروزرسانی</button>
+    </div>
+    <ul class="headlines" id="headlines" aria-live="polite">
+      <!-- skeleton shown until first load resolves -->
+    </ul>
+  </main>
+
+  <footer>
+    طراحی و توسعه با <span style="color:#e8c766">Diyar Widgets</span> · دیار قدمگاه
+  </footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const CONFIG = {
+    primarySource: "https://cdn.jsdelivr.net/gh/maghool51/diyar-news@main/news.json",
+    fallbackSource: "https://cdn.jsdelivr.net/gh/maghool51/diyar-widgets@main/news/news.json",
+    cacheKey: "diyar_qadamgah_news_cache",
+    cacheTTL: 5 * 60 * 1000,
+    requestTimeout: 8000,
+    updateInterval: 60 * 1000,
+    maxItems: 40
+  };
+
+  const listEl = document.getElementById("headlines");
+  const countEl = document.getElementById("news-count");
+  const metaEl = document.getElementById("header-meta");
+  const refreshBtn = document.getElementById("refresh-btn");
+
+  function escapeHTML(str) {
+    if (str == null) return "";
+    return String(str).replace(/[&<>"']/g, (ch) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[ch]));
+  }
+
+  function sanitizeURL(url) {
+    if (typeof url !== "string" || url.trim() === "") return "#";
+    try {
+      const resolved = new URL(url.trim(), window.location.href);
+      if (resolved.protocol === "http:" || resolved.protocol === "https:") return resolved.href;
+      return "#";
+    } catch { return "#"; }
+  }
+
+  function toPersianRelativeTime(dateInput) {
+    if (!dateInput) return "";
+    const date = new Date(dateInput);
+    if (Number.isNaN(date.getTime())) return "";
+    const diffSec = Math.round((Date.now() - date.getTime()) / 1000);
+    if (typeof Intl !== "undefined" && Intl.RelativeTimeFormat) {
+      try {
+        const rtf = new Intl.RelativeTimeFormat("fa", { numeric: "auto" });
+        const abs = Math.abs(diffSec);
+        if (abs < 60) return rtf.format(-Math.round(diffSec), "second");
+        if (abs < 3600) return rtf.format(-Math.round(diffSec / 60), "minute");
+        if (abs < 86400) return rtf.format(-Math.round(diffSec / 3600), "hour");
+        return rtf.format(-Math.round(diffSec / 86400), "day");
+      } catch { /* fall through */ }
+    }
+    const abs = Math.abs(diffSec);
+    if (abs < 60) return "لحظاتی پیش";
+    if (abs < 3600) return `${Math.round(abs / 60)} دقیقه پیش`;
+    if (abs < 86400) return `${Math.round(abs / 3600)} ساعت پیش`;
+    return `${Math.round(abs / 86400)} روز پیش`;
+  }
+
+  function normalizeItem(item) {
+    const time = item.time || toPersianRelativeTime(item.date) || "";
+    return {
+      title: item.title || "",
+      link: sanitizeURL(item.link),
+      category: item.category || "",
+      source: item.source || "",
+      time
+    };
+  }
+
+  async function fetchWithTimeout(url) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), CONFIG.requestTimeout);
+    try {
+      const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data || !Array.isArray(data.news)) throw new Error("Invalid news JSON");
+      return data;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function writeCache(data) {
+    try {
+      localStorage.setItem(CONFIG.cacheKey, JSON.stringify({ ts: Date.now(), data }));
+    } catch {}
+  }
+
+  function readCache() {
+    try {
+      const raw = localStorage.getItem(CONFIG.cacheKey);
+      if (!raw) return null;
+      const payload = JSON.parse(raw);
+      if (!payload || Date.now() - payload.ts > CONFIG.cacheTTL) return null;
+      return payload.data;
+    } catch { return null; }
+  }
+
+  async function loadNews() {
+    try {
+      const data = await fetchWithTimeout(CONFIG.primarySource);
+      writeCache(data);
+      return { data, note: "" };
+    } catch (e) { /* try fallback */ }
+
+    try {
+      const data = await fetchWithTimeout(CONFIG.fallbackSource);
+      writeCache(data);
+      return { data, note: "" };
+    } catch (e) { /* try cache */ }
+
+    const cached = readCache();
+    if (cached) return { data: cached, note: "نمایش نسخه‌ی ذخیره‌شده (عدم دسترسی به شبکه)" };
+
+    return { data: null, note: "خطا در دریافت اخبار. لطفاً بعداً دوباره تلاش کنید." };
+  }
+
+  function renderSkeleton() {
+    listEl.innerHTML = "";
+    for (let i = 0; i < 6; i++) {
+      const li = document.createElement("li");
+      li.className = "skeleton-row";
+      li.innerHTML = `
+        <div class="skeleton-line tag-like"></div>
+        <div class="skeleton-line title-like"></div>
+        <div class="skeleton-line title-like short"></div>
+        <div class="skeleton-line meta-like"></div>
+      `;
+      listEl.appendChild(li);
+    }
+  }
+
+  function renderStatus(message, isError) {
+    listEl.innerHTML = "";
+    const li = document.createElement("li");
+    li.innerHTML = `<div class="status-box"><span class="${isError ? "err" : ""}">${escapeHTML(message)}</span></div>`;
+    listEl.appendChild(li);
+  }
+
+  function renderNews(items) {
+    listEl.innerHTML = "";
+    const frag = document.createDocumentFragment();
+    items.slice(0, CONFIG.maxItems).forEach((item) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.className = "headline-row";
+      a.href = item.link;
+      if (item.link !== "#" && new URL(item.link).origin !== window.location.origin) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+
+      const top = document.createElement("div");
+      top.className = "headline-top";
+      if (item.category) {
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = item.category;
+        top.appendChild(tag);
+      }
+      const title = document.createElement("span");
+      title.className = "headline-title";
+      title.textContent = item.title;
+      top.appendChild(title);
+
+      const meta = document.createElement("div");
+      meta.className = "headline-meta";
+      const parts = [item.source, item.time].filter(Boolean);
+      meta.textContent = parts.join(" · ");
+
+      a.appendChild(top);
+      a.appendChild(meta);
+      li.appendChild(a);
+      frag.appendChild(li);
+    });
+    listEl.appendChild(frag);
+  }
+
+  async function refresh() {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "در حال بروزرسانی…";
+    renderSkeleton();
+
+    const { data, note } = await loadNews();
+
+    if (!data || !Array.isArray(data.news) || data.news.length === 0) {
+      renderStatus(note || "خبری برای نمایش وجود ندارد.", true);
+      countEl.textContent = "—";
+      metaEl.textContent = "خطا در دریافت اخبار";
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = "تلاش دوباره";
+      return;
+    }
+
+    const items = data.news.map(normalizeItem);
+    renderNews(items);
+
+    const total = data.totalNews || items.length;
+    const catCount = Array.isArray(data.categories) ? data.categories.length : null;
+    countEl.textContent = catCount ? `${total} خبر در ${catCount} دسته` : `${total} خبر`;
+
+    const updated = data.lastUpdatePersian || data.updatedPersian || "";
+    metaEl.textContent = updated ? `بروزرسانی: ${updated}` : "بروزرسانی شد";
+
+    if (note) {
+      const li = document.createElement("li");
+      li.innerHTML = `<div class="status-box">${escapeHTML(note)}</div>`;
+      listEl.appendChild(li);
+    }
+
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = "بروزرسانی";
+  }
+
+  refreshBtn.addEventListener("click", refresh);
+  refresh();
+  setInterval(refresh, CONFIG.updateInterval);
+})();
+</script>
+</body>
+</html>

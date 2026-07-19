@@ -1,0 +1,559 @@
+/*!
+ * Diyar Widgets — News Ticker v3.0
+ * ticker.js
+ *
+ * Vanilla JavaScript (ES2023+). No dependencies. No jQuery.
+ * Works on GitHub Pages with zero build step.
+ *
+ * Public API (available on every instance and on window.DiyarTicker
+ * for the first/default instance):
+ *   refresh()      — re-fetch news from network (bypassing cache)
+ *   pause()        — stop the scroll animation
+ *   resume()       — resume the scroll animation
+ *   destroy()       — remove listeners/DOM and stop all timers
+ *   getNews()      — returns the current news array
+ *   setConfig(cfg) — merge partial config at runtime
+ *   setTheme(name) — "auto" | "light" | "dark"
+ *   reload()       — re-render from the currently loaded news (no fetch)
+ *
+ * @module DiyarNewsTicker
+ */
+(() => {
+  "use strict";
+
+  const DEFAULTS = {
+    primarySource: "news.json",
+    fallbackSource: "",
+    defaultNews: [],
+    selector: "#diyar-ticker",
+    speed: 40,
+    direction: "auto",
+    rtl: true,
+    theme: "auto",
+    height: 44,
+    gap: 48,
+    showIcon: true,
+    showLabel: true,
+    label: "آخرین اخبار",
+    pauseOnHover: true,
+    pauseOnTouch: true,
+    updateInterval: 60_000,
+    cacheKey: "diyar_news_cache_v3",
+    cacheTTL: 5 * 60_000,
+    requestTimeout: 8_000,
+    retryCount: 2,
+    retryDelay: 2_000,
+    breakingBlink: true,
+    breakingLabel: "فوری",
+    debug: false
+  };
+
+  /* ---------------------------------------------------------------- */
+  /* Utilities                                                          */
+  /* ---------------------------------------------------------------- */
+
+  /** Escape a string for safe insertion into HTML text content. */
+  function escapeHTML(str) {
+    if (str == null) return "";
+    return String(str).replace(/[&<>"']/g, (ch) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[ch]));
+  }
+
+  /** Only allow http(s) and relative URLs; neutralize javascript:/data: etc. */
+  function sanitizeURL(url) {
+    if (typeof url !== "string" || url.trim() === "") return "#";
+    const trimmed = url.trim();
+    try {
+      // Relative URLs resolve against location; absolute ones are checked directly.
+      const resolved = new URL(trimmed, window.location.href);
+      if (resolved.protocol === "http:" || resolved.protocol === "https:") {
+        return resolved.href;
+      }
+      return "#";
+    } catch {
+      return "#";
+    }
+  }
+
+  function debounce(fn, wait) {
+    let t = null;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), wait);
+    };
+  }
+
+  function throttle(fn, wait) {
+    let last = 0;
+    let pendingArgs = null;
+    let timer = null;
+    return (...args) => {
+      const now = performance.now();
+      const remaining = wait - (now - last);
+      if (remaining <= 0) {
+        last = now;
+        fn(...args);
+      } else {
+        pendingArgs = args;
+        if (!timer) {
+          timer = setTimeout(() => {
+            last = performance.now();
+            timer = null;
+            fn(...pendingArgs);
+          }, remaining);
+        }
+      }
+    };
+  }
+
+  function isRTLText(text) {
+    return /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/.test(text || "");
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Core class                                                         */
+  /* ---------------------------------------------------------------- */
+
+  class DiyarNewsTicker {
+    /**
+     * @param {HTMLElement} root
+     * @param {object} userConfig
+     */
+    constructor(root, userConfig = {}) {
+      this.root = root;
+      this.config = { ...DEFAULTS, ...userConfig };
+      this.news = [];
+      this._destroyed = false;
+      this._paused = false;
+      this._rafId = null;
+      this._offsetX = 0;
+      this._lastFrameTime = null;
+      this._refreshTimer = null;
+      this._retryAttempt = 0;
+      this._trackWidth = 0;
+      this._viewportWidth = 0;
+
+      this._buildDOM();
+      this._bindEvents();
+      this._log("instance created", this.config);
+
+      this._boot();
+    }
+
+    /* ---------------- lifecycle ---------------- */
+
+    async _boot() {
+      const news = await this._loadNews();
+      this._applyNews(news);
+      this._scheduleAutoRefresh();
+    }
+
+    async _loadNews() {
+      // 1. Primary source
+      try {
+        const data = await this._fetchWithTimeoutAndRetry(this.config.primarySource);
+        this._writeCache(data);
+        this._retryAttempt = 0;
+        return data.news || [];
+      } catch (err) {
+        this._log("primary source failed", err);
+      }
+
+      // 2. Fallback source
+      if (this.config.fallbackSource) {
+        try {
+          const data = await this._fetchWithTimeoutAndRetry(this.config.fallbackSource);
+          this._writeCache(data);
+          return data.news || [];
+        } catch (err) {
+          this._log("fallback source failed", err);
+        }
+      }
+
+      // 3. Local cache
+      const cached = this._readCache();
+      if (cached && Array.isArray(cached.news) && cached.news.length) {
+        this._showStatus("نمایش اخبار از حافظه محلی (عدم دسترسی به شبکه)");
+        return cached.news;
+      }
+
+      // 4. Default news
+      this._showStatus(
+        this.config.defaultNews.length
+          ? ""
+          : "در حال حاضر خبری برای نمایش وجود ندارد."
+      );
+      return this.config.defaultNews || [];
+    }
+
+    async _fetchWithTimeoutAndRetry(url, attempt = 0) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), this.config.requestTimeout);
+      try {
+        const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data || !Array.isArray(data.news)) {
+          throw new Error("Invalid news JSON: missing `news` array");
+        }
+        return data;
+      } catch (err) {
+        if (attempt < this.config.retryCount) {
+          await new Promise((r) => setTimeout(r, this.config.retryDelay));
+          return this._fetchWithTimeoutAndRetry(url, attempt + 1);
+        }
+        throw err;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    _scheduleAutoRefresh() {
+      if (this._refreshTimer) clearInterval(this._refreshTimer);
+      if (!this.config.updateInterval) return;
+      this._refreshTimer = setInterval(() => {
+        this.refresh();
+      }, this.config.updateInterval);
+    }
+
+    /* ---------------- cache ---------------- */
+
+    _writeCache(data) {
+      try {
+        const payload = {
+          ts: Date.now(),
+          data
+        };
+        localStorage.setItem(this.config.cacheKey, JSON.stringify(payload));
+      } catch (err) {
+        this._log("cache write failed", err);
+      }
+    }
+
+    _readCache() {
+      try {
+        const raw = localStorage.getItem(this.config.cacheKey);
+        if (!raw) return null;
+        const payload = JSON.parse(raw);
+        if (!payload || typeof payload.ts !== "number") return null;
+        if (Date.now() - payload.ts > this.config.cacheTTL) {
+          // Expired — clean it up but still return it as a last-resort fallback
+          // only if nothing else is available (handled by caller order).
+          localStorage.removeItem(this.config.cacheKey);
+          return null;
+        }
+        return payload.data;
+      } catch (err) {
+        this._log("cache read failed", err);
+        return null;
+      }
+    }
+
+    /* ---------------- DOM ---------------- */
+
+    _buildDOM() {
+      this.root.classList.add("diyar-ticker");
+      this.root.setAttribute("data-theme", this.config.theme);
+      this.root.setAttribute("data-blink", String(!!this.config.breakingBlink));
+      this.root.style.setProperty("--diyar-height", `${this.config.height}px`);
+      this.root.style.setProperty("--diyar-gap", `${this.config.gap}px`);
+      this.root.setAttribute("dir", this._resolveDirection());
+      this.root.setAttribute("role", "marquee");
+      this.root.setAttribute("aria-label", this.config.label || "News ticker");
+      this.root.innerHTML = "";
+
+      if (this.config.showLabel) {
+        const label = document.createElement("div");
+        label.className = "diyar-ticker__label";
+        const span = document.createElement("span");
+        span.className = "diyar-ticker__label-text";
+        span.textContent = this.config.label;
+        label.appendChild(span);
+        this.root.appendChild(label);
+      }
+
+      this.viewport = document.createElement("div");
+      this.viewport.className = "diyar-ticker__viewport";
+
+      this.track = document.createElement("div");
+      this.track.className = "diyar-ticker__track";
+      this.viewport.appendChild(this.track);
+
+      this.statusEl = document.createElement("div");
+      this.statusEl.className = "diyar-ticker__status";
+      this.statusEl.style.display = "none";
+      this.viewport.appendChild(this.statusEl);
+
+      this.root.appendChild(this.viewport);
+    }
+
+    _resolveDirection() {
+      if (this.config.direction === "rtl" || this.config.direction === "ltr") {
+        return this.config.direction;
+      }
+      return this.config.rtl ? "rtl" : "ltr";
+    }
+
+    _showStatus(msg) {
+      if (!msg) {
+        this.statusEl.style.display = "none";
+        return;
+      }
+      this.statusEl.textContent = msg;
+      this.statusEl.style.display = "block";
+      this.track.style.display = "none";
+    }
+
+    _hideStatus() {
+      this.statusEl.style.display = "none";
+      this.track.style.display = "flex";
+    }
+
+    _renderItems() {
+      const frag = document.createDocumentFragment();
+      const items = this.news.length ? this.news : [];
+
+      // Duplicate the list once so the marquee can loop seamlessly.
+      const loopList = items.length ? [...items, ...items] : [];
+
+      for (const item of loopList) {
+        const el = document.createElement("span");
+        el.className = "diyar-ticker__item";
+        if (item.breaking) el.setAttribute("data-breaking", "true");
+
+        if (this.config.showIcon) {
+          const icon = document.createElement("span");
+          icon.className = "diyar-ticker__icon";
+          icon.setAttribute("aria-hidden", "true");
+          el.appendChild(icon);
+        }
+
+        if (item.breaking) {
+          const badge = document.createElement("span");
+          badge.className = "diyar-ticker__badge";
+          badge.textContent = this.config.breakingLabel;
+          el.appendChild(badge);
+        }
+
+        if (item.category) {
+          const cat = document.createElement("span");
+          cat.className = "diyar-ticker__category";
+          cat.textContent = escapeHTML(item.category);
+          el.appendChild(cat);
+        }
+
+        const link = document.createElement("a");
+        link.href = sanitizeURL(item.link);
+        if (link.getAttribute("href") !== "#" && /^https?:/.test(link.href) &&
+            new URL(link.href).origin !== window.location.origin) {
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+        }
+        link.textContent = escapeHTML(item.title || "");
+        el.appendChild(link);
+
+        if (item.time) {
+          const time = document.createElement("span");
+          time.className = "diyar-ticker__time";
+          time.textContent = escapeHTML(item.time);
+          el.appendChild(time);
+        }
+
+        frag.appendChild(el);
+      }
+
+      this.track.innerHTML = "";
+      this.track.appendChild(frag);
+    }
+
+    _applyNews(news) {
+      this.news = Array.isArray(news) ? news : [];
+      if (!this.news.length) {
+        this._showStatus("خبری برای نمایش وجود ندارد.");
+        return;
+      }
+      this._hideStatus();
+      this._renderItems();
+      // Measure after layout, then (re)start animation.
+      requestAnimationFrame(() => {
+        this._measure();
+        this._startAnimation();
+      });
+    }
+
+    _measure() {
+      this._viewportWidth = this.viewport.clientWidth;
+      // Track holds a duplicated list; half its width is one full loop.
+      this._trackWidth = this.track.scrollWidth / 2 || 0;
+    }
+
+    /* ---------------- animation ---------------- */
+
+    _startAnimation() {
+      if (this._rafId) cancelAnimationFrame(this._rafId);
+      if (!this._trackWidth) return;
+      this._lastFrameTime = null;
+
+      const dir = this._resolveDirection();
+      const sign = dir === "rtl" ? 1 : -1; // rtl content scrolls toward the left visually via right-anchored track
+
+      const step = (time) => {
+        if (this._destroyed) return;
+        if (this._lastFrameTime == null) this._lastFrameTime = time;
+        const dt = (time - this._lastFrameTime) / 1000;
+        this._lastFrameTime = time;
+
+        if (!this._paused) {
+          this._offsetX += this.config.speed * dt;
+          if (this._offsetX >= this._trackWidth) {
+            this._offsetX -= this._trackWidth;
+          }
+          const translate = sign * -this._offsetX;
+          this.track.style.transform = `translate3d(${translate}px, 0, 0)`;
+        }
+        this._rafId = requestAnimationFrame(step);
+      };
+      this._rafId = requestAnimationFrame(step);
+    }
+
+    _stopAnimation() {
+      if (this._rafId) {
+        cancelAnimationFrame(this._rafId);
+        this._rafId = null;
+      }
+    }
+
+    /* ---------------- events ---------------- */
+
+    _bindEvents() {
+      this._onResize = debounce(() => {
+        this._measure();
+      }, 200);
+      window.addEventListener("resize", this._onResize, { passive: true });
+
+      if (this.config.pauseOnHover) {
+        this._onEnter = () => { this._paused = true; };
+        this._onLeave = () => { this._paused = false; };
+        this.root.addEventListener("mouseenter", this._onEnter, { passive: true });
+        this.root.addEventListener("mouseleave", this._onLeave, { passive: true });
+      }
+
+      if (this.config.pauseOnTouch) {
+        this._onTouchStart = () => { this._paused = true; };
+        this._onTouchEnd = throttle(() => { this._paused = false; }, 300);
+        this.root.addEventListener("touchstart", this._onTouchStart, { passive: true });
+        this.root.addEventListener("touchend", this._onTouchEnd, { passive: true });
+      }
+
+      this._onVisibility = () => {
+        // Save CPU/battery when tab is hidden.
+        if (document.hidden) {
+          this._stopAnimation();
+        } else {
+          this._startAnimation();
+        }
+      };
+      document.addEventListener("visibilitychange", this._onVisibility);
+    }
+
+    _unbindEvents() {
+      window.removeEventListener("resize", this._onResize);
+      if (this._onEnter) this.root.removeEventListener("mouseenter", this._onEnter);
+      if (this._onLeave) this.root.removeEventListener("mouseleave", this._onLeave);
+      if (this._onTouchStart) this.root.removeEventListener("touchstart", this._onTouchStart);
+      if (this._onTouchEnd) this.root.removeEventListener("touchend", this._onTouchEnd);
+      if (this._onVisibility) document.removeEventListener("visibilitychange", this._onVisibility);
+    }
+
+    _log(...args) {
+      if (this.config.debug) console.log("[DiyarTicker]", ...args);
+    }
+
+    /* ---------------- Public API ---------------- */
+
+    /** Force a fresh fetch from the network (ignores cache freshness, but still writes to it). */
+    async refresh() {
+      const news = await this._loadNews();
+      this._applyNews(news);
+      return this.news;
+    }
+
+    /** Re-render using whatever news is already loaded (no network call). */
+    reload() {
+      this._applyNews(this.news);
+    }
+
+    pause() {
+      this._paused = true;
+    }
+
+    resume() {
+      this._paused = false;
+    }
+
+    getNews() {
+      return [...this.news];
+    }
+
+    setConfig(partial = {}) {
+      this.config = { ...this.config, ...partial };
+      this._buildDOM();
+      this._bindEvents();
+      this._applyNews(this.news);
+      this._scheduleAutoRefresh();
+    }
+
+    setTheme(theme) {
+      if (!["auto", "light", "dark"].includes(theme)) return;
+      this.config.theme = theme;
+      this.root.setAttribute("data-theme", theme);
+    }
+
+    destroy() {
+      this._destroyed = true;
+      this._stopAnimation();
+      if (this._refreshTimer) clearInterval(this._refreshTimer);
+      this._unbindEvents();
+      this.root.innerHTML = "";
+      this.root.classList.remove("diyar-ticker");
+    }
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Auto-init                                                           */
+  /* ---------------------------------------------------------------- */
+
+  function init() {
+    const userConfig = window.TICKER_CONFIG || {};
+    const selector = userConfig.selector || DEFAULTS.selector;
+    const roots = document.querySelectorAll(selector);
+
+    const instances = [];
+    roots.forEach((root) => {
+      instances.push(new DiyarNewsTicker(root, userConfig));
+    });
+
+    // Expose the first instance (or a lightweight multi-instance proxy) globally.
+    if (instances.length === 1) {
+      window.DiyarTicker = instances[0];
+    } else if (instances.length > 1) {
+      window.DiyarTicker = instances[0];
+      window.DiyarTickerInstances = instances;
+    }
+    return instances;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  // Also expose the class itself for advanced/manual usage.
+  window.DiyarNewsTicker = DiyarNewsTicker;
+})();

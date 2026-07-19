@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diyar Widgets — News Ticker Demo</title>
+<link rel="stylesheet" href="ticker.css">
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, "Vazirmatn", Arial, sans-serif;
+    margin: 0;
+    padding: 24px;
+    background: #f5f6f8;
+    color: #1a1a1a;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  p.desc { color: #6b7280; font-size: 14px; margin-top: 0; }
+  .panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .panel h2 { font-size: 14px; margin: 0 0 10px; color: #374151; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  button {
+    border: 1px solid #d1d5db;
+    background: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  button:hover { background: #f3f4f6; }
+  #ticker-demo { margin-top: 16px; }
+  pre#log {
+    background: #0f172a;
+    color: #d1fae5;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    max-height: 200px;
+    overflow: auto;
+    direction: ltr;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Diyar Widgets — News Ticker Demo</h1>
+    <p class="desc">نمایش کامل API عمومی: pause / resume / refresh / theme</p>
+
+    <div id="ticker-demo"></div>
+
+    <div class="panel">
+      <h2>کنترل‌ها</h2>
+      <div class="btns">
+        <button onclick="window.DiyarTicker.pause()">⏸ توقف</button>
+        <button onclick="window.DiyarTicker.resume()">▶ ادامه</button>
+        <button onclick="handleRefresh()">🔄 بروزرسانی</button>
+        <button onclick="window.DiyarTicker.setTheme('light')">☀️ روشن</button>
+        <button onclick="window.DiyarTicker.setTheme('dark')">🌙 تیره</button>
+        <button onclick="window.DiyarTicker.setTheme('auto')">🖥 خودکار</button>
+        <button onclick="window.DiyarTicker.setConfig({speed:80})">🚀 سرعت زیاد</button>
+        <button onclick="window.DiyarTicker.setConfig({speed:20})">🐢 سرعت کم</button>
+        <button onclick="logNews()">📄 نمایش JSON اخبار</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>خروجی</h2>
+      <pre id="log">آماده.</pre>
+    </div>
+  </div>
+
+  <script>
+    // این کانفیگ فقط برای این دمو، سلکتور را به #ticker-demo تغییر می‌دهد
+    window.TICKER_CONFIG = {
+      selector: "#ticker-demo",
+      primarySource: "news.json",
+      speed: 40,
+      theme: "auto",
+      rtl: true,
+      debug: true
+    };
+  </script>
+  <script src="ticker.js"></script>
+  <script>
+    function print(obj) {
+      document.getElementById("log").textContent =
+        typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+    }
+    async function handleRefresh() {
+      print("در حال بروزرسانی...");
+      const news = await window.DiyarTicker.refresh();
+      print(`بروزرسانی شد — ${news.length} خبر دریافت شد.`);
+    }
+    function logNews() {
+      print(window.DiyarTicker.getNews());
+    }
+  </script>
+</body>
+</html>

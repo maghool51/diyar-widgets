@@ -112,7 +112,15 @@ currentTime.textContent=formatTime(p.currentTime);
 
 p.onended=function(){
 
-nextTrack();
+    if(repeatMode===2){
+
+        loadFile(currentIndex);
+
+        return;
+
+    }
+
+    nextTrack();
 
 };
 

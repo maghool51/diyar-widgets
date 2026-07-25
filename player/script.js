@@ -39,18 +39,18 @@ function formatTime(sec){
     return String(m).padStart(2,"0") +
     ":" +
     String(s).padStart(2,"0");
-}
-/* ==========================================
-   Part 2 : Playlist
+
+   /* ==========================================
+   Part 2 : Playlist & File Loader
 ========================================== */
 
-fileInput.addEventListener("change", e => {
+fileInput.addEventListener("change", function (e) {
 
     files = Array.from(e.target.files);
 
     playlist.innerHTML = "";
 
-    if(files.length === 0){
+    if (files.length === 0) {
 
         title.textContent = "فایلی انتخاب نشده است";
         artist.textContent = "Diyar Player";
@@ -59,17 +59,17 @@ fileInput.addEventListener("change", e => {
 
     }
 
-    files.forEach((file,index)=>{
+    files.forEach(function (file, index) {
 
         const li = document.createElement("li");
 
         li.textContent = file.name;
 
-        li.onclick = ()=>{
+        li.addEventListener("click", function () {
 
             loadFile(index);
 
-        };
+        });
 
         playlist.appendChild(li);
 
@@ -79,9 +79,9 @@ fileInput.addEventListener("change", e => {
 
 });
 
-function loadFile(index){
+function loadFile(index) {
 
-    if(index<0 || index>=files.length) return;
+    if (index < 0 || index >= files.length) return;
 
     currentIndex = index;
 
@@ -90,37 +90,48 @@ function loadFile(index){
     const url = URL.createObjectURL(file);
 
     title.textContent = file.name;
-
     artist.textContent = file.type;
 
-    if(file.type.startsWith("video")){
+    // پاک کردن پلیر قبلی
+    audio.pause();
+    video.pause();
 
-        audio.pause();
+    audio.removeAttribute("src");
+    video.removeAttribute("src");
 
-        audio.style.display="none";
+    if (file.type.startsWith("video/")) {
 
-        video.style.display="block";
+        video.style.display = "block";
+        audio.style.display = "none";
 
         video.src = url;
+        video.load();
 
         player = video;
 
-    }else{
+    } else {
 
-        video.pause();
-
-        video.style.display="none";
-
-        audio.style.display="block";
+        audio.style.display = "block";
+        video.style.display = "none";
 
         audio.src = url;
+        audio.load();
 
         player = audio;
 
     }
 
-    player.play();
+    player.play()
+        .then(function () {
 
-    playBtn.textContent="⏸";
+            playBtn.textContent = "⏸";
 
+        })
+        .catch(function (err) {
+
+            console.error("Play Error:", err);
+
+        });
+
+}
 }

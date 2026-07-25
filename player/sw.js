@@ -2,25 +2,22 @@
 // sw.js - Service Worker for دیار قدمگاه پلیر
 // ============================================================
 // Version: 1.0.0
-// Cache name with version for easy updates
 
 const CACHE_NAME = 'diar-player-v1.0.0';
 const ASSETS = [
   '/',
   '/index.html',
-  '/style.css',
-  '/script.js',
   '/manifest.json',
-  '/logo.png',
+  '/player/assets/images/de9630bd-5d33-40ce-beed-7729e121c01f.png',
   '/default-cover.png',
-  '/icons/icon-72.png',
-  '/icons/icon-96.png',
-  '/icons/icon-128.png',
-  '/icons/icon-144.png',
-  '/icons/icon-152.png',
-  '/icons/icon-192.png',
-  '/icons/icon-384.png',
-  '/icons/icon-512.png'
+  '/player/assets/icons/icon-72.png',
+  '/player/assets/icons/icon-96.png',
+  '/player/assets/icons/icon-128.png',
+  '/player/assets/icons/icon-144.png',
+  '/player/assets/icons/icon-152.png',
+  '/player/assets/icons/icon-192.png',
+  '/player/assets/icons/icon-384.png',
+  '/player/assets/icons/icon-512.png'
 ];
 
 // ============================================================
@@ -152,8 +149,8 @@ self.addEventListener('push', function(event) {
   const title = data.title || 'دیار قدمگاه';
   const options = {
     body: data.body || 'یک فایل جدید در لیست پخش',
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-96.png',
+    icon: '/player/assets/icons/icon-192.png',
+    badge: '/player/assets/icons/icon-96.png',
     tag: 'diar-player-notification',
     vibrate: [200, 100, 200],
     requireInteraction: true,
@@ -199,14 +196,5 @@ self.addEventListener('notificationclick', function(event) {
     );
   }
 });
-
-// ============================================================
-// PERIODIC SYNC - Check for updates (optional)
-// ============================================================
-// self.addEventListener('periodicsync', function(event) {
-//   if (event.tag === 'update-check') {
-//     event.waitUntil(checkForUpdates());
-//   }
-// });
 
 console.log('[SW] Service Worker loaded successfully');

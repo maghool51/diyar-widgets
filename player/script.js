@@ -168,3 +168,78 @@ playlist.appendChild(li);
 loadFile(0);
 
 });
+
+/*=========================================
+ Controls
+=========================================*/
+
+function playPause(){
+
+const p=getPlayer();
+
+if(!p.src)return;
+
+if(p.paused){
+
+p.play();
+
+playBtn.textContent="⏸";
+
+}else{
+
+p.pause();
+
+playBtn.textContent="▶";
+
+}
+
+}
+
+function previousTrack(){
+
+if(files.length===0)return;
+
+let i=currentIndex-1;
+
+if(i<0)i=files.length-1;
+
+loadFile(i);
+
+}
+
+function nextTrack(){
+
+if(files.length===0)return;
+
+let i=currentIndex+1;
+
+if(i>=files.length)i=0;
+
+loadFile(i);
+
+}
+
+playBtn.onclick=playPause;
+
+prevBtn.onclick=previousTrack;
+
+nextBtn.onclick=nextTrack;
+
+volumeBar.oninput=function(){
+
+audio.volume=this.value;
+video.volume=this.value;
+
+};
+
+seekBar.oninput=function(){
+
+const p=getPlayer();
+
+if(!isNaN(p.duration)){
+
+p.currentTime=this.value;
+
+}
+
+};

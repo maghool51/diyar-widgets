@@ -1,151 +1,117 @@
-# 🎵 Diyar Player
+# 🎵 دیار قدمگاه - پلیر حرفه‌ای صوتی و تصویری
 
-**A modern, feature-rich multimedia player for the web.**  
-Built with vanilla JavaScript, HTML5, and CSS3 – no frameworks, no dependencies.  
-Designed to feel like a desktop application (Spotify, Apple Music, VLC) while running entirely in the browser.
+![دیار قدمگاه](logo.png)
 
-[![Live Demo](https://img.shields.io/badge/demo-github_pages-blue?style=flat-square)](https://yourusername.github.io/player)
-[![PWA](https://img.shields.io/badge/PWA-installable-brightgreen?style=flat-square)](#)
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+یک پلیر صوتی و تصویری کاملاً آفلاین، مستقل و حرفه‌ای با طراحی مدرن و الهام‌گرفته از Spotify، Apple Music و YouTube Music.
 
 ---
 
-## ✨ Features
+## ✨ ویژگی‌های اصلی
 
-### 🎮 Playback
-- Play / Pause / Stop / Previous / Next
-- Seek (click or drag progress bar)
-- Volume control & mute
-- Playback speed (0.5× – 3.0×)
-- Shuffle & Repeat (off / one / all)
-- Sleep timer (auto-pause after N minutes)
-- Resume playback (remembers last position)
-- Auto-next (continues through playlist)
+### 🎵 پخش صوتی و تصویری
+- پشتیبانی از فرمت‌های صوتی: MP3, AAC, M4A, FLAC, WAV, OGG, OPUS, AMR
+- پشتیبانی از فرمت‌های تصویری: MP4, WEBM, MKV, AVI, MOV, MPEG
+- پخش با کیفیت بالا و نمایش اطلاعات متادیتا
 
-### 📁 Playlist Management
-- Add files via file picker or drag-and-drop
-- Reorder tracks by drag-and-drop
-- Remove individual tracks or clear all
-- Search / filter tracks
-- Favorites (star tracks)
-- History & Recently Played
-- Most Played (play count tracking)
-- Export / Import playlist (JSON format)
-- M3U support (via import/export)
+### 🎛 کنترل‌های پیشرفته
+- پخش، مکث، توقف، قبلی، بعدی
+- رفتن ۱۰ ثانیه جلو/عقب
+- تنظیم سرعت پخش (۰٫۲۵x تا ۲x)
+- تصادفی (Shuffle) و تکرار (Repeat: None/One/All)
+- تنظیم ولوم و بی‌صدا کردن
+- نوار پیشرفت با نمایش بافر
 
-### 🎨 User Interface
-- **Glassmorphism** design with soft shadows
-- **Dark / Light / Auto** themes (respects system preference)
-- **Responsive** – mobile-first, desktop-optimized
-- **RTL / LTR** support (right-to-left languages)
-- **Mini Player** & **Compact Mode** (reduces player bar height)
-- **Fullscreen** mode
-- **Picture-in-Picture** (when supported)
+### 🎚 یکسان‌ساز (Equalizer)
+- ۱۰ باند مجزا
+- پریست‌های: Flat, Rock, Pop, Jazz, Classical, Movie, Bass Boost, Treble Boost
+- حالت Custom برای تنظیم دستی
 
-### 📺 Video Support
-- Fullscreen video playback
-- Picture-in-Picture (PiP)
-- Playback speed control
-- Zoom & fit modes (via CSS object-fit)
-- Rotation (planned)
-- Subtitles (WebVTT) – planned
+### 📊 ویژوالایزر (Visualizer)
+- طیف‌نمایی پویا (Spectrum)
+- انیمیشن‌های جذاب و واکنش‌گرا به صدا
+- نمایش در پس‌زمینه هنگام پخش صوتی
 
-### 🎧 Audio Features
-- Web Audio API integration
-- Real-time audio visualizer (bars / wave)
-- Volume & mute control
-- Playback speed control
-- (Optional) Equalizer – planned
+### 📋 لیست پخش (Playlist)
+- نمایش شماره، کاور، نام فایل، مدت، حجم، هنرمند، آلبوم، سال، نوع فایل و زمان اضافه‌شدن
+- جستجو و فیلتر
+- مرتب‌سازی
+- حذف چندگانه
+- کشیدن و رها کردن (Drag & Drop) برای جابجایی
+- هایلایت آیتم در حال پخش
 
-### 📊 Visualizer
-- Canvas-based spectrum analyzer
-- Bars or Wave visualization
-- 60 FPS target, efficient rendering
-- Auto-hides when not playing
+### 🖼 نمایش کاور آلبوم
+- استخراج خودکار کاور از فایل (در صورت وجود)
+- نمایش کاور پیش‌فرض در صورت عدم وجود
+- انیمیشن چرخش کاور هنگام پخش موسیقی
+- بلور (Blur) کاور به عنوان پس‌زمینه
 
-### ⌨️ Keyboard Shortcuts
-| Key | Action |
-|-----|--------|
-| `Space` | Play / Pause |
-| `Enter` | Play / Pause |
-| `Arrow Right` | Seek +5s |
-| `Arrow Left` | Seek –5s |
-| `Arrow Up` | Volume +5% |
-| `Arrow Down` | Volume –5% |
-| `M` | Mute / Unmute |
-| `F` | Toggle Fullscreen |
-| `Delete` / `Backspace` | Remove current track |
-| `Escape` | Close sidebar (mobile) |
-| `Ctrl+O` | Open file dialog |
+### 🎬 پخش ویدئو
+- نمایش ویدئو در همان ناحیه پلیر
+- حالت تمام صفحه (Fullscreen)
+- حالت تصویر در تصویر (Picture-in-Picture)
+- پشتیبانی از زیرنویس (Subtitle)
 
-### 📱 Touch Support
-- Swipe to seek / volume (planned)
-- Double-tap to toggle favorite
-- Long press for context menu (planned)
+### 📂 مدیریت فایل
+- انتخاب فایل از حافظه دستگاه
+- انتخاب همزمان چند فایل
+- کشیدن و رها کردن (Drag & Drop)
+- چسباندن (Paste) فایل از کلیپ‌بورد
 
-### 🔌 Media Session API
-- Lock screen controls
-- Bluetooth / headset controls
-- Notification center controls
-- Metadata (title, artist, album, artwork)
+### 💾 ذخیره‌سازی محلی (LocalStorage)
+- ذخیره لیست پخش
+- ذخیره آخرین فایل پخش‌شده و موقعیت آن (ادامه پخش)
+- ذخیره ولوم، سرعت، تم، حالت تکرار و تصادفی
+- ذخیره علاقه‌مندی‌ها
+- ذخیره تنظیمات یکسان‌ساز
 
-### 📦 PWA (Progressive Web App)
-- **Installable** – works offline, can be added to home screen
-- **Offline capable** – caches static assets
-- **Service Worker** with versioned caching
-- **Manifest** with app icons, theme colors, shortcuts
+### 🌓 تم‌های متنوع
+- تاریک (Dark)
+- روشن (Light)
+- سبز زمردی (Green)
+- طلایی (Golden)
 
-### 💾 Local Storage
-Persists across sessions:
-- Theme preference
-- Volume level
-- Playback speed
-- Playlist (tracks metadata)
-- Last played track & position
-- Favorites
-- History
-- Most Played counts
-- All settings
+### ⌨️ میانبرهای صفحه‌کلید
+- Space: پخش/مکث
+- ←/→: ۵ ثانیه عقب/جلو
+- ↑/↓: افزایش/کاهش ولوم
+- F: تمام صفحه
+- M: بی‌صدا
+- S: تصادفی
+- R: تکرار
+- Delete: حذف فایل جاری
 
-### ♿ Accessibility
-- ARIA labels and roles
-- Keyboard navigable
-- Screen reader support
-- Focus management
-- High-contrast compatibility
+### 📱 ژست‌های لمسی (موبایل)
+- دوبار ضربه (Double Tap): پخش/مکث
+- کشیدن (Swipe) به چپ/راست: فایل بعدی/قبلی
+- نیشگون (Pinch): تنظیم ولوم (دو انگشت)
 
-### 🔒 Security
-- No `eval()`, no user input execution
-- Escaped dynamic content (prevents XSS)
-- Safe DOM updates (avoid `innerHTML` where possible)
-- Object URL cleanup (revokes blob URLs)
+### 🎨 طراحی
+- الهام‌گرفته از Spotify و Apple Music
+- Glassmorphism، Blur، Shadow و Rounded Corners
+- انیمیشن‌های نرم و روان
+- واکنش‌گرا (Responsive) برای تمام دستگاه‌ها
+- پشتیبانی از RTL (راست به چپ) و زبان فارسی
 
-### ⚡ Performance
-- Lazy loading (images, media)
-- Efficient DOM updates (batch re-renders)
-- Minimal reflows / repaints
-- Object URL cleanup
-- No duplicated event listeners
-- Fast startup (< 200ms)
+### 📦 نصب به عنوان PWA
+- نصب روی دستگاه‌های اندروید، iOS و دسکتاپ
+- آفلاین‌کار (با استفاده از Service Worker)
+- آیکون و اسپلش‌اسکرین اختصاصی
 
 ---
 
-## 🛠️ Technology Stack
+## 🚀 نحوه استفاده
 
-| Category | Technology |
-|----------|------------|
-| **Markup** | HTML5 |
-| **Styling** | CSS3 (vanilla, custom properties, glassmorphism) |
-| **Logic** | JavaScript ES2023 (vanilla, no frameworks) |
-| **Audio/Video** | HTML5 Media API + Web Audio API |
-| **Visualization** | Canvas 2D API |
-| **PWA** | Service Worker + Manifest |
-| **Storage** | localStorage |
-| **Metadata** | FileReader (ID3 tags via mozGetMetadata) |
-| **Hosting** | GitHub Pages (static, no server) |
+### ۱. اجرای مستقیم
+فایل `index.html` را در مرورگر باز کنید. همه چیز در یک فایل HTML گنجانده شده است.
 
-**Zero external dependencies** – everything is built from scratch using native browser APIs.
+### ۲. نصب به عنوان PWA
+- در مرورگر Chrome/Edge: روی آیکون نصب (Install) در نوار آدرس کلیک کنید.
+- در مرورگر Firefox: از منوی مرورگر گزینه "Add to Home Screen" را انتخاب کنید.
+- در مرورگر Safari (iOS): از منوی اشتراک‌گذاری گزینه "Add to Home Screen" را انتخاب کنید.
+
+### ۳. آفلاین‌سازی
+پس از اولین بار باز کردن، فایل‌ها در کش ذخیره می‌شوند و برنامه به صورت آفلاین قابل استفاده است.
 
 ---
 
-## 📁 Project Structure
+## 🔧 ساختار پروژه

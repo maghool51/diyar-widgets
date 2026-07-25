@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Diyar Player</title>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <meta name="description" content="Diyar Player — a modern, feature-rich multimedia player" />
+    <link rel="icon" href="assets/icons/favicon.ico" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+    <!-- External Styles -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <!-- ============================================================
+    APP
+    ============================================================ -->
+    <div id="app" role="application" aria-label="Diyar Player">
+
+        <!-- Top Bar -->
+        <header class="top-bar" role="banner">
+            <div class="brand" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15V7l6 5-6 5z"/></svg>
+                <span>Diyar Player</span>
+            </div>
+            <div class="actions">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle playlist" title="Playlist">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <button id="themeToggle" aria-label="Toggle theme" title="Theme">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <button id="pipToggle" aria-label="Picture in picture" title="Picture in Picture">⏏</button>
+                <button id="fullscreenToggle" aria-label="Fullscreen" title="Fullscreen">⛶</button>
+                <button id="sleepTimerBtn" aria-label="Sleep timer" title="Sleep timer">⏱</button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+
+            <!-- Sidebar Overlay (mobile) -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+            <!-- Sidebar / Playlist -->
+            <aside class="sidebar" id="sidebar" role="complementary" aria-label="Playlist">
+                <div class="sidebar-header">
+                    <h2>
+                        Playlist
+                        <span class="count" id="playlistCount">0</span>
+                    </h2>
+                    <div class="tools">
+                        <button id="addFilesBtn" aria-label="Add files" title="Add files">➕</button>
+                        <button id="clearPlaylistBtn" class="danger" aria-label="Clear playlist" title="Clear">🗑</button>
+                        <button id="exportBtn" aria-label="Export playlist" title="Export">📤</button>
+                        <button id="importBtn" aria-label="Import playlist" title="Import">📥</button>
+                    </div>
+                </div>
+                <div class="sidebar-search">
+                    <input type="text" id="playlistSearch" placeholder="Search playlist…" aria-label="Search playlist" />
+                </div>
+                <div class="playlist-container" id="playlistContainer" role="list" aria-label="Playlist items">
+                    <!-- Items rendered by JS -->
+                </div>
+            </aside>
+
+            <!-- Video / Visualizer Area -->
+            <div class="video-container" id="videoContainer">
+                <video id="player" preload="metadata" aria-label="Media player"></video>
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15V7l6 5-6 5z"/></svg>
+                    <p>Drop media here or use <kbd>Ctrl+O</kbd></p>
+                </div>
+                <canvas id="visualizer" class="hidden" aria-hidden="true"></canvas>
+            </div>
+        </div>
+
+        <!-- Player Bar -->
+        <footer class="player-bar" id="playerBar" role="contentinfo" aria-label="Player controls">
+            <div class="top-row">
+                <!-- Track info -->
+                <div class="track-info" id="trackInfo">
+                    <div class="thumb" id="trackThumb">
+                        <img id="trackCover" src="assets/default-cover.png" alt="Cover art" />
+                    </div>
+                    <div class="meta">
+                        <div class="name" id="trackName">No track</div>
+                        <div class="artist" id="trackArtist">–</div>
+                    </div>
+                </div>
+
+                <!-- Center controls -->
+                <div class="controls-center" role="group" aria-label="Playback controls">
+                    <button id="shuffleBtn" aria-label="Toggle shuffle" title="Shuffle">🔀</button>
+                    <button id="prevBtn" aria-label="Previous" title="Previous">⏮</button>
+                    <button id="playBtn" class="primary" aria-label="Play" title="Play">▶</button>
+                    <button id="stopBtn" aria-label="Stop" title="Stop">⏹</button>
+                    <button id="nextBtn" aria-label="Next" title="Next">⏭</button>
+                    <button id="repeatBtn" aria-label="Toggle repeat" title="Repeat">🔁</button>
+                </div>
+
+                <!-- Right controls -->
+                <div class="controls-right">
+                    <div class="volume-wrap">
+                        <button id="muteBtn" aria-label="Mute" title="Mute">🔊</button>
+                        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" aria-label="Volume" />
+                    </div>
+                    <button class="speed-btn" id="speedBtn" aria-label="Playback speed" title="Speed">1×</button>
+                    <button id="visualizerToggle" aria-label="Toggle visualizer" title="Visualizer">📊</button>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-row">
+                <span class="time" id="currentTime">0:00</span>
+                <input type="range" id="progressSlider" min="0" max="1" step="0.001" value="0" aria-label="Seek" />
+                <span class="time" id="durationTime">0:00</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+    <!-- External Script -->
+    <script src="script.js" defer></script>
+</body>
+</html>

@@ -1922,3 +1922,1622 @@
 
 })();
 
+// ============================================================
+// script.js - دیار قدمگاه پلیر حرفه‌ای
+// ============================================================
+// Part 6 of 8 - Media Session API, UI Improvements & Enhancements
+// ============================================================
+
+(function() {
+    'use strict';
+
+    // ============================================================
+    // MEDIA SESSION API - Update system media controls
+    // ============================================================
+    function updateMediaSession(item) {
+        if (!item) {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = null;
+                navigator.mediaSession.playbackState = 'none';
+            }
+            return;
+        }
+
+        if ('mediaSession' in navigator) {
+            var metadata = new MediaMetadata({
+                title: item.name || 'بدون نام',
+                artist: item.artist || 'هنرمند ناشناس',
+                album: item.album || 'آلبوم ناشناس',
+                artwork: []
+            });
+
+            // Add artwork if available
+            if (item.cover && item.cover.indexOf('data:') === 0) {
+                metadata.artwork = [
+                    { src: item.cover, sizes: '96x96', type: 'image/jpeg' },
+                    { src: item.cover, sizes: '128x128', type: 'image/jpeg' },
+                    { src: item.cover, sizes: '192x192', type: 'image/jpeg' },
+                    { src: item.cover, sizes: '256x256', type: 'image/jpeg' },
+                    { src: item.cover, sizes: '512x512', type: 'image/jpeg' }
+                ];
+            } else {
+                // Use default cover
+                metadata.artwork = [
+                    { src: 'default-cover.png', sizes: '96x96', type: 'image/png' },
+                    { src: 'default-cover.png', sizes: '128x128', type: 'image/png' },
+                    { src: 'default-cover.png', sizes: '192x192', type: 'image/png' }
+                ];
+            }
+
+            navigator.mediaSession.metadata = metadata;
+            navigator.mediaSession.playbackState = state.isPlaying ? 'playing' : 'paused';
+
+            // Set action handlers
+            navigator.mediaSession.setActionHandler('play', function() {
+                if (!state.isPlaying) togglePlay();
+            });
+            navigator.mediaSession.setActionHandler('pause', function() {
+                if (state.isPlaying) togglePlay();
+            });
+            navigator.mediaSession.setActionHandler('previoustrack', function() {
+                playPrev();
+            });
+            navigator.mediaSession.setActionHandler('nexttrack', function() {
+                playNext();
+            });
+            navigator.mediaSession.setActionHandler('seekbackward', function(details) {
+                var seconds = details.seekOffset || 10;
+                seekDelta(-seconds);
+            });
+            navigator.mediaSession.setActionHandler('seekforward', function(details) {
+                var seconds = details.seekOffset || 10;
+                seekDelta(seconds);
+            });
+            navigator.mediaSession.setActionHandler('seekto', function(details) {
+                if (details.seekTime && audioEl) {
+                    audioEl.currentTime = Math.min(details.seekTime, audioEl.duration || 0);
+                }
+            });
+        }
+    }
+
+    // ============================================================
+    // OVERRIDE PLAYBACK FUNCTIONS TO UPDATE MEDIA SESSION
+    // ============================================================
+    var originalPlayIndex = window.playIndex;
+    if (typeof window.playIndex === 'function') {
+        window.playIndex = function(index) {
+            originalPlayIndex.apply(this, arguments);
+            var item = getCurrentItem();
+            updateMediaSession(item);
+        };
+    }
+
+    var originalTogglePlay = window.togglePlay;
+    if (typeof window.togglePlay === 'function') {
+        window.togglePlay = function() {
+            originalTogglePlay.apply(this, arguments);
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = state.isPlaying ? 'playing' : 'paused';
+            }
+        };
+    }
+
+    var originalUpdateNowPlaying = window.updateNowPlaying;
+    if (typeof window.updateNowPlaying === 'function') {
+        window.updateNowPlaying = function(item) {
+            originalUpdateNowPlaying.apply(this, arguments);
+            updateMediaSession(item);
+        };
+    }
+
+    // ============================================================
+    // UI IMPROVEMENTS - Smooth scrolling to current playlist item
+    // ============================================================
+    function scrollToCurrentPlaylistItem() {
+        var activeItem = document.querySelector('.playlist-item.active');
+        if (activeItem) {
+            var container = dom.playlistContainer;
+            var itemRect = activeItem.getBoundingClientRect();
+            var containerRect = container.getBoundingClientRect();
+            var scrollOffset = itemRect.top - containerRect.top - containerRect.height / 2 + itemRect.height / 2;
+            container.scrollBy({
+                top: scrollOffset,
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    // Override renderPlaylist to scroll to current item
+    var originalRenderPlaylist = window.renderPlaylist;
+    if (typeof window.renderPlaylist === 'function') {
+        window.renderPlaylist = function() {
+            originalRenderPlaylist.apply(this, arguments);
+            setTimeout(scrollToCurrentPlaylistItem, 100);
+        };
+    }
+
+    // ============================================================
+    // TOAST IMPROVEMENTS - Better toast with progress indicator
+    // ============================================================
+    function showToast(message, type) {
+        if (type === undefined) type = 'info';
+        var container = dom.toastContainer;
+        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        
+        // Remove existing toasts
+        var existingToasts = container.querySelectorAll('.toast');
+        if (existingToasts.length > 2) {
+            existingToasts[0].remove();
+        }
+
+        var toast = document.createElement('div');
+        toast.className = 'toast ' + type;
+        toast.innerHTML = '<span class="toast-icon">' + (icons[type] || 'ℹ️') + '</span> ' + message;
+        
+        // Add progress bar
+        var progressBar = document.createElement('div');
+        progressBar.style.cssText = 'position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,0.1);overflow:hidden;';
+        var progressFill = document.createElement('div');
+        progressFill.style.cssText = 'height:100%;background:var(--primary);width:100%;animation:toastProgress 2.6s linear forwards;';
+        progressBar.appendChild(progressFill);
+        toast.appendChild(progressBar);
+        
+        // Add animation keyframes if not exists
+        if (!document.getElementById('toastProgressStyles')) {
+            var styleEl = document.createElement('style');
+            styleEl.id = 'toastProgressStyles';
+            styleEl.textContent = '@keyframes toastProgress { from { width:100%; } to { width:0%; } }';
+            document.head.appendChild(styleEl);
+        }
+
+        toast.style.position = 'relative';
+        container.appendChild(toast);
+        setTimeout(function() {
+            if (toast.parentElement) toast.remove();
+        }, 3000);
+    }
+
+    // ============================================================
+    // SLEEP TIMER - Auto stop playback after set time
+    // ============================================================
+    var sleepTimerId = null;
+    var sleepTimerMinutes = 0;
+
+    function setSleepTimer(minutes) {
+        if (sleepTimerId) {
+            clearTimeout(sleepTimerId);
+            sleepTimerId = null;
+        }
+        if (minutes > 0) {
+            sleepTimerMinutes = minutes;
+            showToast('⏰ تایمر خواب به ' + minutes + ' دقیقه تنظیم شد', 'info');
+            sleepTimerId = setTimeout(function() {
+                if (state.isPlaying) {
+                    stopPlayback();
+                    showToast('⏰ تایمر خواب فعال شد - پخش متوقف شد', 'warning');
+                }
+                sleepTimerId = null;
+                sleepTimerMinutes = 0;
+            }, minutes * 60 * 1000);
+        } else {
+            showToast('⏰ تایمر خواب لغو شد', 'info');
+        }
+    }
+
+    function cancelSleepTimer() {
+        if (sleepTimerId) {
+            clearTimeout(sleepTimerId);
+            sleepTimerId = null;
+            sleepTimerMinutes = 0;
+            showToast('⏰ تایمر خواب لغو شد', 'info');
+        }
+    }
+
+    // ============================================================
+    // KEYBOARD SHORTCUTS - Add sleep timer shortcuts
+    // ============================================================
+    var originalHandleKeyboard = window.handleKeyboard;
+    if (typeof window.handleKeyboard === 'function') {
+        window.handleKeyboard = function(e) {
+            // Call original handler
+            if (originalHandleKeyboard) {
+                originalHandleKeyboard.call(this, e);
+            }
+            // Add sleep timer shortcuts
+            if (e.key === 't' || e.key === 'T') {
+                e.preventDefault();
+                if (sleepTimerId) {
+                    cancelSleepTimer();
+                } else {
+                    setSleepTimer(15); // Default 15 minutes
+                }
+            }
+        };
+    }
+
+    // ============================================================
+    // AUDIO VISUALIZER - Add different visualization modes
+    // ============================================================
+    var visualizerMode = 'spectrum'; // spectrum, wave, bars, circle
+
+    function toggleVisualizerMode() {
+        var modes = ['spectrum', 'wave', 'bars', 'circle'];
+        var idx = modes.indexOf(visualizerMode);
+        idx = (idx + 1) % modes.length;
+        visualizerMode = modes[idx];
+        showToast('حالت ویژوالایزر: ' + visualizerMode, 'info');
+        // Restart visualizer with new mode
+        if (state.visualizerRunning) {
+            stopVisualizer();
+            startVisualizer();
+        }
+    }
+
+    // Override drawVisualizer to support different modes
+    var originalDrawVisualizer = window.drawVisualizer;
+    if (typeof window.drawVisualizer === 'function') {
+        window.drawVisualizer = function() {
+            if (!state.visualizerRunning) return;
+            var canvas = dom.visualizerCanvas;
+            var ctx = state.visualizerCtx;
+            if (!ctx) { state.visualizerRunning = false; return; }
+
+            var w = canvas.width;
+            var h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            var data = null;
+            try {
+                if (state.analyser && state.audioCtx && state.audioCtx.state === 'running') {
+                    state.analyser.getByteFrequencyData(state.dataArray);
+                    data = state.dataArray;
+                }
+            } catch (e) { /* ignore */ }
+
+            if (!data) {
+                // Fallback wave
+                var now = Date.now() / 1000;
+                ctx.beginPath();
+                for (var x = 0; x < w; x++) {
+                    var y = h / 2 + Math.sin(x * 0.05 + now * 2) * 20 + Math.sin(x * 0.08 + now * 3) * 10;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = 'rgba(124, 92, 255, 0.4)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                state.animationId = requestAnimationFrame(window.drawVisualizer);
+                return;
+            }
+
+            var len = data.length;
+            var barWidth = w / len;
+            var grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, 'rgba(124, 92, 255, 0.9)');
+            grad.addColorStop(0.5, 'rgba(124, 92, 255, 0.6)');
+            grad.addColorStop(1, 'rgba(124, 92, 255, 0.2)');
+
+            if (visualizerMode === 'spectrum' || visualizerMode === 'bars') {
+                for (var i = 0; i < len; i++) {
+                    var val = data[i] / 255;
+                    var barHeight = val * h * 0.7;
+                    var xPos = i * barWidth;
+                    var yPos = h - barHeight;
+                    ctx.fillStyle = grad;
+                    var barWidthAdj = visualizerMode === 'spectrum' ? Math.max(barWidth - 1, 1) : 2;
+                    ctx.fillRect(xPos, yPos, barWidthAdj, barHeight);
+                }
+            } else if (visualizerMode === 'wave') {
+                ctx.beginPath();
+                for (var i = 0; i < len; i++) {
+                    var val = data[i] / 255;
+                    var xPos = (i / len) * w;
+                    var yPos = h / 2 + (val - 0.5) * h * 0.8;
+                    if (i === 0) ctx.moveTo(xPos, yPos);
+                    else ctx.lineTo(xPos, yPos);
+                }
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 3;
+                ctx.shadowColor = 'rgba(124, 92, 255, 0.5)';
+                ctx.shadowBlur = 20;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            } else if (visualizerMode === 'circle') {
+                var centerX = w / 2;
+                var centerY = h / 2;
+                var radius = Math.min(w, h) * 0.3;
+                var angleStep = (Math.PI * 2) / len;
+                for (var i = 0; i < len; i++) {
+                    var val = data[i] / 255;
+                    var r = radius + val * radius * 0.5;
+                    var angle = i * angleStep;
+                    var xPos = centerX + Math.cos(angle) * r;
+                    var yPos = centerY + Math.sin(angle) * r;
+                    ctx.beginPath();
+                    ctx.arc(xPos, yPos, 2 + val * 4, 0, Math.PI * 2);
+                    ctx.fillStyle = grad;
+                    ctx.fill();
+                }
+            }
+
+            // Glow effect
+            ctx.shadowColor = 'rgba(124, 92, 255, 0.2)';
+            ctx.shadowBlur = 20;
+            ctx.shadowBlur = 0;
+
+            state.animationId = requestAnimationFrame(window.drawVisualizer);
+        };
+    }
+
+    // ============================================================
+    // EXPOSE NEW FUNCTIONS
+    // ============================================================
+    window.updateMediaSession = updateMediaSession;
+    window.scrollToCurrentPlaylistItem = scrollToCurrentPlaylistItem;
+    window.setSleepTimer = setSleepTimer;
+    window.cancelSleepTimer = cancelSleepTimer;
+    window.toggleVisualizerMode = toggleVisualizerMode;
+    window.visualizerMode = visualizerMode;
+
+    console.log('script.js Part 6 loaded: Media Session API, UI Improvements, Sleep Timer & Visualizer Modes.');
+
+})();
+
+// ============================================================
+// script.js - دیار قدمگاه پلیر حرفه‌ای
+// ============================================================
+// Part 7 of 8 - Subtitle Support, Lyrics (LRC), Advanced Playlist Features & Error Handling
+// ============================================================
+
+(function() {
+    'use strict';
+
+    // ============================================================
+    // SUBTITLE SUPPORT (for video files)
+    // ============================================================
+    var subtitleTracks = [];
+    var activeSubtitleIndex = -1;
+
+    function loadSubtitle(videoElement, subtitleFile) {
+        if (!videoElement || !subtitleFile) return;
+        try {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var content = e.target.result;
+                // Parse SRT or VTT format (basic support)
+                var tracks = parseSubtitleContent(content);
+                if (tracks.length > 0) {
+                    subtitleTracks = tracks;
+                    activeSubtitleIndex = 0;
+                    showToast('زیرنویس با موفقیت بارگذاری شد', 'success');
+                    // Add subtitle track to video
+                    if (videoElement.textTracks) {
+                        // Use WebVTT API if available
+                        try {
+                            var track = videoElement.addTextTrack('subtitles', 'Persian', 'fa');
+                            track.mode = 'showing';
+                            for (var i = 0; i < tracks.length; i++) {
+                                var cue = new VTTCue(tracks[i].start, tracks[i].end, tracks[i].text);
+                                track.addCue(cue);
+                            }
+                        } catch (err) {
+                            console.warn('WebVTT API not available, using fallback');
+                            // Fallback: store subtitle data for manual rendering
+                            window._subtitleData = tracks;
+                        }
+                    }
+                } else {
+                    showToast('فرمت زیرنویس پشتیبانی نمی‌شود', 'error');
+                }
+            };
+            reader.readAsText(subtitleFile);
+        } catch (e) {
+            console.error('Error loading subtitle:', e);
+            showToast('خطا در بارگذاری زیرنویس', 'error');
+        }
+    }
+
+    function parseSubtitleContent(content) {
+        var tracks = [];
+        var lines = content.split(/\r?\n/);
+        var current = null;
+        var timeRegex = /(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/;
+        var timeRegexVTT = /(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})/;
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line) continue;
+
+            var match = line.match(timeRegex) || line.match(timeRegexVTT);
+            if (match) {
+                if (current) {
+                    tracks.push(current);
+                }
+                var start = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 + parseInt(match[3]) + parseInt(match[4]) / 1000;
+                var end = parseInt(match[5]) * 3600 + parseInt(match[6]) * 60 + parseInt(match[7]) + parseInt(match[8]) / 1000;
+                current = { start: start, end: end, text: '' };
+            } else if (current && !line.match(/^\d+$/)) {
+                // Skip index numbers
+                if (current.text) current.text += ' ';
+                current.text += line;
+            }
+        }
+        if (current) {
+            tracks.push(current);
+        }
+        return tracks;
+    }
+
+    // ============================================================
+    // LYRICS SUPPORT (LRC files)
+    // ============================================================
+    var lyricsData = [];
+    var currentLyricIndex = -1;
+
+    function loadLyrics(file) {
+        try {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var content = e.target.result;
+                var parsed = parseLRC(content);
+                if (parsed.length > 0) {
+                    lyricsData = parsed;
+                    showToast('متن ترانه با موفقیت بارگذاری شد', 'success');
+                    // Start lyric sync
+                    startLyricSync();
+                } else {
+                    showToast('فرمت فایل LRC معتبر نیست', 'error');
+                }
+            };
+            reader.readAsText(file);
+        } catch (e) {
+            console.error('Error loading lyrics:', e);
+            showToast('خطا در بارگذاری متن ترانه', 'error');
+        }
+    }
+
+    function parseLRC(content) {
+        var lines = content.split(/\r?\n/);
+        var lyrics = [];
+        var timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line) continue;
+
+            var match = line.match(timeRegex);
+            if (match) {
+                var minutes = parseInt(match[1]);
+                var seconds = parseInt(match[2]);
+                var centiseconds = parseInt(match[3]);
+                var time = minutes * 60 + seconds + centiseconds / 100;
+                var text = match[4].trim();
+                if (text) {
+                    lyrics.push({ time: time, text: text });
+                }
+            }
+        }
+        // Sort by time
+        lyrics.sort(function(a, b) { return a.time - b.time; });
+        return lyrics;
+    }
+
+    function startLyricSync() {
+        if (lyricsData.length === 0) return;
+        currentLyricIndex = 0;
+        // Display first lyric
+        displayLyric(currentLyricIndex);
+    }
+
+    function displayLyric(index) {
+        if (index < 0 || index >= lyricsData.length) return;
+        var lyric = lyricsData[index];
+        // Update UI - show lyric in a dedicated area
+        var lyricDisplay = document.getElementById('lyricDisplay');
+        if (!lyricDisplay) {
+            // Create lyric display if not exists
+            lyricDisplay = document.createElement('div');
+            lyricDisplay.id = 'lyricDisplay';
+            lyricDisplay.style.cssText = 'position:absolute;bottom:80px;left:50%;transform:translateX(-50%);' +
+                'background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);padding:8px 20px;' +
+                'border-radius:12px;color:var(--text-primary);font-size:1.1rem;' +
+                'text-align:center;z-index:20;max-width:80%;transition:all 0.3s ease;' +
+                'border:1px solid rgba(255,255,255,0.05);';
+            var playerSection = document.querySelector('.player-section');
+            if (playerSection) {
+                playerSection.style.position = 'relative';
+                playerSection.appendChild(lyricDisplay);
+            }
+        }
+        lyricDisplay.textContent = lyric.text;
+        lyricDisplay.style.opacity = '1';
+        lyricDisplay.style.transform = 'translateX(-50%) translateY(0)';
+        currentLyricIndex = index;
+    }
+
+    function updateLyrics(currentTime) {
+        if (lyricsData.length === 0) return;
+        // Find current lyric
+        var found = -1;
+        for (var i = lyricsData.length - 1; i >= 0; i--) {
+            if (lyricsData[i].time <= currentTime) {
+                found = i;
+                break;
+            }
+        }
+        if (found !== currentLyricIndex && found >= 0) {
+            displayLyric(found);
+        }
+    }
+
+    // Override onTimeUpdate to update lyrics
+    var originalOnTimeUpdate = window.onTimeUpdate;
+    if (typeof window.onTimeUpdate === 'function') {
+        window.onTimeUpdate = function() {
+            if (originalOnTimeUpdate) {
+                originalOnTimeUpdate.apply(this, arguments);
+            }
+            if (audioEl && lyricsData.length > 0) {
+                updateLyrics(audioEl.currentTime || 0);
+            }
+        };
+    }
+
+    // ============================================================
+    // ADVANCED PLAYLIST FEATURES
+    // ============================================================
+    function sortPlaylist(by, order) {
+        if (order === undefined) order = 'asc';
+        var items = state.playlist;
+        if (items.length === 0) return;
+
+        var sortFn;
+        switch (by) {
+            case 'name':
+                sortFn = function(a, b) {
+                    var nameA = (a.name || '').toLowerCase();
+                    var nameB = (b.name || '').toLowerCase();
+                    return nameA.localeCompare(nameB);
+                };
+                break;
+            case 'duration':
+                sortFn = function(a, b) { return (a.duration || 0) - (b.duration || 0); };
+                break;
+            case 'size':
+                sortFn = function(a, b) { return (a.size || 0) - (b.size || 0); };
+                break;
+            case 'added':
+                sortFn = function(a, b) {
+                    var dateA = new Date(a.added || 0);
+                    var dateB = new Date(b.added || 0);
+                    return dateA - dateB;
+                };
+                break;
+            case 'artist':
+                sortFn = function(a, b) {
+                    var artistA = (a.artist || '').toLowerCase();
+                    var artistB = (b.artist || '').toLowerCase();
+                    return artistA.localeCompare(artistB);
+                };
+                break;
+            default:
+                return;
+        }
+
+        state.playlist.sort(sortFn);
+        if (order === 'desc') {
+            state.playlist.reverse();
+        }
+        // Update current index
+        if (state.currentIndex >= 0) {
+            var currentId = state.playlist[state.currentIndex] ? state.playlist[state.currentIndex].id : null;
+            if (currentId) {
+                for (var i = 0; i < state.playlist.length; i++) {
+                    if (state.playlist[i].id === currentId) {
+                        state.currentIndex = i;
+                        break;
+                    }
+                }
+            } else {
+                state.currentIndex = -1;
+            }
+        }
+        updatePlaylistUI();
+        showToast('لیست پخش مرتب شد', 'success');
+    }
+
+    function shufflePlaylist() {
+        var items = state.playlist;
+        if (items.length === 0) return;
+        // Fisher-Yates shuffle
+        for (var i = items.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = items[i];
+            items[i] = items[j];
+            items[j] = temp;
+        }
+        // Reset current index
+        if (state.currentIndex >= 0) {
+            state.currentIndex = 0;
+        }
+        updatePlaylistUI();
+        showToast('لیست پخش به‌هم ریخته شد', 'success');
+    }
+
+    function exportPlaylist() {
+        if (state.playlist.length === 0) {
+            showToast('لیست پخش خالی است', 'warning');
+            return;
+        }
+        var data = state.playlist.map(function(item) {
+            return {
+                name: item.name,
+                artist: item.artist || '',
+                album: item.album || '',
+                duration: item.duration || 0,
+                type: item.type || 'audio'
+            };
+        });
+        var json = JSON.stringify(data, null, 2);
+        var blob = new Blob([json], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'playlist_' + new Date().toISOString().slice(0, 10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('لیست پخش با موفقیت ذخیره شد', 'success');
+    }
+
+    function importPlaylist(file) {
+        try {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var data = JSON.parse(e.target.result);
+                if (!Array.isArray(data)) {
+                    showToast('فرمت فایل معتبر نیست', 'error');
+                    return;
+                }
+                var added = 0;
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    if (item.name) {
+                        // Create placeholder items (file paths won't work, so we add as metadata only)
+                        var newItem = {
+                            id: generateId(),
+                            name: item.name,
+                            path: '', // No actual file
+                            duration: item.duration || 0,
+                            size: 0,
+                            type: item.type || 'audio',
+                            artist: item.artist || '',
+                            album: item.album || '',
+                            year: '',
+                            genre: '',
+                            bitrate: '',
+                            sampleRate: '',
+                            channels: '',
+                            codec: '',
+                            resolution: '',
+                            fps: '',
+                            cover: '',
+                            added: new Date().toISOString(),
+                            _isPlaceholder: true
+                        };
+                        state.playlist.push(newItem);
+                        added++;
+                    }
+                }
+                updatePlaylistUI();
+                showToast(added + ' آیتم به لیست پخش اضافه شد', 'success');
+            };
+            reader.readAsText(file);
+        } catch (e) {
+            console.error('Error importing playlist:', e);
+            showToast('خطا در بارگذاری لیست پخش', 'error');
+        }
+    }
+
+    // ============================================================
+    // ERROR HANDLING & RECOVERY
+    // ============================================================
+    function handlePlaybackError(error) {
+        console.error('Playback error:', error);
+        showToast('خطا در پخش فایل: ' + (error.message || 'خطای ناشناخته'), 'error');
+        // Try to recover: skip to next
+        if (state.playlist.length > 1) {
+            var next = state.currentIndex + 1;
+            if (next < state.playlist.length) {
+                state.currentIndex = next;
+                playIndex(next);
+                showToast('پرش به فایل بعدی...', 'warning');
+            } else {
+                stopPlayback();
+            }
+        } else {
+            stopPlayback();
+        }
+    }
+
+    // Override audio error handler
+    var originalAudioError = audioEl ? audioEl.onerror : null;
+    if (audioEl) {
+        audioEl.addEventListener('error', function(e) {
+            handlePlaybackError(e);
+        });
+    }
+
+    // ============================================================
+    // PERFORMANCE OPTIMIZATION - Debounce frequent operations
+    // ============================================================
+    var debouncedUpdateUI = debounce(function() {
+        updatePlaylistUI();
+    }, 300);
+
+    // Optimize renderPlaylist for large playlists
+    var originalRenderPlaylist = window.renderPlaylist;
+    if (typeof window.renderPlaylist === 'function') {
+        window.renderPlaylist = function() {
+            if (state.playlist.length > 100) {
+                // Use document fragment for better performance
+                var fragment = document.createDocumentFragment();
+                var container = dom.playlistContainer;
+                var items = state.playlist;
+                dom.playlistCount.textContent = items.length;
+
+                var empty = dom.emptyPlaylist;
+                container.innerHTML = '';
+                if (items.length === 0) {
+                    container.appendChild(empty);
+                    empty.style.display = 'flex';
+                    return;
+                }
+                empty.style.display = 'none';
+
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    var div = document.createElement('div');
+                    div.className = 'playlist-item' + (i === state.currentIndex ? ' active' : '');
+                    div.dataset.index = i;
+                    div.draggable = true;
+                    div.role = 'listitem';
+
+                    var idxSpan = document.createElement('span');
+                    idxSpan.className = 'playlist-index';
+                    idxSpan.textContent = i + 1;
+
+                    var cover = document.createElement('div');
+                    cover.className = 'playlist-cover';
+                    if (item.cover && item.cover.indexOf('data:') === 0) {
+                        cover.innerHTML = '<img src="' + item.cover + '" alt="کاور">';
+                    } else {
+                        cover.textContent = item.type === 'video' ? '🎬' : '🎵';
+                    }
+
+                    var info = document.createElement('div');
+                    info.className = 'playlist-info';
+                    var title = document.createElement('div');
+                    title.className = 'title';
+                    title.textContent = item.name || 'بدون نام';
+                    var sub = document.createElement('div');
+                    sub.className = 'sub';
+                    sub.textContent = item.artist || item.album || (item.type === 'video' ? 'ویدئو' : 'صوتی');
+                    info.appendChild(title);
+                    info.appendChild(sub);
+
+                    var dur = document.createElement('span');
+                    dur.className = 'playlist-duration';
+                    dur.textContent = item.duration ? formatTime(item.duration) : '--:--';
+
+                    var rm = document.createElement('button');
+                    rm.className = 'remove-btn';
+                    rm.textContent = '✕';
+                    rm.setAttribute('aria-label', 'حذف');
+                    rm.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var idx = parseInt(this.parentElement.dataset.index);
+                        removeFromPlaylist(idx);
+                    });
+
+                    div.appendChild(idxSpan);
+                    div.appendChild(cover);
+                    div.appendChild(info);
+                    div.appendChild(dur);
+                    div.appendChild(rm);
+
+                    div.addEventListener('click', function() {
+                        var idx = parseInt(this.dataset.index);
+                        if (idx === state.currentIndex) {
+                            togglePlay();
+                        } else {
+                            state.currentIndex = idx;
+                            playIndex(idx);
+                        }
+                    });
+
+                    div.addEventListener('dblclick', function() {
+                        var idx = parseInt(this.dataset.index);
+                        if (idx !== state.currentIndex) {
+                            state.currentIndex = idx;
+                            playIndex(idx);
+                        } else {
+                            togglePlay();
+                        }
+                    });
+
+                    div.addEventListener('dragstart', function(e) {
+                        state.dragIndex = parseInt(this.dataset.index);
+                        this.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', String(state.dragIndex));
+                        dom.dragGhost.textContent = item.name;
+                        dom.dragGhost.style.display = 'block';
+                        document.body.appendChild(dom.dragGhost);
+                    });
+
+                    div.addEventListener('dragend', function() {
+                        this.classList.remove('dragging');
+                        dom.dragGhost.style.display = 'none';
+                        document.querySelectorAll('.playlist-item.drag-over').forEach(function(el) {
+                            el.classList.remove('drag-over');
+                        });
+                    });
+
+                    div.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        document.querySelectorAll('.playlist-item.drag-over').forEach(function(el) {
+                            el.classList.remove('drag-over');
+                        });
+                        this.classList.add('drag-over');
+                    });
+
+                    div.addEventListener('dragleave', function() {
+                        this.classList.remove('drag-over');
+                    });
+
+                    div.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        this.classList.remove('drag-over');
+                        var from = parseInt(e.dataTransfer.getData('text/plain'));
+                        var to = parseInt(this.dataset.index);
+                        if (!isNaN(from) && from !== to) {
+                            movePlaylistItem(from, to);
+                        }
+                        dom.dragGhost.style.display = 'none';
+                    });
+
+                    fragment.appendChild(div);
+                }
+                container.appendChild(fragment);
+                // Update active state
+                document.querySelectorAll('.playlist-item').forEach(function(el) {
+                    var idx = parseInt(el.dataset.index);
+                    el.classList.toggle('active', idx === state.currentIndex);
+                });
+            } else {
+                // Use original render for small playlists
+                if (originalRenderPlaylist) {
+                    originalRenderPlaylist.apply(this, arguments);
+                }
+            }
+        };
+    }
+
+    // ============================================================
+    // EXPOSE NEW FUNCTIONS
+    // ============================================================
+    window.loadSubtitle = loadSubtitle;
+    window.loadLyrics = loadLyrics;
+    window.sortPlaylist = sortPlaylist;
+    window.shufflePlaylist = shufflePlaylist;
+    window.exportPlaylist = exportPlaylist;
+    window.importPlaylist = importPlaylist;
+    window.handlePlaybackError = handlePlaybackError;
+    window.debouncedUpdateUI = debouncedUpdateUI;
+
+    console.log('script.js Part 7 loaded: Subtitle Support, Lyrics (LRC), Advanced Playlist Features & Error Handling.');
+
+})();
+// ============================================================
+// script.js - دیار قدمگاه پلیر حرفه‌ای
+// ============================================================
+// Part 8 of 8 - Final Enhancements, Cleanup, Utilities & Advanced Features
+// ============================================================
+
+(function() {
+    'use strict';
+
+    // ============================================================
+    // MEDIA SESSION API - Complete implementation
+    // ============================================================
+    function setupMediaSession() {
+        if (!('mediaSession' in navigator)) {
+            console.log('Media Session API not supported');
+            return;
+        }
+
+        // Set action handlers for all standard actions
+        try {
+            navigator.mediaSession.setActionHandler('play', function() {
+                if (!state.isPlaying) togglePlay();
+            });
+            navigator.mediaSession.setActionHandler('pause', function() {
+                if (state.isPlaying) togglePlay();
+            });
+            navigator.mediaSession.setActionHandler('previoustrack', function() {
+                playPrev();
+            });
+            navigator.mediaSession.setActionHandler('nexttrack', function() {
+                playNext();
+            });
+            navigator.mediaSession.setActionHandler('seekbackward', function(details) {
+                var seconds = details.seekOffset || 10;
+                seekDelta(-seconds);
+            });
+            navigator.mediaSession.setActionHandler('seekforward', function(details) {
+                var seconds = details.seekOffset || 10;
+                seekDelta(seconds);
+            });
+            navigator.mediaSession.setActionHandler('seekto', function(details) {
+                if (details.seekTime && audioEl) {
+                    audioEl.currentTime = Math.min(details.seekTime, audioEl.duration || 0);
+                }
+            });
+            navigator.mediaSession.setActionHandler('stop', function() {
+                stopPlayback();
+            });
+            navigator.mediaSession.setActionHandler('togglecamera', function() {
+                // Toggle video display if video is playing
+                if (getCurrentItem() && getCurrentItem().type === 'video') {
+                    var video = dom.videoPlayer;
+                    if (video) {
+                        video.hidden = !video.hidden;
+                    }
+                }
+            });
+        } catch (e) {
+            console.warn('Some media session actions not supported:', e);
+        }
+    }
+
+    // ============================================================
+    // KEYBOARD SHORTCUTS - Complete list
+    // ============================================================
+    function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', function(e) {
+            var target = e.target;
+            // Ignore if typing in input fields
+            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+                return;
+            }
+
+            // Check for Ctrl/Cmd key combinations
+            var ctrl = e.ctrlKey || e.metaKey;
+
+            switch (e.key) {
+                case ' ':
+                    e.preventDefault();
+                    togglePlay();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        seekDelta(-30); // 30 seconds with shift
+                    } else {
+                        seekDelta(-5);
+                    }
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        seekDelta(30);
+                    } else {
+                        seekDelta(5);
+                    }
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    setVolume(Math.min(state.volume + 0.05, 1));
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    setVolume(Math.max(state.volume - 0.05, 0));
+                    break;
+                case 'f':
+                case 'F':
+                    e.preventDefault();
+                    toggleFullscreen();
+                    break;
+                case 'm':
+                case 'M':
+                    e.preventDefault();
+                    toggleMute();
+                    break;
+                case 's':
+                case 'S':
+                    e.preventDefault();
+                    if (ctrl) {
+                        // Save current playlist
+                        exportPlaylist();
+                    } else {
+                        toggleShuffle();
+                    }
+                    break;
+                case 'r':
+                case 'R':
+                    e.preventDefault();
+                    if (ctrl) {
+                        // Reset all settings
+                        if (confirm('آیا از بازنشانی تمام تنظیمات اطمینان دارید؟')) {
+                            resetAllSettings();
+                        }
+                    } else {
+                        toggleRepeat();
+                    }
+                    break;
+                case 'Delete':
+                case 'Backspace':
+                    if (state.currentIndex >= 0) {
+                        e.preventDefault();
+                        removeFromPlaylist(state.currentIndex);
+                    }
+                    break;
+                case 'l':
+                case 'L':
+                    e.preventDefault();
+                    // Toggle lyrics display
+                    if (lyricsData.length > 0) {
+                        var lyricDisplay = document.getElementById('lyricDisplay');
+                        if (lyricDisplay) {
+                            lyricDisplay.style.display = lyricDisplay.style.display === 'none' ? 'block' : 'none';
+                        }
+                    }
+                    break;
+                case 't':
+                case 'T':
+                    e.preventDefault();
+                    // Sleep timer
+                    if (sleepTimerId) {
+                        cancelSleepTimer();
+                    } else {
+                        var minutes = 15;
+                        if (e.shiftKey) minutes = 30;
+                        if (e.ctrlKey) minutes = 60;
+                        setSleepTimer(minutes);
+                    }
+                    break;
+                case 'v':
+                case 'V':
+                    e.preventDefault();
+                    // Toggle visualizer mode
+                    toggleVisualizerMode();
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '0':
+                    if (ctrl) {
+                        e.preventDefault();
+                        var index = parseInt(e.key);
+                        if (index === 0) index = 10;
+                        // Jump to playlist item
+                        var targetIndex = index - 1;
+                        if (targetIndex < state.playlist.length) {
+                            state.currentIndex = targetIndex;
+                            playIndex(targetIndex);
+                        }
+                    }
+                    break;
+                case 'Escape':
+                    // Close all panels
+                    if (state.queueVisible) {
+                        dom.queuePanel.classList.remove('open');
+                        state.queueVisible = false;
+                    }
+                    if (state.eqVisible) {
+                        dom.eqModal.classList.remove('open');
+                        state.eqVisible = false;
+                    }
+                    if (dom.playlistDrawer.classList.contains('open')) {
+                        closeDrawer();
+                    }
+                    break;
+            }
+        });
+    }
+
+    // ============================================================
+    // CONTEXT MENU - Right-click on playlist items
+    // ============================================================
+    function setupContextMenu() {
+        document.addEventListener('contextmenu', function(e) {
+            var item = e.target.closest('.playlist-item');
+            if (!item) return;
+            e.preventDefault();
+            var idx = parseInt(item.dataset.index);
+            if (isNaN(idx)) return;
+
+            // Build custom context menu
+            var menu = document.getElementById('contextMenu');
+            if (!menu) {
+                menu = document.createElement('div');
+                menu.id = 'contextMenu';
+                menu.style.cssText = 'position:fixed;background:rgba(20,20,20,0.95);backdrop-filter:blur(10px);' +
+                    'border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:4px 0;' +
+                    'box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:1000;min-width:180px;';
+                document.body.appendChild(menu);
+            }
+
+            // Clear menu
+            menu.innerHTML = '';
+            menu.style.display = 'block';
+            menu.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
+            menu.style.top = Math.min(e.clientY, window.innerHeight - 300) + 'px';
+
+            var items = [
+                { label: '▶ پخش', action: function() { state.currentIndex = idx;
+                        playIndex(idx); } },
+                { label: '➕ اضافه به صف', action: function() { addToQueue(state.playlist[idx].id); } },
+                { label: '❤️ علاقه‌مندی', action: function() {
+                        state.currentIndex = idx;
+                        toggleFavorite();
+                    } },
+                { label: '✕ حذف', action: function() { removeFromPlaylist(idx); } },
+                { label: '📋 اطلاعات فایل', action: function() { showFileInfo(idx); } },
+            ];
+
+            // Add separator
+            if (idx !== state.currentIndex) {
+                items.push({ label: '─', action: null });
+                items.push({ label: '📊 نمایش متادیتا', action: function() { showMetadata(idx); } });
+            }
+
+            items.forEach(function(item) {
+                var div = document.createElement('div');
+                div.style.cssText = 'padding:8px 16px;cursor:pointer;color:var(--text-secondary);' +
+                    'transition:all 0.2s;font-size:0.85rem;';
+                if (item.label === '─') {
+                    div.style.cssText = 'padding:0;height:1px;background:rgba(255,255,255,0.05);margin:4px 8px;';
+                    div.textContent = '';
+                } else {
+                    div.textContent = item.label;
+                    div.addEventListener('click', function() {
+                        menu.style.display = 'none';
+                        if (item.action) item.action();
+                    });
+                    div.addEventListener('mouseenter', function() {
+                        this.style.background = 'rgba(124,92,255,0.15)';
+                        this.style.color = 'var(--text-primary)';
+                    });
+                    div.addEventListener('mouseleave', function() {
+                        this.style.background = 'transparent';
+                        this.style.color = 'var(--text-secondary)';
+                    });
+                }
+                menu.appendChild(div);
+            });
+
+            // Close menu on click outside
+            var closeMenu = function(e2) {
+                if (!menu.contains(e2.target)) {
+                    menu.style.display = 'none';
+                    document.removeEventListener('click', closeMenu);
+                    document.removeEventListener('keydown', closeMenuOnEsc);
+                }
+            };
+            var closeMenuOnEsc = function(e2) {
+                if (e2.key === 'Escape') {
+                    menu.style.display = 'none';
+                    document.removeEventListener('click', closeMenu);
+                    document.removeEventListener('keydown', closeMenuOnEsc);
+                }
+            };
+            setTimeout(function() {
+                document.addEventListener('click', closeMenu);
+                document.addEventListener('keydown', closeMenuOnEsc);
+            }, 10);
+        });
+    }
+
+    // ============================================================
+    // FILE INFO / METADATA DISPLAY
+    // ============================================================
+    function showFileInfo(index) {
+        var item = state.playlist[index];
+        if (!item) return;
+        var info = '📋 اطلاعات فایل\n';
+        info += '─────────────\n';
+        info += 'نام: ' + (item.name || 'نامشخص') + '\n';
+        info += 'نوع: ' + (item.type || 'نامشخص') + '\n';
+        info += 'مدت: ' + (item.duration ? formatTime(item.duration) : 'نامشخص') + '\n';
+        info += 'حجم: ' + (item.size ? (item.size / 1024 / 1024).toFixed(2) + ' MB' : 'نامشخص') + '\n';
+        info += 'هنرمند: ' + (item.artist || 'نامشخص') + '\n';
+        info += 'آلبوم: ' + (item.album || 'نامشخص') + '\n';
+        info += 'سال: ' + (item.year || 'نامشخص') + '\n';
+        info += 'ژانر: ' + (item.genre || 'نامشخص') + '\n';
+        info += 'کدک: ' + (item.codec || 'نامشخص') + '\n';
+        info += 'رزولوشن: ' + (item.resolution || 'نامشخص') + '\n';
+        info += 'افزوده‌شده: ' + (item.added ? new Date(item.added).toLocaleString() : 'نامشخص') + '\n';
+        showToast(info.replace(/\n/g, ' | '), 'info');
+    }
+
+    function showMetadata(index) {
+        var item = state.playlist[index];
+        if (!item) return;
+        var info = [];
+        if (item.artist) info.push('🎤 ' + item.artist);
+        if (item.album) info.push('💿 ' + item.album);
+        if (item.year) info.push('📅 ' + item.year);
+        if (item.genre) info.push('🎵 ' + item.genre);
+        if (item.bitrate) info.push('📊 ' + item.bitrate + ' kbps');
+        if (item.sampleRate) info.push('🎛️ ' + item.sampleRate + ' Hz');
+        if (item.channels) info.push('🔊 ' + item.channels + ' ch');
+        if (item.codec) info.push('💻 ' + item.codec);
+        if (item.resolution) info.push('📐 ' + item.resolution);
+        if (item.fps) info.push('🎞️ ' + item.fps + ' fps');
+        if (info.length === 0) {
+            info.push('هیچ متادیتایی موجود نیست');
+        }
+        showToast(info.join(' | '), 'info');
+    }
+
+    // ============================================================
+    // RESET ALL SETTINGS
+    // ============================================================
+    function resetAllSettings() {
+        try {
+            // Clear localStorage
+            var keys = Object.values(STORAGE);
+            keys.forEach(function(key) {
+                localStorage.removeItem(key);
+            });
+            // Reset state
+            state.volume = 0.8;
+            state.speed = 1.0;
+            state.repeat = 'none';
+            state.shuffle = false;
+            state.favorites = [];
+            state.recent = [];
+            state.eqValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            state.eqPreset = 'flat';
+            state.theme = 'dark';
+            // Apply reset
+            applyTheme('dark');
+            dom.volumeSlider.value = 0.8;
+            dom.speedBtn.textContent = '1.0x';
+            dom.repeatBtn.textContent = '🔁';
+            dom.repeatBtn.classList.remove('active');
+            dom.shuffleBtn.classList.remove('active');
+            showToast('تمامی تنظیمات بازنشانی شد', 'success');
+            // Clear playlist if user wants
+            if (state.playlist.length > 0 && confirm('آیا لیست پخش نیز پاک شود؟')) {
+                clearPlaylist();
+            }
+        } catch (e) {
+            console.error('Error resetting settings:', e);
+            showToast('خطا در بازنشانی تنظیمات', 'error');
+        }
+    }
+
+    // ============================================================
+    // AUTO-SAVE & RECOVERY
+    // ============================================================
+    function setupAutoSave() {
+        // Auto-save every 30 seconds
+        setInterval(function() {
+            if (state.playlist.length > 0) {
+                savePlaylist();
+                if (state.currentIndex >= 0) {
+                    var item = state.playlist[state.currentIndex];
+                    if (item && audioEl) {
+                        saveTime(item.id, audioEl.currentTime || 0);
+                    }
+                }
+            }
+        }, 30000);
+
+        // Save on page unload
+        window.addEventListener('beforeunload', function() {
+            savePlaylist();
+            if (state.currentIndex >= 0) {
+                var item = state.playlist[state.currentIndex];
+                if (item && audioEl) {
+                    saveTime(item.id, audioEl.currentTime || 0);
+                }
+            }
+        });
+    }
+
+    // ============================================================
+    // DRAG AND DROP IMPROVEMENTS
+    // ============================================================
+    function setupDragAndDrop() {
+        // Enhanced drag and drop for the entire app
+        var dragCounter = 0;
+
+        document.addEventListener('dragenter', function(e) {
+            e.preventDefault();
+            dragCounter++;
+            if (dragCounter === 1) {
+                dom.dropZone.classList.add('dragover');
+            }
+        });
+
+        document.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dragCounter--;
+            if (dragCounter === 0) {
+                dom.dropZone.classList.remove('dragover');
+            }
+        });
+
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dom.dropZone.classList.add('dragover');
+        });
+
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dragCounter = 0;
+            dom.dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+    }
+
+    // ============================================================
+    // NETWORK STATUS HANDLING
+    // ============================================================
+    function setupNetworkHandling() {
+        var wasOnline = navigator.onLine;
+
+        window.addEventListener('online', function() {
+            if (!wasOnline) {
+                wasOnline = true;
+                showToast('🌐 اتصال اینترنت برقرار شد', 'success');
+            }
+        });
+
+        window.addEventListener('offline', function() {
+            wasOnline = false;
+            showToast('🌐 اتصال اینترنت قطع شد (حالت آفلاین)', 'warning');
+        });
+
+        // Check if we're offline and show status
+        if (!navigator.onLine) {
+            showToast('🌐 حالت آفلاین - برخی ویژگی‌ها ممکن است محدود شوند', 'warning');
+        }
+    }
+
+    // ============================================================
+    // PERFORMANCE OPTIMIZATION - Lazy loading for large playlists
+    // ============================================================
+    function optimizePlaylistRendering() {
+        var container = dom.playlistContainer;
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 20) {
+                    // If many nodes added, optimize rendering
+                    requestAnimationFrame(function() {
+                        var items = container.querySelectorAll('.playlist-item');
+                        if (items.length > 200) {
+                            // Virtual scrolling could be implemented here
+                            // For now, we just ensure smooth rendering
+                            container.style.willChange = 'transform';
+                        }
+                    });
+                }
+            });
+        });
+        observer.observe(container, { childList: true, subtree: true });
+    }
+
+    // ============================================================
+    // CACHE CLEANUP
+    // ============================================================
+    function clearCache() {
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                names.forEach(function(name) {
+                    caches.delete(name);
+                });
+                showToast('کش مرورگر پاک شد', 'success');
+            }).catch(function() {
+                showToast('خطا در پاک کردن کش', 'error');
+            });
+        } else {
+            showToast('مرورگر از کش پشتیبانی نمی‌کند', 'warning');
+        }
+    }
+
+    // ============================================================
+    // ABOUT DIALOG
+    // ============================================================
+    function showAbout() {
+        var version = '1.0.0';
+        var info = '🎵 دیار قدمگاه\n';
+        info += 'پلیر حرفه‌ای صوتی و تصویری\n';
+        info += 'نسخه ' + version + '\n';
+        info += '─────────────\n';
+        info += '✨ ویژگی‌ها:\n';
+        info += '• پخش صوتی و تصویری\n';
+        info += '• یکسان‌ساز ۱۰ باند\n';
+        info += '• ویژوالایزر پیشرفته\n';
+        info += '• پشتیبانی از زیرنویس\n';
+        info += '• نمایش متن ترانه (LRC)\n';
+        info += '• تایمر خواب\n';
+        info += '• حالت آفلاین\n';
+        info += '• نصب به عنوان PWA\n';
+        info += '─────────────\n';
+        info += '🖥️ ساخته شده با ❤️ برای ایران';
+        showToast(info.replace(/\n/g, ' | '), 'info');
+    }
+
+    // ============================================================
+    // LOGGING & DEBUGGING
+    // ============================================================
+    function setupDebugging() {
+        // Enable debug mode with localStorage flag
+        var debug = localStorage.getItem('diar_debug') === 'true';
+        if (debug) {
+            console.log('🐛 Debug mode enabled');
+            // Log state changes
+            var originalState = {};
+            Object.keys(state).forEach(function(key) {
+                originalState[key] = state[key];
+            });
+            setInterval(function() {
+                Object.keys(state).forEach(function(key) {
+                    if (state[key] !== originalState[key]) {
+                        console.log('[DEBUG] State changed:', key, state[key]);
+                        originalState[key] = state[key];
+                    }
+                });
+            }, 1000);
+
+            // Log audio events
+            if (audioEl) {
+                var events = ['play', 'pause', 'ended', 'timeupdate', 'volumechange', 'ratechange'];
+                events.forEach(function(eventName) {
+                    audioEl.addEventListener(eventName, function() {
+                        console.log('[DEBUG] Audio event:', eventName);
+                    });
+                });
+            }
+        }
+    }
+
+    // ============================================================
+    // INITIALIZE ALL FINAL FEATURES
+    // ============================================================
+    function initFinalFeatures() {
+        setupMediaSession();
+        setupKeyboardShortcuts();
+        setupContextMenu();
+        setupAutoSave();
+        setupDragAndDrop();
+        setupNetworkHandling();
+        optimizePlaylistRendering();
+        setupDebugging();
+
+        // Add global shortcuts for utility functions
+        window.showAbout = showAbout;
+        window.clearCache = clearCache;
+        window.resetAllSettings = resetAllSettings;
+        window.showFileInfo = showFileInfo;
+        window.showMetadata = showMetadata;
+
+        // Add keyboard shortcut hint
+        console.log('⌨️ دیار قدمگاه - میانبرهای صفحه‌کلید:');
+        console.log('  Space: پخش/مکث');
+        console.log('  ←/→: ۵ ثانیه عقب/جلو');
+        console.log('  Shift+←/→: ۳۰ ثانیه');
+        console.log('  ↑/↓: تنظیم ولوم');
+        console.log('  F: تمام صفحه');
+        console.log('  M: بی‌صدا');
+        console.log('  S: تصادفی | Ctrl+S: ذخیره لیست');
+        console.log('  R: تکرار | Ctrl+R: بازنشانی تنظیمات');
+        console.log('  Delete: حذف فایل جاری');
+        console.log('  L: نمایش/مخفی کردن متن ترانه');
+        console.log('  T: تایمر خواب (15 دقیقه)');
+        console.log('  Shift+T: تایمر خواب (30 دقیقه)');
+        console.log('  Ctrl+T: تایمر خواب (60 دقیقه)');
+        console.log('  V: تغییر حالت ویژوالایزر');
+        console.log('  Ctrl+1-0: پرش به آیتم لیست');
+        console.log('  Escape: بستن پنل‌ها');
+
+        // Check if PWA is installed
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('📱 دیار قدمگاه در حالت PWA اجرا می‌شود');
+        }
+
+        // Set initial media session if playing
+        var currentItem = getCurrentItem();
+        if (currentItem) {
+            updateMediaSession(currentItem);
+        }
+
+        console.log('✅ دیار قدمگاه - تمام ویژگی‌ها بارگذاری شدند');
+        console.log('🎵 نسخه 1.0.0 - آماده برای استفاده');
+    }
+
+    // ============================================================
+    // EXPOSE FINAL FUNCTIONS
+    // ============================================================
+    window.setupMediaSession = setupMediaSession;
+    window.setupKeyboardShortcuts = setupKeyboardShortcuts;
+    window.setupContextMenu = setupContextMenu;
+    window.setupAutoSave = setupAutoSave;
+    window.setupDragAndDrop = setupDragAndDrop;
+    window.setupNetworkHandling = setupNetworkHandling;
+    window.optimizePlaylistRendering = optimizePlaylistRendering;
+    window.setupDebugging = setupDebugging;
+    window.initFinalFeatures = initFinalFeatures;
+    window.resetAllSettings = resetAllSettings;
+    window.clearCache = clearCache;
+    window.showAbout = showAbout;
+    window.showFileInfo = showFileInfo;
+    window.showMetadata = showMetadata;
+
+    // ============================================================
+    // AUTO-INITIALIZE FINAL FEATURES AFTER DOM READY
+    // ============================================================
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        // Wait a bit for other parts to load
+        setTimeout(initFinalFeatures, 100);
+    } else {
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initFinalFeatures, 100);
+        });
+    }
+
+    console.log('script.js Part 8 loaded: Final Enhancements, Cleanup, Utilities & Advanced Features.');
+    console.log('🎵 دیار قدمگاه - پلیر حرفه‌ای کاملاً آماده است!');
+
+})();
+
+// ============================================================
+// GLOBAL REGISTRATION - Ensure all functions are accessible
+// ============================================================
+(function() {
+    // Register all functions to window if not already registered
+    var functions = [
+        'setupMediaSession', 'setupKeyboardShortcuts', 'setupContextMenu',
+        'setupAutoSave', 'setupDragAndDrop', 'setupNetworkHandling',
+        'optimizePlaylistRendering', 'setupDebugging', 'initFinalFeatures',
+        'resetAllSettings', 'clearCache', 'showAbout', 'showFileInfo', 'showMetadata'
+    ];
+
+    functions.forEach(function(fn) {
+        if (typeof window[fn] === 'function') {
+            // Already registered
+        } else {
+            // Try to get from closure (this should not happen)
+            console.warn('Function not registered:', fn);
+        }
+    });
+
+    // Ensure media session is updated when playback state changes
+    var originalTogglePlay = window.togglePlay;
+    if (typeof window.togglePlay === 'function') {
+        window.togglePlay = function() {
+            originalTogglePlay.apply(this, arguments);
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = state.isPlaying ? 'playing' : 'paused';
+            }
+        };
+    }
+
+    console.log('✅ تمام توابع دیار قدمگاه ثبت شدند');
+})();

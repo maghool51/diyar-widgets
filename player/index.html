@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>دیار پلیر</title>
+
+<meta name="theme-color" content="#0b3d2e">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="player">
+
+<header class="topbar">
+
+<div class="logo">
+🎵 دیار پلیر
+</div>
+
+<button id="themeBtn">
+🌙
+</button>
+
+</header>
+
+<section class="cover">
+
+<img
+id="cover"
+src="assets/images/default-cover.png"
+alt="Cover">
+
+</section>
+
+<section class="info">
+
+<h2 id="title">
+
+فایلی انتخاب نشده است
+
+</h2>
+
+<p id="artist">
+
+Diyar Player
+
+</p>
+
+</section>
+
+<section class="progress">
+
+<input
+type="range"
+id="seekBar"
+value="0"
+min="0"
+max="100">
+
+<div class="time">
+
+<span id="currentTime">
+
+00:00
+
+</span>
+
+<span id="duration">
+
+00:00
+
+</span>
+
+</div>
+
+</section>
+
+<section class="controls">
+
+<button id="prevBtn">⏮</button>
+
+<button id="playBtn">▶</button>
+
+<button id="nextBtn">⏭</button>
+
+</section>
+
+<section class="volume">
+
+🔊
+
+<input
+type="range"
+id="volumeBar"
+min="0"
+max="1"
+step="0.01"
+value="1">
+
+</section>
+
+<section class="playlist">
+
+<h3>
+
+Playlist
+
+</h3>
+
+<ul id="playlist">
+
+</ul>
+
+</section>
+
+<footer>
+
+<input
+type="file"
+id="fileInput"
+multiple
+accept="audio/*,video/*">
+
+</footer>
+
+</div>
+
+<audio id="audio"></audio>
+
+<video
+id="video"
+style="display:none"></video>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

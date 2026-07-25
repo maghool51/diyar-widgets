@@ -1,200 +1,160 @@
-// ============================================================
-// sw.js - Service Worker for دیار قدمگاه پلیر
-// ============================================================
-// Version: 1.0.0
+/**
+ * Diyar Player - Service Worker
+ * Version: 1.0.0
+ * Cache strategy: Cache-first for static assets, network-first for API calls
+ */
 
-const CACHE_NAME = 'diar-player-v1.0.0';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/player/assets/images/de9630bd-5d33-40ce-beed-7729e121c01f.png',
-  '/default-cover.png',
-  '/player/assets/icons/icon-72.png',
-  '/player/assets/icons/icon-96.png',
-  '/player/assets/icons/icon-128.png',
-  '/player/assets/icons/icon-144.png',
-  '/player/assets/icons/icon-152.png',
-  '/player/assets/icons/icon-192.png',
-  '/player/assets/icons/icon-384.png',
-  '/player/assets/icons/icon-512.png'
+const CACHE_VERSION = 'v1.0.0';
+const CACHE_NAME = `diyar-player-${CACHE_VERSION}`;
+
+// Files to cache on install
+const STATIC_CACHE_URLS = [
+    '/',
+    '/index.html',
+    '/style.css',
+    '/script.js',
+    '/manifest.json',
+    '/assets/default-cover.png',
+    '/assets/icons/icon-72x72.png',
+    '/assets/icons/icon-96x96.png',
+    '/assets/icons/icon-128x128.png',
+    '/assets/icons/icon-144x144.png',
+    '/assets/icons/icon-152x152.png',
+    '/assets/icons/icon-192x192.png',
+    '/assets/icons/icon-384x384.png',
+    '/assets/icons/icon-512x512.png',
 ];
 
-// ============================================================
-// INSTALL EVENT - Cache static assets
-// ============================================================
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        console.log('[SW] Caching assets...');
-        return cache.addAll(ASSETS);
-      })
-      .then(function() {
-        console.log('[SW] Assets cached successfully');
-        return self.skipWaiting();
-      })
-      .catch(function(error) {
-        console.error('[SW] Cache installation failed:', error);
-      })
-  );
+// URLs that should be fetched from network first (e.g., streaming media)
+// We'll treat all audio/video URLs and external streams as network-first
+// Also any URL that is not in the static list
+
+// Install event - cache static assets
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log(`[SW] Caching static assets (${CACHE_NAME})`);
+                return cache.addAll(STATIC_CACHE_URLS);
+            })
+            .then(() => {
+                console.log('[SW] Static assets cached');
+                // Force the waiting service worker to become active
+                return self.skipWaiting();
+            })
+            .catch((error) => {
+                console.error('[SW] Failed to cache static assets:', error);
+            })
+    );
 });
 
-// ============================================================
-// ACTIVATE EVENT - Clean up old caches
-// ============================================================
-self.addEventListener('activate', function(event) {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(function() {
-      console.log('[SW] Activated successfully');
-      return self.clients.claim();
-    })
-  );
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys()
+            .then((cacheNames) => {
+                return Promise.all(
+                    cacheNames.map((cacheName) => {
+                        if (cacheName !== CACHE_NAME && cacheName.startsWith('diyar-player-')) {
+                            console.log(`[SW] Deleting old cache: ${cacheName}`);
+                            return caches.delete(cacheName);
+                        }
+                        return Promise.resolve();
+                    })
+                );
+            })
+            .then(() => {
+                console.log('[SW] Activated and old caches cleaned');
+                // Claim clients so the SW controls all pages
+                return self.clients.claim();
+            })
+    );
 });
 
-// ============================================================
-// FETCH EVENT - Serve from cache, fallback to network
-// ============================================================
-self.addEventListener('fetch', function(event) {
-  const requestUrl = new URL(event.request.url);
-  
-  // Skip cross-origin requests
-  if (requestUrl.origin !== location.origin) {
-    return;
-  }
+// Fetch event - handle requests
+self.addEventListener('fetch', (event) => {
+    const request = event.request;
+    const url = new URL(request.url);
 
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
+    // Skip cross-origin requests (except for media streams which we handle separately)
+    if (url.origin !== self.location.origin) {
+        // For cross-origin media requests, we can try network first but we don't cache them
+        // We'll just let the browser handle it normally
+        return;
+    }
 
-  // Skip browser extensions, devtools, etc.
-  if (requestUrl.pathname.startsWith('/chrome-extension') || 
-      requestUrl.pathname.startsWith('/__')) {
-    return;
-  }
+    // For static assets (our own files), use cache-first
+    if (STATIC_CACHE_URLS.includes(url.pathname) || url.pathname.startsWith('/assets/')) {
+        event.respondWith(
+            caches.match(request)
+                .then((cachedResponse) => {
+                    if (cachedResponse) {
+                        // Return cached response
+                        return cachedResponse;
+                    }
+                    // If not in cache, fetch from network and cache it
+                    return fetch(request)
+                        .then((networkResponse) => {
+                            // Clone the response to put one in cache and return the other
+                            const responseToCache = networkResponse.clone();
+                            caches.open(CACHE_NAME)
+                                .then((cache) => {
+                                    cache.put(request, responseToCache);
+                                })
+                                .catch((err) => console.warn('[SW] Failed to cache:', err));
+                            return networkResponse;
+                        })
+                        .catch((error) => {
+                            console.warn('[SW] Failed to fetch:', request.url, error);
+                            // Return offline fallback if available
+                            return caches.match('/index.html');
+                        });
+                })
+        );
+        return;
+    }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(cachedResponse) {
-        if (cachedResponse) {
-          // Return cached response
-          return cachedResponse;
-        }
-
-        // If not in cache, fetch from network
-        return fetch(event.request)
-          .then(function(networkResponse) {
-            // Cache the fetched response for future use
-            // Only cache successful responses for static assets
-            if (networkResponse && networkResponse.status === 200) {
-              const responseClone = networkResponse.clone();
-              caches.open(CACHE_NAME).then(function(cache) {
-                // Cache specific file types
-                const url = new URL(event.request.url);
-                const ext = url.pathname.split('.').pop().toLowerCase();
-                const cacheableTypes = ['html', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'webp', 'woff2', 'ttf', 'otf', 'mp3', 'mp4', 'webm'];
-                if (cacheableTypes.indexOf(ext) !== -1) {
-                  cache.put(event.request, responseClone);
+    // For all other requests (including media files that might be cached), use network-first
+    event.respondWith(
+        fetch(request)
+            .then((networkResponse) => {
+                // If it's a successful response, clone it and cache it (if it's a GET request)
+                if (networkResponse.ok && request.method === 'GET') {
+                    const responseToCache = networkResponse.clone();
+                    caches.open(CACHE_NAME)
+                        .then((cache) => {
+                            cache.put(request, responseToCache);
+                        })
+                        .catch((err) => console.warn('[SW] Failed to cache:', err));
                 }
-              }).catch(function(error) {
-                console.warn('[SW] Cache put failed:', error);
-              });
-            }
-            return networkResponse;
-          })
-          .catch(function(error) {
-            console.warn('[SW] Network fetch failed:', error);
-            // Return offline fallback for HTML requests
-            if (event.request.headers.get('Accept') && event.request.headers.get('Accept').indexOf('text/html') !== -1) {
-              return caches.match('/index.html');
-            }
-            // Return a simple offline response for other requests
-            return new Response('Network error occurred', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({
-                'Content-Type': 'text/plain'
-              })
-            });
-          });
-      })
-  );
-});
-
-// ============================================================
-// MESSAGE EVENT - Handle messages from client
-// ============================================================
-self.addEventListener('message', function(event) {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
-
-// ============================================================
-// PUSH EVENT - Handle push notifications (optional)
-// ============================================================
-self.addEventListener('push', function(event) {
-  const data = event.data ? event.data.json() : {};
-  const title = data.title || 'دیار قدمگاه';
-  const options = {
-    body: data.body || 'یک فایل جدید در لیست پخش',
-    icon: '/player/assets/icons/icon-192.png',
-    badge: '/player/assets/icons/icon-96.png',
-    tag: 'diar-player-notification',
-    vibrate: [200, 100, 200],
-    requireInteraction: true,
-    actions: [
-      {
-        action: 'open',
-        title: 'باز کردن پلیر'
-      },
-      {
-        action: 'close',
-        title: 'بستن'
-      }
-    ]
-  };
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
-});
-
-// ============================================================
-// NOTIFICATION CLICK EVENT
-// ============================================================
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close();
-  if (event.action === 'open') {
-    event.waitUntil(
-      clients.openWindow('/')
+                return networkResponse;
+            })
+            .catch(() => {
+                // If network fails, try cache
+                return caches.match(request)
+                    .then((cachedResponse) => {
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+                        // If not in cache, return a fallback (index.html for navigation)
+                        if (request.headers.get('accept').includes('text/html')) {
+                            return caches.match('/index.html');
+                        }
+                        // Otherwise, return an error response
+                        return new Response('Offline', {
+                            status: 503,
+                            statusText: 'Service Unavailable',
+                        });
+                    });
+            })
     );
-  } else if (event.action === 'close') {
-    // Just close the notification
-  } else {
-    event.waitUntil(
-      clients.matchAll({ type: 'window', includeUncontrolled: true })
-        .then(function(clientList) {
-          for (var i = 0; i < clientList.length; i++) {
-            var client = clientList[i];
-            if (client.url === '/' && 'focus' in client) {
-              return client.focus();
-            }
-          }
-          return clients.openWindow('/');
-        })
-    );
-  }
 });
 
-console.log('[SW] Service Worker loaded successfully');
+// Handle messages from clients (e.g., skip waiting)
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
+console.log('[SW] Diyar Player Service Worker loaded');

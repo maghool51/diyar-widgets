@@ -135,3 +135,108 @@ function loadFile(index) {
 
 }
 }
+
+/* ==========================================
+   Part 3 : Player Controls
+========================================== */
+
+playBtn.addEventListener("click", function () {
+
+    if (!player.src) return;
+
+    if (player.paused) {
+
+        player.play();
+
+        playBtn.textContent = "⏸";
+
+    } else {
+
+        player.pause();
+
+        playBtn.textContent = "▶";
+
+    }
+
+});
+
+prevBtn.addEventListener("click", function () {
+
+    if (files.length === 0) return;
+
+    let index = currentIndex - 1;
+
+    if (index < 0) {
+
+        index = files.length - 1;
+
+    }
+
+    loadFile(index);
+
+});
+
+nextBtn.addEventListener("click", function () {
+
+    if (files.length === 0) return;
+
+    let index = currentIndex + 1;
+
+    if (index >= files.length) {
+
+        index = 0;
+
+    }
+
+    loadFile(index);
+
+});
+
+player.addEventListener("timeupdate", updateProgress);
+
+function updateProgress() {
+
+    if (!player.duration) return;
+
+    seekBar.max = Math.floor(player.duration);
+
+    seekBar.value = Math.floor(player.currentTime);
+
+    currentTime.textContent = formatTime(player.currentTime);
+
+    duration.textContent = formatTime(player.duration);
+
+}
+
+seekBar.addEventListener("input", function () {
+
+    player.currentTime = seekBar.value;
+
+});
+
+volumeBar.addEventListener("input", function () {
+
+    audio.volume = volumeBar.value;
+    video.volume = volumeBar.value;
+
+});
+
+audio.addEventListener("ended", playNext);
+
+video.addEventListener("ended", playNext);
+
+function playNext() {
+
+    if (files.length === 0) return;
+
+    let index = currentIndex + 1;
+
+    if (index >= files.length) {
+
+        index = 0;
+
+    }
+
+    loadFile(index);
+
+}

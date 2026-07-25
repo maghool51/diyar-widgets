@@ -137,106 +137,120 @@ function loadFile(index) {
 }
 
 /* ==========================================
-   Part 3 : Player Controls
+   Part 3 : Professional Controls
 ========================================== */
 
-playBtn.addEventListener("click", function () {
+function getPlayer() {
+    return player;
+}
 
-    if (!player.src) return;
+function updateButton() {
+    playBtn.textContent = getPlayer().paused ? "▶" : "⏸";
+}
 
-    if (player.paused) {
+function attachPlayerEvents() {
 
-        player.play();
+    const p = getPlayer();
 
-        playBtn.textContent = "⏸";
+    p.ontimeupdate = function () {
 
-    } else {
+        if (!p.duration) return;
 
-        player.pause();
+        seekBar.max = Math.floor(p.duration);
+        seekBar.value = Math.floor(p.currentTime);
 
-        playBtn.textContent = "▶";
+        currentTime.textContent = formatTime(p.currentTime);
+        duration.textContent = formatTime(p.duration);
 
-    }
+    };
 
-});
+    p.onloadedmetadata = function () {
 
-prevBtn.addEventListener("click", function () {
+        duration.textContent = formatTime(p.duration);
 
-    if (files.length === 0) return;
+    };
 
-    let index = currentIndex - 1;
+    p.onplay = updateButton;
 
-    if (index < 0) {
+    p.onpause = updateButton;
 
-        index = files.length - 1;
+    p.onended = function () {
 
-    }
+        nextBtn.click();
 
-    loadFile(index);
-
-});
-
-nextBtn.addEventListener("click", function () {
-
-    if (files.length === 0) return;
-
-    let index = currentIndex + 1;
-
-    if (index >= files.length) {
-
-        index = 0;
-
-    }
-
-    loadFile(index);
-
-});
-
-player.addEventListener("timeupdate", updateProgress);
-
-function updateProgress() {
-
-    if (!player.duration) return;
-
-    seekBar.max = Math.floor(player.duration);
-
-    seekBar.value = Math.floor(player.currentTime);
-
-    currentTime.textContent = formatTime(player.currentTime);
-
-    duration.textContent = formatTime(player.duration);
+    };
 
 }
 
-seekBar.addEventListener("input", function () {
+const oldLoadFile = loadFile;
 
-    player.currentTime = seekBar.value;
+loadFile = function(index){
 
-});
+    oldLoadFile(index);
 
-volumeBar.addEventListener("input", function () {
+    attachPlayerEvents();
 
-    audio.volume = volumeBar.value;
-    video.volume = volumeBar.value;
+};
 
-});
+playBtn.onclick = function(){
 
-audio.addEventListener("ended", playNext);
+    const p = getPlayer();
 
-video.addEventListener("ended", playNext);
+    if(!p.src) return;
 
-function playNext() {
+    if(p.paused){
 
-    if (files.length === 0) return;
+        p.play();
 
-    let index = currentIndex + 1;
+    }else{
 
-    if (index >= files.length) {
-
-        index = 0;
+        p.pause();
 
     }
 
-    loadFile(index);
+};
 
-}
+prevBtn.onclick = function(){
+
+    if(files.length===0) return;
+
+    let i=currentIndex-1;
+
+    if(i<0) i=files.length-1;
+
+    loadFile(i);
+
+};
+
+nextBtn.onclick = function(){
+
+    if(files.length===0) return;
+
+    let i=currentIndex+1;
+
+    if(i>=files.length) i=0;
+
+    loadFile(i);
+
+};
+
+seekBar.oninput=function(){
+
+    const p=getPlayer();
+
+    if(p.duration){
+
+        p.currentTime=this.value;
+
+    }
+
+};
+
+volumeBar.oninput=function(){
+
+    audio.volume=this.value;
+    video.volume=this.value;
+
+};
+
+attachPlayerEvents();

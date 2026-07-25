@@ -116,17 +116,21 @@ nextTrack();
 
 };
 
-p.play()
-.then(function(){
+p.oncanplay = function () {
 
-playBtn.textContent="⏸";
+    p.play()
+    .then(function () {
 
-})
-.catch(function(err){
+        playBtn.textContent = "⏸";
 
-console.error(err);
+    })
+    .catch(function (err) {
 
-});
+        console.error("Play Error:", err);
+
+    });
+
+};
 
 }
 

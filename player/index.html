@@ -1672,7 +1672,6 @@
         <header class="app-header">
             <div class="header-left">
                 <div class="logo-area" id="logoArea" role="banner">
-                    <!-- تغییر مسیر لوگو به آدرس داده شده -->
                     <img id="logoImg" src="player/assets/images/de9630bd-5d33-40ce-beed-7729e121c01f.png" alt="دیار قدمگاه" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';">
                     <span class="logo-text" id="logoFallback" style="display:none;">دیار قدمگاه</span>
                 </div>
@@ -1845,7 +1844,7 @@
     <div class="drag-ghost" id="dragGhost" style="display:none;"></div>
 
     <!-- ============================================================
-    JAVASCRIPT - Full Player Logic (Complete)
+    JAVASCRIPT - Full Player Logic (One IIFE)
     ============================================================ -->
     <script>
         (function() {
@@ -1964,6 +1963,13 @@
                 queueVisible: false,
                 eqVisible: false,
                 dragIndex: null,
+                sleepTimerId: null,
+                sleepTimerMinutes: 0,
+                visualizerMode: 'spectrum',
+                lyricsData: [],
+                currentLyricIndex: -1,
+                subtitleTracks: [],
+                activeSubtitleIndex: -1,
             };
 
             var audioEl = null;
@@ -2134,21 +2140,71 @@
             }
 
             // ============================================================
-            // EXPOSE GLOBALS (for UI hooks)
+            // MEDIA SESSION API
             // ============================================================
-            window.state = state;
-            window.audioEl = audioEl;
-            window.dom = dom;
-            window.showToast = showToast;
-            window.formatTime = formatTime;
-            window.getCurrentItem = getCurrentItem;
-            window.updateMediaDisplay = updateMediaDisplay;
-            window.updateNowPlaying = updateNowPlaying;
-            window.updatePlayButton = updatePlayButton;
-            window.updateFooterStatus = updateFooterStatus;
-            window.updateFooterMeta = updateFooterMeta;
-            window.updateMuteIcon = updateMuteIcon;
-            window.debounce = debounce;
+            function updateMediaSession(item) {
+                if (!item) {
+                    if ('mediaSession' in navigator) {
+                        navigator.mediaSession.metadata = null;
+                        navigator.mediaSession.playbackState = 'none';
+                    }
+                    return;
+                }
+
+                if ('mediaSession' in navigator) {
+                    var metadata = new MediaMetadata({
+                        title: item.name || 'بدون نام',
+                        artist: item.artist || 'هنرمند ناشناس',
+                        album: item.album || 'آلبوم ناشناس',
+                        artwork: []
+                    });
+
+                    if (item.cover && item.cover.indexOf('data:') === 0) {
+                        metadata.artwork = [
+                            { src: item.cover, sizes: '96x96', type: 'image/jpeg' },
+                            { src: item.cover, sizes: '128x128', type: 'image/jpeg' },
+                            { src: item.cover, sizes: '192x192', type: 'image/jpeg' },
+                            { src: item.cover, sizes: '256x256', type: 'image/jpeg' },
+                            { src: item.cover, sizes: '512x512', type: 'image/jpeg' }
+                        ];
+                    } else {
+                        metadata.artwork = [
+                            { src: 'default-cover.png', sizes: '96x96', type: 'image/png' },
+                            { src: 'default-cover.png', sizes: '128x128', type: 'image/png' },
+                            { src: 'default-cover.png', sizes: '192x192', type: 'image/png' }
+                        ];
+                    }
+
+                    navigator.mediaSession.metadata = metadata;
+                    navigator.mediaSession.playbackState = state.isPlaying ? 'playing' : 'paused';
+
+                    navigator.mediaSession.setActionHandler('play', function() {
+                        if (!state.isPlaying) togglePlay();
+                    });
+                    navigator.mediaSession.setActionHandler('pause', function() {
+                        if (state.isPlaying) togglePlay();
+                    });
+                    navigator.mediaSession.setActionHandler('previoustrack', function() {
+                        playPrev();
+                    });
+                    navigator.mediaSession.setActionHandler('nexttrack', function() {
+                        playNext();
+                    });
+                    navigator.mediaSession.setActionHandler('seekbackward', function(details) {
+                        var seconds = details.seekOffset || 10;
+                        seekDelta(-seconds);
+                    });
+                    navigator.mediaSession.setActionHandler('seekforward', function(details) {
+                        var seconds = details.seekOffset || 10;
+                        seekDelta(seconds);
+                    });
+                    navigator.mediaSession.setActionHandler('seekto', function(details) {
+                        if (details.seekTime && audioEl) {
+                            audioEl.currentTime = Math.min(details.seekTime, audioEl.duration || 0);
+                        }
+                    });
+                }
+            }
 
             // ============================================================
             // AUDIO SETUP
@@ -2173,9 +2229,9 @@
                     updateFooterStatus('▶ پخش');
                 });
                 audioEl.addEventListener('progress', onProgress);
-                audioEl.addEventListener('error', function() {
+                audioEl.addEventListener('error', function(e) {
                     showToast('خطا در پخش فایل', 'error');
-                    stopPlayback();
+                    handlePlaybackError(e);
                 });
                 document.body.appendChild(audioEl);
                 setupAudioContext();
@@ -2239,7 +2295,6 @@
                 if (items.length === 0) {
                     container.appendChild(empty);
                     empty.style.display = 'flex';
-                    // Also update drawer
                     if (dom.drawerBody) dom.drawerBody.innerHTML =
                         '<div class="empty-state"><div class="icon">🎵</div><p>هیچ فایلی در لیست پخش نیست.</p></div>';
                     return;
@@ -2367,8 +2422,8 @@
                     el.classList.toggle('active', idx === state.currentIndex);
                 });
 
-                // Update drawer if open
                 updateDrawerContent();
+                setTimeout(scrollToCurrentPlaylistItem, 100);
             }
 
             function updatePlaylistUI() {
@@ -2381,7 +2436,6 @@
                     var sidebarItems = dom.playlistContainer;
                     if (sidebarItems) {
                         dom.drawerBody.innerHTML = sidebarItems.innerHTML;
-                        // Re-bind events for drawer items
                         dom.drawerBody.querySelectorAll('.playlist-item').forEach(function(el, idx) {
                             el.addEventListener('click', function() {
                                 var sidebarItem = document.querySelector(
@@ -2405,6 +2459,20 @@
                             }
                         });
                     }
+                }
+            }
+
+            function scrollToCurrentPlaylistItem() {
+                var activeItem = document.querySelector('.playlist-item.active');
+                if (activeItem) {
+                    var container = dom.playlistContainer;
+                    var itemRect = activeItem.getBoundingClientRect();
+                    var containerRect = container.getBoundingClientRect();
+                    var scrollOffset = itemRect.top - containerRect.top - containerRect.height / 2 + itemRect.height / 2;
+                    container.scrollBy({
+                        top: scrollOffset,
+                        behavior: 'smooth'
+                    });
                 }
             }
 
@@ -2453,7 +2521,6 @@
                 updatePlaylistUI();
                 showToast(added.length + ' فایل به لیست پخش اضافه شد', 'success');
 
-                // Extract metadata
                 for (var a = 0; a < added.length; a++) {
                     (function(item) {
                         if (item.type === 'video') {
@@ -2513,7 +2580,6 @@
                     })(added[a]);
                 }
 
-                // Auto-play first item
                 if (state.currentIndex === -1 && state.playlist.length > 0) {
                     state.currentIndex = 0;
                     playIndex(0);
@@ -2619,6 +2685,7 @@
                     saveLastFile(item.id);
                     startVisualizer();
                     updateMediaDisplay();
+                    updateMediaSession(item);
                 }).catch(function(err) {
                     console.warn('Play error:', err);
                     state.isPlaying = false;
@@ -2649,6 +2716,7 @@
                     updateFooterStatus('⏸ مکث');
                     stopVisualizer();
                     if (dom.albumArtContainer) dom.albumArtContainer.classList.remove('spin');
+                    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
                 } else {
                     audioEl.play().then(function() {
                         state.isPlaying = true;
@@ -2657,6 +2725,7 @@
                         updateFooterStatus('▶ پخش');
                         startVisualizer();
                         if (dom.albumArtContainer) dom.albumArtContainer.classList.add('spin');
+                        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
                     }).catch(function(err) {
                         console.warn('Play error:', err);
                     });
@@ -2678,6 +2747,7 @@
                 updateFooterStatus('⏸ متوقف');
                 if (dom.albumArtContainer) dom.albumArtContainer.classList.remove('spin');
                 if (dom.videoPlayer) dom.videoPlayer.pause();
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'none';
             }
 
             function playNext() {
@@ -2728,7 +2798,6 @@
                 if (!audioEl || !audioEl.duration) return;
                 var time = (percent / 100) * audioEl.duration;
                 audioEl.currentTime = Math.min(time, audioEl.duration - 0.1);
-                // Sync video player
                 if (dom.videoPlayer && dom.videoPlayer.src) {
                     dom.videoPlayer.currentTime = audioEl.currentTime;
                 }
@@ -2806,9 +2875,12 @@
                 if (state.currentIndex >= 0 && state.playlist[state.currentIndex]) {
                     saveTime(state.playlist[state.currentIndex].id, cur);
                 }
-                // Sync video player
                 if (dom.videoPlayer && dom.videoPlayer.src && Math.abs(dom.videoPlayer.currentTime - cur) > 0.3) {
                     dom.videoPlayer.currentTime = cur;
+                }
+                // Update lyrics
+                if (state.lyricsData.length > 0) {
+                    updateLyrics(cur);
                 }
             }
 
@@ -2871,6 +2943,9 @@
             function handleKeyboard(e) {
                 var target = e.target;
                 if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return;
+
+                var ctrl = e.ctrlKey || e.metaKey;
+
                 switch (e.key) {
                     case ' ':
                         e.preventDefault();
@@ -2878,19 +2953,21 @@
                         break;
                     case 'ArrowLeft':
                         e.preventDefault();
-                        seekDelta(-5);
+                        if (e.shiftKey) seekDelta(-30);
+                        else seekDelta(-5);
                         break;
                     case 'ArrowRight':
                         e.preventDefault();
-                        seekDelta(5);
+                        if (e.shiftKey) seekDelta(30);
+                        else seekDelta(5);
                         break;
                     case 'ArrowUp':
                         e.preventDefault();
-                        setVolume(state.volume + 0.05);
+                        setVolume(Math.min(state.volume + 0.05, 1));
                         break;
                     case 'ArrowDown':
                         e.preventDefault();
-                        setVolume(state.volume - 0.05);
+                        setVolume(Math.max(state.volume - 0.05, 0));
                         break;
                     case 'f':
                     case 'F':
@@ -2905,15 +2982,83 @@
                     case 's':
                     case 'S':
                         e.preventDefault();
-                        toggleShuffle();
+                        if (ctrl) exportPlaylist();
+                        else toggleShuffle();
                         break;
                     case 'r':
                     case 'R':
                         e.preventDefault();
-                        toggleRepeat();
+                        if (ctrl) {
+                            if (confirm('آیا از بازنشانی تمام تنظیمات اطمینان دارید؟')) resetAllSettings();
+                        } else toggleRepeat();
                         break;
                     case 'Delete':
-                        if (state.currentIndex >= 0) removeFromPlaylist(state.currentIndex);
+                    case 'Backspace':
+                        if (state.currentIndex >= 0) {
+                            e.preventDefault();
+                            removeFromPlaylist(state.currentIndex);
+                        }
+                        break;
+                    case 'l':
+                    case 'L':
+                        e.preventDefault();
+                        if (state.lyricsData.length > 0) {
+                            var lyricDisplay = document.getElementById('lyricDisplay');
+                            if (lyricDisplay) {
+                                lyricDisplay.style.display = lyricDisplay.style.display === 'none' ? 'block' : 'none';
+                            }
+                        }
+                        break;
+                    case 't':
+                    case 'T':
+                        e.preventDefault();
+                        if (state.sleepTimerId) {
+                            cancelSleepTimer();
+                        } else {
+                            var minutes = 15;
+                            if (e.shiftKey) minutes = 30;
+                            if (e.ctrlKey) minutes = 60;
+                            setSleepTimer(minutes);
+                        }
+                        break;
+                    case 'v':
+                    case 'V':
+                        e.preventDefault();
+                        toggleVisualizerMode();
+                        break;
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                    case '0':
+                        if (ctrl) {
+                            e.preventDefault();
+                            var index = parseInt(e.key);
+                            if (index === 0) index = 10;
+                            var targetIndex = index - 1;
+                            if (targetIndex < state.playlist.length) {
+                                state.currentIndex = targetIndex;
+                                playIndex(targetIndex);
+                            }
+                        }
+                        break;
+                    case 'Escape':
+                        if (state.queueVisible) {
+                            dom.queuePanel.classList.remove('open');
+                            state.queueVisible = false;
+                        }
+                        if (state.eqVisible) {
+                            dom.eqModal.classList.remove('open');
+                            state.eqVisible = false;
+                        }
+                        if (dom.playlistDrawer.classList.contains('open')) {
+                            closeDrawer();
+                        }
                         break;
                 }
             }
@@ -3036,21 +3181,66 @@
                 grad.addColorStop(0.5, 'rgba(124, 92, 255, 0.6)');
                 grad.addColorStop(1, 'rgba(124, 92, 255, 0.2)');
 
-                for (var i = 0; i < len; i++) {
-                    var val = data[i] / 255;
-                    var barHeight = val * h * 0.7;
-                    var xPos = i * barWidth;
-                    var yPos = h - barHeight;
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(xPos, yPos, Math.max(barWidth - 1, 1), barHeight);
+                if (state.visualizerMode === 'spectrum' || state.visualizerMode === 'bars') {
+                    for (var i = 0; i < len; i++) {
+                        var val = data[i] / 255;
+                        var barHeight = val * h * 0.7;
+                        var xPos = i * barWidth;
+                        var yPos = h - barHeight;
+                        ctx.fillStyle = grad;
+                        var barWidthAdj = state.visualizerMode === 'spectrum' ? Math.max(barWidth - 1, 1) : 2;
+                        ctx.fillRect(xPos, yPos, barWidthAdj, barHeight);
+                    }
+                } else if (state.visualizerMode === 'wave') {
+                    ctx.beginPath();
+                    for (var i = 0; i < len; i++) {
+                        var val = data[i] / 255;
+                        var xPos = (i / len) * w;
+                        var yPos = h / 2 + (val - 0.5) * h * 0.8;
+                        if (i === 0) ctx.moveTo(xPos, yPos);
+                        else ctx.lineTo(xPos, yPos);
+                    }
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = 3;
+                    ctx.shadowColor = 'rgba(124, 92, 255, 0.5)';
+                    ctx.shadowBlur = 20;
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                } else if (state.visualizerMode === 'circle') {
+                    var centerX = w / 2;
+                    var centerY = h / 2;
+                    var radius = Math.min(w, h) * 0.3;
+                    var angleStep = (Math.PI * 2) / len;
+                    for (var i = 0; i < len; i++) {
+                        var val = data[i] / 255;
+                        var r = radius + val * radius * 0.5;
+                        var angle = i * angleStep;
+                        var xPos = centerX + Math.cos(angle) * r;
+                        var yPos = centerY + Math.sin(angle) * r;
+                        ctx.beginPath();
+                        ctx.arc(xPos, yPos, 2 + val * 4, 0, Math.PI * 2);
+                        ctx.fillStyle = grad;
+                        ctx.fill();
+                    }
                 }
 
-                // Glow effect
                 ctx.shadowColor = 'rgba(124, 92, 255, 0.2)';
                 ctx.shadowBlur = 20;
                 ctx.shadowBlur = 0;
 
                 state.animationId = requestAnimationFrame(drawVisualizer);
+            }
+
+            function toggleVisualizerMode() {
+                var modes = ['spectrum', 'wave', 'bars', 'circle'];
+                var idx = modes.indexOf(state.visualizerMode);
+                idx = (idx + 1) % modes.length;
+                state.visualizerMode = modes[idx];
+                showToast('حالت ویژوالایزر: ' + state.visualizerMode, 'info');
+                if (state.visualizerRunning) {
+                    stopVisualizer();
+                    startVisualizer();
+                }
             }
 
             // ============================================================
@@ -3082,7 +3272,6 @@
                         state.eqPreset = 'custom';
                         dom.eqPreset.value = 'custom';
                         saveEQ();
-                        applyEQ();
                     });
                 });
                 dom.eqPreset.value = state.eqPreset;
@@ -3117,22 +3306,7 @@
                         }
                     });
                     saveEQ();
-                    applyEQ();
                 }
-            }
-
-            function applyEQ() {
-                // Apply EQ via Web Audio API (simplified)
-                // In production, this would use BiquadFilterNode for each band
-                // For this demo, we just store the values
-                // Future enhancement: implement real-time EQ
-                try {
-                    if (state.audioCtx && state.analyser) {
-                        // EQ would be applied here using filter nodes
-                        // This is a placeholder for the actual EQ implementation
-                        // console.log('EQ applied:', state.eqValues);
-                    }
-                } catch (e) { /* ignore */ }
             }
 
             // ============================================================
@@ -3353,6 +3527,9 @@
                 } catch (e) { /* ignore */ }
             }
 
+            // ============================================================
+            // THEME
+            // ============================================================
             function loadTheme() {
                 try {
                     var t = localStorage.getItem(STORAGE.THEME);
@@ -3424,6 +3601,331 @@
             }
 
             // ============================================================
+            // SLEEP TIMER
+            // ============================================================
+            function setSleepTimer(minutes) {
+                if (state.sleepTimerId) {
+                    clearTimeout(state.sleepTimerId);
+                    state.sleepTimerId = null;
+                }
+                if (minutes > 0) {
+                    state.sleepTimerMinutes = minutes;
+                    showToast('⏰ تایمر خواب به ' + minutes + ' دقیقه تنظیم شد', 'info');
+                    state.sleepTimerId = setTimeout(function() {
+                        if (state.isPlaying) {
+                            stopPlayback();
+                            showToast('⏰ تایمر خواب فعال شد - پخش متوقف شد', 'warning');
+                        }
+                        state.sleepTimerId = null;
+                        state.sleepTimerMinutes = 0;
+                    }, minutes * 60 * 1000);
+                } else {
+                    showToast('⏰ تایمر خواب لغو شد', 'info');
+                }
+            }
+
+            function cancelSleepTimer() {
+                if (state.sleepTimerId) {
+                    clearTimeout(state.sleepTimerId);
+                    state.sleepTimerId = null;
+                    state.sleepTimerMinutes = 0;
+                    showToast('⏰ تایمر خواب لغو شد', 'info');
+                }
+            }
+
+            // ============================================================
+            // LYRICS (LRC)
+            // ============================================================
+            function loadLyrics(file) {
+                try {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var content = e.target.result;
+                        var parsed = parseLRC(content);
+                        if (parsed.length > 0) {
+                            state.lyricsData = parsed;
+                            showToast('متن ترانه با موفقیت بارگذاری شد', 'success');
+                            startLyricSync();
+                        } else {
+                            showToast('فرمت فایل LRC معتبر نیست', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                } catch (e) {
+                    console.error('Error loading lyrics:', e);
+                    showToast('خطا در بارگذاری متن ترانه', 'error');
+                }
+            }
+
+            function parseLRC(content) {
+                var lines = content.split(/\r?\n/);
+                var lyrics = [];
+                var timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
+                for (var i = 0; i < lines.length; i++) {
+                    var line = lines[i].trim();
+                    if (!line) continue;
+                    var match = line.match(timeRegex);
+                    if (match) {
+                        var minutes = parseInt(match[1]);
+                        var seconds = parseInt(match[2]);
+                        var centiseconds = parseInt(match[3]);
+                        var time = minutes * 60 + seconds + centiseconds / 100;
+                        var text = match[4].trim();
+                        if (text) {
+                            lyrics.push({ time: time, text: text });
+                        }
+                    }
+                }
+                lyrics.sort(function(a, b) { return a.time - b.time; });
+                return lyrics;
+            }
+
+            function startLyricSync() {
+                if (state.lyricsData.length === 0) return;
+                state.currentLyricIndex = 0;
+                displayLyric(0);
+            }
+
+            function displayLyric(index) {
+                if (index < 0 || index >= state.lyricsData.length) return;
+                var lyric = state.lyricsData[index];
+                var lyricDisplay = document.getElementById('lyricDisplay');
+                if (!lyricDisplay) {
+                    lyricDisplay = document.createElement('div');
+                    lyricDisplay.id = 'lyricDisplay';
+                    lyricDisplay.style.cssText = 'position:absolute;bottom:80px;left:50%;transform:translateX(-50%);' +
+                        'background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);padding:8px 20px;' +
+                        'border-radius:12px;color:var(--text-primary);font-size:1.1rem;' +
+                        'text-align:center;z-index:20;max-width:80%;transition:all 0.3s ease;' +
+                        'border:1px solid rgba(255,255,255,0.05);';
+                    var playerSection = document.querySelector('.player-section');
+                    if (playerSection) {
+                        playerSection.style.position = 'relative';
+                        playerSection.appendChild(lyricDisplay);
+                    }
+                }
+                lyricDisplay.textContent = lyric.text;
+                lyricDisplay.style.opacity = '1';
+                lyricDisplay.style.transform = 'translateX(-50%) translateY(0)';
+                state.currentLyricIndex = index;
+            }
+
+            function updateLyrics(currentTime) {
+                if (state.lyricsData.length === 0) return;
+                var found = -1;
+                for (var i = state.lyricsData.length - 1; i >= 0; i--) {
+                    if (state.lyricsData[i].time <= currentTime) {
+                        found = i;
+                        break;
+                    }
+                }
+                if (found !== state.currentLyricIndex && found >= 0) {
+                    displayLyric(found);
+                }
+            }
+
+            // ============================================================
+            // ADVANCED PLAYLIST FEATURES
+            // ============================================================
+            function sortPlaylist(by, order) {
+                if (order === undefined) order = 'asc';
+                var items = state.playlist;
+                if (items.length === 0) return;
+                var sortFn;
+                switch (by) {
+                    case 'name':
+                        sortFn = function(a, b) {
+                            var nameA = (a.name || '').toLowerCase();
+                            var nameB = (b.name || '').toLowerCase();
+                            return nameA.localeCompare(nameB);
+                        };
+                        break;
+                    case 'duration':
+                        sortFn = function(a, b) { return (a.duration || 0) - (b.duration || 0); };
+                        break;
+                    case 'size':
+                        sortFn = function(a, b) { return (a.size || 0) - (b.size || 0); };
+                        break;
+                    case 'added':
+                        sortFn = function(a, b) {
+                            var dateA = new Date(a.added || 0);
+                            var dateB = new Date(b.added || 0);
+                            return dateA - dateB;
+                        };
+                        break;
+                    case 'artist':
+                        sortFn = function(a, b) {
+                            var artistA = (a.artist || '').toLowerCase();
+                            var artistB = (b.artist || '').toLowerCase();
+                            return artistA.localeCompare(artistB);
+                        };
+                        break;
+                    default:
+                        return;
+                }
+                state.playlist.sort(sortFn);
+                if (order === 'desc') state.playlist.reverse();
+                if (state.currentIndex >= 0) {
+                    var currentId = state.playlist[state.currentIndex] ? state.playlist[state.currentIndex].id : null;
+                    if (currentId) {
+                        for (var i = 0; i < state.playlist.length; i++) {
+                            if (state.playlist[i].id === currentId) {
+                                state.currentIndex = i;
+                                break;
+                            }
+                        }
+                    } else {
+                        state.currentIndex = -1;
+                    }
+                }
+                updatePlaylistUI();
+                showToast('لیست پخش مرتب شد', 'success');
+            }
+
+            function shufflePlaylist() {
+                var items = state.playlist;
+                if (items.length === 0) return;
+                for (var i = items.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var temp = items[i];
+                    items[i] = items[j];
+                    items[j] = temp;
+                }
+                if (state.currentIndex >= 0) state.currentIndex = 0;
+                updatePlaylistUI();
+                showToast('لیست پخش به‌هم ریخته شد', 'success');
+            }
+
+            function exportPlaylist() {
+                if (state.playlist.length === 0) {
+                    showToast('لیست پخش خالی است', 'warning');
+                    return;
+                }
+                var data = state.playlist.map(function(item) {
+                    return {
+                        name: item.name,
+                        artist: item.artist || '',
+                        album: item.album || '',
+                        duration: item.duration || 0,
+                        type: item.type || 'audio'
+                    };
+                });
+                var json = JSON.stringify(data, null, 2);
+                var blob = new Blob([json], { type: 'application/json' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'playlist_' + new Date().toISOString().slice(0, 10) + '.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('لیست پخش با موفقیت ذخیره شد', 'success');
+            }
+
+            function importPlaylist(file) {
+                try {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var data = JSON.parse(e.target.result);
+                        if (!Array.isArray(data)) {
+                            showToast('فرمت فایل معتبر نیست', 'error');
+                            return;
+                        }
+                        var added = 0;
+                        for (var i = 0; i < data.length; i++) {
+                            var item = data[i];
+                            if (item.name) {
+                                var newItem = {
+                                    id: generateId(),
+                                    name: item.name,
+                                    path: '',
+                                    duration: item.duration || 0,
+                                    size: 0,
+                                    type: item.type || 'audio',
+                                    artist: item.artist || '',
+                                    album: item.album || '',
+                                    year: '',
+                                    genre: '',
+                                    bitrate: '',
+                                    sampleRate: '',
+                                    channels: '',
+                                    codec: '',
+                                    resolution: '',
+                                    fps: '',
+                                    cover: '',
+                                    added: new Date().toISOString(),
+                                    _isPlaceholder: true
+                                };
+                                state.playlist.push(newItem);
+                                added++;
+                            }
+                        }
+                        updatePlaylistUI();
+                        showToast(added + ' آیتم به لیست پخش اضافه شد', 'success');
+                    };
+                    reader.readAsText(file);
+                } catch (e) {
+                    console.error('Error importing playlist:', e);
+                    showToast('خطا در بارگذاری لیست پخش', 'error');
+                }
+            }
+
+            // ============================================================
+            // ERROR HANDLING
+            // ============================================================
+            function handlePlaybackError(error) {
+                console.error('Playback error:', error);
+                showToast('خطا در پخش فایل: ' + (error.message || 'خطای ناشناخته'), 'error');
+                if (state.playlist.length > 1) {
+                    var next = state.currentIndex + 1;
+                    if (next < state.playlist.length) {
+                        state.currentIndex = next;
+                        playIndex(next);
+                        showToast('پرش به فایل بعدی...', 'warning');
+                    } else {
+                        stopPlayback();
+                    }
+                } else {
+                    stopPlayback();
+                }
+            }
+
+            // ============================================================
+            // RESET ALL SETTINGS
+            // ============================================================
+            function resetAllSettings() {
+                try {
+                    var keys = Object.values(STORAGE);
+                    keys.forEach(function(key) {
+                        localStorage.removeItem(key);
+                    });
+                    state.volume = 0.8;
+                    state.speed = 1.0;
+                    state.repeat = 'none';
+                    state.shuffle = false;
+                    state.favorites = [];
+                    state.recent = [];
+                    state.eqValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    state.eqPreset = 'flat';
+                    state.theme = 'dark';
+                    applyTheme('dark');
+                    dom.volumeSlider.value = 0.8;
+                    dom.speedBtn.textContent = '1.0x';
+                    dom.repeatBtn.textContent = '🔁';
+                    dom.repeatBtn.classList.remove('active');
+                    dom.shuffleBtn.classList.remove('active');
+                    showToast('تمامی تنظیمات بازنشانی شد', 'success');
+                    if (state.playlist.length > 0 && confirm('آیا لیست پخش نیز پاک شود؟')) {
+                        clearPlaylist();
+                    }
+                } catch (e) {
+                    console.error('Error resetting settings:', e);
+                    showToast('خطا در بازنشانی تنظیمات', 'error');
+                }
+            }
+
+            // ============================================================
             // FILE HANDLING SETUP
             // ============================================================
             function setupFileHandling() {
@@ -3480,6 +3982,33 @@
             }
 
             // ============================================================
+            // AUTO-SAVE
+            // ============================================================
+            function setupAutoSave() {
+                setInterval(function() {
+                    if (state.playlist.length > 0) {
+                        savePlaylist();
+                        if (state.currentIndex >= 0) {
+                            var item = state.playlist[state.currentIndex];
+                            if (item && audioEl) {
+                                saveTime(item.id, audioEl.currentTime || 0);
+                            }
+                        }
+                    }
+                }, 30000);
+
+                window.addEventListener('beforeunload', function() {
+                    savePlaylist();
+                    if (state.currentIndex >= 0) {
+                        var item = state.playlist[state.currentIndex];
+                        if (item && audioEl) {
+                            saveTime(item.id, audioEl.currentTime || 0);
+                        }
+                    }
+                });
+            }
+
+            // ============================================================
             // INIT
             // ============================================================
             function init() {
@@ -3509,6 +4038,7 @@
 
                 setupFileHandling();
                 setupGestures();
+                setupAutoSave();
 
                 dom.playBtn.addEventListener('click', togglePlay);
                 dom.prevBtn.addEventListener('click', playPrev);
@@ -3594,7 +4124,6 @@
 
                 document.addEventListener('keydown', handleKeyboard);
 
-                // Mobile playlist drawer
                 dom.mobileToggle.addEventListener('click', function(e) {
                     e.stopPropagation();
                     if (dom.playlistDrawer.classList.contains('open')) {
@@ -3607,7 +4136,6 @@
                 dom.drawerClose.addEventListener('click', closeDrawer);
                 dom.drawerOverlay.addEventListener('click', closeDrawer);
 
-                // Auto resume
                 var lastId = getLastFile();
                 if (lastId) {
                     var idx = -1;
@@ -3634,11 +4162,28 @@
                 showToast('🎵 دیار قدمگاه آماده است', 'success');
             }
 
+            // ============================================================
+            // START
+            // ============================================================
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', init);
             } else {
                 init();
             }
+
+            // Expose useful functions globally for debugging/console
+            window.showToast = showToast;
+            window.state = state;
+            window.audioEl = audioEl;
+            window.dom = dom;
+            window.togglePlay = togglePlay;
+            window.playNext = playNext;
+            window.playPrev = playPrev;
+            window.stopPlayback = stopPlayback;
+            window.playIndex = playIndex;
+
+            console.log('🎵 دیار قدمگاه - پلیر حرفه‌ای بارگذاری شد');
+            console.log('📋 میانبرهای صفحه‌کلید: Space (پخش/مکث), ←/→ (عقب/جلو), ↑/↓ (ولوم), F (تمام صفحه), M (بی‌صدا)');
 
         })();
     </script>

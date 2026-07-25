@@ -173,6 +173,12 @@ loadFile(0);
  Controls
 =========================================*/
 
+const shuffleBtn=document.getElementById("shuffleBtn");
+const repeatBtn=document.getElementById("repeatBtn");
+
+let shuffleMode=false;
+let repeatMode=0; // 0=خاموش 1=همه 2=یکی
+
 function playPause(){
 
 const p=getPlayer();
@@ -183,13 +189,9 @@ if(p.paused){
 
 p.play();
 
-playBtn.textContent="⏸";
-
 }else{
 
 p.pause();
-
-playBtn.textContent="▶";
 
 }
 
@@ -199,9 +201,23 @@ function previousTrack(){
 
 if(files.length===0)return;
 
-let i=currentIndex-1;
+let i;
 
-if(i<0)i=files.length-1;
+if(shuffleMode){
+
+i=Math.floor(Math.random()*files.length);
+
+}else{
+
+i=currentIndex-1;
+
+if(i<0){
+
+i=files.length-1;
+
+}
+
+}
 
 loadFile(i);
 
@@ -211,9 +227,31 @@ function nextTrack(){
 
 if(files.length===0)return;
 
-let i=currentIndex+1;
+let i;
 
-if(i>=files.length)i=0;
+if(shuffleMode){
+
+i=Math.floor(Math.random()*files.length);
+
+}else{
+
+i=currentIndex+1;
+
+if(i>=files.length){
+
+if(repeatMode===1){
+
+i=0;
+
+}else{
+
+return;
+
+}
+
+}
+
+}
 
 loadFile(i);
 
@@ -224,6 +262,47 @@ playBtn.onclick=playPause;
 prevBtn.onclick=previousTrack;
 
 nextBtn.onclick=nextTrack;
+
+shuffleBtn.onclick=function(){
+
+shuffleMode=!shuffleMode;
+
+this.style.opacity=shuffleMode?"1":"0.5";
+
+};
+
+repeatBtn.onclick=function(){
+
+repeatMode++;
+
+if(repeatMode>2){
+
+repeatMode=0;
+
+}
+
+if(repeatMode===0){
+
+this.textContent="🔁";
+this.style.opacity="0.5";
+
+}
+
+if(repeatMode===1){
+
+this.textContent="🔁";
+this.style.opacity="1";
+
+}
+
+if(repeatMode===2){
+
+this.textContent="🔂";
+this.style.opacity="1";
+
+}
+
+};
 
 volumeBar.oninput=function(){
 

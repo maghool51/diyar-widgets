@@ -1444,3 +1444,481 @@
 
     console.log('script.js Part 4 loaded: Visualizer, Equalizer & Queue.');
 })();
+
+// ============================================================
+// script.js - دیار قدمگاه پلیر حرفه‌ای
+// ============================================================
+// Part 5 of 8 - Favorites, Save/Load, Fullscreen, PIP, Theme & Init
+// ============================================================
+
+(function() {
+    'use strict';
+
+    // ============================================================
+    // FAVORITES
+    // ============================================================
+    function toggleFavorite() {
+        if (state.currentIndex < 0) {
+            showToast('هیچ فایلی انتخاب نشده', 'warning');
+            return;
+        }
+        var item = state.playlist[state.currentIndex];
+        var idx = state.favorites.indexOf(item.id);
+        if (idx >= 0) {
+            state.favorites.splice(idx, 1);
+            dom.favBtn.classList.remove('active');
+            dom.favBtn.textContent = '❤';
+            showToast('از علاقه‌مندی‌ها حذف شد', 'warning');
+        } else {
+            state.favorites.push(item.id);
+            dom.favBtn.classList.add('active');
+            dom.favBtn.textContent = '❤';
+            showToast('به علاقه‌مندی‌ها اضافه شد', 'success');
+        }
+        saveFavorites();
+    }
+
+    function loadFavorites() {
+        try {
+            var data = localStorage.getItem(STORAGE.FAVORITES);
+            if (data) {
+                state.favorites = JSON.parse(data);
+                if (!Array.isArray(state.favorites)) state.favorites = [];
+            }
+        } catch (e) { state.favorites = []; }
+        if (state.currentIndex >= 0) {
+            var item = state.playlist[state.currentIndex];
+            if (item && state.favorites.indexOf(item.id) !== -1) {
+                dom.favBtn.classList.add('active');
+                dom.favBtn.textContent = '❤';
+            } else {
+                dom.favBtn.classList.remove('active');
+                dom.favBtn.textContent = '❤';
+            }
+        }
+    }
+
+    function saveFavorites() {
+        try {
+            localStorage.setItem(STORAGE.FAVORITES, JSON.stringify(state.favorites));
+        } catch (e) { /* ignore */ }
+    }
+
+    function updateRecent(item) {
+        if (!item) return;
+        state.recent = state.recent.filter(function(id) { return id !== item.id; });
+        state.recent.unshift(item.id);
+        if (state.recent.length > 50) state.recent.pop();
+        try {
+            localStorage.setItem(STORAGE.RECENT, JSON.stringify(state.recent));
+        } catch (e) { /* ignore */ }
+    }
+
+    // ============================================================
+    // SAVE / LOAD
+    // ============================================================
+    function saveLastFile(id) {
+        try { localStorage.setItem(STORAGE.LAST_FILE, String(id)); } catch (e) { /* ignore */ }
+    }
+
+    function getLastFile() {
+        try {
+            var id = localStorage.getItem(STORAGE.LAST_FILE);
+            return id ? parseInt(id) : null;
+        } catch (e) { return null; }
+    }
+
+    function saveTime(id, time) {
+        try {
+            var data = JSON.parse(localStorage.getItem(STORAGE.LAST_TIME) || '{}');
+            data[id] = time;
+            localStorage.setItem(STORAGE.LAST_TIME, JSON.stringify(data));
+        } catch (e) { /* ignore */ }
+    }
+
+    function getSavedTime(id) {
+        try {
+            var data = JSON.parse(localStorage.getItem(STORAGE.LAST_TIME) || '{}');
+            return data[id] || 0;
+        } catch (e) { return 0; }
+    }
+
+    function saveVolume() {
+        try { localStorage.setItem(STORAGE.VOLUME, String(state.volume)); } catch (e) { /* ignore */ }
+    }
+
+    function loadVolume() {
+        try {
+            var v = parseFloat(localStorage.getItem(STORAGE.VOLUME));
+            if (!isNaN(v) && v >= 0 && v <= 1) state.volume = v;
+        } catch (e) { /* ignore */ }
+    }
+
+    function saveSpeed() {
+        try { localStorage.setItem(STORAGE.SPEED, String(state.speed)); } catch (e) { /* ignore */ }
+    }
+
+    function loadSpeed() {
+        try {
+            var s = parseFloat(localStorage.getItem(STORAGE.SPEED));
+            if (!isNaN(s) && s >= 0.25 && s <= 2) state.speed = s;
+        } catch (e) { /* ignore */ }
+    }
+
+    function saveRepeat() {
+        try { localStorage.setItem(STORAGE.REPEAT, state.repeat); } catch (e) { /* ignore */ }
+    }
+
+    function loadRepeat() {
+        try {
+            var r = localStorage.getItem(STORAGE.REPEAT);
+            if (r === 'none' || r === 'one' || r === 'all') state.repeat = r;
+        } catch (e) { /* ignore */ }
+    }
+
+    function saveShuffle() {
+        try { localStorage.setItem(STORAGE.SHUFFLE, String(state.shuffle)); } catch (e) { /* ignore */ }
+    }
+
+    function loadShuffle() {
+        try {
+            state.shuffle = localStorage.getItem(STORAGE.SHUFFLE) === 'true';
+        } catch (e) { /* ignore */ }
+    }
+
+    function saveEQ() {
+        try {
+            localStorage.setItem(STORAGE.EQ, JSON.stringify({ values: state.eqValues, preset: state.eqPreset }));
+        } catch (e) { /* ignore */ }
+    }
+
+    function loadEQ() {
+        try {
+            var data = JSON.parse(localStorage.getItem(STORAGE.EQ));
+            if (data) {
+                if (Array.isArray(data.values) && data.values.length === 10) state.eqValues = data.values;
+                if (data.preset) state.eqPreset = data.preset;
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    // ============================================================
+    // THEME
+    // ============================================================
+    function loadTheme() {
+        try {
+            var t = localStorage.getItem(STORAGE.THEME);
+            if (t) state.theme = t;
+        } catch (e) { /* ignore */ }
+        applyTheme(state.theme);
+    }
+
+    function saveTheme() {
+        try { localStorage.setItem(STORAGE.THEME, state.theme); } catch (e) { /* ignore */ }
+    }
+
+    function applyTheme(theme) {
+        document.body.className = 'theme-' + theme;
+        var icons = { dark: '🌙', light: '☀️', green: '🌿', golden: '🌟' };
+        dom.themeToggle.textContent = icons[theme] || '🌙';
+        state.theme = theme;
+        saveTheme();
+    }
+
+    function cycleTheme() {
+        var themes = ['dark', 'light', 'green', 'golden'];
+        var idx = themes.indexOf(state.theme);
+        idx = (idx + 1) % themes.length;
+        applyTheme(themes[idx]);
+        showToast('تم ' + themes[idx], 'success');
+    }
+
+    // ============================================================
+    // FULLSCREEN & PIP
+    // ============================================================
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(function() {});
+        } else {
+            document.exitFullscreen().catch(function() {});
+        }
+    }
+
+    function togglePIP() {
+        if (audioEl && audioEl instanceof HTMLVideoElement) {
+            if (document.pictureInPictureElement) {
+                document.exitPictureInPicture().catch(function() {});
+            } else {
+                audioEl.requestPictureInPicture().catch(function() {});
+            }
+        } else {
+            showToast('تصویر در تصویر فقط برای ویدئوها قابل استفاده است', 'warning');
+        }
+    }
+
+    function downloadCurrent() {
+        if (state.currentIndex < 0) {
+            showToast('هیچ فایلی انتخاب نشده', 'warning');
+            return;
+        }
+        var item = state.playlist[state.currentIndex];
+        if (item.path && item.path.indexOf('blob:') === 0) {
+            var a = document.createElement('a');
+            a.href = item.path;
+            a.download = item.name || 'download';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('دانلود شروع شد', 'success');
+        } else {
+            showToast('دانلود فایل امکان‌پذیر نیست', 'error');
+        }
+    }
+
+    // ============================================================
+    // FILE HANDLING SETUP (Complete)
+    // ============================================================
+    function setupFileHandling() {
+        dom.fileInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files.length) {
+                handleFiles(e.target.files);
+                dom.fileInput.value = '';
+            }
+        });
+
+        dom.addFilesBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            dom.fileInput.click();
+        });
+
+        dom.dropZone.addEventListener('click', function(e) {
+            e.preventDefault();
+            dom.fileInput.click();
+        });
+
+        dom.dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dom.dropZone.classList.add('dragover');
+        });
+
+        dom.dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dom.dropZone.classList.remove('dragover');
+        });
+
+        dom.dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dom.dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+
+        document.addEventListener('paste', function(e) {
+            if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length) {
+                handleFiles(e.clipboardData.files);
+            }
+        });
+
+        dom.app.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        dom.app.addEventListener('drop', function(e) {
+            e.preventDefault();
+            if (e.dataTransfer.files && e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+    }
+
+    // ============================================================
+    // INITIALIZATION
+    // ============================================================
+    function init() {
+        loadPlaylist();
+        loadVolume();
+        loadSpeed();
+        loadRepeat();
+        loadShuffle();
+        loadEQ();
+        loadTheme();
+        loadFavorites();
+
+        dom.volumeSlider.value = state.volume;
+        dom.speedBtn.textContent = state.speed.toFixed(2).replace(/\.?0+$/, '') + 'x';
+        dom.repeatBtn.textContent = state.repeat === 'one' ? '🔂' : '🔁';
+        dom.repeatBtn.classList.toggle('active', state.repeat !== 'none');
+        dom.shuffleBtn.classList.toggle('active', state.shuffle);
+        updateMuteIcon();
+
+        initAudio();
+        renderPlaylist();
+        renderQueue();
+        renderEqualizer();
+
+        updateClock();
+        setInterval(updateClock, 10000);
+
+        setupFileHandling();
+        setupGestures();
+
+        // ---- Event Listeners ----
+        dom.playBtn.addEventListener('click', togglePlay);
+        dom.prevBtn.addEventListener('click', playPrev);
+        dom.nextBtn.addEventListener('click', playNext);
+        dom.rewindBtn.addEventListener('click', function() { seekDelta(-10); });
+        dom.forwardBtn.addEventListener('click', function() { seekDelta(10); });
+        dom.shuffleBtn.addEventListener('click', toggleShuffle);
+        dom.repeatBtn.addEventListener('click', toggleRepeat);
+
+        dom.muteBtn.addEventListener('click', toggleMute);
+        dom.volumeSlider.addEventListener('input', function(e) {
+            setVolume(parseFloat(e.target.value));
+        });
+
+        dom.progressTrack.addEventListener('click', function(e) {
+            var rect = dom.progressTrack.getBoundingClientRect();
+            var pct = ((e.clientX - rect.left) / rect.width) * 100;
+            seekTo(Math.max(0, Math.min(100, pct)));
+        });
+
+        dom.speedBtn.addEventListener('click', function() {
+            var speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+            var idx = speeds.indexOf(state.speed);
+            idx = (idx + 1) % speeds.length;
+            setSpeed(speeds[idx]);
+            showToast('سرعت: ' + state.speed.toFixed(2) + 'x', 'info');
+        });
+
+        dom.queueToggle.addEventListener('click', function() {
+            state.queueVisible = !state.queueVisible;
+            dom.queuePanel.classList.toggle('open', state.queueVisible);
+            if (state.queueVisible) {
+                dom.eqModal.classList.remove('open');
+                state.eqVisible = false;
+            }
+        });
+
+        dom.clearQueueBtn.addEventListener('click', clearQueue);
+        dom.favBtn.addEventListener('click', toggleFavorite);
+        dom.downloadBtn.addEventListener('click', downloadCurrent);
+        dom.pipBtn.addEventListener('click', togglePIP);
+        dom.fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+        dom.eqToggle.addEventListener('click', function() {
+            state.eqVisible = !state.eqVisible;
+            dom.eqModal.classList.toggle('open', state.eqVisible);
+            if (state.eqVisible) {
+                dom.queuePanel.classList.remove('open');
+                state.queueVisible = false;
+            }
+        });
+
+        dom.eqPreset.addEventListener('change', function(e) {
+            applyEQPreset(e.target.value);
+        });
+
+        dom.themeToggle.addEventListener('click', cycleTheme);
+
+        dom.clearPlaylistBtn.addEventListener('click', function() {
+            if (state.playlist.length === 0) return;
+            if (confirm('آیا از پاک کردن لیست پخش اطمینان دارید؟')) {
+                clearPlaylist();
+            }
+        });
+
+        dom.logoArea.addEventListener('click', function() {
+            showToast('🕌 دیار قدمگاه - پلیر حرفه‌ای', 'info');
+        });
+
+        dom.search.addEventListener('input', debounce(function() {
+            var q = this.value.trim().toLowerCase();
+            var items = dom.playlistContainer.querySelectorAll('.playlist-item');
+            items.forEach(function(el) {
+                var idx = parseInt(el.dataset.index);
+                var item = state.playlist[idx];
+                if (!item) return;
+                var match = item.name.toLowerCase().indexOf(q) !== -1 ||
+                    (item.artist && item.artist.toLowerCase().indexOf(q) !== -1) ||
+                    (item.album && item.album.toLowerCase().indexOf(q) !== -1);
+                el.style.display = match || !q ? 'flex' : 'none';
+            });
+        }, 200));
+
+        document.addEventListener('keydown', handleKeyboard);
+
+        // Mobile playlist drawer
+        dom.mobileToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (dom.playlistDrawer.classList.contains('open')) {
+                closeDrawer();
+            } else {
+                openDrawer();
+            }
+        });
+
+        dom.drawerClose.addEventListener('click', closeDrawer);
+        dom.drawerOverlay.addEventListener('click', closeDrawer);
+
+        // Auto resume
+        var lastId = getLastFile();
+        if (lastId) {
+            var idx = -1;
+            for (var i = 0; i < state.playlist.length; i++) {
+                if (state.playlist[i].id === lastId) { idx = i; break; }
+            }
+            if (idx >= 0) {
+                state.currentIndex = idx;
+                playIndex(idx);
+                var saved = getSavedTime(lastId);
+                if (saved > 0 && audioEl) {
+                    audioEl.currentTime = saved;
+                }
+            }
+        } else if (state.playlist.length > 0) {
+            state.currentIndex = 0;
+            playIndex(0);
+        }
+
+        window.addEventListener('resize', function() {
+            setupVisualizer();
+        });
+
+        showToast('🎵 دیار قدمگاه آماده است', 'success');
+    }
+
+    // ============================================================
+    // EXPOSE REMAINING FUNCTIONS
+    // ============================================================
+    window.toggleFavorite = toggleFavorite;
+    window.loadFavorites = loadFavorites;
+    window.saveFavorites = saveFavorites;
+    window.updateRecent = updateRecent;
+    window.saveLastFile = saveLastFile;
+    window.getLastFile = getLastFile;
+    window.saveTime = saveTime;
+    window.getSavedTime = getSavedTime;
+    window.saveVolume = saveVolume;
+    window.loadVolume = loadVolume;
+    window.saveSpeed = saveSpeed;
+    window.loadSpeed = loadSpeed;
+    window.saveRepeat = saveRepeat;
+    window.loadRepeat = loadRepeat;
+    window.saveShuffle = saveShuffle;
+    window.loadShuffle = loadShuffle;
+    window.saveEQ = saveEQ;
+    window.loadEQ = loadEQ;
+    window.loadTheme = loadTheme;
+    window.saveTheme = saveTheme;
+    window.applyTheme = applyTheme;
+    window.cycleTheme = cycleTheme;
+    window.toggleFullscreen = toggleFullscreen;
+    window.togglePIP = togglePIP;
+    window.downloadCurrent = downloadCurrent;
+    window.setupFileHandling = setupFileHandling;
+    window.init = init;
+
+    console.log('script.js Part 5 loaded: Favorites, Save/Load, Fullscreen, PIP, Theme & Init.');
+
+})();
+

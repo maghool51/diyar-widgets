@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diyar Player – Asset Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: #0d0d0d;
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #1db954, #1ed760);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .sub {
+            color: #888;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+        .app {
+            max-width: 1440px;
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 900px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ----- LEFT PANEL ----- */
+        .panel {
+            background: #222;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #333;
+        }
+        .panel h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #1db954;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        .setting {
+            margin-bottom: 18px;
+        }
+        .setting label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #bbb;
+            margin-bottom: 4px;
+        }
+        .setting input[type="color"] {
+            width: 100%;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: #111;
+            padding: 2px;
+            cursor: pointer;
+        }
+        .setting input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            background: #111;
+            border-radius: 8px;
+            border: 1px dashed #555;
+            color: #bbb;
+            font-size: 0.85rem;
+        }
+        .setting input[type="file"]::file-selector-button {
+            background: #1db954;
+            border: none;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .style-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .style-options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            background: #2a2a2a;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #444;
+            transition: 0.2s;
+        }
+        .style-options label:hover {
+            border-color: #1db954;
+        }
+        .style-options input[type="radio"] {
+            accent-color: #1db954;
+        }
+        .btn-primary {
+            background: #1db954;
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .btn-primary:hover {
+            background: #1ed760;
+            transform: scale(1.02);
+        }
+        .btn-secondary {
+            background: #333;
+            border: none;
+            color: #ddd;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .btn-secondary:hover {
+            background: #444;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .btn-group .btn-secondary {
+            flex: 1;
+        }
+
+        /* ----- RIGHT PANEL (PREVIEW) ----- */
+        .preview-area {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid #2a2a2a;
+            min-height: 400px;
+        }
+        .preview-area h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1db954;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        .preview-area h2 span {
+            font-weight: 400;
+            color: #888;
+            font-size: 0.8rem;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .preview-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+        .preview-grid::-webkit-scrollbar-track {
+            background: #222;
+            border-radius: 3px;
+        }
+        .preview-grid::-webkit-scrollbar-thumb {
+            background: #1db954;
+            border-radius: 3px;
+        }
+        .asset-card {
+            background: #222;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+            transition: 0.2s;
+        }
+        .asset-card:hover {
+            border-color: #1db954;
+            transform: translateY(-2px);
+        }
+        .asset-card canvas {
+            display: block;
+            margin: 0 auto 6px;
+            border-radius: 6px;
+            background: #111;
+            max-width: 100%;
+            height: auto;
+            image-rendering: auto;
+        }
+        .asset-card .filename {
+            font-size: 0.7rem;
+            color: #999;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+        .asset-card .dl-btn {
+            background: #1db954;
+            border: none;
+            color: #fff;
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-top: 4px;
+            transition: 0.2s;
+        }
+        .asset-card .dl-btn:hover {
+            background: #1ed760;
+        }
+
+        /* ----- MANIFEST JSON OUTPUT ----- */
+        .manifest-output {
+            margin-top: 16px;
+            background: #111;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #333;
+        }
+        .manifest-output textarea {
+            width: 100%;
+            background: #0d0d0d;
+            color: #ddd;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+            min-height: 120px;
+            white-space: pre;
+        }
+        .manifest-output .copy-btn {
+            background: #444;
+            border: none;
+            color: #ddd;
+            padding: 4px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+        .manifest-output .copy-btn:hover {
+            background: #555;
+        }
+
+        /* ----- STATUS / TOAST ----- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 12px 28px;
+            border-radius: 40px;
+            border: 1px solid #333;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* progress */
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        .progress .bar {
+            height: 100%;
+            width: 0%;
+            background: #1db954;
+            transition: width 0.3s;
+            border-radius: 2px;
+        }
+
+        /* responsive */
+        @media (max-width: 600px) {
+            .app {
+                padding: 12px;
+            }
+            .panel {
+                padding: 14px;
+            }
+            .preview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎵 Diyar Player – Asset Generator</h1>
+    <p class="sub">Generate all PWA assets, icons, splash screens, and screenshots in one click.</p>
+
+    <div class="app">
+        <!-- LEFT: Settings -->
+        <div class="panel">
+            <h2>⚙️ Settings</h2>
+
+            <div class="setting">
+                <label for="logo-upload">Custom Logo (PNG/SVG, square recommended)</label>
+                <input type="file" id="logo-upload" accept="image/png,image/svg+xml,image/jpeg" />
+            </div>
+
+            <div class="setting">
+                <label for="bg-color">Background Color</label>
+                <input type="color" id="bg-color" value="#121212" />
+            </div>
+
+            <div class="setting">
+                <label for="accent-color">Accent Color</label>
+                <input type="color" id="accent-color" value="#1db954" />
+            </div>
+
+            <div class="setting">
+                <label>Icon Style</label>
+                <div class="style-options">
+                    <label><input type="radio" name="style" value="flat" checked /> Flat</label>
+                    <label><input type="radio" name="style" value="glass" /> Glass</label>
+                    <label><input type="radio" name="style" value="rounded" /> Rounded</label>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="generate-btn">🔄 Generate All Assets</button>
+
+            <div class="btn-group">
+                <button class="btn-secondary" id="download-zip-btn">📦 Download All as ZIP</button>
+                <button class="btn-secondary" id="reset-btn">↺ Reset Defaults</button>
+            </div>
+
+            <div class="progress"><div class="bar" id="progress-bar"></div></div>
+
+            <!-- Manifest JSON output -->
+            <div class="manifest-output">
+                <label style="font-size:0.85rem; font-weight:500; color:#bbb;">📄 manifest.json – icons section</label>
+                <textarea id="manifest-json" readonly></textarea>
+                <button class="copy-btn" id="copy-manifest-btn">📋 Copy JSON</button>
+            </div>
+        </div>
+
+        <!-- RIGHT: Preview -->
+        <div class="preview-area">
+            <h2>🖼️ Asset Preview <span id="asset-count">0 assets</span></h2>
+            <div class="preview-grid" id="preview-grid">
+                <!-- cards will be injected -->
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ------------------------------------------------------------------
+            // DOM refs
+            // ------------------------------------------------------------------
+            const logoInput = document.getElementById('logo-upload');
+            const bgColorInput = document.getElementById('bg-color');
+            const accentColorInput = document.getElementById('accent-color');
+            const styleRadios = document.querySelectorAll('input[name="style"]');
+            const generateBtn = document.getElementById('generate-btn');
+            const downloadZipBtn = document.getElementById('download-zip-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const previewGrid = document.getElementById('preview-grid');
+            const assetCountSpan = document.getElementById('asset-count');
+            const manifestTextarea = document.getElementById('manifest-json');
+            const copyManifestBtn = document.getElementById('copy-manifest-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const toast = document.getElementById('toast');
+
+            // ------------------------------------------------------------------
+            // State
+            // ------------------------------------------------------------------
+            let customLogoImage = null; // HTMLImageElement
+            let currentAssets = []; // array of { name, data: Uint8Array, blob }
+
+            // ------------------------------------------------------------------
+            // Utility: Toast
+            // ------------------------------------------------------------------
+            let toastTimer = null;
+
+            function showToast(msg, duration = 2500) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
+            }
+
+            // ------------------------------------------------------------------
+            // Utility: ZIP generation (store method, no compression)
+            // ------------------------------------------------------------------
+            function createZip(files) {
+                // files: [{ name: string, data: Uint8Array }]
+                const entries = [];
+                let offset = 0;
+                const fileData = [];
+
+                for (const f of files) {
+                    const nameBuf = new TextEncoder().encode(f.name);
+                    const nameLen = nameBuf.length;
+                    const data = f.data;
+                    const dataLen = data.length;
+
+                    // Local file header signature 0x04034b50
+                    const localHeader = new Uint8Array(30 + nameLen);
+                    const dv = new DataView(localHeader.buffer);
+                    dv.setUint32(0, 0x04034b50, true); // signature
+                    dv.setUint16(4, 0x0a, true); // version needed
+                    dv.setUint16(6, 0x0000, true); // general purpose bit flag
+                    dv.setUint16(8, 0x0000, true); // compression method (store)
+                    dv.setUint32(10, 0x00000000, true); // last mod time/date
+                    dv.setUint32(14, 0x00000000, true); // crc-32 (0 for store)
+                    dv.setUint32(18, dataLen, true); // compressed size
+                    dv.setUint32(22, dataLen, true); // uncompressed size
+                    dv.setUint16(26, nameLen, true); // file name length
+                    dv.setUint16(28, 0x0000, true); // extra field length
+
+                    localHeader.set(nameBuf, 30);
+
+                    const entry = {
+                        name: f.name,
+                        data: data,
+                        localHeader: localHeader,
+                        dataOffset: offset + localHeader.length,
+                        compressedSize: dataLen,
+                        uncompressedSize: dataLen,
+                        crc: 0, // not used for store
+                    };
+                    entries.push(entry);
+                    offset += localHeader.length + dataLen;
+                    fileData.push(localHeader, data);
+                }
+
+                // Central directory
+                const centralDirSize = entries.length * 46;
+                const centralDir = new Uint8Array(centralDirSize);
+                let cdOffset = 0;
+                for (let i = 0; i < entries.length; i++) {
+                    const e = entries[i];
+                    const nameBuf = new TextEncoder().encode(e.name);
+                    const nameLen = nameBuf.length;
+                    const dv = new DataView(centralDir.buffer, cdOffset);
+                    dv.setUint32(0, 0x02014b50, true); // central file header signature
+                    dv.setUint16(4, 0x0a, true); // version made by
+                    dv.setUint16(6, 0x0a, true); // version needed
+                    dv.setUint16(8, 0x0000, true); // general purpose bit flag
+                    dv.setUint16(10, 0x0000, true); // compression method
+                    dv.setUint32(12, 0x00000000, true); // last mod time/date
+                    dv.setUint32(16, 0x00000000, true); // crc-32
+                    dv.setUint32(20, e.compressedSize, true);
+                    dv.setUint32(24, e.uncompressedSize, true);
+                    dv.setUint16(28, nameLen, true);
+                    dv.setUint16(30, 0x0000, true); // extra field length
+                    dv.setUint16(32, 0x0000, true); // file comment length
+                    dv.setUint16(34, 0x0000, true); // disk number start
+                    dv.setUint16(36, 0x0000, true); // internal file attributes
+                    dv.setUint32(38, 0x00000000, true); // external file attributes
+                    dv.setUint32(42, e.dataOffset, true); // relative offset of local header
+                    centralDir.set(nameBuf, 46);
+                    cdOffset += 46 + nameLen;
+                }
+
+                // End of central directory
+                const eocd = new Uint8Array(22);
+                const dvE = new DataView(eocd.buffer);
+                dvE.setUint32(0, 0x06054b50, true); // signature
+                dvE.setUint16(4, 0x0000, true); // disk number
+                dvE.setUint16(6, 0x0000, true); // disk with central dir
+                dvE.setUint16(8, entries.length, true); // number of entries on this disk
+                dvE.setUint16(10, entries.length, true); // total entries
+                dvE.setUint32(12, centralDirSize, true); // size of central dir
+                dvE.setUint32(16, offset, true); // offset of central dir
+                dvE.setUint16(20, 0x0000, true); // zip file comment length
+
+                // Combine all
+                const parts = fileData.concat([centralDir, eocd]);
+                const totalLen = parts.reduce((sum, p) => sum + p.length, 0);
+                const result = new Uint8Array(totalLen);
+                let pos = 0;
+                for (const p of parts) {
+                    result.set(p, pos);
+                    pos += p.length;
+                }
+                return result;
+            }
+
+            // ------------------------------------------------------------------
+            // Canvas drawing helpers
+            // ------------------------------------------------------------------
+            function roundRect(ctx, x, y, w, h, r) {
+                if (r > w / 2) r = w / 2;
+                if (r > h / 2) r = h / 2;
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + w - r, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                ctx.lineTo(x + w, y + h - r);
+                ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                ctx.lineTo(x + r, y + h);
+                ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+            }
+
+            function drawIcon(canvas, size, bg, accent, style, logoImg) {
+                const ctx = canvas.getContext('2d');
+                canvas.width = size;
+                canvas.height = size;
+                ctx.clearRect(0, 0, size, size);
+
+                const rad = style === 'rounded' ? size * 0.2 : 0;
+                const isGlass = style === 'glass';
+
+                // Background
+                if (isGlass) {
+                    // Frosted glass: gradient with blur illusion
+                    const grad = ctx.createLinearGradient(0, 0, size, size);
+                    grad.addColorStop(0, bg + '99');
+                    grad.addColorStop(1, bg + '44');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    roundRect(ctx, 0, 0, size, size, rad);
+                    ctx.fill();
+                    // Add glass highlight
+                    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                    ctx.beginPath();
+                    roundRect(ctx, size * 0.05, size * 0.05, size * 0.9, size * 0.45, rad * 0.5);
+                    ctx.fill();
+                    // border
+                    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    roundRect(ctx, 1, 1, size - 2, size - 2, rad);
+                    ctx.stroke();
+                } else {
+                    // Flat
+                    ctx.fillStyle = bg;
+                    ctx.beginPath();
+                    roundRect(ctx, 0, 0, size, size, rad);
+                    ctx.fill();
+                    // Subtle shadow
+                    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                    ctx.shadowBlur = size * 0.05;
+                    ctx.shadowOffsetY = size * 0.02;
+                }
+
+                // Draw logo
+                const center = size / 2;
+                const logoSize = size * 0.55;
+                if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
+                    // Draw custom logo
+                    const aspect = logoImg.naturalWidth / logoImg.naturalHeight;
+                    let w = logoSize;
+                    let h = logoSize;
+                    if (aspect > 1) {
+                        h = logoSize / aspect;
+                    } else {
+                        w = logoSize * aspect;
+                    }
+                    const x = center - w / 2;
+                    const y = center - h / 2;
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(0,0,0,0.2)';
+                    ctx.shadowBlur = size * 0.04;
+                    ctx.drawImage(logoImg, x, y, w, h);
+                    ctx.restore();
+                } else {
+                    // Default "D" letter
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(0,0,0,0.2)';
+                    ctx.shadowBlur = size * 0.04;
+                    ctx.fillStyle = accent;
+                    ctx.font = `bold ${size * 0.55}px 'Segoe UI', system-ui, sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('D', center, center + size * 0.02);
+                    ctx.restore();
+                }
+
+                // Optional accent border for flat/rounded
+                if (!isGlass) {
+                    ctx.strokeStyle = accent;
+                    ctx.lineWidth = Math.max(2, size * 0.02);
+                    ctx.beginPath();
+                    roundRect(ctx, ctx.lineWidth / 2, ctx.lineWidth / 2, size - ctx.lineWidth, size - ctx.lineWidth, rad);
+                    ctx.stroke();
+                }
+
+                // Small decorative dot (accent)
+                ctx.fillStyle = accent;
+                ctx.beginPath();
+                ctx.arc(size * 0.78, size * 0.22, size * 0.035, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            function drawCover(canvas, bg, accent) {
+                const size = 512;
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                // Background gradient
+                const grad = ctx.createLinearGradient(0, 0, size, size);
+                grad.addColorStop(0, bg);
+                grad.addColorStop(0.7, accent + 'aa');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, size, size);
+
+                // Vinyl disc
+                const center = size / 2;
+                const outerR = size * 0.38;
+
+                // Disc shadow
+                ctx.shadowColor = 'rgba(0,0,0,0.4)';
+                ctx.shadowBlur = 30;
+                ctx.shadowOffsetY = 8;
+                ctx.fillStyle = '#1a1a1a';
+                ctx.beginPath();
+                ctx.arc(center, center, outerR, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
+
+                // Grooves
+                for (let i = 0; i < 12; i++) {
+                    const r = outerR * (0.3 + i * 0.055);
+                    ctx.strokeStyle = `rgba(255,255,255,${0.03 + i * 0.005})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(center, center, r, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                // Accent ring
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    const nextAngle = ((i + 1) / 6) * Math.PI * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(center, center);
+                    ctx.arc(center, center, outerR * 0.15, angle, nextAngle);
+                    ctx.closePath();
+                    ctx.fillStyle = accent;
+                    ctx.globalAlpha = 0.2;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+
+                // Center label
+                ctx.shadowColor = 'rgba(0,0,0,0.2)';
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = accent;
+                ctx.beginPath();
+                ctx.arc(center, center, outerR * 0.22, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Music note
+                ctx.fillStyle = '#fff';
+                ctx.font = `bold ${size * 0.28}px 'Segoe UI', system-ui, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.2)';
+                ctx.shadowBlur = 4;
+                ctx.fillText('♪', center, center + size * 0.015);
+                ctx.shadowBlur = 0;
+
+                // Diyar text
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.font = `${size * 0.04}px 'Segoe UI', system-ui, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText('Diyar Player', center, size * 0.95);
+            }
+
+            function drawScreenshot(canvas, width, height, bg, accent, isMobile) {
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+
+                // Background
+                const grad = ctx.createLinearGradient(0, 0, 0, height);
+                grad.addColorStop(0, bg);
+                grad.addColorStop(0.5, '#1a1a2e');
+                grad.addColorStop(1, bg);
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+
+                const pad = isMobile ? 20 : 40;
+                const headerH = isMobile ? 50 : 70;
+
+                // Header
+                ctx.fillStyle = 'rgba(255,255,255,0.05)';
+                ctx.fillRect(0, 0, width, headerH);
+                ctx.fillStyle = accent;
+                ctx.font = `bold ${isMobile ? 18 : 28}px 'Segoe UI', system-ui, sans-serif`;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🎵 Diyar Player', pad, headerH / 2);
+
+                // Album art
+                const artSize = isMobile ? width * 0.5 : height * 0.35;
+                const artX = (width - artSize) / 2;
+                const artY = isMobile ? 80 : 120;
+                ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                ctx.shadowBlur = 20;
+                ctx.shadowOffsetY = 5;
+                const grad2 = ctx.createRadialGradient(
+                    artX + artSize * 0.4, artY + artSize * 0.3, artSize * 0.1,
+                    artX + artSize * 0.5, artY + artSize * 0.5, artSize * 0.7
+                );
+                grad2.addColorStop(0, accent);
+                grad2.addColorStop(1, bg);
+                ctx.fillStyle = grad2;
+                ctx.beginPath();
+                roundRect(ctx, artX, artY, artSize, artSize, 12);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // "D" on album
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.font = `${artSize * 0.5}px 'Segoe UI', system-ui, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('D', width / 2, artY + artSize / 2 + 2);
+
+                // Info
+                const infoY = artY + artSize + (isMobile ? 20 : 30);
+                ctx.fillStyle = '#fff';
+                ctx.font = `bold ${isMobile ? 16 : 22}px 'Segoe UI', system-ui, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText('Now Playing', width / 2, infoY);
+                ctx.fillStyle = '#b3b3b3';
+                ctx.font = `${isMobile ? 13 : 18}px 'Segoe UI', system-ui, sans-serif`;
+                ctx.fillText('Track Title · Artist Name', width / 2, infoY + (isMobile ? 25 : 35));
+
+                // Seek
+                const seekY = infoY + (isMobile ? 55 : 80);
+                ctx.fillStyle = '#333';
+                ctx.beginPath();
+                roundRect(ctx, width * 0.15, seekY, width * 0.7, 4, 2);
+                ctx.fill();
+                ctx.fillStyle = accent;
+                ctx.beginPath();
+                roundRect(ctx, width * 0.15, seekY, width * 0.35, 4, 2);
+                ctx.fill();
+
+                // Controls
+                const ctrlY = seekY + (isMobile ? 30 : 40);
+                const ctrlGap = isMobile ? 25 : 40;
+                const ctrlSize = isMobile ? 30 : 40;
+                const totalWidth = ctrlGap * 4 + ctrlSize * 5;
+                let cx = (width - totalWidth) / 2;
+                const ctrlColors = ['#666', '#666', accent, '#666', '#666'];
+                const ctrlLabels = ['⏮', '◀', '▶', '▶', '⏭'];
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = `${ctrlSize}px 'Segoe UI', system-ui, sans-serif`;
+                for (let i = 0; i < 5; i++) {
+                    ctx.fillStyle = i === 2 ? accent : '#b3b3b3';
+                    ctx.fillText(ctrlLabels[i], cx + ctrlSize / 2 + i * (ctrlSize + ctrlGap), ctrlY + ctrlSize / 2);
+                }
+
+                // Bottom
+                const bottomY = height - (isMobile ? 50 : 70);
+                ctx.fillStyle = 'rgba(255,255,255,0.05)';
+                ctx.fillRect(0, bottomY - 20, width, 40);
+                ctx.fillStyle = '#666';
+                ctx.font = `${isMobile ? 12 : 16}px 'Segoe UI', system-ui, sans-serif`;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🔊', pad + 5, bottomY + 2);
+                ctx.fillStyle = '#444';
+                ctx.beginPath();
+                roundRect(ctx, pad + 35, bottomY - 2, 60, 4, 2);
+                ctx.fill();
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'right';
+                ctx.fillText('1.0x', width - 80, bottomY + 2);
+                ctx.textAlign = 'right';
+                ctx.fillText('⏲️', width - pad, bottomY + 2);
+
+                // Label
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                ctx.fillRect(0, height - 28, width, 28);
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(isMobile ? '📱 Mobile Screenshot' : '💻 Desktop Screenshot', width / 2, height - 14);
+            }
+
+            // ------------------------------------------------------------------
+            // Asset generation
+            // ------------------------------------------------------------------
+            function generateAllAssets(bg, accent, style, logoImg) {
+                const assets = [];
+
+                // 1. PWA icons
+                const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
+                for (const size of iconSizes) {
+                    const canvas = document.createElement('canvas');
+                    drawIcon(canvas, size, bg, accent, style, logoImg);
+                    const blob = canvasToBlob(canvas);
+                    const name = `icon-${size}x${size}.png`;
+                    assets.push({ name, data: new Uint8Array(blob) });
+                }
+
+                // 2. favicon.ico (generate 32x32 PNG renamed as .ico)
+                const favCanvas = document.createElement('canvas');
+                drawIcon(favCanvas, 32, bg, accent, style, logoImg);
+                const favBlob = canvasToBlob(favCanvas);
+                assets.push({ name: 'favicon.ico', data: new Uint8Array(favBlob) });
+
+                // 3. favicon-16.png and favicon-32.png
+                const f16 = document.createElement('canvas');
+                drawIcon(f16, 16, bg, accent, style, logoImg);
+                assets.push({ name: 'favicon-16.png', data: new Uint8Array(canvasToBlob(f16)) });
+
+                const f32 = document.createElement('canvas');
+                drawIcon(f32, 32, bg, accent, style, logoImg);
+                assets.push({ name: 'favicon-32.png', data: new Uint8Array(canvasToBlob(f32)) });
+
+                // 4. apple-touch-icon (180x180)
+                const appleCanvas = document.createElement('canvas');
+                drawIcon(appleCanvas, 180, bg, accent, style, logoImg);
+                assets.push({ name: 'apple-touch-icon.png', data: new Uint8Array(canvasToBlob(appleCanvas)) });
+
+                // 5. maskable icon (192x192 with padding)
+                const maskCanvas = document.createElement('canvas');
+                const sizeMask = 192;
+                maskCanvas.width = sizeMask;
+                maskCanvas.height = sizeMask;
+                const ctx = maskCanvas.getContext('2d');
+                // Draw background with padding (safe zone)
+                const padPx = sizeMask * 0.12;
+                ctx.fillStyle = bg;
+                ctx.fillRect(0, 0, sizeMask, sizeMask);
+                // Draw icon with padding
+                const innerCanvas = document.createElement('canvas');
+                drawIcon(innerCanvas, sizeMask - padPx * 2, bg, accent, style, logoImg);
+                ctx.drawImage(innerCanvas, padPx, padPx);
+                assets.push({ name: 'maskable-icon.png', data: new Uint8Array(canvasToBlob(maskCanvas)) });
+
+                // 6. monochrome icon (192x192, black/white)
+                const monoCanvas = document.createElement('canvas');
+                drawIcon(monoCanvas, 192, '#000000', '#ffffff', 'flat', logoImg);
+                assets.push({ name: 'monochrome-icon.png', data: new Uint8Array(canvasToBlob(monoCanvas)) });
+
+                // 7. default-cover.png
+                const coverCanvas = document.createElement('canvas');
+                drawCover(coverCanvas, bg, accent);
+                assets.push({ name: 'default-cover.png', data: new Uint8Array(canvasToBlob(coverCanvas)) });
+
+                // 8. Splash screens
+                const splashSizes = [
+                    { w: 640, h: 1136 },
+                    { w: 750, h: 1334 },
+                    { w: 1242, h: 2208 },
+                    { w: 1536, h: 2048 },
+                    { w: 1668, h: 2224 },
+                    { w: 2048, h: 2732 },
+                ];
+                for (const { w, h } of splashSizes) {
+                    const splCanvas = document.createElement('canvas');
+                    splCanvas.width = w;
+                    splCanvas.height = h;
+                    const sctx = splCanvas.getContext('2d');
+                    // Background
+                    sctx.fillStyle = bg;
+                    sctx.fillRect(0, 0, w, h);
+                    // Centered logo (large)
+                    const logoSize = Math.min(w, h) * 0.3;
+                    const cx = w / 2;
+                    const cy = h / 2;
+                    if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
+                        const aspect = logoImg.naturalWidth / logoImg.naturalHeight;
+                        let lw = logoSize;
+                        let lh = logoSize;
+                        if (aspect > 1) lh = logoSize / aspect;
+                        else lw = logoSize * aspect;
+                        sctx.drawImage(logoImg, cx - lw / 2, cy - lh / 2, lw, lh);
+                    } else {
+                        sctx.fillStyle = accent;
+                        sctx.font = `bold ${logoSize}px 'Segoe UI', system-ui, sans-serif`;
+                        sctx.textAlign = 'center';
+                        sctx.textBaseline = 'middle';
+                        sctx.fillText('D', cx, cy + logoSize * 0.04);
+                    }
+                    // Accent line
+                    sctx.fillStyle = accent;
+                    sctx.fillRect(cx - logoSize * 0.4, cy + logoSize * 0.5, logoSize * 0.8, 4);
+                    // Text
+                    sctx.fillStyle = '#aaa';
+                    sctx.font = `${Math.min(w, h) * 0.03}px 'Segoe UI', system-ui, sans-serif`;
+                    sctx.textAlign = 'center';
+                    sctx.textBaseline = 'bottom';
+                    sctx.fillText('Diyar Player', cx, h - 40);
+                    assets.push({ name: `splash-${w}x${h}.png`, data: new Uint8Array(canvasToBlob(splCanvas)) });
+                }
+
+                // 9. Screenshots (mobile & desktop)
+                const mobileScreen = document.createElement('canvas');
+                drawScreenshot(mobileScreen, 1080, 1920, bg, accent, true);
+                assets.push({ name: 'screenshot-mobile.png', data: new Uint8Array(canvasToBlob(mobileScreen)) });
+
+                const desktopScreen = document.createElement('canvas');
+                drawScreenshot(desktopScreen, 1920, 1080, bg, accent, false);
+                assets.push({ name: 'screenshot-desktop.png', data: new Uint8Array(canvasToBlob(desktopScreen)) });
+
+                return assets;
+            }
+
+            function canvasToBlob(canvas) {
+                // PNG, quality 0.92 for good balance
+                const dataUrl = canvas.toDataURL('image/png');
+                const binary = atob(dataUrl.split(',')[1]);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                return bytes.buffer;
+            }
+
+            // ------------------------------------------------------------------
+            // UI rendering
+            // ------------------------------------------------------------------
+            function renderAssets(assets) {
+                previewGrid.innerHTML = '';
+                if (assets.length === 0) {
+                    previewGrid.innerHTML = '<p style="color:#666; grid-column:1/-1; text-align:center; padding:40px;">No assets generated yet. Click "Generate All Assets".</p>';
+                    assetCountSpan.textContent = '0 assets';
+                    return;
+                }
+                assetCountSpan.textContent = `${assets.length} assets`;
+
+                for (const asset of assets) {
+                    const card = document.createElement('div');
+                    card.className = 'asset-card';
+
+                    const canvas = document.createElement('canvas');
+                    const img = new Image();
+                    const blob = new Blob([asset.data], { type: 'image/png' });
+                    const url = URL.createObjectURL(blob);
+                    img.onload = () => {
+                        canvas.width = img.naturalWidth;
+                        canvas.height = img.naturalHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        URL.revokeObjectURL(url);
+                    };
+                    img.src = url;
+                    canvas.style.maxWidth = '100%';
+                    canvas.style.height = 'auto';
+                    canvas.style.aspectRatio = '1/1';
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'filename';
+                    nameDiv.textContent = asset.name;
+
+                    const dlBtn = document.createElement('button');
+                    dlBtn.className = 'dl-btn';
+                    dlBtn.textContent = '⬇ Download';
+                    dlBtn.addEventListener('click', () => {
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(new Blob([asset.data], { type: 'image/png' }));
+                        a.download = asset.name;
+                        a.click();
+                        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+                        showToast(`Downloaded ${asset.name}`);
+                    });
+
+                    card.appendChild(canvas);
+                    card.appendChild(nameDiv);
+                    card.appendChild(dlBtn);
+                    previewGrid.appendChild(card);
+
+                    // Store reference
+                    card._blob = blob;
+                    card._canvas = canvas;
+                }
+            }
+
+            function updateManifestJSON(assets) {
+                const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
+                const icons = iconSizes.map(size => ({
+                    src: `assets/icons/icon-${size}x${size}.png`,
+                    sizes: `${size}x${size}`,
+                    type: 'image/png',
+                    purpose: 'any maskable'
+                }));
+                // Add maskable separately
+                icons.push({
+                    src: 'assets/icons/maskable-icon.png',
+                    sizes: '192x192',
+                    type: 'image/png',
+                    purpose: 'maskable'
+                });
+                // monochrome
+                icons.push({
+                    src: 'assets/icons/monochrome-icon.png',
+                    sizes: '192x192',
+                    type: 'image/png',
+                    purpose: 'monochrome'
+                });
+                // apple touch
+                icons.push({
+                    src: 'assets/icons/apple-touch-icon.png',
+                    sizes: '180x180',
+                    type: 'image/png',
+                    purpose: 'any'
+                });
+                const json = JSON.stringify(icons, null, 2);
+                manifestTextarea.value = json;
+            }
+
+            // ------------------------------------------------------------------
+            // Main generate flow
+            // ------------------------------------------------------------------
+            function generate() {
+                const bg = bgColorInput.value;
+                const accent = accentColorInput.value;
+                const style = document.querySelector('input[name="style"]:checked').value;
+
+                // Show progress
+                progressBar.style.width = '0%';
+
+                // Use setTimeout to allow UI update
+                setTimeout(() => {
+                    try {
+                        const assets = generateAllAssets(bg, accent, style, customLogoImage);
+                        currentAssets = assets;
+                        renderAssets(assets);
+                        updateManifestJSON(assets);
+                        progressBar.style.width = '100%';
+                        showToast(`✅ Generated ${assets.length} assets successfully!`);
+                    } catch (e) {
+                        console.error(e);
+                        showToast('❌ Error generating assets: ' + e.message, 4000);
+                        progressBar.style.width = '0%';
+                    }
+                }, 50);
+            }
+
+            // ------------------------------------------------------------------
+            // ZIP download
+            // ------------------------------------------------------------------
+            function downloadZip() {
+                if (currentAssets.length === 0) {
+                    showToast('Please generate assets first.', 2000);
+                    return;
+                }
+                // Prepare files for zip
+                const files = currentAssets.map(a => ({
+                    name: a.name,
+                    data: a.data
+                }));
+                const zipData = createZip(files);
+                const blob = new Blob([zipData], { type: 'application/zip' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'diyar-player-assets.zip';
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+                showToast('📦 Downloaded ZIP archive');
+            }
+
+            // ------------------------------------------------------------------
+            // Reset to defaults
+            // ------------------------------------------------------------------
+            function resetDefaults() {
+                bgColorInput.value = '#121212';
+                accentColorInput.value = '#1db954';
+                document.querySelector('input[name="style"][value="flat"]').checked = true;
+                // Clear logo
+                logoInput.value = '';
+                customLogoImage = null;
+                generate();
+                showToast('↺ Reset to default settings');
+            }
+
+            // ------------------------------------------------------------------
+            // Logo upload handling
+            // ------------------------------------------------------------------
+            function handleLogoUpload(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        customLogoImage = img;
+                        showToast('✅ Logo uploaded successfully');
+                        // Auto-generate after upload? we'll let user click generate.
+                    };
+                    img.onerror = function() {
+                        showToast('❌ Failed to load logo image', 2000);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            logoInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    handleLogoUpload(this.files[0]);
+                }
+            });
+
+            // ------------------------------------------------------------------
+            // Event listeners
+            // ------------------------------------------------------------------
+            generateBtn.addEventListener('click', generate);
+            downloadZipBtn.addEventListener('click', downloadZip);
+            resetBtn.addEventListener('click', resetDefaults);
+
+            copyManifestBtn.addEventListener('click', function() {
+                const text = manifestTextarea.value;
+                if (!text) { showToast('Nothing to copy', 1500); return; }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('📋 Manifest JSON copied to clipboard');
+                    }).catch(() => {
+                        // fallback
+                        copyTextFallback(text);
+                    });
+                } else {
+                    copyTextFallback(text);
+                }
+            });
+
+            function copyTextFallback(text) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('📋 Manifest JSON copied');
+                } catch (e) {
+                    showToast('❌ Copy failed', 1500);
+                }
+                document.body.removeChild(ta);
+            }
+
+            // ------------------------------------------------------------------
+            // Initial generation
+            // ------------------------------------------------------------------
+            window.addEventListener('load', function() {
+                generate();
+            });
+
+            // Also regenerate when color or style changes? We'll let user click generate.
+            // But we can auto-generate on change if desired - let's not, to avoid excessive redraws.
+
+        })();
+    </script>
+</body>
+  </html>

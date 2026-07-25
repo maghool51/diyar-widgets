@@ -1,195 +1,188 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>دیار قدمگاه - پلیر حرفه‌ای</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Diyar Player</title>
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
-    <meta name="theme-color" content="#7C5CFF">
-    <meta name="description" content="پلیر صوتی و تصویری حرفه‌ای با طراحی مدرن و امکانات کامل">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <meta name="theme-color" content="#1db954">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container" role="application" aria-label="پلیر دیار قدمگاه">
-        <!-- HEADER -->
-        <header class="app-header">
-            <div class="header-left">
-                <div class="logo-area" id="logoArea" role="banner">
-                    <img id="logoImg" src="assets/images/de9630bd-5d33-40ce-beed-7729e121c01f.png" alt="دیار قدمگاه" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';">
-                    <span class="logo-text" id="logoFallback" style="display:none;">دیار قدمگاه</span>
-                </div>
-                <button class="mobile-playlist-toggle" id="mobilePlaylistToggle" aria-label="لیست پخش" title="لیست پخش">📋</button>
-            </div>
-            <div class="header-center">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-box" id="searchBox" placeholder="جستجو در لیست پخش ..." aria-label="جستجو">
-            </div>
-            <div class="header-right">
-                <span class="header-clock" id="clockDisplay">--:--</span>
-                <button class="theme-toggle" id="themeToggle" aria-label="تغییر تم" title="تغییر تم">🌙</button>
+    <!-- App Shell -->
+    <div id="app" role="application" aria-label="Diyar Player">
+        <!-- Header -->
+        <header id="app-header" role="banner">
+            <h1>🎵 Diyar Player</h1>
+            <div id="header-controls">
+                <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+                <button id="settings-toggle" aria-label="Settings" title="Settings">⚙️</button>
             </div>
         </header>
 
-        <!-- MAIN LAYOUT -->
-        <div class="main-layout">
-            <!-- SIDEBAR (Desktop) -->
-            <aside class="sidebar" role="complementary" aria-label="لیست پخش">
-                <div class="sidebar-header">
-                    <h3>📋 لیست پخش <span class="badge" id="playlistCount">0</span></h3>
-                    <div class="sidebar-actions">
-                        <button id="addFilesBtn" aria-label="افزودن فایل" title="افزودن فایل">➕</button>
-                        <button id="clearPlaylistBtn" aria-label="پاک کردن لیست" title="پاک کردن لیست">🗑</button>
-                    </div>
-                </div>
-                <div class="playlist-container" id="playlistContainer" role="list">
-                    <div class="empty-state" id="emptyPlaylist">
-                        <div class="icon">🎵</div>
-                        <p>هیچ فایلی در لیست پخش نیست.<br>فایل‌های صوتی یا تصویری را اضافه کنید.</p>
-                    </div>
-                </div>
-                <!-- File Input -->
-                <input type="file" id="fileInput" multiple accept="audio/*,video/*,.mp3,.aac,.m4a,.flac,.wav,.ogg,.opus,.amr,.mp4,.webm,.mkv,.avi,.mov,.mpeg" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;">
-                <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="ریزش فایل">
-                    <div class="dz-icon">📁</div>
-                    <div class="dz-text">فایل‌ها را اینجا بکشید و رها کنید</div>
-                    <div class="dz-sub">یا کلیک کنید تا انتخاب کنید</div>
-                </div>
-            </aside>
-
-            <!-- CONTENT AREA -->
-            <main class="content-area" role="main">
-                <section class="player-section" aria-label="پخش کننده">
-                    <!-- Visualizer / Album Art / Video Container -->
-                    <div class="visualizer-wrap" id="visualizerWrap">
-                        <canvas id="visualizerCanvas"></canvas>
-                        <div class="vis-overlay"></div>
-                        <!-- Album Art (shown for audio) -->
-                        <div class="album-art-container" id="albumArtContainer">
-                            <div class="album-bg" id="albumBg"></div>
-                            <div class="album-cover" id="albumCover">
-                                <img id="albumCoverImg" src="" alt="کاور آلبوم" style="display:none;">
-                                <div class="default-cover" id="defaultCover">🎵</div>
-                            </div>
-                        </div>
-                        <!-- Video Container (shown for video) -->
-                        <div class="video-container" id="videoContainer">
-                            <video id="videoPlayer" controls></video>
-                        </div>
-                    </div>
-
-                    <!-- Now Playing -->
-                    <div class="now-playing" id="nowPlaying">
-                        <div class="cover" id="nowCover">🎵</div>
-                        <div class="meta">
-                            <div class="track" id="nowTrack">هیچ فایلی انتخاب نشده</div>
-                            <div class="artist" id="nowArtist">—</div>
-                        </div>
-                    </div>
-
-                    <!-- Controls -->
-                    <div class="controls" role="toolbar" aria-label="کنترل‌های پخش">
-                        <button id="shuffleBtn" aria-label="تصادفی" title="تصادفی">🔀</button>
-                        <button id="prevBtn" aria-label="قبلی" title="قبلی">⏮</button>
-                        <button id="rewindBtn" aria-label="۱۰ ثانیه عقب" title="۱۰ ثانیه عقب">⏪</button>
-                        <button class="primary" id="playBtn" aria-label="پخش/مکث" title="پخش/مکث">▶</button>
-                        <button id="forwardBtn" aria-label="۱۰ ثانیه جلو" title="۱۰ ثانیه جلو">⏩</button>
-                        <button id="nextBtn" aria-label="بعدی" title="بعدی">⏭</button>
-                        <button id="repeatBtn" aria-label="تکرار" title="تکرار">🔁</button>
-                    </div>
-
-                    <!-- Progress -->
-                    <div class="progress-wrap">
-                        <span class="time current" id="currentTime">0:00</span>
-                        <div class="progress-track" id="progressTrack" role="slider" aria-label="موقعیت پخش" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                            <div class="buffer-fill" id="bufferFill"></div>
-                            <div class="progress-fill" id="progressFill"></div>
-                        </div>
-                        <span class="time total" id="totalTime">0:00</span>
-                    </div>
-
-                    <!-- Bottom Controls -->
-                    <div class="bottom-controls">
-                        <div class="bottom-left">
-                            <div class="vol-wrap">
-                                <button id="muteBtn" aria-label="بی صدا" title="بی صدا">🔊</button>
-                                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" aria-label="بلندی صدا">
-                            </div>
-                            <button id="eqToggle" aria-label="یکسان‌ساز" title="یکسان‌ساز">🎛</button>
-                        </div>
-                        <div class="bottom-center">
-                            <button class="speed-btn" id="speedBtn" aria-label="سرعت پخش" title="سرعت پخش">1.0x</button>
-                            <button id="queueToggle" aria-label="صف پخش" title="صف پخش">📋</button>
-                        </div>
-                        <div class="bottom-right">
-                            <button id="favBtn" aria-label="علاقه‌مندی" title="علاقه‌مندی">❤</button>
-                            <button id="downloadBtn" aria-label="دانلود" title="دانلود">⬇</button>
-                            <button id="pipBtn" aria-label="تصویر در تصویر" title="تصویر در تصویر">📺</button>
-                            <button id="fullscreenBtn" aria-label="تمام صفحه" title="تمام صفحه">⛶</button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- QUEUE PANEL -->
-                <div class="queue-panel" id="queuePanel" role="dialog" aria-label="صف پخش">
-                    <div class="queue-header">
-                        <span>📋 صف پخش</span>
-                        <button id="clearQueueBtn">پاک کردن صف</button>
-                    </div>
-                    <div id="queueList"><div class="queue-empty">صف پخش خالی است</div></div>
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Player Area -->
+            <section id="player-area" aria-label="Player">
+                <!-- Video container (hidden for audio) -->
+                <div id="video-container" style="display:none;">
+                    <video id="video-element" controls playsinline preload="metadata"></video>
                 </div>
 
-                <!-- EQUALIZER MODAL -->
-                <div class="eq-modal" id="eqModal" role="dialog" aria-label="یکسان‌ساز">
-                    <div class="eq-header">
-                        <span>🎛 یکسان‌ساز</span>
-                        <select id="eqPreset">
-                            <option value="flat">Flat</option>
-                            <option value="rock">Rock</option>
-                            <option value="pop">Pop</option>
-                            <option value="jazz">Jazz</option>
-                            <option value="classical">Classical</option>
-                            <option value="movie">Movie</option>
-                            <option value="bass">Bass Boost</option>
-                            <option value="treble">Treble Boost</option>
-                            <option value="custom">Custom</option>
+                <!-- Audio visualizer and cover -->
+                <div id="audio-visualizer-container">
+                    <div id="cover-art">
+                        <img id="album-cover" src="assets/default-cover.png" alt="Album cover">
+                    </div>
+                    <canvas id="visualizer-canvas" aria-hidden="true"></canvas>
+                </div>
+
+                <!-- Metadata -->
+                <div id="track-info">
+                    <div id="track-title">No media loaded</div>
+                    <div id="track-artist">—</div>
+                </div>
+
+                <!-- Progress -->
+                <div id="progress-container" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <span id="current-time">0:00</span>
+                    <input type="range" id="seek-slider" min="0" max="1000" value="0" step="1" aria-label="Seek slider">
+                    <span id="duration-time">0:00</span>
+                </div>
+
+                <!-- Controls -->
+                <div id="controls" role="group" aria-label="Playback controls">
+                    <button id="shuffle-btn" aria-label="Shuffle" title="Shuffle">🔀</button>
+                    <button id="prev-btn" aria-label="Previous" title="Previous">⏮️</button>
+                    <button id="play-pause-btn" aria-label="Play" title="Play">▶️</button>
+                    <button id="stop-btn" aria-label="Stop" title="Stop">⏹️</button>
+                    <button id="next-btn" aria-label="Next" title="Next">⏭️</button>
+                    <button id="repeat-btn" aria-label="Repeat" title="Repeat">🔁</button>
+                </div>
+
+                <!-- Volume and speed -->
+                <div id="extra-controls">
+                    <div id="volume-container">
+                        <button id="mute-btn" aria-label="Mute" title="Mute">🔊</button>
+                        <input type="range" id="volume-slider" min="0" max="100" value="80" step="1" aria-label="Volume">
+                    </div>
+                    <div id="speed-container">
+                        <label for="speed-select">Speed</label>
+                        <select id="speed-select" aria-label="Playback speed">
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1.0" selected>1.0x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2.0">2.0x</option>
                         </select>
                     </div>
-                    <div class="eq-bands" id="eqBands"></div>
+                    <button id="pip-btn" aria-label="Picture-in-Picture" title="Picture-in-Picture">⏺️</button>
+                    <button id="fullscreen-btn" aria-label="Fullscreen" title="Fullscreen">⛶</button>
+                    <button id="sleep-timer-btn" aria-label="Sleep timer" title="Sleep timer">⏲️</button>
                 </div>
-            </main>
-        </div>
+            </section>
 
-        <!-- FOOTER -->
-        <footer class="app-footer">
-            <span>🎵 دیار قدمگاه · پلیر حرفه‌ای</span>
-            <div class="footer-links">
-                <span id="footerStatus">⏸ متوقف</span>
-                <span class="dot">·</span>
-                <span id="footerMeta">—</span>
+            <!-- Playlist Sidebar -->
+            <aside id="playlist-sidebar" aria-label="Playlist">
+                <div id="playlist-header">
+                    <h2>Playlist</h2>
+                    <div id="playlist-actions">
+                        <button id="add-files-btn" aria-label="Add files">📂</button>
+                        <button id="add-url-btn" aria-label="Add URL">🔗</button>
+                        <button id="clear-playlist-btn" aria-label="Clear playlist">🗑️</button>
+                        <button id="export-playlist-btn" aria-label="Export playlist">⬇️</button>
+                        <button id="import-playlist-btn" aria-label="Import playlist">⬆️</button>
+                    </div>
+                </div>
+                <div id="playlist-search">
+                    <input type="text" id="playlist-search-input" placeholder="Search playlist..." aria-label="Search playlist">
+                </div>
+                <ul id="playlist-items" role="list" aria-label="Playlist items">
+                    <!-- Dynamic items -->
+                </ul>
+                <div id="playlist-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px;">
+                    <p>Playlist is empty</p>
+                    <button id="empty-add-files-btn" class="fab">📂 Select Media</button>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">or paste a URL above</p>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Floating Action Button (always visible on mobile) -->
+        <button id="fab-add-files" class="fab" aria-label="Add files" title="Add files">➕</button>
+
+        <!-- Hidden file input -->
+        <input type="file" id="file-input" accept="audio/*,video/*" multiple style="display:none;">
+
+        <!-- URL input dialog (hidden) -->
+        <div id="url-dialog" role="dialog" aria-label="Add URL" style="display:none;">
+            <div id="url-dialog-content">
+                <h3>Add URL</h3>
+                <input type="url" id="url-input" placeholder="Paste media URL (MP3, AAC, FLAC, WAV, OGG, OPUS, MP4, WEBM, M4A, etc.)">
+                <div id="url-dialog-actions">
+                    <button id="url-add-btn">Add</button>
+                    <button id="url-cancel-btn">Cancel</button>
+                </div>
             </div>
-        </footer>
+        </div>
+
+        <!-- Sleep timer dialog -->
+        <div id="sleep-dialog" role="dialog" aria-label="Sleep timer" style="display:none;">
+            <div id="sleep-dialog-content">
+                <h3>Sleep Timer</h3>
+                <p>Stop playback after:</p>
+                <div>
+                    <button class="sleep-option" data-minutes="5">5 min</button>
+                    <button class="sleep-option" data-minutes="10">10 min</button>
+                    <button class="sleep-option" data-minutes="15">15 min</button>
+                    <button class="sleep-option" data-minutes="30">30 min</button>
+                    <button class="sleep-option" data-minutes="60">60 min</button>
+                    <button class="sleep-option" data-minutes="0">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings dialog -->
+        <div id="settings-dialog" role="dialog" aria-label="Settings" style="display:none;">
+            <div id="settings-content">
+                <h3>Settings</h3>
+                <div>
+                    <label for="theme-select">Theme</label>
+                    <select id="theme-select" aria-label="Theme">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                        <option value="green">Green</option>
+                        <option value="golden">Golden</option>
+                        <option value="system">System</option>
+                    </select>
+                </div>
+                <button id="settings-close-btn">Close</button>
+            </div>
+        </div>
+
+        <!-- Toast notifications -->
+        <div id="toast" role="alert" aria-live="polite"></div>
     </div>
 
-    <!-- MOBILE PLAYLIST DRAWER -->
-    <div class="playlist-drawer-overlay" id="playlistDrawerOverlay"></div>
-    <div class="playlist-drawer" id="playlistDrawer">
-        <div class="drawer-header">
-            <span class="drawer-title">📋 لیست پخش</span>
-            <button class="drawer-close" id="drawerCloseBtn">✕</button>
-        </div>
-        <div class="drawer-body" id="drawerBody">
-            <!-- playlist items rendered here -->
-        </div>
-    </div>
+    <!-- Service Worker registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered:', reg))
+                .catch(err => console.warn('SW registration failed:', err));
+        }
+    </script>
 
-    <!-- TOAST CONTAINER -->
-    <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
-    <div class="drag-ghost" id="dragGhost" style="display:none;"></div>
-
-    <!-- SCRIPTS -->
-    <script src="script.js"></script>
+    <!-- Main script -->
+    <script src="script.js" type="module"></script>
 </body>
-</html>
+    </html>

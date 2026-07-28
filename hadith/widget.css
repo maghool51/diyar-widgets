@@ -1,0 +1,158 @@
+/**
+ * widget.css
+ * استایل مستقل ویجت حدیث با پشتیبانی از تم روشن/تاریک و راست‌چین.
+ * تمام متغیرها با پیشوند --hw- تعریف شده تا با استایل سایت میزبان تداخل نکند.
+ */
+
+.hw-container {
+  --hw-bg: #ffffff;
+  --hw-fg: #1f2430;
+  --hw-muted: #6b7280;
+  --hw-accent: #0f766e;
+  --hw-accent-fg: #ffffff;
+  --hw-border: #e5e7eb;
+  --hw-radius: 14px;
+  --hw-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+  --hw-font: 'Vazirmatn', 'Tahoma', system-ui, sans-serif;
+
+  box-sizing: border-box;
+  font-family: var(--hw-font);
+  max-width: 480px;
+  width: 100%;
+}
+
+.hw-container *,
+.hw-container *::before,
+.hw-container *::after {
+  box-sizing: border-box;
+}
+
+.hw-container[data-theme='dark'] {
+  --hw-bg: #14181f;
+  --hw-fg: #f2f4f7;
+  --hw-muted: #9aa3af;
+  --hw-accent: #2dd4bf;
+  --hw-accent-fg: #0b1220;
+  --hw-border: #262c37;
+  --hw-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  .hw-container[data-theme='auto'] {
+    --hw-bg: #14181f;
+    --hw-fg: #f2f4f7;
+    --hw-muted: #9aa3af;
+    --hw-accent: #2dd4bf;
+    --hw-accent-fg: #0b1220;
+    --hw-border: #262c37;
+    --hw-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.hw-card {
+  background: var(--hw-bg);
+  color: var(--hw-fg);
+  border: 1px solid var(--hw-border);
+  border-radius: var(--hw-radius);
+  box-shadow: var(--hw-shadow);
+  padding: 20px 22px;
+  line-height: 1.9;
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.hw-card.hw-fade-in {
+  animation: hw-fade-in 0.35s ease forwards;
+}
+
+@keyframes hw-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hw-card-header {
+  margin-bottom: 10px;
+}
+
+.hw-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hw-accent-fg);
+  background: var(--hw-accent);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.hw-text {
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-weight: 500;
+  quotes: none;
+}
+
+.hw-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  font-size: 13px;
+  color: var(--hw-muted);
+  margin-bottom: 14px;
+}
+
+.hw-actions {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--hw-border);
+  padding-top: 12px;
+}
+
+.hw-btn {
+  cursor: pointer;
+  border: 1px solid var(--hw-border);
+  background: transparent;
+  color: var(--hw-fg);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.hw-btn:hover {
+  background: var(--hw-border);
+}
+
+.hw-btn:active {
+  transform: scale(0.94);
+}
+
+.hw-footer {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.hw-brand {
+  font-size: 11px;
+  color: var(--hw-muted);
+  text-decoration: none;
+}
+
+.hw-brand:hover {
+  text-decoration: underline;
+}
+
+/* واکنش‌گرا برای صفحات کوچک */
+@media (max-width: 360px) {
+  .hw-card {
+    padding: 16px;
+  }
+  .hw-text {
+    font-size: 15px;
+  }
+}

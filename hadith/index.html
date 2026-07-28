@@ -1,1 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>دموی ویجت حدیث</title>
+  <link rel="stylesheet" href="./widget.css" />
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      background: #f4f5f7;
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      padding: 32px 16px;
+    }
+    h1 { font-size: 20px; color: #1f2430; margin: 0; }
+    .hw-demo-row { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+    .hw-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .hw-panel span { font-size: 12px; color: #6b7280; }
+    code { background: #e5e7eb; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>دموی ویجت حدیث</h1>
 
+  <div class="hw-demo-row">
+    <div class="hw-panel">
+      <div id="hadith-widget-light"></div>
+      <span>تم روشن — انتخاب روزانه</span>
+    </div>
+    <div class="hw-panel">
+      <div id="hadith-widget-dark"></div>
+      <span>تم تاریک — انتخاب تصادفی</span>
+    </div>
+  </div>
+
+  <p>برای استفاده در سایت خودتان: کافیست فایل‌های <code>widget.js</code>، <code>widget.css</code>، <code>config.js</code> و پوشه‌های <code>core/</code> و <code>data/</code> را کنار هم آپلود کنید و کد زیر را در صفحه قرار دهید.</p>
+
+  <!-- بارگذاری اسکریپت‌های ویجت (ترتیب مهم است) -->
+  <script src="./config.js"></script>
+  <script src="./core/utils.js"></script>
+  <script src="./core/storage.js"></script>
+  <script src="./core/cache.js"></script>
+  <script src="./core/api.js"></script>
+  <script src="./core/renderer.js"></script>
+  <script src="./core/share.js"></script>
+  <script src="./widget.js"></script>
+
+  <script>
+    const lightWidget = new HadithWidget({
+      containerId: 'hadith-widget-light',
+      theme: 'light',
+      language: 'fa',
+      selectionMode: 'daily'
+    });
+    lightWidget.init();
+
+    const darkWidget = new HadithWidget({
+      containerId: 'hadith-widget-dark',
+      theme: 'dark',
+      language: 'fa',
+      selectionMode: 'random'
+    });
+    darkWidget.init();
+  </script>
+</body>
+</html>

@@ -1,1 +1,241 @@
-paint
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, touch-action: manipulation">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="description" content="نرم‌افزار نقاشی حرفه‌ای - Professional Paint Application">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Paint Pro - نرم‌افزار نقاشی حرفه‌ای</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+</head>
+<body class="dark-mode">
+    <div id="app-container">
+        <header id="main-header">
+            <div class="header-left">
+                <button id="menu-btn" class="icon-btn" aria-label="منو" title="منو">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h1 class="app-title">Paint Pro</h1>
+            </div>
+            <div class="header-center" id="document-info">
+                <span id="doc-name">بدون عنوان</span>
+                <span class="separator">•</span>
+                <span id="doc-zoom">100%</span>
+                <span class="separator">•</span>
+                <span id="doc-dimensions">1920×1080</span>
+            </div>
+            <div class="header-right">
+                <button id="undo-btn" class="icon-btn" aria-label="بازگشت" title="بازگشت (Ctrl+Z)">
+                    <span class="material-symbols-outlined">undo</span>
+                </button>
+                <button id="redo-btn" class="icon-btn" aria-label="انجام مجدد" title="انجام مجدد (Ctrl+Y)">
+                    <span class="material-symbols-outlined">redo</span>
+                </button>
+                <button id="save-btn" class="icon-btn" aria-label="ذخیره" title="ذخیره (Ctrl+S)">
+                    <span class="material-symbols-outlined">save</span>
+                </button>
+                <button id="theme-toggle" class="icon-btn" aria-label="تغییر پوسته" title="تغییر پوسته">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+                <button id="settings-btn" class="icon-btn" aria-label="تنظیمات" title="تنظیمات">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+            </div>
+        </header>
+        <div id="main-content">
+            <aside id="side-panel" class="panel-collapsed">
+                <div class="panel-tabs">
+                    <button class="panel-tab active" data-panel="tools-panel">
+                        <span class="material-symbols-outlined">brush</span>
+                        <span class="tab-label">ابزارها</span>
+                    </button>
+                    <button class="panel-tab" data-panel="layers-panel">
+                        <span class="material-symbols-outlined">layers</span>
+                        <span class="tab-label">لایه‌ها</span>
+                    </button>
+                    <button class="panel-tab" data-panel="pages-panel">
+                        <span class="material-symbols-outlined">description</span>
+                        <span class="tab-label">صفحات</span>
+                    </button>
+                    <button class="panel-tab" data-panel="color-panel">
+                        <span class="material-symbols-outlined">palette</span>
+                        <span class="tab-label">رنگ</span>
+                    </button>
+                    <button class="panel-tab" data-panel="brushes-panel">
+                        <span class="material-symbols-outlined">ink_pen</span>
+                        <span class="tab-label">براش‌ها</span>
+                    </button>
+                </div>
+                <div class="panel-content" id="panel-content">
+                    <div id="tools-panel" class="panel-section active">
+                        <div class="tools-grid" id="tools-grid"></div>
+                        <div class="tool-options" id="tool-options"></div>
+                    </div>
+                    <div id="layers-panel" class="panel-section">
+                        <div class="layers-header">
+                            <h3>لایه‌ها</h3>
+                            <div class="layers-actions">
+                                <button id="add-layer-btn" class="icon-btn-sm" title="افزودن لایه">
+                                    <span class="material-symbols-outlined">add</span>
+                                </button>
+                                <button id="delete-layer-btn" class="icon-btn-sm" title="حذف لایه">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                                <button id="duplicate-layer-btn" class="icon-btn-sm" title="تکثیر لایه">
+                                    <span class="material-symbols-outlined">content_copy</span>
+                                </button>
+                                <button id="merge-layer-btn" class="icon-btn-sm" title="ادغام با لایه زیرین">
+                                    <span class="material-symbols-outlined">merge</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="layers-list" id="layers-list"></div>
+                        <div class="layer-opacity-control">
+                            <label for="layer-opacity">شفافیت: <span id="opacity-value">100%</span></label>
+                            <input type="range" id="layer-opacity" min="0" max="100" value="100">
+                        </div>
+                    </div>
+                    <div id="pages-panel" class="panel-section">
+                        <div class="pages-header">
+                            <h3>صفحات</h3>
+                            <div class="pages-actions">
+                                <button id="add-page-btn" class="icon-btn-sm" title="افزودن صفحه">
+                                    <span class="material-symbols-outlined">add</span>
+                                </button>
+                                <button id="delete-page-btn" class="icon-btn-sm" title="حذف صفحه">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                                <button id="duplicate-page-btn" class="icon-btn-sm" title="تکثیر صفحه">
+                                    <span class="material-symbols-outlined">content_copy</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pages-list" id="pages-list"></div>
+                    </div>
+                    <div id="color-panel" class="panel-section">
+                        <div class="color-picker-container">
+                            <canvas id="color-wheel" width="240" height="240"></canvas>
+                            <div class="color-sliders">
+                                <div class="slider-group">
+                                    <label>H: <span id="hue-value">0</span>°</label>
+                                    <input type="range" id="hue-slider" min="0" max="360" value="0" class="hue-slider">
+                                </div>
+                                <div class="slider-group">
+                                    <label>S: <span id="saturation-value">100</span>%</label>
+                                    <input type="range" id="saturation-slider" min="0" max="100" value="100">
+                                </div>
+                                <div class="slider-group">
+                                    <label>L: <span id="lightness-value">50</span>%</label>
+                                    <input type="range" id="lightness-slider" min="0" max="100" value="50">
+                                </div>
+                                <div class="slider-group">
+                                    <label>A: <span id="alpha-value">100</span>%</label>
+                                    <input type="range" id="alpha-slider" min="0" max="100" value="100">
+                                </div>
+                            </div>
+                            <div class="color-preview">
+                                <div class="current-color" id="current-color"></div>
+                                <div class="previous-color" id="previous-color"></div>
+                                <input type="text" id="hex-input" value="#FF0000" maxlength="9">
+                            </div>
+                            <div class="recent-colors" id="recent-colors"></div>
+                            <div class="color-palettes">
+                                <h4>پالت‌های رنگ</h4>
+                                <div class="palette-grid" id="color-palette-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="brushes-panel" class="panel-section">
+                        <div class="brushes-grid" id="brushes-grid"></div>
+                        <div class="brush-settings">
+                            <div class="slider-group">
+                                <label>اندازه: <span id="brush-size-value">10</span>px</label>
+                                <input type="range" id="brush-size" min="1" max="500" value="10">
+                            </div>
+                            <div class="slider-group">
+                                <label>شفافیت: <span id="brush-opacity-value">100</span>%</label>
+                                <input type="range" id="brush-opacity" min="1" max="100" value="100">
+                            </div>
+                            <div class="slider-group">
+                                <label>جریان: <span id="brush-flow-value">100</span>%</label>
+                                <input type="range" id="brush-flow" min="1" max="100" value="100">
+                            </div>
+                            <div class="slider-group">
+                                <label>نرمی: <span id="brush-hardness-value">50</span>%</label>
+                                <input type="range" id="brush-hardness" min="0" max="100" value="50">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <main id="canvas-container">
+                <div id="canvas-wrapper">
+                    <canvas id="main-canvas"></canvas>
+                    <canvas id="preview-canvas"></canvas>
+                    <canvas id="selection-canvas"></canvas>
+                    <canvas id="grid-canvas"></canvas>
+                    <div id="text-editor" contenteditable="true" style="display: none;"></div>
+                </div>
+                <div id="zoom-controls">
+                    <button id="zoom-out-btn" class="icon-btn-sm" title="کوچک‌نمایی">-</button>
+                    <select id="zoom-select">
+                        <option value="0.1">10%</option>
+                        <option value="0.25">25%</option>
+                        <option value="0.5">50%</option>
+                        <option value="0.75">75%</option>
+                        <option value="1" selected>100%</option>
+                        <option value="1.5">150%</option>
+                        <option value="2">200%</option>
+                        <option value="3">300%</option>
+                        <option value="4">400%</option>
+                        <option value="8">800%</option>
+                    </select>
+                    <button id="zoom-in-btn" class="icon-btn-sm" title="بزرگ‌نمایی">+</button>
+                    <button id="fit-to-screen-btn" class="icon-btn-sm" title="تنظیم با صفحه">
+                        <span class="material-symbols-outlined">fit_screen</span>
+                    </button>
+                </div>
+            </main>
+        </div>
+        <footer id="status-bar">
+            <div class="status-left">
+                <span id="cursor-position">X: 0, Y: 0</span>
+                <span class="separator">|</span>
+                <span id="tool-status">قلم</span>
+            </div>
+            <div class="status-center">
+                <span id="selection-size" style="display: none;">W: 0, H: 0</span>
+            </div>
+            <div class="status-right">
+                <span id="memory-usage">حافظه: --</span>
+                <span class="separator">|</span>
+                <span id="auto-save-status">ذخیره خودکار: فعال</span>
+            </div>
+        </footer>
+    </div>
+    <div id="context-menu" class="context-menu" style="display: none;">
+        <ul>
+            <li data-action="cut">برش</li>
+            <li data-action="copy">کپی</li>
+            <li data-action="paste">جای‌گذاری</li>
+            <li data-action="delete">حذف</li>
+            <li class="separator"></li>
+            <li data-action="select-all">انتخاب همه</li>
+            <li data-action="deselect">لغو انتخاب</li>
+            <li class="separator"></li>
+            <li data-action="bring-to-front">انتقال به جلو</li>
+            <li data-action="send-to-back">انتقال به عقب</li>
+        </ul>
+    </div>
+    <div id="toast-container"></div>
+    <div id="modal-container"></div>
+    <script type="module" src="app.js"></script>
+</body>
+                      </html>

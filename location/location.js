@@ -1,7 +1,7 @@
 (function () {
     'use strict';
     try {
-        if (document.getElementById('shareLocationWidget')) return;
+        if (document.getElementById('locationWidget')) return;
 
         /* ==================================================================
            Ù„ÛŒØ³Øª Ù…ÙˆÙ‚Ø¹ÛŒØªâ€ŒÙ‡Ø§: Ø¨Ø±Ø§ÛŒ Ø§ÙØ²ÙˆØ¯Ù† Ù…ÙˆÙ‚Ø¹ÛŒØª Ø¬Ø¯ÛŒØ¯ ÛŒÚ© Ø®Ø· Ø¯ÛŒÚ¯Ø± Ù…Ø«Ù„ Ø²ÛŒØ± Ø§Ø¶Ø§ÙÙ‡ Ú©Ù†ÛŒØ¯:
@@ -14,24 +14,25 @@
 
         /* ---------- style ---------- */
         var css =
-            '.share-location-widget{max-width:340px;margin:0 auto;padding:16px;background:#fff;border-radius:var(--radius,16px);box-shadow:var(--shadow,0 8px 24px rgba(0,0,0,.12));font-family:var(--font,\'Vazirmatn\',\'Segoe UI\',Tahoma,sans-serif);direction:rtl;text-align:right;box-sizing:border-box}' +
-            '.share-location-widget *{box-sizing:border-box}' +
-            '.slw-title{margin:0 0 12px;font-size:16px;font-weight:bold;color:var(--primary,#0b3d2e)}' +
-            '.slw-select{width:100%;padding:9px 10px;margin-bottom:10px;border:1px solid #ddd;border-radius:10px;font-size:14px;font-family:inherit;background:#fafafa;color:#222}' +
-            '.slw-buttons{display:flex;gap:8px;flex-wrap:wrap}' +
-            '.slw-btn{flex:1 1 130px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;border:none;border-radius:25px;font-size:13px;font-weight:bold;font-family:inherit;text-decoration:none;cursor:pointer;transition:var(--transition,.25s ease);white-space:nowrap}' +
-            '.slw-btn-primary{background:var(--primary,#0b3d2e);color:#fff}' +
-            '.slw-btn-primary:hover{background:var(--gold,#f0c040);color:#222}' +
-            '.slw-btn-secondary{background:#f0ece2;color:var(--primary,#0b3d2e)}' +
-            '.slw-btn-secondary:hover{background:var(--gold,#f0c040);color:#222}' +
-            '.slw-btn-outline{display:block;width:100%;margin-top:8px;background:transparent;border:2px solid var(--primary,#0b3d2e);color:var(--primary,#0b3d2e)}' +
-            '.slw-btn-outline:hover{background:var(--primary,#0b3d2e);color:#fff}' +
-            'body.dark .slw-btn-outline{border-color:var(--gold-light,#ffe082);color:var(--gold-light,#ffe082)}' +
-            'body.dark .slw-btn-outline:hover{background:var(--gold-light,#ffe082);color:#222}' +
-            '.slw-msg{min-height:18px;margin-top:8px;font-size:12px;color:#2e7d32;text-align:center}' +
-            'body.dark .share-location-widget{background:#1d1d1d;color:#f2f2f2}' +
-            'body.dark .slw-select{background:#2a2a2a;color:#fff;border-color:#444}' +
-            'body.dark .slw-btn-secondary{background:#2a2a2a;color:var(--gold-light,#ffe082)}';
+            '.location-widget{max-width:340px;margin:0 auto;padding:16px;background:#fff;border-radius:var(--radius,16px);box-shadow:var(--shadow,0 8px 24px rgba(0,0,0,.12));font-family:var(--font,\'Vazirmatn\',\'Segoe UI\',Tahoma,sans-serif);direction:rtl;text-align:right;box-sizing:border-box}' +
+            '.location-widget *{box-sizing:border-box}' +
+            '.lw-title{margin:0 0 12px;font-size:16px;font-weight:bold;color:var(--primary,#0b3d2e)}' +
+            '.lw-select{width:100%;padding:9px 10px;margin-bottom:10px;border:1px solid #ddd;border-radius:10px;font-size:14px;font-family:inherit;background:#fafafa;color:#222}' +
+            '.lw-map{width:100%;height:180px;border:0;border-radius:12px;margin-bottom:10px;display:block}' +
+            '.lw-buttons{display:flex;gap:8px;flex-wrap:wrap}' +
+            '.lw-btn{flex:1 1 130px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;border:none;border-radius:25px;font-size:13px;font-weight:bold;font-family:inherit;text-decoration:none;cursor:pointer;transition:var(--transition,.25s ease);white-space:nowrap}' +
+            '.lw-btn-primary{background:var(--primary,#0b3d2e);color:#fff}' +
+            '.lw-btn-primary:hover{background:var(--gold,#f0c040);color:#222}' +
+            '.lw-btn-secondary{background:#f0ece2;color:var(--primary,#0b3d2e)}' +
+            '.lw-btn-secondary:hover{background:var(--gold,#f0c040);color:#222}' +
+            '.lw-btn-outline{display:block;width:100%;margin-top:8px;background:transparent;border:2px solid var(--primary,#0b3d2e);color:var(--primary,#0b3d2e)}' +
+            '.lw-btn-outline:hover{background:var(--primary,#0b3d2e);color:#fff}' +
+            'body.dark .lw-btn-outline{border-color:var(--gold-light,#ffe082);color:var(--gold-light,#ffe082)}' +
+            'body.dark .lw-btn-outline:hover{background:var(--gold-light,#ffe082);color:#222}' +
+            '.lw-msg{min-height:18px;margin-top:8px;font-size:12px;color:#2e7d32;text-align:center}' +
+            'body.dark .location-widget{background:#1d1d1d;color:#f2f2f2}' +
+            'body.dark .lw-select{background:#2a2a2a;color:#fff;border-color:#444}' +
+            'body.dark .lw-btn-secondary{background:#2a2a2a;color:var(--gold-light,#ffe082)}';
 
         var styleEl = document.createElement('style');
         styleEl.textContent = css;
@@ -39,16 +40,16 @@
 
         /* ---------- markup (built via DOM, not innerHTML) ---------- */
         var wrap = document.createElement('div');
-        wrap.className = 'share-location-widget';
-        wrap.id = 'shareLocationWidget';
+        wrap.className = 'location-widget';
+        wrap.id = 'locationWidget';
 
         var title = document.createElement('h3');
-        title.className = 'slw-title';
-        title.textContent = 'ðŸ“ Ø§Ø´ØªØ±Ø§Ú©â€ŒÚ¯Ø°Ø§Ø±ÛŒ Ù…ÙˆÙ‚Ø¹ÛŒØª';
+        title.className = 'lw-title';
+        title.textContent = 'ðŸ“ Ù†Ù‚Ø´Ù‡ Ùˆ Ù…ÙˆÙ‚Ø¹ÛŒØª';
         wrap.appendChild(title);
 
         var select = document.createElement('select');
-        select.className = 'slw-select';
+        select.className = 'lw-select';
         select.setAttribute('aria-label', 'Ø§Ù†ØªØ®Ø§Ø¨ Ù…ÙˆÙ‚Ø¹ÛŒØª');
         LOCATIONS.forEach(function (loc) {
             var opt = document.createElement('option');
@@ -58,8 +59,16 @@
         });
         wrap.appendChild(select);
 
+        /* embedded map â€” plain iframe embed, no API key / no billing needed */
+        var mapFrame = document.createElement('iframe');
+        mapFrame.className = 'lw-map';
+        mapFrame.setAttribute('loading', 'lazy');
+        mapFrame.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+        mapFrame.title = 'Ù†Ù‚Ø´Ù‡ Ù…ÙˆÙ‚Ø¹ÛŒØª';
+        wrap.appendChild(mapFrame);
+
         var msg = document.createElement('div');
-        msg.className = 'slw-msg';
+        msg.className = 'lw-msg';
         msg.setAttribute('role', 'status');
         msg.setAttribute('aria-live', 'polite');
 
@@ -72,6 +81,11 @@
         function buildUrl(lat, lng, name) {
             return 'https://www.google.com/maps?q=' + encodeURIComponent(lat) + ',' +
                    encodeURIComponent(lng) + '(' + encodeURIComponent(name) + ')';
+        }
+
+        function buildEmbedUrl(lat, lng) {
+            return 'https://www.google.com/maps?q=' + encodeURIComponent(lat) + ',' +
+                   encodeURIComponent(lng) + '&z=15&output=embed';
         }
 
         function copyText(text) {
@@ -101,11 +115,11 @@
         }
 
         var btnRow = document.createElement('div');
-        btnRow.className = 'slw-buttons';
+        btnRow.className = 'lw-buttons';
 
         var shareBtn = document.createElement('button');
         shareBtn.type = 'button';
-        shareBtn.className = 'slw-btn slw-btn-primary';
+        shareBtn.className = 'lw-btn lw-btn-primary';
         shareBtn.textContent = 'ðŸ”— Ø§Ø´ØªØ±Ø§Ú©â€ŒÚ¯Ø°Ø§Ø±ÛŒ';
         shareBtn.addEventListener('click', function () {
             var loc = currentSelection();
@@ -125,23 +139,26 @@
         btnRow.appendChild(shareBtn);
 
         var mapLink = document.createElement('a');
-        mapLink.className = 'slw-btn slw-btn-secondary';
+        mapLink.className = 'lw-btn lw-btn-secondary';
         mapLink.target = '_blank';
         mapLink.rel = 'nofollow';
         mapLink.textContent = 'ðŸ—ºï¸ Ù…Ø³ÛŒØ±ÛŒØ§Ø¨ÛŒ';
-        mapLink.href = buildUrl(LOCATIONS[0].lat, LOCATIONS[0].lng, LOCATIONS[0].name);
-        function updateMapHref() {
+
+        function updateMap() {
             var loc = currentSelection();
-            if (loc) mapLink.href = buildUrl(loc.lat, loc.lng, loc.name);
+            if (!loc) return;
+            mapLink.href = buildUrl(loc.lat, loc.lng, loc.name);
+            mapFrame.src = buildEmbedUrl(loc.lat, loc.lng);
         }
-        select.addEventListener('change', updateMapHref);
+        select.addEventListener('change', updateMap);
+        updateMap();
         btnRow.appendChild(mapLink);
 
         wrap.appendChild(btnRow);
 
         var myLocBtn = document.createElement('button');
         myLocBtn.type = 'button';
-        myLocBtn.className = 'slw-btn slw-btn-outline';
+        myLocBtn.className = 'lw-btn lw-btn-outline';
         myLocBtn.textContent = 'ðŸ“± Ø§Ø´ØªØ±Ø§Ú©â€ŒÚ¯Ø°Ø§Ø±ÛŒ Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ù†';
         myLocBtn.addEventListener('click', function () {
             if (!navigator.geolocation) {
@@ -154,6 +171,7 @@
                 var lng = pos.coords.longitude;
                 var url = buildUrl(lat, lng, 'Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ù†');
                 var text = 'ðŸ“ Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ù†\n' + url;
+                mapFrame.src = buildEmbedUrl(lat, lng);
                 if (navigator.share) {
                     navigator.share({ title: 'Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ù†', text: text, url: url }).catch(function () {});
                     return;
@@ -184,6 +202,6 @@
             document.body.appendChild(wrap);
         }
     } catch (e) {
-        try { console.warn('Ø®Ø·Ø§ Ø¯Ø± Ø¨Ø§Ø±Ú¯Ø°Ø§Ø±ÛŒ ÙˆÛŒØ¬Øª Ø§Ø´ØªØ±Ø§Ú© Ù…ÙˆÙ‚Ø¹ÛŒØª:', e && e.message); } catch (e2) {}
+        try { console.warn('Ø®Ø·Ø§ Ø¯Ø± Ø¨Ø§Ø±Ú¯Ø°Ø§Ø±ÛŒ ÙˆÛŒØ¬Øª Ù†Ù‚Ø´Ù‡ Ùˆ Ù…ÙˆÙ‚Ø¹ÛŒØª:', e && e.message); } catch (e2) {}
     }
 })();

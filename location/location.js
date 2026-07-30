@@ -4,12 +4,12 @@
         if (document.getElementById('locationWidget')) return;
 
         /* ==================================================================
-           Ù„ÛŒØ³Øª Ù…ÙˆÙ‚Ø¹ÛŒØªâ€ŒÙ‡Ø§: Ø¨Ø±Ø§ÛŒ Ø§ÙØ²ÙˆØ¯Ù† Ù…ÙˆÙ‚Ø¹ÛŒØª Ø¬Ø¯ÛŒØ¯ ÛŒÚ© Ø®Ø· Ø¯ÛŒÚ¯Ø± Ù…Ø«Ù„ Ø²ÛŒØ± Ø§Ø¶Ø§ÙÙ‡ Ú©Ù†ÛŒØ¯:
-           { name: 'Ù†Ø§Ù… Ù…ÙˆÙ‚Ø¹ÛŒØª', lat: Ø¹Ø±Ø¶ Ø¬ØºØ±Ø§ÙÛŒØ§ÛŒÛŒ, lng: Ø·ÙˆÙ„ Ø¬ØºØ±Ø§ÙÛŒØ§ÛŒÛŒ }
+           \u0644\u06cc\u0633\u062a \u0645\u0648\u0642\u0639\u06cc\u062a\u200c\u0647\u0627: \u0628\u0631\u0627\u06cc \u0627\u0641\u0632\u0648\u062f\u0646 \u0645\u0648\u0642\u0639\u06cc\u062a \u062c\u062f\u06cc\u062f \u06cc\u06a9 \u062e\u0637 \u062f\u06cc\u06af\u0631 \u0645\u062b\u0644 \u0632\u06cc\u0631 \u0627\u0636\u0627\u0641\u0647 \u06a9\u0646\u06cc\u062f:
+           { name: '\u0646\u0627\u0645 \u0645\u0648\u0642\u0639\u06cc\u062a', lat: \u0639\u0631\u0636 \u062c\u063a\u0631\u0627\u0641\u06cc\u0627\u06cc\u06cc, lng: \u0637\u0648\u0644 \u062c\u063a\u0631\u0627\u0641\u06cc\u0627\u06cc\u06cc }
            ================================================================== */
         var LOCATIONS = [
-            { name: 'Ø§Ù…Ø§Ù…Ø²Ø§Ø¯Ù‡ Ø³ÛŒØ¯ Ù…Ø­Ù…Ø¯ Ø³Ø§ØºÙ†Ø¯', lat: 34.452173, lng: 57.273014 },
-            { name: 'Ø­ÙˆÙ†ÙˆÛŒÙ‡', lat: 34.463493, lng: 57.280267 }
+            { name: '\u0627\u0645\u0627\u0645\u0632\u0627\u062f\u0647 \u0633\u06cc\u062f \u0645\u062d\u0645\u062f \u0633\u0627\u063a\u0646\u062f', lat: 34.452173, lng: 57.273014 },
+            { name: '\u062d\u0648\u0646\u0648\u06cc\u0647', lat: 34.463493, lng: 57.280267 }
         ];
 
         /* ---------- style ---------- */
@@ -45,12 +45,12 @@
 
         var title = document.createElement('h3');
         title.className = 'lw-title';
-        title.textContent = 'ðŸ“ Ù†Ù‚Ø´Ù‡ Ùˆ Ù…ÙˆÙ‚Ø¹ÛŒØª';
+        title.textContent = '\ud83d\udccd \u0646\u0642\u0634\u0647 \u0648 \u0645\u0648\u0642\u0639\u06cc\u062a';
         wrap.appendChild(title);
 
         var select = document.createElement('select');
         select.className = 'lw-select';
-        select.setAttribute('aria-label', 'Ø§Ù†ØªØ®Ø§Ø¨ Ù…ÙˆÙ‚Ø¹ÛŒØª');
+        select.setAttribute('aria-label', '\u0627\u0646\u062a\u062e\u0627\u0628 \u0645\u0648\u0642\u0639\u06cc\u062a');
         LOCATIONS.forEach(function (loc) {
             var opt = document.createElement('option');
             opt.textContent = loc.name;
@@ -59,12 +59,12 @@
         });
         wrap.appendChild(select);
 
-        /* embedded map â€” plain iframe embed, no API key / no billing needed */
+        /* embedded map \u2014 plain iframe embed, no API key / no billing needed */
         var mapFrame = document.createElement('iframe');
         mapFrame.className = 'lw-map';
         mapFrame.setAttribute('loading', 'lazy');
         mapFrame.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-        mapFrame.title = 'Ù†Ù‚Ø´Ù‡ Ù…ÙˆÙ‚Ø¹ÛŒØª';
+        mapFrame.title = '\u0646\u0642\u0634\u0647 \u0645\u0648\u0642\u0639\u06cc\u062a';
         wrap.appendChild(mapFrame);
 
         var msg = document.createElement('div');
@@ -120,20 +120,20 @@
         var shareBtn = document.createElement('button');
         shareBtn.type = 'button';
         shareBtn.className = 'lw-btn lw-btn-primary';
-        shareBtn.textContent = 'ðŸ”— Ø§Ø´ØªØ±Ø§Ú©â€ŒÚ¯Ø°Ø§Ø±ÛŒ';
+        shareBtn.textContent = '\ud83d\udd17 \u0627\u0634\u062a\u0631\u0627\u06a9\u200c\u06af\u0630\u0627\u0631\u06cc';
         shareBtn.addEventListener('click', function () {
             var loc = currentSelection();
             if (!loc) return;
             var url = buildUrl(loc.lat, loc.lng, loc.name);
-            var text = 'ðŸ“ ' + loc.name + '\n' + url;
+            var text = '\ud83d\udccd ' + loc.name + '\n' + url;
             if (navigator.share) {
                 navigator.share({ title: loc.name, text: text, url: url }).catch(function () {});
                 return;
             }
             copyText(text).then(function () {
-                showMsg('âœ… Ù„ÛŒÙ†Ú© Ù…ÙˆÙ‚Ø¹ÛŒØª Ú©Ù¾ÛŒ Ø´Ø¯!');
+                showMsg('\u2705 \u0644\u06cc\u0646\u06a9 \u0645\u0648\u0642\u0639\u06cc\u062a \u06a9\u067e\u06cc \u0634\u062f!');
             }).catch(function () {
-                showMsg('âŒ Ú©Ù¾ÛŒ Ù†Ø´Ø¯ØŒ Ù„Ø·ÙØ§Ù‹ Ø¯Ø³ØªÛŒ Ú©Ù¾ÛŒ Ú©Ù†ÛŒØ¯.');
+                showMsg('\u274c \u06a9\u067e\u06cc \u0646\u0634\u062f\u060c \u0644\u0637\u0641\u0627\u064b \u062f\u0633\u062a\u06cc \u06a9\u067e\u06cc \u06a9\u0646\u06cc\u062f.');
             });
         });
         btnRow.appendChild(shareBtn);
@@ -142,7 +142,7 @@
         mapLink.className = 'lw-btn lw-btn-secondary';
         mapLink.target = '_blank';
         mapLink.rel = 'nofollow';
-        mapLink.textContent = 'ðŸ—ºï¸ Ù…Ø³ÛŒØ±ÛŒØ§Ø¨ÛŒ';
+        mapLink.textContent = '\ud83d\uddfa\ufe0f \u0645\u0633\u06cc\u0631\u06cc\u0627\u0628\u06cc';
 
         function updateMap() {
             var loc = currentSelection();
@@ -159,34 +159,34 @@
         var myLocBtn = document.createElement('button');
         myLocBtn.type = 'button';
         myLocBtn.className = 'lw-btn lw-btn-outline';
-        myLocBtn.textContent = 'ðŸ“± Ø§Ø´ØªØ±Ø§Ú©â€ŒÚ¯Ø°Ø§Ø±ÛŒ Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ù†';
+        myLocBtn.textContent = '\ud83d\udcf1 \u0627\u0634\u062a\u0631\u0627\u06a9\u200c\u06af\u0630\u0627\u0631\u06cc \u0645\u0648\u0642\u0639\u06cc\u062a \u0645\u0646';
         myLocBtn.addEventListener('click', function () {
             if (!navigator.geolocation) {
-                showMsg('âŒ Ù…Ø±ÙˆØ±Ú¯Ø± Ø´Ù…Ø§ Ø§Ø² Ù…ÙˆÙ‚Ø¹ÛŒØªâ€ŒÛŒØ§Ø¨ÛŒ Ù¾Ø´ØªÛŒØ¨Ø§Ù†ÛŒ Ù†Ù…ÛŒâ€ŒÚ©Ù†Ø¯');
+                showMsg('\u274c \u0645\u0631\u0648\u0631\u06af\u0631 \u0634\u0645\u0627 \u0627\u0632 \u0645\u0648\u0642\u0639\u06cc\u062a\u200c\u06cc\u0627\u0628\u06cc \u067e\u0634\u062a\u06cc\u0628\u0627\u0646\u06cc \u0646\u0645\u06cc\u200c\u06a9\u0646\u062f');
                 return;
             }
-            showMsg('â³ Ø¯Ø± Ø­Ø§Ù„ Ø¯Ø±ÛŒØ§ÙØª Ù…ÙˆÙ‚Ø¹ÛŒØª...');
+            showMsg('\u23f3 \u062f\u0631 \u062d\u0627\u0644 \u062f\u0631\u06cc\u0627\u0641\u062a \u0645\u0648\u0642\u0639\u06cc\u062a...');
             navigator.geolocation.getCurrentPosition(function (pos) {
                 var lat = pos.coords.latitude;
                 var lng = pos.coords.longitude;
-                var url = buildUrl(lat, lng, 'Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ù†');
-                var text = 'ðŸ“ Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ù†\n' + url;
+                var url = buildUrl(lat, lng, '\u0645\u0648\u0642\u0639\u06cc\u062a \u0645\u0646');
+                var text = '\ud83d\udccd \u0645\u0648\u0642\u0639\u06cc\u062a \u0645\u0646\n' + url;
                 mapFrame.src = buildEmbedUrl(lat, lng);
                 if (navigator.share) {
-                    navigator.share({ title: 'Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ù†', text: text, url: url }).catch(function () {});
+                    navigator.share({ title: '\u0645\u0648\u0642\u0639\u06cc\u062a \u0645\u0646', text: text, url: url }).catch(function () {});
                     return;
                 }
                 copyText(text).then(function () {
-                    showMsg('âœ… Ù„ÛŒÙ†Ú© Ù…ÙˆÙ‚Ø¹ÛŒØª Ø´Ù…Ø§ Ú©Ù¾ÛŒ Ø´Ø¯!');
+                    showMsg('\u2705 \u0644\u06cc\u0646\u06a9 \u0645\u0648\u0642\u0639\u06cc\u062a \u0634\u0645\u0627 \u06a9\u067e\u06cc \u0634\u062f!');
                 }).catch(function () {
-                    showMsg('âŒ Ú©Ù¾ÛŒ Ù†Ø´Ø¯ØŒ Ù„Ø·ÙØ§Ù‹ Ø¯Ø³ØªÛŒ Ú©Ù¾ÛŒ Ú©Ù†ÛŒØ¯.');
+                    showMsg('\u274c \u06a9\u067e\u06cc \u0646\u0634\u062f\u060c \u0644\u0637\u0641\u0627\u064b \u062f\u0633\u062a\u06cc \u06a9\u067e\u06cc \u06a9\u0646\u06cc\u062f.');
                 });
             }, function (err) {
-                var m = 'âŒ Ø®Ø·Ø§ Ø¯Ø± Ø¯Ø±ÛŒØ§ÙØª Ù…ÙˆÙ‚Ø¹ÛŒØª';
+                var m = '\u274c \u062e\u0637\u0627 \u062f\u0631 \u062f\u0631\u06cc\u0627\u0641\u062a \u0645\u0648\u0642\u0639\u06cc\u062a';
                 if (err) {
-                    if (err.code === 1) m = 'âŒ Ø§Ø¬Ø§Ø²Ù‡â€ŒÛŒ Ø¯Ø³ØªØ±Ø³ÛŒ Ø¨Ù‡ Ù…ÙˆÙ‚Ø¹ÛŒØª Ø¯Ø§Ø¯Ù‡ Ù†Ø´Ø¯';
-                    else if (err.code === 2) m = 'âŒ Ù…ÙˆÙ‚Ø¹ÛŒØª Ù…Ú©Ø§Ù†ÛŒ Ø¯Ø± Ø¯Ø³ØªØ±Ø³ Ù†ÛŒØ³Øª';
-                    else if (err.code === 3) m = 'âŒ Ø²Ù…Ø§Ù† Ø¯Ø±ÛŒØ§ÙØª Ù…ÙˆÙ‚Ø¹ÛŒØª ØªÙ…Ø§Ù… Ø´Ø¯';
+                    if (err.code === 1) m = '\u274c \u0627\u062c\u0627\u0632\u0647\u200c\u06cc \u062f\u0633\u062a\u0631\u0633\u06cc \u0628\u0647 \u0645\u0648\u0642\u0639\u06cc\u062a \u062f\u0627\u062f\u0647 \u0646\u0634\u062f';
+                    else if (err.code === 2) m = '\u274c \u0645\u0648\u0642\u0639\u06cc\u062a \u0645\u06a9\u0627\u0646\u06cc \u062f\u0631 \u062f\u0633\u062a\u0631\u0633 \u0646\u06cc\u0633\u062a';
+                    else if (err.code === 3) m = '\u274c \u0632\u0645\u0627\u0646 \u062f\u0631\u06cc\u0627\u0641\u062a \u0645\u0648\u0642\u0639\u06cc\u062a \u062a\u0645\u0627\u0645 \u0634\u062f';
                 }
                 showMsg(m);
             }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
@@ -202,6 +202,6 @@
             document.body.appendChild(wrap);
         }
     } catch (e) {
-        try { console.warn('Ø®Ø·Ø§ Ø¯Ø± Ø¨Ø§Ø±Ú¯Ø°Ø§Ø±ÛŒ ÙˆÛŒØ¬Øª Ù†Ù‚Ø´Ù‡ Ùˆ Ù…ÙˆÙ‚Ø¹ÛŒØª:', e && e.message); } catch (e2) {}
+        try { console.warn('\u062e\u0637\u0627 \u062f\u0631 \u0628\u0627\u0631\u06af\u0630\u0627\u0631\u06cc \u0648\u06cc\u062c\u062a \u0646\u0642\u0634\u0647 \u0648 \u0645\u0648\u0642\u0639\u06cc\u062a:', e && e.message); } catch (e2) {}
     }
 })();

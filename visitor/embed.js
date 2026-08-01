@@ -6,98 +6,115 @@
 
     function loadCSS() {
 
-        if (document.getElementById("diyar-visitor-css"))
-            return;
+        if (document.querySelector(
+            'link[data-diyar-css]'
+        )) return;
 
         const css = document.createElement("link");
 
-        css.id = "diyar-visitor-css";
         css.rel = "stylesheet";
         css.href = BASE_URL + "visitor.css";
+        css.dataset.diyarCss = "true";
 
         document.head.appendChild(css);
     }
 
 
-    function loadJS(src, callback) {
+    function loadScript(url, callback) {
 
         const script = document.createElement("script");
 
-        script.src = src;
+        script.src = url;
         script.onload = callback;
 
         document.body.appendChild(script);
     }
 
 
-    function createContainer() {
+    function createMountPoint() {
 
-        let box =
+        let el =
             document.getElementById(
                 "diyar-visitor-widget"
             );
 
-        if (!box) {
+        if (!el) {
 
-            box = document.createElement("div");
+            el = document.createElement("div");
 
-            box.id =
+            el.id =
                 "diyar-visitor-widget";
 
             document.currentScript
                 .parentNode
                 .insertBefore(
-                    box,
+                    el,
                     document.currentScript
                 );
         }
 
+        return el;
     }
 
 
-    function init() {
+    function start() {
+
+        createMountPoint();
 
         loadCSS();
 
-        createContainer();
+
+        const files = [
+            "config.js",
+            "utils.js",
+            "theme.js",
+            "animations.js",
+            "visitor.js"
+        ];
 
 
-        loadJS(
-            BASE_URL + "config.js",
-            function () {
+        function next(index) {
 
-                loadJS(
-                    BASE_URL + "utils.js",
-                    function () {
+            if (index >= files.length) {
 
-                        loadJS(
-                            BASE_URL + "theme.js",
-                            function () {
+                if (window.DiyarVisitor) {
 
-                                loadJS(
-                                    BASE_URL + "animations.js",
-                                    function () {
+                    window.DiyarVisitor.mount(
+                        "#diyar-visitor-widget"
+                    );
 
-                                        loadJS(
-                                            BASE_URL + "visitor.js"
-                                        );
+                }
 
-                                    }
-                                );
-
-                            }
-                        );
-
-                    }
-                );
-
+                return;
             }
-        );
+
+
+            loadScript(
+                BASE_URL + files[index],
+                function () {
+                    next(index + 1);
+                }
+            );
+
+        }
+
+
+        next(0);
 
     }
 
 
-    init();
+    if (document.readyState === "loading") {
 
+        document.addEventListener(
+            "DOMContentLoaded",
+            start
+        );
+
+    } else {
+
+        start();
+
+    }
 
 })();

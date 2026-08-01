@@ -1,31 +1,27 @@
 /**
  * core/utils.js
- * توابع کمکی عمومی مورد استفاده در سراسر ویجت
+ * ─────────────────────────────────────────────────────────────
+ * توابع عمومی مستقل از DOM: تبدیل ارقام فارسی، انتخاب حدیث روز
+ * بدون تکرار، پاک‌سازی XSS، اشتراک‌گذاری/کپی/چاپ.
+ * ─────────────────────────────────────────────────────────────
  */
-(function (root, factory) {
-  if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
-  } else {
-    root.HadithUtils = factory();
-  }
-})(typeof self !== 'undefined' ? self : this, function () {
+(function (global) {
   'use strict';
 
-  /** جلوگیری از اجرای مکرر یک تابع در بازه زمانی کوتاه */
-  function debounce(fn, wait) {
-    let timer = null;
-    return function (...args) {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn.apply(this, args), wait);
-    };
+  var PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+  /** تبدیل هر رقم لاتین موجود در یک رشته/عدد به معادل فارسی آن */
+  function toPersianDigits(input) {
+    return String(input).replace(/[0-9]/g, function (d) {
+      return PERSIAN_DIGITS[Number(d)];
+    });
   }
 
-  /** تولید شناسه‌ی تصادفی کوتاه */
-  function generateId(prefix = 'hw') {
-    return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-  }
-
-  /** پاکسازی ساده‌ی HTML برای جلوگیری از XSS در متن‌های پویا */
+  /**
+   * پاک‌سازی متن قبل از درج در DOM برای جلوگیری از XSS.
+   * چون در widget.js همه‌جا از textContent استفاده می‌شود این تابع
+   * به‌عنوان یک لایه‌ی دفاعی دوم برای مواردی است که innerHTML لازم شود.
+   */
   function escapeHTML(str) {
     if (typeof str !== 'string') return '';
     return str
@@ -36,48 +32,202 @@
       .replace(/'/g, '&#39;');
   }
 
-  /** گرفتن شماره‌ی روز سال، برای انتخاب حدیث روزانه ثابت */
-  function dayOfYear(date = new Date()) {
-    const start = new Date(date.getFullYear(), 0, 0);
-    const diff = date - start;
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  /** اعتبارسنجی حداقلی ساختار یک آیتم حدیث؛ آیتم‌های ناقص/مخرب حذف می‌شوند */
+  function isValidHadith(item) {
+    return !!item &&
+      (typeof item.id === 'number' || typeof item.id === 'string') &&
+      typeof item.text === 'string' &&
+      item.text.trim().length > 0;
   }
 
-  /** انتخاب یک آیتم ثابت بر اساس روز (برای حالت daily) */
-  function pickDaily(list, date = new Date()) {
-    if (!Array.isArray(list) || list.length === 0) return null;
-    const idx = dayOfYear(date) % list.length;
+  function sanitizeHadithList(list) {
+    if (!Array.isArray(list)) return [];
+    return list.filter(isValidHadith);
+  }
+
+  /** شماره‌ی روز سال میلادی جاری (۱ تا ۳۶۵/۳۶۶) */
+  function dayOfYear(date) {
+    date = date || new Date();
+    var start = new Date(date.getFullYear(), 0, 0);
+    var diff = date - start;
+    return Math.floor(diff / 86400000);
+  }
+
+  /**
+   * تولید یک ترتیب شبه‌تصادفی اما تکرارپذیر (seeded) از اندیس‌های
+   * ۰..n-1 با استفاده از الگوریتم Fisher–Yates و PRNG ساده‌ی خطی.
+   * این ترتیب برای هر سال ثابت است تا «حدیث روز» در طول روز تغییر
+   * نکند اما در طول یک چرخه‌ی کامل (n روز) هیچ حدیثی تکرار نشود.
+   */
+  function seededShuffle(n, seed) {
+    var arr = [];
+    for (var i = 0; i < n; i++) arr.push(i);
+
+    var s = seed % 2147483647;
+    if (s <= 0) s += 2147483646;
+
+    function nextRandom() {
+      s = (s * 16807) % 2147483647;
+      return (s - 1) / 2147483646;
+    }
+
+    for (var j = arr.length - 1; j > 0; j--) {
+      var k = Math.floor(nextRandom() * (j + 1));
+      var tmp = arr[j];
+      arr[j] = arr[k];
+      arr[k] = tmp;
+    }
+    return arr;
+  }
+
+  /**
+   * انتخاب «حدیث روز»: بر اساس سال + روزِ سال، یک اندیس ثابت اما
+   * غیرتکراری (در طول یک چرخه‌ی کامل) از لیست انتخاب می‌شود.
+   */
+  function pickDailyHadith(list, date) {
+    if (!list.length) return null;
+    date = date || new Date();
+    var order = seededShuffle(list.length, date.getFullYear());
+    var idx = order[dayOfYear(date) % list.length];
     return list[idx];
   }
 
-  /** انتخاب تصادفی از یک آرایه */
-  function pickRandom(list) {
-    if (!Array.isArray(list) || list.length === 0) return null;
-    const idx = Math.floor(Math.random() * list.length);
-    return list[idx];
+  /**
+   * انتخاب تصادفی با جلوگیری از تکرار نزدیک: شناسه‌ی آیتم‌های
+   * اخیراً نمایش‌داده‌شده در recentIds نگه داشته می‌شود؛ وقتی همه‌ی
+   * آیتم‌ها یک‌بار دیده شدند، چرخه از نو آغاز می‌شود.
+   * @param {Array} list
+   * @param {Array} recentIds  آرایه‌ای از id هایی که اخیراً دیده شده‌اند
+   * @returns {{ hadith:object, recentIds:Array }}
+   */
+  function pickRandomHadith(list, recentIds) {
+    if (!list.length) return { hadith: null, recentIds: [] };
+    recentIds = Array.isArray(recentIds) ? recentIds.slice() : [];
+
+    var remaining = list.filter(function (h) {
+      return recentIds.indexOf(h.id) === -1;
+    });
+
+    if (!remaining.length) {
+      recentIds = [];
+      remaining = list;
+    }
+
+    var pick = remaining[Math.floor(Math.random() * remaining.length)];
+    recentIds.push(pick.id);
+
+    // محدود کردن اندازه‌ی تاریخچه به اندازه‌ی کل لیست (منطقی و بدون رشد بی‌نهایت)
+    if (recentIds.length > list.length) {
+      recentIds = recentIds.slice(recentIds.length - list.length);
+    }
+
+    return { hadith: pick, recentIds: recentIds };
   }
 
-  /** فرمت‌دهی ساده تاریخ به شکل YYYY-MM-DD */
-  function formatDate(date = new Date()) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+  /** ساخت متن نهایی برای اشتراک‌گذاری/کپی از روی یک آیتم حدیث */
+  function buildShareText(hadith) {
+    if (!hadith) return '';
+    var parts = [hadith.text];
+    var meta = [];
+    if (hadith.source) meta.push(hadith.source);
+    if (hadith.book) meta.push(hadith.book);
+    if (meta.length) parts.push('— ' + meta.join('، '));
+    return parts.join('\n');
   }
 
-  /** ادغام امن دو شیء (shallow merge) */
-  function merge(a, b) {
-    return Object.assign({}, a || {}, b || {});
+  /** کپی متن در کلیپ‌بورد با پشتیبانی از مرورگرهای قدیمی */
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () {
+        return true;
+      }).catch(function () {
+        return legacyCopy(text);
+      });
+    }
+    return Promise.resolve(legacyCopy(text));
   }
 
-  return {
-    debounce,
-    generateId,
-    escapeHTML,
-    dayOfYear,
-    pickDaily,
-    pickRandom,
-    formatDate,
-    merge
+  function legacyCopy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  /** اشتراک‌گذاری با Web Share API و بازگشت به کپی در صورت نبود آن */
+  function shareText(text, title) {
+    if (navigator.share) {
+      return navigator.share({ text: text, title: title || 'حدیث' }).then(function () {
+        return { ok: true, method: 'share' };
+      }).catch(function () {
+        return copyToClipboard(text).then(function (ok) {
+          return { ok: ok, method: 'copy' };
+        });
+      });
+    }
+    return copyToClipboard(text).then(function (ok) {
+      return { ok: ok, method: 'copy' };
+    });
+  }
+
+  /** باز کردن یک پنجره‌ی چاپ ساده و ایمن حاوی فقط متن حدیث جاری */
+  function printHadith(hadith) {
+    if (!hadith) return;
+    var win = window.open('', '_blank', 'width=480,height=640');
+    if (!win) return; // popup blocker
+
+    var safeText = escapeHTML(hadith.text);
+    var safeSource = escapeHTML(hadith.source || '');
+    var safeBook = escapeHTML(hadith.book || '');
+
+    win.document.open();
+    win.document.write(
+      '<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8">' +
+      '<title>چاپ حدیث</title>' +
+      '<style>body{font-family:Tahoma,sans-serif;padding:32px;line-height:2;}' +
+      'p.text{font-size:18px}p.meta{color:#555;font-size:14px}</style></head><body>' +
+      '<p class="text">' + safeText + '</p>' +
+      '<p class="meta">' + [safeSource, safeBook].filter(Boolean).join('، ') + '</p>' +
+      '</body></html>'
+    );
+    win.document.close();
+    win.focus();
+    win.print();
+  }
+
+  /** debounce ساده برای جلوگیری از کلیک‌های پیاپی روی دکمه‌ها */
+  function debounce(fn, wait) {
+    var timer = null;
+    return function () {
+      var args = arguments;
+      var ctx = this;
+      clearTimeout(timer);
+      timer = setTimeout(function () { fn.apply(ctx, args); }, wait);
+    };
+  }
+
+  global.HadithUtils = {
+    toPersianDigits: toPersianDigits,
+    escapeHTML: escapeHTML,
+    sanitizeHadithList: sanitizeHadithList,
+    dayOfYear: dayOfYear,
+    seededShuffle: seededShuffle,
+    pickDailyHadith: pickDailyHadith,
+    pickRandomHadith: pickRandomHadith,
+    buildShareText: buildShareText,
+    copyToClipboard: copyToClipboard,
+    shareText: shareText,
+    printHadith: printHadith,
+    debounce: debounce
   };
-});
+})(typeof window !== 'undefined' ? window : this);

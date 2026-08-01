@@ -1,608 +1,472 @@
-/* ==========================================================================
-   Diyar Visitor Widget — Stylesheet
-   ==========================================================================
-   Material Design 3 inspired tokens, Light / Dark / Auto theming, RTL
-   Persian layout, glassmorphism surfaces, and a full animation set
-   (entrance, counter, ripple, skeleton shimmer, hover, focus).
+/**
+ * ============================================================================
+ * Diyar Widgets — Visitor Statistics Widget
+ * visitor.css
+ * ----------------------------------------------------------------------------
+ * Material Design 3 tonal system, implemented with plain CSS custom
+ * properties — no build step, no framework.
+ *
+ * Structure:
+ *   1. Design tokens (light + dark)
+ *   2. Reset & base
+ *   3. Layout (header / grid / footer)
+ *   4. Card component
+ *   5. Motion & animation
+ *   6. Responsive breakpoints
+ *   7. Accessibility (focus, reduced motion, high contrast)
+ * ============================================================================
+ */
 
-   Table of contents:
-     1. Design tokens (light + dark)
-     2. Reset & base
-     3. Demo page shell (not required for embedding the widget)
-     4. Widget shell & header
-     5. Stat grid & cards
-     6. Skeleton loading state
-     7. Footer
-     8. Ripple / pulse / theme-transition animations
-     9. Entrance animation states
-     10. Responsive breakpoints
-     11. Accessibility & reduced motion
+/* ==========================================================================
+   1. DESIGN TOKENS
    ========================================================================== */
 
-/* --------------------------------------------------------------------
-   1. Design tokens
-   -------------------------------------------------------------------- */
-:root {
-  /* Brand / role colors — light */
-  --diyar-primary: #4C6EF5;
-  --diyar-primary-container: #DEE4FF;
-  --diyar-on-primary-container: #17285E;
-  --diyar-secondary: #7C4DFF;
-  --diyar-secondary-container: #E7DEFF;
-  --diyar-on-secondary-container: #2C1766;
-  --diyar-tertiary: #00A896;
-  --diyar-tertiary-container: #D3F5EF;
-  --diyar-on-tertiary-container: #003A34;
-  --diyar-success: #2BA84A;
-  --diyar-success-container: #D9F5DE;
-  --diyar-on-success-container: #0E3A1B;
+.visitor-widget {
+  /* --- Light theme (default / M3 baseline purple) --- */
+  --md-primary: #6750a4;
+  --md-on-primary: #ffffff;
+  --md-primary-container: #eaddff;
+  --md-on-primary-container: #21005d;
 
-  /* Surfaces — light */
-  --diyar-bg: #F2F4FA;
-  --diyar-surface: rgba(255, 255, 255, 0.72);
-  --diyar-surface-solid: #FFFFFF;
-  --diyar-surface-hover: rgba(255, 255, 255, 0.92);
-  --diyar-on-surface: #1B1D29;
-  --diyar-on-surface-variant: #5B5E71;
-  --diyar-outline: rgba(27, 29, 41, 0.10);
-  --diyar-shadow: 220, 224, 240;
+  --md-surface: #fffbfe;
+  --md-surface-dim: #f6f2fa;
+  --md-on-surface: #1c1b1f;
+  --md-on-surface-variant: #49454f;
 
-  /* Component tokens */
-  --diyar-radius-sm: 12px;
-  --diyar-radius-md: 18px;
-  --diyar-radius-lg: 26px;
-  --diyar-radius-pill: 999px;
-  --diyar-blur: 18px;
-  --diyar-font-display: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
-  --diyar-font-body: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+  --md-surface-container: #f3edf7;
+  --md-surface-container-high: #ece6f0;
 
-  /* Motion */
-  --diyar-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --diyar-ease-emphasized: cubic-bezier(0.3, 0, 0.1, 1);
-  --diyar-theme-transition-duration: 420ms;
+  --md-outline: #79747e;
+  --md-outline-variant: #cac4d0;
+
+  --md-secondary-container: #e8def8;
+  --md-on-secondary-container: #1d192b;
+
+  --md-success: #146c2e;
+  --md-success-container: #c4eed0;
+  --md-on-success-container: #072711;
+
+  --md-shadow: 220 30% 20%;
+
+  color-scheme: light;
 }
 
-[data-diyar-theme='dark'] {
-  --diyar-primary: #B4C4FF;
-  --diyar-primary-container: #2B3C7E;
-  --diyar-on-primary-container: #DEE4FF;
-  --diyar-secondary: #CDBBFF;
-  --diyar-secondary-container: #4A3383;
-  --diyar-on-secondary-container: #E7DEFF;
-  --diyar-tertiary: #5FE0CC;
-  --diyar-tertiary-container: #00504A;
-  --diyar-on-tertiary-container: #D3F5EF;
-  --diyar-success: #7DDB92;
-  --diyar-success-container: #1C4A29;
-  --diyar-on-success-container: #D9F5DE;
+.visitor-widget[data-theme="dark"] {
+  --md-primary: #d0bcff;
+  --md-on-primary: #381e72;
+  --md-primary-container: #4f378b;
+  --md-on-primary-container: #eaddff;
 
-  --diyar-bg: #101220;
-  --diyar-surface: rgba(28, 31, 46, 0.66);
-  --diyar-surface-solid: #1C1F2E;
-  --diyar-surface-hover: rgba(38, 42, 60, 0.85);
-  --diyar-on-surface: #E7E9F5;
-  --diyar-on-surface-variant: #A6A9C4;
-  --diyar-outline: rgba(231, 233, 245, 0.10);
-  --diyar-shadow: 4, 5, 12;
+  --md-surface: #1c1b1f;
+  --md-surface-dim: #141317;
+  --md-on-surface: #e6e1e5;
+  --md-on-surface-variant: #cac4d0;
+
+  --md-surface-container: #211f24;
+  --md-surface-container-high: #2b2930;
+
+  --md-outline: #938f99;
+  --md-outline-variant: #49454f;
+
+  --md-secondary-container: #4a4458;
+  --md-on-secondary-container: #e8def8;
+
+  --md-success: #7cdc95;
+  --md-success-container: #0a3818;
+  --md-on-success-container: #c4eed0;
+
+  --md-shadow: 260 60% 4%;
+
+  color-scheme: dark;
 }
 
-/* --------------------------------------------------------------------
-   2. Reset & base
-   -------------------------------------------------------------------- */
-*,
-*::before,
-*::after {
+/* Auto-follow the OS/browser preference until JS resolves data-theme.
+   This prevents a flash of the wrong theme before visitor.js runs. */
+@media (prefers-color-scheme: dark) {
+  .visitor-widget[data-theme="auto"] {
+    --md-primary: #d0bcff;
+    --md-on-primary: #381e72;
+    --md-primary-container: #4f378b;
+    --md-on-primary-container: #eaddff;
+
+    --md-surface: #1c1b1f;
+    --md-surface-dim: #141317;
+    --md-on-surface: #e6e1e5;
+    --md-on-surface-variant: #cac4d0;
+
+    --md-surface-container: #211f24;
+    --md-surface-container-high: #2b2930;
+
+    --md-outline: #938f99;
+    --md-outline-variant: #49454f;
+
+    --md-secondary-container: #4a4458;
+    --md-on-secondary-container: #e8def8;
+
+    --md-success: #7cdc95;
+    --md-success-container: #0a3818;
+    --md-on-success-container: #c4eed0;
+
+    --md-shadow: 260 60% 4%;
+
+    color-scheme: dark;
+  }
+}
+
+/* ==========================================================================
+   2. RESET & BASE
+   ========================================================================== */
+
+* {
   box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  font-family: var(--diyar-font-body);
-  background: var(--diyar-bg);
-  color: var(--diyar-on-surface);
-  transition: background-color var(--diyar-theme-transition-duration) var(--diyar-ease-standard),
-    color var(--diyar-theme-transition-duration) var(--diyar-ease-standard);
+  font-family: "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
+  background: transparent;
 }
 
-button {
-  font-family: inherit;
-}
+.visitor-widget {
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --transition-fast: 160ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-medium: 320ms cubic-bezier(0.2, 0, 0, 1);
 
-svg {
-  display: block;
-}
-
-/* --------------------------------------------------------------------
-   3. Demo page shell
-   -------------------------------------------------------------------- */
-.diyar-page {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 28px;
-  padding: 56px 20px 72px;
-  overflow-x: hidden;
-}
-
-.diyar-page__backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(760px 420px at 15% -8%, rgba(76, 110, 245, 0.16), transparent 60%),
-    radial-gradient(680px 460px at 100% 10%, rgba(124, 77, 255, 0.14), transparent 55%),
-    radial-gradient(900px 600px at 50% 120%, rgba(0, 168, 150, 0.10), transparent 60%);
-}
-
-.diyar-page__intro {
   max-width: 640px;
-  text-align: center;
-}
-
-.diyar-page__heading {
-  font-family: var(--diyar-font-display);
-  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
-  font-weight: 800;
-  margin: 0 0 10px;
-  letter-spacing: -0.01em;
-  background: linear-gradient(135deg, var(--diyar-primary), var(--diyar-secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.diyar-page__subheading {
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.9;
-  color: var(--diyar-on-surface-variant);
-}
-
-.diyar-page__note {
-  max-width: 520px;
-  text-align: center;
-  font-size: 0.82rem;
-  line-height: 1.9;
-  color: var(--diyar-on-surface-variant);
-}
-
-.diyar-page__note code {
-  background: var(--diyar-outline);
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 0.78rem;
-  direction: ltr;
-  display: inline-block;
-}
-
-/* --------------------------------------------------------------------
-   4. Widget shell & header
-   -------------------------------------------------------------------- */
-.diyar-visitor {
-  --_ease: var(--diyar-ease-standard);
-  width: min(100%, 880px);
-  font-family: var(--diyar-font-body);
-}
-
-.diyar-visitor.diyar-theme-transitioning,
-.diyar-visitor.diyar-theme-transitioning * {
-  transition:
-    background-color var(--diyar-theme-transition-duration) var(--_ease),
-    border-color var(--diyar-theme-transition-duration) var(--_ease),
-    color var(--diyar-theme-transition-duration) var(--_ease),
-    box-shadow var(--diyar-theme-transition-duration) var(--_ease) !important;
-}
-
-.diyar-visitor__surface {
-  position: relative;
-  padding: 28px 28px 20px;
-  border-radius: var(--diyar-radius-lg);
-  background: var(--diyar-surface);
-  border: 1px solid var(--diyar-outline);
+  margin: 0 auto;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  font-family: inherit;
   box-shadow:
-    0 1px 2px rgba(var(--diyar-shadow), 0.30),
-    0 18px 40px -22px rgba(var(--diyar-shadow), 0.55);
-  backdrop-filter: blur(var(--diyar-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--diyar-blur)) saturate(160%);
-  transition: background-color 260ms var(--_ease), box-shadow 260ms var(--_ease);
+    0 1px 3px hsl(var(--md-shadow) / 0.3),
+    0 4px 16px hsl(var(--md-shadow) / 0.12);
+  transition: background var(--transition-medium), box-shadow var(--transition-medium);
 }
 
-.diyar-visitor__header {
+/* ==========================================================================
+   3. LAYOUT — HEADER
+   ========================================================================== */
+
+.visitor-widget__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
-.diyar-visitor__title-group {
+.visitor-widget__title {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-.diyar-visitor__title-icon {
-  font-size: 1.35rem;
+.visitor-widget__title-icon {
+  font-size: 1.5rem;
   line-height: 1;
 }
 
-.diyar-visitor__title {
-  margin: 0;
-  font-family: var(--diyar-font-display);
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--diyar-on-surface);
-}
-
-.diyar-visitor__theme-toggle {
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: var(--diyar-radius-pill);
-  border: 1px solid var(--diyar-outline);
-  background: var(--diyar-surface-solid);
-  color: var(--diyar-on-surface);
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: transform 180ms var(--_ease), background-color 180ms var(--_ease), box-shadow 180ms var(--_ease);
-}
-
-.diyar-visitor__theme-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px -12px rgba(var(--diyar-shadow), 0.6);
-}
-
-.diyar-visitor__theme-toggle:active {
-  transform: translateY(0) scale(0.95);
-}
-
-.diyar-visitor__theme-toggle:focus-visible,
-.diyar-visitor__refresh:focus-visible {
-  outline: 2.5px solid var(--diyar-primary);
-  outline-offset: 2px;
-}
-
-.diyar-visitor__theme-icon {
-  display: inline-block;
-  transition: transform 320ms var(--diyar-ease-emphasized);
-}
-
-/* --------------------------------------------------------------------
-   5. Stat grid & cards
-   -------------------------------------------------------------------- */
-.diyar-visitor__grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.diyar-visitor__card {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 18px 16px;
-  border-radius: var(--diyar-radius-md);
-  background: var(--diyar-surface-solid);
-  border: 1px solid var(--diyar-outline);
-  opacity: 0;
-  transform: translateY(14px) scale(0.97);
-  transition:
-    opacity var(--diyar-theme-transition-duration, 420ms) var(--diyar-ease-emphasized),
-    transform var(--diyar-theme-transition-duration, 420ms) var(--diyar-ease-emphasized),
-    box-shadow 220ms var(--_ease),
-    border-color 220ms var(--_ease),
-    background-color 220ms var(--_ease);
-  will-change: transform, opacity;
-}
-
-.diyar-visitor__card.diyar-in-view {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.diyar-visitor__card:hover {
-  border-color: transparent;
-  box-shadow: 0 14px 30px -18px rgba(var(--diyar-shadow), 0.65);
-  transform: translateY(-3px) scale(1.01);
-}
-
-.diyar-visitor__card-icon {
-  position: relative;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--diyar-radius-sm);
-  color: var(--diyar-primary);
-  background: var(--diyar-primary-container);
-}
-
-.diyar-visitor__card--secondary .diyar-visitor__card-icon {
-  color: var(--diyar-secondary);
-  background: var(--diyar-secondary-container);
-}
-
-.diyar-visitor__card--tertiary .diyar-visitor__card-icon {
-  color: var(--diyar-tertiary);
-  background: var(--diyar-tertiary-container);
-}
-
-.diyar-visitor__card--success .diyar-visitor__card-icon {
-  color: var(--diyar-success);
-  background: var(--diyar-success-container);
-}
-
-.diyar-visitor__pulse {
-  position: absolute;
-  top: -3px;
-  inset-inline-end: -3px;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: var(--diyar-success);
-  box-shadow: 0 0 0 0 rgba(43, 168, 74, 0.55);
-  animation: diyar-pulse 2.2s var(--_ease) infinite;
-}
-
-.diyar-visitor__card-body {
-  min-width: 0;
-  flex: 1;
-}
-
-.diyar-visitor__card-label {
-  margin: 0 0 6px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--diyar-on-surface-variant);
-}
-
-.diyar-visitor__card-value {
-  position: relative;
-  margin: 0;
-  min-height: 30px;
-}
-
-.diyar-visitor__card-number {
-  display: inline-block;
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
-  color: var(--diyar-on-surface);
-}
-
-/* --------------------------------------------------------------------
-   6. Skeleton loading state
-   -------------------------------------------------------------------- */
-.diyar-visitor__skeleton-line {
-  display: none;
-  width: 64px;
-  height: 20px;
-  border-radius: 6px;
-}
-
-.diyar-visitor__card.is-loading .diyar-visitor__card-number {
-  display: none;
-}
-
-.diyar-visitor__card.is-loading .diyar-visitor__skeleton-line {
-  display: block;
-  background: linear-gradient(
-    90deg,
-    var(--diyar-outline) 0%,
-    rgba(120, 130, 190, 0.28) 50%,
-    var(--diyar-outline) 100%
-  );
-  background-size: 200% 100%;
-  animation: diyar-shimmer var(--diyar-skeleton-duration, 1500ms) ease-in-out infinite;
-}
-
-/* --------------------------------------------------------------------
-   7. Footer
-   -------------------------------------------------------------------- */
-.diyar-visitor__footer {
+.visitor-widget__header-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 22px;
-  padding-top: 16px;
-  border-top: 1px solid var(--diyar-outline);
-  font-size: 0.8rem;
-  color: var(--diyar-on-surface-variant);
 }
 
-.diyar-visitor__footer-icon {
-  flex-shrink: 0;
-  opacity: 0.8;
+.visitor-widget__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  background: var(--md-success-container);
+  color: var(--md-on-success-container);
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
 
-.diyar-visitor__footer-time {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  color: var(--diyar-on-surface);
+.visitor-widget__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--md-success);
+  box-shadow: 0 0 0 0 hsl(var(--md-shadow) / 0.4);
+  animation: pulse-dot 2s ease-out infinite;
 }
 
-.diyar-visitor__refresh {
-  position: relative;
-  overflow: hidden;
-  margin-inline-start: auto;
+.visitor-widget__theme-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--diyar-radius-pill);
-  border: 1px solid var(--diyar-outline);
-  background: transparent;
-  color: var(--diyar-on-surface-variant);
-  cursor: pointer;
-  transition: transform 420ms var(--diyar-ease-emphasized), color 180ms var(--_ease), background-color 180ms var(--_ease);
-}
-
-.diyar-visitor__refresh:hover {
-  color: var(--diyar-primary);
-  background: var(--diyar-primary-container);
-  transform: rotate(140deg);
-}
-
-.diyar-visitor__live-region {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+  width: 40px;
+  height: 40px;
   padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* --------------------------------------------------------------------
-   8. Ripple / pulse animations
-   -------------------------------------------------------------------- */
-.diyar-visitor__theme-toggle,
-.diyar-visitor__refresh {
-  position: relative;
-  overflow: hidden;
-}
-
-.diyar-ripple {
-  position: absolute;
+  border: none;
   border-radius: 50%;
-  background: currentColor;
-  opacity: 0.22;
-  transform: scale(0);
-  pointer-events: none;
-  animation: diyar-ripple 620ms var(--diyar-ease-standard);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
-@keyframes diyar-ripple {
-  to {
-    transform: scale(1);
+.visitor-widget__theme-toggle:hover {
+  background: var(--md-secondary-container);
+}
+
+.visitor-widget__theme-toggle:active {
+  transform: scale(0.92);
+}
+
+/* ==========================================================================
+   3. LAYOUT — GRID
+   ========================================================================== */
+
+.visitor-widget__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==========================================================================
+   4. CARD COMPONENT
+   ========================================================================== */
+
+.visitor-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 18px 16px;
+  border-radius: var(--radius-md);
+  background: var(--md-surface-container);
+  border: 1px solid transparent;
+  cursor: default;
+  outline: none;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: card-fade-in var(--transition-medium) ease-out forwards;
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+/* Staggered entrance — each card appears slightly after the previous one. */
+.visitor-card:nth-child(1) { animation-delay: 40ms; }
+.visitor-card:nth-child(2) { animation-delay: 90ms; }
+.visitor-card:nth-child(3) { animation-delay: 140ms; }
+.visitor-card:nth-child(4) { animation-delay: 190ms; }
+.visitor-card:nth-child(5) { animation-delay: 240ms; }
+.visitor-card:nth-child(6) { animation-delay: 290ms; }
+
+.visitor-card:hover,
+.visitor-card:focus-visible {
+  background: var(--md-surface-container-high);
+  transform: translateY(-3px);
+  box-shadow:
+    0 2px 6px hsl(var(--md-shadow) / 0.16),
+    0 8px 20px hsl(var(--md-shadow) / 0.1);
+}
+
+.visitor-card:focus-visible {
+  border-color: var(--md-primary);
+  outline: 3px solid hsl(var(--md-shadow) / 0.001); /* keeps default outline suppressed cleanly */
+}
+
+.visitor-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  font-size: 1.125rem;
+}
+
+.visitor-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.visitor-card__label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--md-on-surface-variant);
+}
+
+.visitor-card__value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--md-on-surface);
+}
+
+/* Highlight variant — used for the "total" card to give it visual weight. */
+.visitor-card--highlight {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  background: var(--md-primary-container);
+}
+
+.visitor-card--highlight .visitor-card__icon {
+  background: var(--md-surface);
+  color: var(--md-primary);
+}
+
+.visitor-card--highlight .visitor-card__label,
+.visitor-card--highlight .visitor-card__value {
+  color: var(--md-on-primary-container);
+}
+
+.visitor-card--highlight .visitor-card__value {
+  font-size: 1.75rem;
+}
+
+/* Online variant — reuses the success tokens for an at-a-glance cue. */
+.visitor-card--online .visitor-card__icon {
+  background: var(--md-success-container);
+  color: var(--md-on-success-container);
+}
+
+/* ==========================================================================
+   3. LAYOUT — FOOTER
+   ========================================================================== */
+
+.visitor-widget__footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--md-outline-variant);
+  font-size: 0.8125rem;
+  color: var(--md-on-surface-variant);
+}
+
+.visitor-widget__footer-time {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--md-on-surface);
+}
+
+/* ==========================================================================
+   5. MOTION & ANIMATION
+   ========================================================================== */
+
+@keyframes card-fade-in {
+  from {
     opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes diyar-pulse {
+@keyframes pulse-dot {
   0% {
-    box-shadow: 0 0 0 0 rgba(43, 168, 74, 0.55);
+    box-shadow: 0 0 0 0 hsl(var(--md-shadow) / 0.001);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(43, 168, 74, 0);
+    box-shadow: 0 0 0 6px transparent;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(43, 168, 74, 0);
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 
-@keyframes diyar-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
+/* ==========================================================================
+   6. RESPONSIVE BREAKPOINTS
+   ========================================================================== */
 
-/* --------------------------------------------------------------------
-   10. Responsive breakpoints
-   -------------------------------------------------------------------- */
-
-/* Large screens / ultra-wide */
-@media (min-width: 1440px) {
-  .diyar-visitor {
-    width: min(100%, 960px);
+@media (max-width: 560px) {
+  .visitor-widget {
+    padding: 18px;
+    border-radius: var(--radius-md);
   }
 
-  .diyar-visitor__card-number {
-    font-size: 1.65rem;
-  }
-}
-
-/* Tablets & foldables (unfolded) */
-@media (max-width: 900px) {
-  .diyar-visitor__grid {
+  .visitor-widget__grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .visitor-card--highlight {
+    grid-column: span 2;
+  }
+
+  .visitor-card__value {
+    font-size: 1.25rem;
+  }
+
+  .visitor-widget__title {
+    font-size: 1.1875rem;
   }
 }
 
-/* Small tablets / large phones */
-@media (max-width: 640px) {
-  .diyar-page {
-    padding: 40px 14px 56px;
-    gap: 22px;
+@media (max-width: 360px) {
+  .visitor-widget__grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .diyar-visitor__surface {
-    padding: 22px 18px 16px;
-    border-radius: var(--diyar-radius-md);
-  }
-
-  .diyar-visitor__title {
-    font-size: 1.1rem;
+  .visitor-card {
+    padding: 14px 12px;
   }
 }
 
-/* Phones & folded foldables */
-@media (max-width: 420px) {
-  .diyar-visitor__grid {
-    grid-template-columns: repeat(1, 1fr);
-  }
+/* ==========================================================================
+   7. ACCESSIBILITY
+   ========================================================================== */
 
-  .diyar-visitor__card {
-    padding: 16px 14px;
-  }
-
-  .diyar-visitor__card-number {
-    font-size: 1.35rem;
-  }
-
-  .diyar-visitor__footer {
-    flex-wrap: wrap;
-  }
+.visitor-card:focus-visible,
+.visitor-widget__theme-toggle:focus-visible {
+  outline: 3px solid var(--md-primary);
+  outline-offset: 2px;
 }
 
-/* --------------------------------------------------------------------
-   11. Accessibility & reduced motion
-   -------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  .diyar-visitor__card {
+  .visitor-card {
+    animation: none;
     opacity: 1;
     transform: none;
   }
+
+  .visitor-widget__status-dot {
+    animation: none;
+  }
+
+  .visitor-widget,
+  .visitor-card,
+  .visitor-widget__theme-toggle {
+    transition: none;
+  }
 }
 
-@media (forced-colors: active) {
-  .diyar-visitor__surface,
-  .diyar-visitor__card {
-    border: 1px solid CanvasText;
+@media (prefers-contrast: more) {
+  .visitor-card {
+    border: 1px solid var(--md-outline);
+  }
+
+  .visitor-widget {
+    box-shadow: none;
+    border: 2px solid var(--md-outline);
   }
 }

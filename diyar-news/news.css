@@ -1,0 +1,415 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+:root{
+
+--green:#0b6b3a;
+--green2:#0d7d4a;
+--gold:#d4af37;
+--bg:#f5f6f8;
+--text:#333;
+--shadow:0 4px 15px rgba(0,0,0,.12);
+
+}
+
+body{
+
+direction:rtl;
+font-family:tahoma,Arial,sans-serif;
+background:var(--bg);
+color:var(--text);
+
+}
+
+/* هدر */
+
+.header{
+
+background:linear-gradient(135deg,var(--green),var(--green2));
+color:#fff;
+padding:20px 15px;
+box-shadow:var(--shadow);
+
+}
+
+.header-top{
+
+max-width:1200px;
+margin:auto;
+
+display:flex;
+align-items:center;
+gap:15px;
+
+}
+
+.logo{
+
+width:70px;
+height:70px;
+border-radius:50%;
+background:#fff;
+padding:5px;
+
+}
+
+.header h1{
+
+font-size:30px;
+
+}
+
+.header p{
+
+margin-top:6px;
+opacity:.9;
+
+}
+
+/* تیکر */
+
+.ticker{
+
+margin:12px auto;
+max-width:1200px;
+
+}
+
+/* جستجو */
+
+.search{
+
+max-width:1200px;
+margin:15px auto;
+padding:0 10px;
+
+}
+
+.search input{
+
+width:100%;
+height:48px;
+border:none;
+border-radius:10px;
+padding:0 15px;
+font-size:15px;
+box-shadow:var(--shadow);
+outline:none;
+
+}
+
+/* عنوان */
+
+.section-title{
+
+max-width:1200px;
+margin:25px auto 15px;
+padding:0 10px;
+font-size:22px;
+color:var(--green);
+
+}
+
+/* گرید اخبار */
+
+.news-grid{
+
+max-width:1200px;
+margin:auto;
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fill,minmax(320px,1fr));
+
+gap:20px;
+
+padding:10px;
+
+}
+
+/* کارت */
+
+.news-card{
+
+background:#fff;
+border-radius:15px;
+overflow:hidden;
+box-shadow:var(--shadow);
+transition:.3s;
+
+}
+
+.news-card:hover{
+
+transform:translateY(-6px);
+
+}
+
+.news-image{
+
+height:210px;
+background:#ddd;
+
+}
+
+.news-image img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+
+}
+
+.news-body{
+
+padding:15px;
+
+}
+
+.news-title{
+
+font-size:18px;
+font-weight:bold;
+line-height:1.8;
+margin-bottom:10px;
+
+}
+
+.news-summary{
+
+font-size:14px;
+  /* خبر ویژه */
+
+.featured-card{
+
+max-width:1200px;
+margin:20px auto;
+background:#fff;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0 5px 20px rgba(0,0,0,.15);
+
+}
+
+.featured-image{
+
+height:350px;
+
+}
+
+.featured-image img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+
+}
+
+.featured-body{
+
+padding:20px;
+
+}
+
+.featured-title{
+
+font-size:28px;
+font-weight:bold;
+color:#0b6b3a;
+margin-bottom:15px;
+line-height:1.8;
+
+}
+
+.featured-summary{
+
+font-size:16px;
+line-height:2.2;
+color:#555;
+
+}
+
+@media(max-width:768px){
+
+.featured-image{
+
+height:220px;
+
+}
+
+.featured-title{
+
+font-size:22px;
+
+}
+
+}
+  /* منوی بالا */
+
+.top-menu{
+
+max-width:1200px;
+margin:12px auto;
+padding:10px;
+
+display:flex;
+justify-content:center;
+align-items:center;
+gap:12px;
+flex-wrap:wrap;
+
+}
+
+.top-menu a{
+
+text-decoration:none;
+background:#ffffff;
+color:#0b6b3a;
+
+padding:10px 18px;
+
+border-radius:30px;
+
+font-weight:bold;
+
+box-shadow:0 2px 8px rgba(0,0,0,.1);
+
+transition:.3s;
+
+}
+
+.top-menu a:hover{
+
+background:#0b6b3a;
+color:#fff;
+
+}
+
+.top-menu .active{
+
+background:#0b6b3a;
+color:#fff;
+
+}
+
+@media(max-width:768px){
+
+.top-menu{
+
+justify-content:flex-start;
+overflow-x:auto;
+padding-bottom:8px;
+
+}
+
+.top-menu::-webkit-scrollbar{
+
+display:none;
+
+}
+
+.top-menu a{
+
+flex:0 0 auto;
+
+}
+
+}
+  .news-info{
+
+max-width:1200px;
+margin:15px auto;
+
+display:flex;
+gap:15px;
+justify-content:center;
+flex-wrap:wrap;
+
+}
+
+.info-box{
+
+background:#fff;
+padding:12px 22px;
+
+border-radius:12px;
+
+box-shadow:0 3px 10px rgba(0,0,0,.1);
+
+font-weight:bold;
+
+color:#0b6b3a;
+
+}
+  /* نوار اخبار متحرک دیار قدمگاه */
+
+.news-ticker {
+    display: flex;
+    align-items: center;
+    background: #0b5d3b;
+    color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 15px 0;
+    height: 45px;
+}
+
+
+.ticker-title {
+    background: #d89b00;
+    padding: 12px 18px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+
+.ticker-box {
+    overflow: hidden;
+    flex: 1;
+    direction: rtl;
+}
+
+
+#tickerContent {
+
+    display: inline-block;
+    white-space: nowrap;
+
+    animation: tickerMove 35s linear infinite;
+
+}
+
+
+#tickerContent:hover {
+
+    animation-play-state: paused;
+
+}
+
+
+
+#tickerContent span {
+
+    margin-left: 50px;
+    font-size: 15px;
+
+}
+
+
+
+@keyframes tickerMove {
+
+    from {
+        transform: translateX(-100%);
+    }
+
+
+    to {
+        transform: translateX(100%);
+    }
+
+}

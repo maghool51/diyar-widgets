@@ -1,158 +1,299 @@
 /**
  * widget.css
- * استایل مستقل ویجت حدیث با پشتیبانی از تم روشن/تاریک و راست‌چین.
- * تمام متغیرها با پیشوند --hw- تعریف شده تا با استایل سایت میزبان تداخل نکند.
+ * ─────────────────────────────────────────────────────────────
+ * پیاده‌سازی زبان طراحی Material 3 (M3) بدون هیچ وابستگی خارجی.
+ * تمام رنگ‌ها، شعاع گوشه‌ها و سایه‌ها بر اساس نقش‌های رنگی و
+ * مقیاس شکل (Shape Scale) استاندارد M3 تعریف شده‌اند.
+ * ─────────────────────────────────────────────────────────────
  */
 
-.hw-container {
-  --hw-bg: #ffffff;
-  --hw-fg: #1f2430;
-  --hw-muted: #6b7280;
-  --hw-accent: #0f766e;
-  --hw-accent-fg: #ffffff;
-  --hw-border: #e5e7eb;
-  --hw-radius: 14px;
-  --hw-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
-  --hw-font: 'Vazirmatn', 'Tahoma', system-ui, sans-serif;
+.dhw {
+  --md-primary: #12695f;
+  --md-on-primary: #ffffff;
+  --md-primary-container: #a6f2e4;
+  --md-on-primary-container: #00201c;
+  --md-surface: #fbfdfa;
+  --md-surface-container: #eef2ee;
+  --md-surface-container-high: #e3e8e3;
+  --md-on-surface: #191c1b;
+  --md-on-surface-variant: #3f4945;
+  --md-outline: #6f7975;
+  --md-outline-variant: #bfc9c4;
+  --md-shadow: 0 1px 2px rgba(0, 0, 0, 0.10), 0 4px 14px rgba(0, 0, 0, 0.08);
+  --md-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.12), 0 8px 22px rgba(0, 0, 0, 0.12);
 
-  box-sizing: border-box;
-  font-family: var(--hw-font);
-  max-width: 480px;
+  --md-shape-large: 28px;
+  --md-shape-medium: 16px;
+  --md-shape-small: 10px;
+  --md-shape-full: 999px;
+
+  --md-font: 'Vazirmatn', 'Samim', 'IRANSans', Tahoma, sans-serif;
+
+  font-family: var(--md-font);
+  max-width: 560px;
   width: 100%;
-}
-
-.hw-container *,
-.hw-container *::before,
-.hw-container *::after {
   box-sizing: border-box;
 }
 
-.hw-container[data-theme='dark'] {
-  --hw-bg: #14181f;
-  --hw-fg: #f2f4f7;
-  --hw-muted: #9aa3af;
-  --hw-accent: #2dd4bf;
-  --hw-accent-fg: #0b1220;
-  --hw-border: #262c37;
-  --hw-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+.dhw[data-theme='dark'] {
+  --md-primary: #86d5c8;
+  --md-on-primary: #003731;
+  --md-primary-container: #004f47;
+  --md-on-primary-container: #a6f2e4;
+  --md-surface: #101413;
+  --md-surface-container: #1d211f;
+  --md-surface-container-high: #282e2b;
+  --md-on-surface: #e1e3e0;
+  --md-on-surface-variant: #bfc9c4;
+  --md-outline: #89938e;
+  --md-outline-variant: #3f4945;
+  --md-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.35);
+  --md-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 26px rgba(0, 0, 0, 0.4);
 }
 
 @media (prefers-color-scheme: dark) {
-  .hw-container[data-theme='auto'] {
-    --hw-bg: #14181f;
-    --hw-fg: #f2f4f7;
-    --hw-muted: #9aa3af;
-    --hw-accent: #2dd4bf;
-    --hw-accent-fg: #0b1220;
-    --hw-border: #262c37;
-    --hw-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+  .dhw[data-theme='auto'] {
+    --md-primary: #86d5c8;
+    --md-on-primary: #003731;
+    --md-primary-container: #004f47;
+    --md-on-primary-container: #a6f2e4;
+    --md-surface: #101413;
+    --md-surface-container: #1d211f;
+    --md-surface-container-high: #282e2b;
+    --md-on-surface: #e1e3e0;
+    --md-on-surface-variant: #bfc9c4;
+    --md-outline: #89938e;
+    --md-outline-variant: #3f4945;
+    --md-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.35);
+    --md-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 26px rgba(0, 0, 0, 0.4);
   }
 }
 
-.hw-card {
-  background: var(--hw-bg);
-  color: var(--hw-fg);
-  border: 1px solid var(--hw-border);
-  border-radius: var(--hw-radius);
-  box-shadow: var(--hw-shadow);
-  padding: 20px 22px;
-  line-height: 1.9;
+.dhw *,
+.dhw *::before,
+.dhw *::after {
+  box-sizing: border-box;
+}
+
+/* ───────────── کارت اصلی ───────────── */
+.dhw-card {
+  position: relative;
+  background: var(--md-surface-container);
+  color: var(--md-on-surface);
+  border-radius: var(--md-shape-large);
+  box-shadow: var(--md-shadow);
+  padding: 26px 28px 20px;
+  transition: box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.dhw-card:hover {
+  box-shadow: var(--md-shadow-hover);
+}
+
+.dhw-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  min-height: 26px;
+}
+
+.dhw-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+.dhw-chip-offline {
+  background: transparent;
+  border: 1.5px solid var(--md-outline-variant);
+  color: var(--md-on-surface-variant);
+}
+
+.dhw-body {
+  position: relative;
+  padding-inline-start: 4px;
+  min-height: 84px;
+}
+
+.dhw-quote-mark {
+  position: absolute;
+  top: -18px;
+  right: -6px;
+  font-size: 64px;
+  line-height: 1;
+  margin: 0;
+  color: var(--md-primary);
+  opacity: 0.16;
+  font-family: Georgia, serif;
+  user-select: none;
+  pointer-events: none;
+}
+
+.dhw-text {
+  margin: 8px 0 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 2;
   opacity: 0;
-  transform: translateY(4px);
+  transform: translateY(6px);
 }
 
-.hw-card.hw-fade-in {
-  animation: hw-fade-in 0.35s ease forwards;
+.dhw-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 16px 0 4px;
+  font-size: 13px;
+  color: var(--md-on-surface-variant);
 }
 
-@keyframes hw-fade-in {
+.dhw-meta span::before {
+  content: '•';
+  margin-inline-end: 6px;
+  color: var(--md-outline);
+}
+
+.dhw-meta span:first-child::before {
+  content: '';
+  margin: 0;
+}
+
+/* ───────────── انیمیشن ظاهر شدن متن ───────────── */
+.dhw-fade .dhw-text {
+  animation: dhw-fade-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes dhw-fade-in {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.hw-card-header {
-  margin-bottom: 10px;
-}
-
-.hw-badge {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--hw-accent-fg);
-  background: var(--hw-accent);
-  padding: 3px 10px;
-  border-radius: 999px;
-}
-
-.hw-text {
-  margin: 0 0 14px;
-  font-size: 17px;
-  font-weight: 500;
-  quotes: none;
-}
-
-.hw-meta {
+/* ───────────── دکمه‌های اکشن (Material 3 Icon Buttons) ───────────── */
+.dhw-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
-  font-size: 13px;
-  color: var(--hw-muted);
-  margin-bottom: 14px;
+  gap: 6px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--md-outline-variant);
 }
 
-.hw-actions {
-  display: flex;
-  gap: 8px;
-  border-top: 1px solid var(--hw-border);
-  padding-top: 12px;
-}
-
-.hw-btn {
+.dhw-btn {
+  position: relative;
   cursor: pointer;
-  border: 1px solid var(--hw-border);
+  border: none;
   background: transparent;
-  color: var(--hw-fg);
-  border-radius: 10px;
-  width: 36px;
-  height: 36px;
-  font-size: 16px;
+  color: var(--md-on-surface-variant);
+  width: 42px;
+  height: 42px;
+  border-radius: var(--md-shape-full);
+  font-size: 17px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: background-color 0.18s ease, transform 0.12s ease, color 0.18s ease;
+  overflow: hidden;
 }
 
-.hw-btn:hover {
-  background: var(--hw-border);
+.dhw-btn:hover {
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
 }
 
-.hw-btn:active {
-  transform: scale(0.94);
+.dhw-btn:active {
+  transform: scale(0.9);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
 }
 
-.hw-footer {
-  margin-top: 10px;
-  text-align: center;
+.dhw-btn:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
 }
 
-.hw-brand {
-  font-size: 11px;
-  color: var(--hw-muted);
-  text-decoration: none;
+/* ───────────── حالت بارگذاری (Skeleton) ───────────── */
+.dhw-loading .dhw-body,
+.dhw-loading .dhw-meta,
+.dhw-loading .dhw-actions,
+.dhw-loading .dhw-top {
+  display: none;
 }
 
-.hw-brand:hover {
-  text-decoration: underline;
+.dhw-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0 8px;
 }
 
-/* واکنش‌گرا برای صفحات کوچک */
-@media (max-width: 360px) {
-  .hw-card {
-    padding: 16px;
+.dhw-sk-line {
+  height: 14px;
+  border-radius: var(--md-shape-small);
+  background: linear-gradient(
+    90deg,
+    var(--md-surface-container-high) 25%,
+    var(--md-outline-variant) 37%,
+    var(--md-surface-container-high) 63%
+  );
+  background-size: 400% 100%;
+  animation: dhw-shimmer 1.4s ease infinite;
+}
+
+.dhw-sk-80 { width: 80%; }
+.dhw-sk-100 { width: 100%; }
+.dhw-sk-60 { width: 60%; }
+
+@keyframes dhw-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* ───────────── واکنش‌گرا ───────────── */
+@media (max-width: 400px) {
+  .dhw-card {
+    padding: 20px 18px 16px;
+    border-radius: var(--md-shape-medium);
   }
-  .hw-text {
+  .dhw-text {
+    font-size: 16px;
+  }
+  .dhw-btn {
+    width: 38px;
+    height: 38px;
     font-size: 15px;
+  }
+}
+
+/* ───────────── حالت چاپ ───────────── */
+@media print {
+  .dhw-top,
+  .dhw-actions,
+  .dhw-quote-mark {
+    display: none !important;
+  }
+  .dhw-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
+
+/* ───────────── کاهش انیمیشن برای کاربرانی که آن را غیرفعال کرده‌اند ───────────── */
+@media (prefers-reduced-motion: reduce) {
+  .dhw-text,
+  .dhw-card,
+  .dhw-btn,
+  .dhw-sk-line {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

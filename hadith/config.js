@@ -1,69 +1,90 @@
 /**
  * config.js
- * تنظیمات پیش‌فرض ویجت حدیث
- * این تنظیمات هنگام مقداردهی اولیه ویجت با گزینه‌های کاربر ادغام می‌شود.
+ * ─────────────────────────────────────────────────────────────
+ * تمام تنظیمات قابل تغییر ویجت «حدیث روز» در این فایل قرار دارد.
+ * سایر ماژول‌ها (storage.js, cache.js, utils.js, widget.js) فقط
+ * از این فایل تنظیمات را می‌خوانند و هیچ مقدار ثابتی را در خود
+ * تکرار نمی‌کنند.
+ *
+ * این فایل به‌صورت سراسری (Global) روی window.HadithConfig
+ * در دسترس قرار می‌گیرد تا در GitHub Pages و Blogfa بدون نیاز
+ * به bundler قابل استفاده باشد.
+ * ─────────────────────────────────────────────────────────────
  */
-(function (root, factory) {
-  if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
-  } else {
-    root.HadithWidgetConfig = factory();
-  }
-})(typeof self !== 'undefined' ? self : this, function () {
+(function (global) {
   'use strict';
 
-  const DEFAULT_CONFIG = {
-    // آدرس پایه‌ی داده‌ها (می‌تواند لوکال یا CDN باشد)
-    dataBaseUrl: './data',
+  var HadithConfig = {
+    /** مسیر پایه‌ی داده‌ها — نسبی، تا هم روی GitHub Pages و هم زیرپوشه کار کند */
+    dataBaseUrl: 'data',
 
-    // زبان نمایش: 'fa' | 'ar' | 'en'
+    /** فایل‌های داده */
+    files: {
+      hadiths: 'hadiths.json',
+      version: 'version.json'
+    },
+
+    /** زبان ثابت رابط کاربری (فعلاً فقط فارسی پشتیبانی می‌شود) */
     language: 'fa',
-
-    // تم ظاهری: 'light' | 'dark' | 'auto'
-    theme: 'light',
-
-    // دسته‌بندی پیش‌فرض ('all' یعنی بدون فیلتر)
-    category: 'all',
-
-    // نمایش نام راوی و منبع
-    showNarrator: true,
-    showSource: true,
-
-    // دکمه اشتراک‌گذاری
-    enableShare: true,
-
-    // بروزرسانی خودکار حدیث (به میلی‌ثانیه، صفر یعنی غیرفعال)
-    autoRefreshInterval: 0,
-
-    // کش کردن داده در localStorage
-    cacheEnabled: true,
-    cacheTTL: 1000 * 60 * 60 * 6, // ۶ ساعت
-
-    // انتخاب حدیث: 'random' | 'daily' | 'sequential'
-    selectionMode: 'daily',
-
-    // جهت متن
     direction: 'rtl',
 
-    // فونت سفارشی (اختیاری)
-    fontFamily: null,
+    /** تبدیل خودکار ارقام لاتین به فارسی در تمام متن‌های ویجت */
+    usePersianDigits: true,
 
-    // شناسه‌ی کانتینر HTML برای رندر ویجت
-    containerId: 'hadith-widget',
+    /** تم ظاهری: 'light' | 'dark' | 'auto' (پیرو ترجیح سیستم) */
+    theme: 'auto',
 
-    // فراخوانی هنگام بارگذاری موفق حدیث
-    onLoad: null,
+    /** دسته‌بندی پیش‌فرض؛ 'all' یعنی بدون فیلتر */
+    category: 'all',
 
-    // فراخوانی هنگام خطا
-    onError: null
+    /**
+     * حالت انتخاب حدیث:
+     *  'daily'  → یک حدیث ثابت برای هر روز (بدون تکرار در یک چرخه‌ی کامل)
+     *  'random' → حدیث تصادفی با جلوگیری از تکرار نزدیک
+     */
+    selectionMode: 'daily',
+
+    /** نمایش موارد مختلف در کارت */
+    ui: {
+      showSource: true,
+      showBook: true,
+      showCategory: true,
+      showShareButton: true,
+      showCopyButton: true,
+      showPrintButton: true,
+      showNextButton: true,
+      showRandomButton: true
+    },
+
+    /** تنظیمات کش */
+    cache: {
+      enabled: true,
+      /** مدت اعتبار کش داده‌ها (میلی‌ثانیه) — ۱۲ ساعت */
+      ttl: 1000 * 60 * 60 * 12,
+      /** کلید فضای‌نام‌گذاری‌شده در localStorage */
+      namespace: 'diyar-hadith'
+    },
+
+    /** بررسی نسخه‌ی داده و بروزرسانی خودکار */
+    versionCheck: {
+      enabled: true,
+      /** حداقل فاصله بین دو بررسی نسخه (میلی‌ثانیه) — ۱ ساعت */
+      minInterval: 1000 * 60 * 60
+    },
+
+    /** شناسه‌ی عنصر HTML میزبان ویجت */
+    containerId: 'diyar-hadith-widget',
+
+    /** آدرس GitHub Pages برای ساخت کد Embed / iframe (در صورت نیاز جایگزین شود) */
+    embedBaseUrl: 'https://USERNAME.github.io/diyar-widgets/hadith/',
+
+    /** فراخوانی‌های اختیاری کاربر ویجت */
+    callbacks: {
+      onReady: null,   // function(hadith)
+      onChange: null,  // function(hadith)
+      onError: null    // function(error)
+    }
   };
 
-  function mergeConfig(userConfig) {
-    return Object.assign({}, DEFAULT_CONFIG, userConfig || {});
-  }
-
-  return {
-    defaults: DEFAULT_CONFIG,
-    merge: mergeConfig
-  };
-});
+  global.HadithConfig = HadithConfig;
+})(typeof window !== 'undefined' ? window : this);

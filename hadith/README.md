@@ -1,93 +1,68 @@
-# ویجت حدیث (Hadith Widget)
+# Diyar Widgets — ویجت حدیث روز
 
-ویجت سبک، مستقل و بدون وابستگی (vanilla JS) برای نمایش یک حدیث در هر بار بارگذاری صفحه — به‌صورت روزانه‌ی ثابت، تصادفی یا ترتیبی. مناسب برای جاسازی در هر وب‌سایتی با چند خط کد.
+ویجت مستقل، سبک و بدون وابستگی خارجی برای نمایش «حدیث روز»، طراحی‌شده بر پایه‌ی اصول **Material 3**. کاملاً فارسی، راست‌چین، واکنش‌گرا و آماده‌ی استفاده در **GitHub Pages** و **Blogfa**.
 
-## ساختار پروژه
+## ساختار
 
 ```
 hadith/
-├── index.html          # دموی ویجت
-├── widget.js            # موتور ویجت
-├── widget.css           # استایل
-├── config.js            # تنظیمات پیش‌فرض
-├── manifest.json        # اطلاعات ویجت
+├── index.html      # صفحه‌ی دمو + راهنمای جاسازی
+├── widget.js        # منطق اصلی (کلاس DiyarHadithWidget)
+├── widget.css        # استایل Material 3
+├── config.js         # تمام تنظیمات قابل تغییر
+├── sw.js             # Service Worker برای پشتیبانی کامل آفلاین (PWA)
+├── manifest.webmanifest  # مانیفست نصب‌پذیری PWA
 ├── data/
-│   ├── hadiths.json     # داده‌ی احادیث
-│   ├── categories.json  # دسته‌بندی‌ها
-│   └── version.json     # نسخه‌ی داده
-├── assets/
-│   ├── logo.svg
-│   ├── icon.png
-│   └── preview.webp
+│   ├── hadiths.json  # ۱۰۰ حدیث نمونه (آماده‌ی توسعه تا ۱۰۰۰)
+│   └── version.json  # کنترل نسخه‌ی داده
 └── core/
-    ├── cache.js         # کش با TTL
-    ├── storage.js       # لایه‌ی localStorage
-    ├── api.js           # واکشی داده
-    ├── utils.js          # توابع کمکی
-    ├── renderer.js       # رندر DOM
-    └── share.js           # اشتراک‌گذاری
+    ├── storage.js    # لایه‌ی امن روی localStorage
+    ├── cache.js      # کش + بروزرسانی خودکار بر اساس نسخه
+    └── utils.js      # ارقام فارسی، انتخاب حدیث روز، اشتراک/کپی/چاپ
 ```
 
-## نصب سریع
+## نصب روی GitHub Pages
 
-۱. تمام فایل‌ها را در پوشه‌ای در سایت خود آپلود کنید (ساختار پوشه‌ها را حفظ کنید).
-۲. در `HTML` صفحه‌ی خود یک کانتینر بسازید:
+۱. تمام محتوای پوشه‌ی `hadith/` را در ریشه‌ی مخزن `diyar-widgets` (یا زیرپوشه‌ی دلخواه) قرار دهید.
+۲. GitHub Pages را از تنظیمات مخزن فعال کنید.
+۳. آدرس نهایی چیزی شبیه `https://USERNAME.github.io/diyar-widgets/hadith/` خواهد بود.
+۴. مقدار `embedBaseUrl` در `config.js` را با همین آدرس جایگزین کنید.
+
+تمام مسیرهای داخل پروژه نسبی (`relative`) هستند، بنابراین چه در ریشه‌ی دامنه و چه در زیرپوشه اجرا شوند، بدون تغییر کار می‌کنند.
+
+## استفاده در Blogfa
+
+چون Blogfa اجازه‌ی بارگذاری فایل جاوااسکریپت دلخواه نمی‌دهد، ساده‌ترین و امن‌ترین روش، جاسازی با `iframe` است:
 
 ```html
-<div id="hadith-widget"></div>
+<iframe
+  src="https://USERNAME.github.io/diyar-widgets/hadith/"
+  style="width:100%;max-width:560px;height:340px;border:0;"
+  loading="lazy"
+  title="ویجت حدیث روز">
+</iframe>
 ```
 
-۳. استایل و اسکریپت‌ها را به همین ترتیب اضافه کنید:
+## پشتیبانی آفلاین (Service Worker)
 
-```html
-<link rel="stylesheet" href="./widget.css" />
+کش `localStorage` به‌تنهایی فقط *داده‌ی حدیث* را برای استفاده‌ی آفلاین نگه می‌دارد؛ اگر کاربر بدون اینترنت صفحه را کامل رفرش کند، خودِ `index.html`/`widget.js`/`widget.css` هم باید از جایی بارگذاری شوند. به همین دلیل `sw.js` اضافه شده تا کل پوسته‌ی اپ را کش کند:
 
-<script src="./config.js"></script>
-<script src="./core/utils.js"></script>
-<script src="./core/storage.js"></script>
-<script src="./core/cache.js"></script>
-<script src="./core/api.js"></script>
-<script src="./core/renderer.js"></script>
-<script src="./core/share.js"></script>
-<script src="./widget.js"></script>
+- فایل‌های پوسته (HTML/CSS/JS/آیکون): استراتژی **Cache First**
+- فایل‌های داده (`hadiths.json` / `version.json`): استراتژی **Network First** با بازگشت به کش در نبود اینترنت — تا سیستم بروزرسانی نسخه وقتی آنلاین هستید همچنان نسخه‌ی تازه بگیرد.
 
-<script>
-  const widget = new HadithWidget({ containerId: 'hadith-widget' });
-  widget.init();
-</script>
-```
+این رفتار با Playwright تست و تأیید شده: رفرش کامل صفحه در حالت آفلاین بدون `sw.js` با خطا مواجه می‌شد؛ با آن، بدون مشکل کار می‌کند.
 
-## گزینه‌های تنظیمات (`config.js`)
+> نکته: اگر ویجت را فقط با `iframe` در Blogfa جاسازی می‌کنید، ثبت Service Worker به‌صورت خودکار و بی‌سروصدا انجام می‌شود و در صورت عدم پشتیبانی مرورگر میزبان، بدون خطا نادیده گرفته می‌شود.
 
-| گزینه | نوع | پیش‌فرض | توضیح |
-|---|---|---|---|
-| `dataBaseUrl` | string | `./data` | مسیر پوشه‌ی داده |
-| `language` | `'fa' \| 'ar' \| 'en'` | `'fa'` | زبان نمایش متن |
-| `theme` | `'light' \| 'dark' \| 'auto'` | `'light'` | تم ظاهری |
-| `category` | string | `'all'` | فیلتر دسته‌بندی |
-| `showNarrator` | boolean | `true` | نمایش نام راوی |
-| `showSource` | boolean | `true` | نمایش منبع حدیث |
-| `enableShare` | boolean | `true` | فعال‌سازی دکمه اشتراک‌گذاری |
-| `autoRefreshInterval` | number (ms) | `0` | بازه‌ی بروزرسانی خودکار؛ `0` غیرفعال |
-| `cacheEnabled` | boolean | `true` | کش کردن داده در localStorage |
-| `cacheTTL` | number (ms) | ۶ ساعت | زمان انقضای کش |
-| `selectionMode` | `'daily' \| 'random' \| 'sequential'` | `'daily'` | نحوه‌ی انتخاب حدیث |
-| `direction` | `'rtl' \| 'ltr'` | `'rtl'` | جهت متن |
-| `containerId` | string | `'hadith-widget'` | شناسه‌ی کانتینر HTML |
-| `onLoad` | function | `null` | فراخوانی پس از بارگذاری موفق |
-| `onError` | function | `null` | فراخوانی در صورت خطا |
+## سیستم بروزرسانی خودکار
 
-## API عمومی کلاس `HadithWidget`
+هر بار ویجت بارگذاری می‌شود (با رعایت حداقل فاصله‌ی زمانی در `config.js → versionCheck.minInterval`)، فایل `data/version.json` را از سرور می‌خواند. اگر مقدار `version` با نسخه‌ی ذخیره‌شده در مرورگر کاربر تفاوت داشت:
 
-```js
-const widget = new HadithWidget(options);
+1. کش قدیمی (`hadiths.json` ذخیره‌شده) کاملاً پاک می‌شود.
+2. `hadiths.json` جدید از سرور دریافت می‌شود.
+3. نسخه‌ی جدید در `localStorage` ذخیره می‌شود.
 
-await widget.init();      // مقداردهی اولیه و رندر اول
-widget.next();             // نمایش حدیث بعدی
-await widget.share();      // اشتراک‌گذاری حدیث جاری
-widget.updateConfig({...}); // تغییر تنظیمات در زمان اجرا
-widget.destroy();          // پاکسازی تایمرها و رویدادها
-```
+برای انتشار بروزرسانی، کافی است `data/hadiths.json` را ویرایش کنید و `version` در `data/version.json` را افزایش دهید (مثلاً `1.0.0` → `1.1.0`).
 
 ## افزودن حدیث جدید
 
@@ -95,23 +70,17 @@ widget.destroy();          // پاکسازی تایمرها و رویدادها
 
 ```json
 {
-  "id": "h011",
-  "text": "متن عربی حدیث",
-  "translation_fa": "ترجمه فارسی",
-  "translation_en": "English translation",
-  "narrator": "نام راوی",
-  "source": "منبع",
-  "category": "akhlaq",
-  "grade": "صحیح"
+  "id": 101,
+  "text": "متن حدیث",
+  "source": "پیامبر اکرم (ص)",
+  "book": "نام کتاب یا منبع",
+  "category": "دسته‌بندی",
+  "tags": ["برچسب۱", "برچسب۲"]
 }
 ```
 
-سپس مقدار `count` و `updated` را در `data/version.json` به‌روز کنید.
-
-## مرورگرهای پشتیبانی‌شده
-
-Chrome 60+، Firefox 60+، Safari 12+ (نسخه‌های جدیدتر Edge نیز پشتیبانی می‌شوند). در مرورگرهایی که `localStorage` در دسترس نباشد، ویجت به‌صورت خودکار بدون کش کار می‌کند.
+> ⚠️ توجه: محتوای فعلی `data/hadiths.json` به‌عنوان نسخه‌ی اولیه (Starter) تهیه شده و منابع/کتاب‌های هرکدام ذکر شده است. پیش از انتشار عمومی و رسیدن به ۱۰۰۰ حدیث، توصیه می‌شود صحت سند و ترجمه‌ی هر مورد توسط یک عالم دینی یا منبع معتبر بازبینی شود.
 
 ## مجوز
 
-این پروژه تحت مجوز MIT منتشر شده است؛ فایل [LICENSE](./LICENSE) را ببینید.
+آزاد برای استفاده و توسعه در پروژه‌های شخصی و عمومی.

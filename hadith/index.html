@@ -1,72 +1,114 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>دموی ویجت حدیث</title>
-  <link rel="stylesheet" href="./widget.css" />
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 28px;
-      background: #f4f5f7;
-      font-family: 'Vazirmatn', Tahoma, sans-serif;
-      padding: 32px 16px;
-    }
-    h1 { font-size: 20px; color: #1f2430; margin: 0; }
-    .hw-demo-row { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
-    .hw-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .hw-panel span { font-size: 12px; color: #6b7280; }
-    code { background: #e5e7eb; padding: 2px 6px; border-radius: 4px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<title>ویجت حدیث روز | Diyar Widgets</title>
+<meta name="description" content="ویجت مستقل و سبک حدیث روز — قابل استفاده در GitHub Pages، Blogfa و هر وب‌سایت دیگر." />
+
+<!-- فونت فارسی وزیرمتن (اختیاری). در صورت نبود اینترنت، فونت‌های سیستم جایگزین می‌شوند -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+
+<link rel="manifest" href="./manifest.webmanifest" />
+<meta name="theme-color" content="#12695f" />
+<link rel="icon" href="./assets/icons/icon-192.png" />
+<link rel="stylesheet" href="./widget.css" />
+
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    padding: 40px 16px 60px;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    background: #f2f4f2;
+    color: #191c1b;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #101413; color: #e1e3e0; }
+  }
+  header { text-align: center; max-width: 560px; }
+  header h1 { font-size: 22px; margin-bottom: 6px; }
+  header p { font-size: 14px; color: #6f7975; margin: 0; }
+  .dhw { margin: 0 auto; }
+  .embed-box {
+    max-width: 560px;
+    width: 100%;
+    background: rgba(127,127,127,0.08);
+    border-radius: 16px;
+    padding: 18px 20px;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .embed-box code {
+    display: block;
+    direction: ltr;
+    text-align: left;
+    background: rgba(127,127,127,0.12);
+    border-radius: 10px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    margin-top: 8px;
+    font-family: 'Courier New', monospace;
+  }
+</style>
 </head>
 <body>
-  <h1>دموی ویجت حدیث</h1>
 
-  <div class="hw-demo-row">
-    <div class="hw-panel">
-      <div id="hadith-widget-light"></div>
-      <span>تم روشن — انتخاب روزانه</span>
-    </div>
-    <div class="hw-panel">
-      <div id="hadith-widget-dark"></div>
-      <span>تم تاریک — انتخاب تصادفی</span>
-    </div>
-  </div>
+<header>
+  <h1>ویجت حدیث روز</h1>
+  <p>یک ویجت مستقل، سبک و بدون وابستگی خارجی — طراحی‌شده بر پایه‌ی Material 3</p>
+</header>
 
-  <p>برای استفاده در سایت خودتان: کافیست فایل‌های <code>widget.js</code>، <code>widget.css</code>، <code>config.js</code> و پوشه‌های <code>core/</code> و <code>data/</code> را کنار هم آپلود کنید و کد زیر را در صفحه قرار دهید.</p>
+<!-- کانتینر اصلی ویجت: همین یک خط برای جاسازی در هر صفحه‌ای کافی است -->
+<div id="diyar-hadith-widget"></div>
 
-  <!-- بارگذاری اسکریپت‌های ویجت (ترتیب مهم است) -->
-  <script src="./config.js"></script>
-  <script src="./core/utils.js"></script>
-  <script src="./core/storage.js"></script>
-  <script src="./core/cache.js"></script>
-  <script src="./core/api.js"></script>
-  <script src="./core/renderer.js"></script>
-  <script src="./core/share.js"></script>
-  <script src="./widget.js"></script>
+<div class="embed-box">
+  <strong>روش ۱ — جاسازی مستقیم (برای GitHub Pages یا سایت‌های خودمیزبان):</strong>
+  <code>&lt;div id="diyar-hadith-widget"&gt;&lt;/div&gt;
+&lt;link rel="stylesheet" href="widget.css"&gt;
+&lt;script src="config.js"&gt;&lt;/script&gt;
+&lt;script src="core/storage.js"&gt;&lt;/script&gt;
+&lt;script src="core/cache.js"&gt;&lt;/script&gt;
+&lt;script src="core/utils.js"&gt;&lt;/script&gt;
+&lt;script src="widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;new DiyarHadithWidget().init();&lt;/script&gt;</code>
 
-  <script>
-    const lightWidget = new HadithWidget({
-      containerId: 'hadith-widget-light',
-      theme: 'light',
-      language: 'fa',
-      selectionMode: 'daily'
+  <strong style="display:block;margin-top:14px;">روش ۲ — جاسازی در Blogfa با iframe:</strong>
+  <code>&lt;iframe
+  src="https://USERNAME.github.io/diyar-widgets/hadith/"
+  style="width:100%;max-width:560px;height:340px;border:0;"
+  loading="lazy"
+  title="ویجت حدیث روز"&gt;
+&lt;/iframe&gt;</code>
+</div>
+
+<!-- بارگذاری ماژول‌ها به همین ترتیب ضروری است (config قبل از بقیه) -->
+<script src="./config.js"></script>
+<script src="./core/storage.js"></script>
+<script src="./core/cache.js"></script>
+<script src="./core/utils.js"></script>
+<script src="./widget.js"></script>
+<script>
+  new DiyarHadithWidget().init();
+
+  // ثبت Service Worker برای پشتیبانی کامل آفلاین (اختیاری و ایمن؛
+  // در مرورگرهایی که پشتیبانی نمی‌کنند یا داخل iframe با محدودیت
+  // اجرا می‌شوند، بی‌سروصدا نادیده گرفته می‌شود)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').catch(function () {
+        // ثبت ناموفق (مثلاً به‌دلیل محدودیت iframe در Blogfa)؛ ویجت بدون آن هم کار می‌کند
+      });
     });
-    lightWidget.init();
-
-    const darkWidget = new HadithWidget({
-      containerId: 'hadith-widget-dark',
-      theme: 'dark',
-      language: 'fa',
-      selectionMode: 'random'
-    });
-    darkWidget.init();
-  </script>
+  }
+</script>
 </body>
 </html>

@@ -1,0 +1,608 @@
+/* ==========================================================================
+   Diyar Visitor Widget — Stylesheet
+   ==========================================================================
+   Material Design 3 inspired tokens, Light / Dark / Auto theming, RTL
+   Persian layout, glassmorphism surfaces, and a full animation set
+   (entrance, counter, ripple, skeleton shimmer, hover, focus).
+
+   Table of contents:
+     1. Design tokens (light + dark)
+     2. Reset & base
+     3. Demo page shell (not required for embedding the widget)
+     4. Widget shell & header
+     5. Stat grid & cards
+     6. Skeleton loading state
+     7. Footer
+     8. Ripple / pulse / theme-transition animations
+     9. Entrance animation states
+     10. Responsive breakpoints
+     11. Accessibility & reduced motion
+   ========================================================================== */
+
+/* --------------------------------------------------------------------
+   1. Design tokens
+   -------------------------------------------------------------------- */
+:root {
+  /* Brand / role colors — light */
+  --diyar-primary: #4C6EF5;
+  --diyar-primary-container: #DEE4FF;
+  --diyar-on-primary-container: #17285E;
+  --diyar-secondary: #7C4DFF;
+  --diyar-secondary-container: #E7DEFF;
+  --diyar-on-secondary-container: #2C1766;
+  --diyar-tertiary: #00A896;
+  --diyar-tertiary-container: #D3F5EF;
+  --diyar-on-tertiary-container: #003A34;
+  --diyar-success: #2BA84A;
+  --diyar-success-container: #D9F5DE;
+  --diyar-on-success-container: #0E3A1B;
+
+  /* Surfaces — light */
+  --diyar-bg: #F2F4FA;
+  --diyar-surface: rgba(255, 255, 255, 0.72);
+  --diyar-surface-solid: #FFFFFF;
+  --diyar-surface-hover: rgba(255, 255, 255, 0.92);
+  --diyar-on-surface: #1B1D29;
+  --diyar-on-surface-variant: #5B5E71;
+  --diyar-outline: rgba(27, 29, 41, 0.10);
+  --diyar-shadow: 220, 224, 240;
+
+  /* Component tokens */
+  --diyar-radius-sm: 12px;
+  --diyar-radius-md: 18px;
+  --diyar-radius-lg: 26px;
+  --diyar-radius-pill: 999px;
+  --diyar-blur: 18px;
+  --diyar-font-display: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+  --diyar-font-body: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+
+  /* Motion */
+  --diyar-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --diyar-ease-emphasized: cubic-bezier(0.3, 0, 0.1, 1);
+  --diyar-theme-transition-duration: 420ms;
+}
+
+[data-diyar-theme='dark'] {
+  --diyar-primary: #B4C4FF;
+  --diyar-primary-container: #2B3C7E;
+  --diyar-on-primary-container: #DEE4FF;
+  --diyar-secondary: #CDBBFF;
+  --diyar-secondary-container: #4A3383;
+  --diyar-on-secondary-container: #E7DEFF;
+  --diyar-tertiary: #5FE0CC;
+  --diyar-tertiary-container: #00504A;
+  --diyar-on-tertiary-container: #D3F5EF;
+  --diyar-success: #7DDB92;
+  --diyar-success-container: #1C4A29;
+  --diyar-on-success-container: #D9F5DE;
+
+  --diyar-bg: #101220;
+  --diyar-surface: rgba(28, 31, 46, 0.66);
+  --diyar-surface-solid: #1C1F2E;
+  --diyar-surface-hover: rgba(38, 42, 60, 0.85);
+  --diyar-on-surface: #E7E9F5;
+  --diyar-on-surface-variant: #A6A9C4;
+  --diyar-outline: rgba(231, 233, 245, 0.10);
+  --diyar-shadow: 4, 5, 12;
+}
+
+/* --------------------------------------------------------------------
+   2. Reset & base
+   -------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--diyar-font-body);
+  background: var(--diyar-bg);
+  color: var(--diyar-on-surface);
+  transition: background-color var(--diyar-theme-transition-duration) var(--diyar-ease-standard),
+    color var(--diyar-theme-transition-duration) var(--diyar-ease-standard);
+}
+
+button {
+  font-family: inherit;
+}
+
+svg {
+  display: block;
+}
+
+/* --------------------------------------------------------------------
+   3. Demo page shell
+   -------------------------------------------------------------------- */
+.diyar-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 56px 20px 72px;
+  overflow-x: hidden;
+}
+
+.diyar-page__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(760px 420px at 15% -8%, rgba(76, 110, 245, 0.16), transparent 60%),
+    radial-gradient(680px 460px at 100% 10%, rgba(124, 77, 255, 0.14), transparent 55%),
+    radial-gradient(900px 600px at 50% 120%, rgba(0, 168, 150, 0.10), transparent 60%);
+}
+
+.diyar-page__intro {
+  max-width: 640px;
+  text-align: center;
+}
+
+.diyar-page__heading {
+  font-family: var(--diyar-font-display);
+  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  font-weight: 800;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, var(--diyar-primary), var(--diyar-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.diyar-page__subheading {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--diyar-on-surface-variant);
+}
+
+.diyar-page__note {
+  max-width: 520px;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: var(--diyar-on-surface-variant);
+}
+
+.diyar-page__note code {
+  background: var(--diyar-outline);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  direction: ltr;
+  display: inline-block;
+}
+
+/* --------------------------------------------------------------------
+   4. Widget shell & header
+   -------------------------------------------------------------------- */
+.diyar-visitor {
+  --_ease: var(--diyar-ease-standard);
+  width: min(100%, 880px);
+  font-family: var(--diyar-font-body);
+}
+
+.diyar-visitor.diyar-theme-transitioning,
+.diyar-visitor.diyar-theme-transitioning * {
+  transition:
+    background-color var(--diyar-theme-transition-duration) var(--_ease),
+    border-color var(--diyar-theme-transition-duration) var(--_ease),
+    color var(--diyar-theme-transition-duration) var(--_ease),
+    box-shadow var(--diyar-theme-transition-duration) var(--_ease) !important;
+}
+
+.diyar-visitor__surface {
+  position: relative;
+  padding: 28px 28px 20px;
+  border-radius: var(--diyar-radius-lg);
+  background: var(--diyar-surface);
+  border: 1px solid var(--diyar-outline);
+  box-shadow:
+    0 1px 2px rgba(var(--diyar-shadow), 0.30),
+    0 18px 40px -22px rgba(var(--diyar-shadow), 0.55);
+  backdrop-filter: blur(var(--diyar-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--diyar-blur)) saturate(160%);
+  transition: background-color 260ms var(--_ease), box-shadow 260ms var(--_ease);
+}
+
+.diyar-visitor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.diyar-visitor__title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.diyar-visitor__title-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.diyar-visitor__title {
+  margin: 0;
+  font-family: var(--diyar-font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--diyar-on-surface);
+}
+
+.diyar-visitor__theme-toggle {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--diyar-radius-pill);
+  border: 1px solid var(--diyar-outline);
+  background: var(--diyar-surface-solid);
+  color: var(--diyar-on-surface);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: transform 180ms var(--_ease), background-color 180ms var(--_ease), box-shadow 180ms var(--_ease);
+}
+
+.diyar-visitor__theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px -12px rgba(var(--diyar-shadow), 0.6);
+}
+
+.diyar-visitor__theme-toggle:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.diyar-visitor__theme-toggle:focus-visible,
+.diyar-visitor__refresh:focus-visible {
+  outline: 2.5px solid var(--diyar-primary);
+  outline-offset: 2px;
+}
+
+.diyar-visitor__theme-icon {
+  display: inline-block;
+  transition: transform 320ms var(--diyar-ease-emphasized);
+}
+
+/* --------------------------------------------------------------------
+   5. Stat grid & cards
+   -------------------------------------------------------------------- */
+.diyar-visitor__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.diyar-visitor__card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 16px;
+  border-radius: var(--diyar-radius-md);
+  background: var(--diyar-surface-solid);
+  border: 1px solid var(--diyar-outline);
+  opacity: 0;
+  transform: translateY(14px) scale(0.97);
+  transition:
+    opacity var(--diyar-theme-transition-duration, 420ms) var(--diyar-ease-emphasized),
+    transform var(--diyar-theme-transition-duration, 420ms) var(--diyar-ease-emphasized),
+    box-shadow 220ms var(--_ease),
+    border-color 220ms var(--_ease),
+    background-color 220ms var(--_ease);
+  will-change: transform, opacity;
+}
+
+.diyar-visitor__card.diyar-in-view {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.diyar-visitor__card:hover {
+  border-color: transparent;
+  box-shadow: 0 14px 30px -18px rgba(var(--diyar-shadow), 0.65);
+  transform: translateY(-3px) scale(1.01);
+}
+
+.diyar-visitor__card-icon {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--diyar-radius-sm);
+  color: var(--diyar-primary);
+  background: var(--diyar-primary-container);
+}
+
+.diyar-visitor__card--secondary .diyar-visitor__card-icon {
+  color: var(--diyar-secondary);
+  background: var(--diyar-secondary-container);
+}
+
+.diyar-visitor__card--tertiary .diyar-visitor__card-icon {
+  color: var(--diyar-tertiary);
+  background: var(--diyar-tertiary-container);
+}
+
+.diyar-visitor__card--success .diyar-visitor__card-icon {
+  color: var(--diyar-success);
+  background: var(--diyar-success-container);
+}
+
+.diyar-visitor__pulse {
+  position: absolute;
+  top: -3px;
+  inset-inline-end: -3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--diyar-success);
+  box-shadow: 0 0 0 0 rgba(43, 168, 74, 0.55);
+  animation: diyar-pulse 2.2s var(--_ease) infinite;
+}
+
+.diyar-visitor__card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.diyar-visitor__card-label {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--diyar-on-surface-variant);
+}
+
+.diyar-visitor__card-value {
+  position: relative;
+  margin: 0;
+  min-height: 30px;
+}
+
+.diyar-visitor__card-number {
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--diyar-on-surface);
+}
+
+/* --------------------------------------------------------------------
+   6. Skeleton loading state
+   -------------------------------------------------------------------- */
+.diyar-visitor__skeleton-line {
+  display: none;
+  width: 64px;
+  height: 20px;
+  border-radius: 6px;
+}
+
+.diyar-visitor__card.is-loading .diyar-visitor__card-number {
+  display: none;
+}
+
+.diyar-visitor__card.is-loading .diyar-visitor__skeleton-line {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--diyar-outline) 0%,
+    rgba(120, 130, 190, 0.28) 50%,
+    var(--diyar-outline) 100%
+  );
+  background-size: 200% 100%;
+  animation: diyar-shimmer var(--diyar-skeleton-duration, 1500ms) ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------
+   7. Footer
+   -------------------------------------------------------------------- */
+.diyar-visitor__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--diyar-outline);
+  font-size: 0.8rem;
+  color: var(--diyar-on-surface-variant);
+}
+
+.diyar-visitor__footer-icon {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.diyar-visitor__footer-time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--diyar-on-surface);
+}
+
+.diyar-visitor__refresh {
+  position: relative;
+  overflow: hidden;
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--diyar-radius-pill);
+  border: 1px solid var(--diyar-outline);
+  background: transparent;
+  color: var(--diyar-on-surface-variant);
+  cursor: pointer;
+  transition: transform 420ms var(--diyar-ease-emphasized), color 180ms var(--_ease), background-color 180ms var(--_ease);
+}
+
+.diyar-visitor__refresh:hover {
+  color: var(--diyar-primary);
+  background: var(--diyar-primary-container);
+  transform: rotate(140deg);
+}
+
+.diyar-visitor__live-region {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------
+   8. Ripple / pulse animations
+   -------------------------------------------------------------------- */
+.diyar-visitor__theme-toggle,
+.diyar-visitor__refresh {
+  position: relative;
+  overflow: hidden;
+}
+
+.diyar-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.22;
+  transform: scale(0);
+  pointer-events: none;
+  animation: diyar-ripple 620ms var(--diyar-ease-standard);
+}
+
+@keyframes diyar-ripple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes diyar-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(43, 168, 74, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(43, 168, 74, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(43, 168, 74, 0);
+  }
+}
+
+@keyframes diyar-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* --------------------------------------------------------------------
+   10. Responsive breakpoints
+   -------------------------------------------------------------------- */
+
+/* Large screens / ultra-wide */
+@media (min-width: 1440px) {
+  .diyar-visitor {
+    width: min(100%, 960px);
+  }
+
+  .diyar-visitor__card-number {
+    font-size: 1.65rem;
+  }
+}
+
+/* Tablets & foldables (unfolded) */
+@media (max-width: 900px) {
+  .diyar-visitor__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small tablets / large phones */
+@media (max-width: 640px) {
+  .diyar-page {
+    padding: 40px 14px 56px;
+    gap: 22px;
+  }
+
+  .diyar-visitor__surface {
+    padding: 22px 18px 16px;
+    border-radius: var(--diyar-radius-md);
+  }
+
+  .diyar-visitor__title {
+    font-size: 1.1rem;
+  }
+}
+
+/* Phones & folded foldables */
+@media (max-width: 420px) {
+  .diyar-visitor__grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .diyar-visitor__card {
+    padding: 16px 14px;
+  }
+
+  .diyar-visitor__card-number {
+    font-size: 1.35rem;
+  }
+
+  .diyar-visitor__footer {
+    flex-wrap: wrap;
+  }
+}
+
+/* --------------------------------------------------------------------
+   11. Accessibility & reduced motion
+   -------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .diyar-visitor__card {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .diyar-visitor__surface,
+  .diyar-visitor__card {
+    border: 1px solid CanvasText;
+  }
+}

@@ -1,71 +1,95 @@
 (function () {
     "use strict";
 
-    const BASE_URL = "https://maghool51.github.io/diyar-widgets/visitor/";
+    const BASE_URL =
+        "https://maghool51.github.io/diyar-widgets/visitor/";
 
-    function loadFile(type, url, callback) {
+    function loadCSS() {
 
-        if (type === "css") {
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.href = url;
-            document.head.appendChild(link);
+        if (document.getElementById("diyar-visitor-css"))
+            return;
 
-            if (callback) callback();
-        }
+        const css = document.createElement("link");
 
-        if (type === "js") {
-            const script = document.createElement("script");
-            script.src = url;
-            script.onload = callback;
-            document.body.appendChild(script);
-        }
+        css.id = "diyar-visitor-css";
+        css.rel = "stylesheet";
+        css.href = BASE_URL + "visitor.css";
+
+        document.head.appendChild(css);
     }
 
 
-    function createBox() {
+    function loadJS(src, callback) {
 
-        let box = document.getElementById("diyar-visitor-widget");
+        const script = document.createElement("script");
+
+        script.src = src;
+        script.onload = callback;
+
+        document.body.appendChild(script);
+    }
+
+
+    function createContainer() {
+
+        let box =
+            document.getElementById(
+                "diyar-visitor-widget"
+            );
 
         if (!box) {
 
             box = document.createElement("div");
-            box.id = "diyar-visitor-widget";
 
-            const currentScript = document.currentScript;
+            box.id =
+                "diyar-visitor-widget";
 
-            currentScript.parentNode.insertBefore(
-                box,
-                currentScript
-            );
+            document.currentScript
+                .parentNode
+                .insertBefore(
+                    box,
+                    document.currentScript
+                );
         }
 
-        return box;
     }
 
 
     function init() {
 
-        createBox();
+        loadCSS();
 
-        loadFile(
-            "css",
-            BASE_URL + "style.css"
-        );
+        createContainer();
 
-        loadFile(
-            "js",
-            BASE_URL + "widget.js",
+
+        loadJS(
+            BASE_URL + "config.js",
             function () {
 
-                if (window.DiyarVisitorWidget) {
+                loadJS(
+                    BASE_URL + "utils.js",
+                    function () {
 
-                    window.DiyarVisitorWidget.init({
-                        target: "diyar-visitor-widget",
-                        json: BASE_URL + "stats.json"
-                    });
+                        loadJS(
+                            BASE_URL + "theme.js",
+                            function () {
 
-                }
+                                loadJS(
+                                    BASE_URL + "animations.js",
+                                    function () {
+
+                                        loadJS(
+                                            BASE_URL + "visitor.js"
+                                        );
+
+                                    }
+                                );
+
+                            }
+                        );
+
+                    }
+                );
 
             }
         );
@@ -73,17 +97,7 @@
     }
 
 
-    if (document.readyState === "loading") {
+    init();
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            init
-        );
-
-    } else {
-
-        init();
-
-    }
 
 })();

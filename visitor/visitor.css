@@ -252,9 +252,27 @@ body {
   border: 1px solid transparent;
   cursor: default;
   outline: none;
-  opacity: 0;
-  transform: translateY(10px);
-  animation: card-fade-in var(--transition-medium) ease-out forwards;
+
+  /*
+   * VISIBILITY-SAFE ENTRANCE ANIMATION
+   * ---------------------------------------------------------------
+   * `opacity: 1` / `transform: none` below are a literal, UNCONDITIONAL
+   * fallback — they are the card's real base style, not part of the
+   * animation. If the browser/host strips @keyframes (some blog/CMS
+   * sanitizers, e.g. Blogfa, do this), blocks it via CSP, or the
+   * animation fails to apply for any other reason, the card — and the
+   * statistic value inside it — stays fully visible.
+   *
+   * The fade-in is expressed only through `animation-fill-mode:
+   * backwards`, which borrows the 0% keyframe (opacity: 0) ONLY while
+   * a valid animation is actually running/pending. Never declare
+   * opacity/transform as a bare "hidden" base state — that was the
+   * bug: if the animation didn't fire, cards stayed invisible forever.
+   */
+  opacity: 1;
+  transform: none;
+  animation: card-fade-in var(--transition-medium) ease-out backwards;
+
   transition:
     background var(--transition-fast),
     box-shadow var(--transition-fast),

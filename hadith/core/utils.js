@@ -127,7 +127,9 @@
   /** ساخت متن نهایی برای اشتراک‌گذاری/کپی از روی یک آیتم حدیث */
   function buildShareText(hadith) {
     if (!hadith) return '';
-    var parts = [hadith.text];
+    var parts = [];
+    if (hadith.arabic) parts.push(hadith.arabic);
+    parts.push(hadith.text);
     var meta = [];
     if (hadith.source) meta.push(hadith.source);
     if (hadith.book) meta.push(hadith.book);
@@ -180,12 +182,13 @@
     });
   }
 
-  /** باز کردن یک پنجره‌ی چاپ ساده و ایمن حاوی فقط متن حدیث جاری */
+  /** باز کردن یک پنجره‌ی چاپ ساده و ایمن حاوی متن حدیث جاری (عربی + ترجمه) */
   function printHadith(hadith) {
     if (!hadith) return;
     var win = window.open('', '_blank', 'width=480,height=640');
     if (!win) return; // popup blocker
 
+    var safeArabic = hadith.arabic ? escapeHTML(hadith.arabic) : '';
     var safeText = escapeHTML(hadith.text);
     var safeSource = escapeHTML(hadith.source || '');
     var safeBook = escapeHTML(hadith.book || '');
@@ -195,7 +198,9 @@
       '<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8">' +
       '<title>چاپ حدیث</title>' +
       '<style>body{font-family:Tahoma,sans-serif;padding:32px;line-height:2;}' +
+      'p.arabic{font-size:19px;font-weight:600;margin-bottom:14px}' +
       'p.text{font-size:18px}p.meta{color:#555;font-size:14px}</style></head><body>' +
+      (safeArabic ? '<p class="arabic" lang="ar" dir="rtl">' + safeArabic + '</p>' : '') +
       '<p class="text">' + safeText + '</p>' +
       '<p class="meta">' + [safeSource, safeBook].filter(Boolean).join('، ') + '</p>' +
       '</body></html>'

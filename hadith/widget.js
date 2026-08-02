@@ -27,6 +27,41 @@
   var Cache = global.HadithCache;
   var Utils = global.HadithUtils;
 
+  /**
+   * آیکون‌های SVG به‌سبک Material (خطی/outline)، جایگزین ایموجی‌های قبلی.
+   * چرا: ایموجی‌ها بین سیستم‌عامل‌ها و مرورگرهای مختلف ظاهر متفاوتی
+   * دارند (فونت ایموجی سیستم)، رنگشان با تم (روشن/تاریک) هماهنگ نمی‌شود
+   * و در Material 3 خطی/تک‌رنگ نیستند. این SVGها از currentColor استفاده
+   * می‌کنند تا رنگشان خودکار با رنگ متن دکمه (و تم روشن/تاریک) هماهنگ
+   * شود؛ aria-hidden دارند چون نام قابل‌دسترس دکمه از aria-label می‌آید.
+   */
+  var ICONS = {
+    next:
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+      '<path d="M20 12a8 8 0 1 1-2.34-5.66"/><polyline points="20 4 20 9 15 9"/></svg>',
+    random:
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+      '<path d="M4 6h3l7 12h4"/><path d="M4 18h3l3-5"/>' +
+      '<polyline points="15 4 18 6 15 8"/><line x1="18" y1="6" x2="14" y2="6"/>' +
+      '<polyline points="15 16 18 18 15 20"/><line x1="18" y1="18" x2="12" y2="18"/></svg>',
+    copy:
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+      '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4.5 15.5A2 2 0 0 1 3 13.6V4a2 2 0 0 1 2-2h9.6a2 2 0 0 1 1.9 1.5"/></svg>',
+    share:
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+      '<circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/>' +
+      '<line x1="8.1" y1="10.7" x2="15.9" y2="6.3"/><line x1="8.1" y1="13.3" x2="15.9" y2="17.7"/></svg>',
+    print:
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+      '<polyline points="6 9 6 3 18 3 18 9"/><rect x="4" y="9" width="16" height="8" rx="2"/>' +
+      '<polyline points="6 17 6 21 18 21 18 17"/></svg>'
+  };
+
   function DiyarHadithWidget(options) {
     this.config = mergeDeep(Config, options || {});
     this.el = null;
@@ -117,6 +152,11 @@
 
     return Cache.getHadiths()
       .then(function (result) {
+        // نکته: این پرچم فقط نشان می‌دهد داده‌ی حدیث از کش (به‌خاطر شکست
+        // fetch) آمده یا نه — به نشان «آفلاین» در رابط کاربری متصل
+        // نیست. طبق الزام محصول، آن نشان صرفاً از navigator.onLine
+        // واقعی می‌آید (نگاه کنید به _setupOnlineStatus)، چون ممکن است
+        // fetch به دلایل دیگری (نه لزوماً قطعی کامل اینترنت) شکست بخورد.
         self.offline = !!result.offline;
         self.hadiths = Utils.sanitizeHadithList(result.hadiths);
 
@@ -131,7 +171,6 @@
 
         self._selectInitial();
         self._setState('ready');
-        self._notifyOfflineIfNeeded();
 
         if (typeof self.config.callbacks.onReady === 'function') {
           self.config.callbacks.onReady(self.current);
@@ -192,11 +231,18 @@
     el.setAttribute('dir', this.config.direction);
     el.setAttribute('data-theme', this.config.theme);
 
+    // شناسه‌ی یکتا برای عنوان به‌ازای هر نمونه (چند ویجت هم‌زمان روی یک
+    // صفحه نباید id تکراری بسازند)
+    var titleId = 'dhw-title-' + this.config.containerId;
+
     el.innerHTML =
-      '<div class="dhw-card" role="region" aria-label="حدیث روز" aria-live="polite">' +
+      '<div class="dhw-card" role="region" aria-labelledby="' + titleId + '" aria-live="polite">' +
         '<div class="dhw-top">' +
-          '<span class="dhw-chip dhw-chip-category"></span>' +
-          '<span class="dhw-chip dhw-chip-offline" hidden>آفلاین</span>' +
+          '<h2 class="dhw-title" id="' + titleId + '">حدیث روز</h2>' +
+          '<div class="dhw-top-meta">' +
+            '<span class="dhw-chip dhw-chip-category"></span>' +
+            '<span class="dhw-chip dhw-chip-offline" hidden>آفلاین</span>' +
+          '</div>' +
         '</div>' +
         '<div class="dhw-body">' +
           '<p class="dhw-quote-mark" aria-hidden="true">”</p>' +
@@ -217,6 +263,7 @@
 
     this.refs = {
       card: el.querySelector('.dhw-card'),
+      title: el.querySelector('.dhw-title'),
       category: el.querySelector('.dhw-chip-category'),
       offlineChip: el.querySelector('.dhw-chip-offline'),
       text: el.querySelector('.dhw-text'),
@@ -228,6 +275,7 @@
     };
 
     this._buildActions();
+    this._setupOnlineStatus();
   };
 
   DiyarHadithWidget.prototype._buildActions = function () {
@@ -236,19 +284,19 @@
     var buttons = [];
 
     if (ui.showNextButton) {
-      buttons.push(this._makeButton('next', 'حدیث بعدی', '⟳', function () { self.next(); }));
+      buttons.push(this._makeButton('next', 'حدیث بعدی', ICONS.next, function () { self.next(); }));
     }
     if (ui.showRandomButton) {
-      buttons.push(this._makeButton('random', 'حدیث تصادفی', '🎲', function () { self._pickRandom(); }));
+      buttons.push(this._makeButton('random', 'حدیث تصادفی', ICONS.random, function () { self._pickRandom(); }));
     }
     if (ui.showCopyButton) {
-      buttons.push(this._makeButton('copy', 'کپی متن', '⧉', function () { self._copy(); }));
+      buttons.push(this._makeButton('copy', 'کپی متن', ICONS.copy, function () { self._copy(); }));
     }
     if (ui.showShareButton) {
-      buttons.push(this._makeButton('share', 'اشتراک‌گذاری', '↗', function () { self._share(); }));
+      buttons.push(this._makeButton('share', 'اشتراک‌گذاری', ICONS.share, function () { self._share(); }));
     }
     if (ui.showPrintButton) {
-      buttons.push(this._makeButton('print', 'چاپ', '🖨', function () { self._print(); }));
+      buttons.push(this._makeButton('print', 'چاپ', ICONS.print, function () { self._print(); }));
     }
 
     buttons.forEach(function (btn) { self.refs.actions.appendChild(btn); });
@@ -257,26 +305,24 @@
   /**
    * ساخت یک دکمه‌ی اکشن.
    *
-   * رفع باگ عملکردی: نسخه‌ی قبلی از Utils.debounce (لبه‌ی پایانی) استفاده
-   * می‌کرد که هر کلیک — حتی تک‌کلیک اول — را ۱۵۰ میلی‌ثانیه به تأخیر
-   * می‌انداخت (تأخیر مصنوعی در واکنش‌گرایی رابط کاربری). اکنون از
-   * createClickGuard استفاده می‌شود: کلیک اول بلافاصله اجرا و فقط
-   * کلیک‌های تکراری تا پایان cooldown نادیده گرفته می‌شوند.
+   * رفع باگ عملکردی (بازبینی قبلی): نسخه‌ای که از Utils.debounce (لبه‌ی
+   * پایانی) استفاده می‌کرد هر کلیک — حتی تک‌کلیک اول — را ۱۵۰ میلی‌ثانیه
+   * به تأخیر می‌انداخت. اکنون از createClickGuard استفاده می‌شود: کلیک
+   * اول بلافاصله اجرا و فقط کلیک‌های تکراری تا پایان cooldown نادیده
+   * گرفته می‌شوند.
    *
-   * دسترس‌پذیری: گلیف/ایموجی داخل دکمه با aria-hidden مخفی از صفحه‌خوان
-   * شده تا فقط متن aria-label (نام کامل فارسی دکمه) خوانده شود.
+   * پولیش UI: آیکون ایموجی قبلی با SVG درون‌خطیِ به‌سبک Material جایگزین
+   * شد (markup ثابت و از پیش تعریف‌شده در ICONS — نه داده‌ی کاربر، پس
+   * innerHTML اینجا امن است). SVG با aria-hidden مخفی از صفحه‌خوان است؛
+   * نام قابل‌دسترس دکمه فقط از aria-label می‌آید.
    */
-  DiyarHadithWidget.prototype._makeButton = function (name, label, glyph, handler) {
+  DiyarHadithWidget.prototype._makeButton = function (name, label, iconSvg, handler) {
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'dhw-btn dhw-btn-' + name;
     btn.setAttribute('aria-label', label);
     btn.title = label;
-
-    var glyphSpan = document.createElement('span');
-    glyphSpan.setAttribute('aria-hidden', 'true');
-    glyphSpan.textContent = glyph;
-    btn.appendChild(glyphSpan);
+    btn.innerHTML = iconSvg;
 
     var cooldown = (this.config.ui && this.config.ui.buttonCooldownMs) || 250;
     var guardedHandler = Utils.createClickGuard(handler, cooldown);
@@ -327,8 +373,32 @@
     }
   };
 
-  DiyarHadithWidget.prototype._notifyOfflineIfNeeded = function () {
-    this.refs.offlineChip.hidden = !this.offline;
+  /**
+   * نشان «آفلاین» را دقیقاً طبق وضعیت واقعی اتصال شبکه (navigator.onLine)
+   * مدیریت می‌کند — نه بر اساس نتیجه‌ی یک fetch خاص. علاوه بر تنظیم
+   * وضعیت اولیه، به رویدادهای 'online'/'offline' مرورگر گوش می‌دهد تا
+   * نشان بدون نیاز به رفرش صفحه زنده بروز شود (مثلاً وقتی کاربر در حین
+   * مطالعه‌ی همان صفحه اینترنتش قطع/وصل می‌شود).
+   */
+  DiyarHadithWidget.prototype._setupOnlineStatus = function () {
+    var self = this;
+
+    function update() {
+      if (self.refs.offlineChip) {
+        self.refs.offlineChip.hidden = navigator.onLine !== false;
+      }
+    }
+
+    update();
+
+    var onOnline = function () { update(); };
+    var onOffline = function () { update(); };
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+
+    // ثبت برای پاک‌سازی کامل در destroy() (رفع نشتی listener سطح window)
+    this._listeners.push({ el: window, type: 'online', handler: onOnline });
+    this._listeners.push({ el: window, type: 'offline', handler: onOffline });
   };
 
   /**

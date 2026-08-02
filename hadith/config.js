@@ -82,8 +82,8 @@
     /** شناسه‌ی عنصر HTML میزبان ویجت */
     containerId: 'diyar-hadith-widget',
 
-    /** آدرس GitHub Pages برای ساخت کد Embed / iframe (در صورت نیاز جایگزین شود) */
-    embedBaseUrl: 'https://USERNAME.github.io/diyar-widgets/hadith/',
+    /** آدرس GitHub Pages برای ساخت کد Embed / iframe */
+    embedBaseUrl: 'https://maghool51.github.io/diyar-widgets/hadith/',
 
     /** فراخوانی‌های اختیاری کاربر ویجت */
     callbacks: {

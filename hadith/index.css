@@ -1,0 +1,35 @@
+/**
+ * index.css
+ * ─────────────────────────────────────────────────────────────
+ * استایل صفحه‌ی «فقط ویجت» (index.html). برخلاف نسخه‌ی قبلی که
+ * index.html یک صفحه‌ی دموی توسعه‌دهنده با تیتر و مثال‌های embed بود،
+ * این فایل فقط کاری می‌کند که ویجت وسط صفحه و با فاصله‌ی مناسب از
+ * لبه‌ها نمایش داده شود — دقیقاً همان چیزی که در iframe/جاسازی واقعی
+ * دیده می‌شود.
+ * ─────────────────────────────────────────────────────────────
+ */
+:root { color-scheme: light dark; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f2f4f2;
+}
+
+@media (prefers-color-scheme: dark) {
+  body { background: #101413; }
+}
+
+.dhw {
+  margin: 0 auto;
+}

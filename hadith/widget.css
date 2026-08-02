@@ -75,6 +75,24 @@
   box-sizing: border-box;
 }
 
+/*
+ * رفع باگ واقعی (کشف‌شده با تست Playwright، نه فقط با خواندن کد):
+ * ویژگی HTML چند عنصر (چیپ آفلاین، اسکلتون لودینگ) با
+ * `element.hidden = true/false` در widget.js کنترل می‌شود. اما چون
+ * `.dhw-chip` و `.dhw-skeleton` مقدار `display` صریح (inline-flex/flex)
+ * دارند، و در کسکید CSS سبک نویسنده (author) همیشه — صرف‌نظر از
+ * specificity — بر سبک پیش‌فرض مرورگر (user-agent، از جمله قانون
+ * ضمنی `[hidden]{display:none}`) اولویت دارد، آن مقدار display صریح
+ * می‌توانست هر بار hidden=true را بی‌اثر کند. نتیجه در عمل: اسکلتون
+ * لودینگ حتی بعد از پایان بارگذاری با display:flex باقی می‌ماند (با
+ * تست تأیید شد: hidden=true اما computedStyle.display='flex'). این
+ * قانون صریح، صرف‌نظر از هر display دیگری روی همان عنصر، اولویت را
+ * تضمین می‌کند.
+ */
+.dhw [hidden] {
+  display: none !important;
+}
+
 /* ───────────── کارت اصلی ───────────── */
 .dhw-card {
   position: relative;
@@ -82,7 +100,7 @@
   color: var(--md-on-surface);
   border-radius: var(--md-shape-large);
   box-shadow: var(--md-shadow);
-  padding: 26px 28px 20px;
+  padding: 28px 28px 22px;
   transition: box-shadow 0.25s ease;
   overflow: hidden;
 }
@@ -94,9 +112,33 @@
 .dhw-top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  min-height: 28px;
+}
+
+/*
+ * عنوان ویجت («حدیث روز»). به‌عنوان h2 معنایی برای ساختار سرفصل‌ها
+ * (کمک به ناوبری صفحه‌خوان) و به‌عنوان لنگر aria-labelledby ناحیه‌ی
+ * کارت استفاده می‌شود. از نظر بصری با رنگ primary و وزن بالا، سلسله‌مراتب
+ * روشنی نسبت به چیپ دسته‌بندی (که رنگ خنثی‌تر و اندازه‌ی کوچک‌تری دارد)
+ * ایجاد می‌کند — طبق مقیاس تایپوگرافی M3 (نزدیک به label-large/title-small).
+ */
+.dhw-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--md-primary);
+  line-height: 1.4;
+}
+
+.dhw-top-meta {
+  display: flex;
+  align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
-  min-height: 26px;
+  flex-shrink: 0;
 }
 
 .dhw-chip {
@@ -192,9 +234,10 @@
 /* ───────────── دکمه‌های اکشن (Material 3 Icon Buttons) ───────────── */
 .dhw-actions {
   display: flex;
-  gap: 6px;
-  margin-top: 18px;
-  padding-top: 14px;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--md-outline-variant);
 }
 
@@ -204,15 +247,20 @@
   border: none;
   background: transparent;
   color: var(--md-on-surface-variant);
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--md-shape-full);
-  font-size: 17px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: background-color 0.18s ease, transform 0.12s ease, color 0.18s ease;
   overflow: hidden;
+  flex-shrink: 0;
+}
+
+.dhw-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .dhw-btn:hover {
@@ -258,10 +306,14 @@
 }
 
 /* ───────────── حالت بارگذاری (Skeleton) ───────────── */
+/* توجه: برخلاف نسخه‌ی قبلی که کل dhw-top (شامل عنوان) را مخفی می‌کرد،
+   اکنون فقط بخش‌های وابسته به داده (چیپ دسته‌بندی/آفلاین) حین بارگذاری
+   مخفی می‌شوند؛ عنوان «حدیث روز» ثابت و همیشه قابل مشاهده می‌ماند تا
+   سلسله‌مراتب بصری و برندینگ حین لودینگ هم حفظ شود. */
+.dhw-loading .dhw-top-meta,
 .dhw-loading .dhw-body,
 .dhw-loading .dhw-meta,
-.dhw-loading .dhw-actions,
-.dhw-loading .dhw-top {
+.dhw-loading .dhw-actions {
   display: none;
 }
 
@@ -303,10 +355,16 @@
   .dhw-text {
     font-size: 16px;
   }
+  .dhw-actions {
+    gap: 6px;
+  }
   .dhw-btn {
-    width: 38px;
-    height: 38px;
-    font-size: 15px;
+    width: 40px;
+    height: 40px;
+  }
+  .dhw-btn svg {
+    width: 18px;
+    height: 18px;
   }
 }
 

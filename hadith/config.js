@@ -53,7 +53,14 @@
       showCopyButton: true,
       showPrintButton: true,
       showNextButton: true,
-      showRandomButton: true
+      showRandomButton: true,
+      /**
+       * فاصله‌ی زمانی محافظ کلیک روی دکمه‌ها (میلی‌ثانیه). برخلاف نسخه‌ی
+       * قبلی که از debounce (تأخیر در همان کلیک اول) استفاده می‌کرد، اکنون
+       * کلیک اول بلافاصله اجرا می‌شود و فقط کلیک‌های *بعدی* تا پایان این
+       * بازه نادیده گرفته می‌شوند (نگاه کنید به core/utils.js#createClickGuard).
+       */
+      buttonCooldownMs: 250
     },
 
     /** تنظیمات کش */

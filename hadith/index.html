@@ -7,58 +7,33 @@
 <title>ویجت حدیث روز | Diyar Widgets</title>
 <meta name="description" content="ویجت مستقل و سبک حدیث روز — قابل استفاده در GitHub Pages، Blogfa و هر وب‌سایت دیگر." />
 
-<!-- فونت فارسی وزیرمتن (اختیاری). در صورت نبود اینترنت، فونت‌های سیستم جایگزین می‌شوند -->
+<!-- فونت فارسی وزیرمتن (اختیاری).
+     رفع مشکل عملکردی: نسخه‌ی قبلی این stylesheet را به‌صورت render-blocking
+     در <head> بارگذاری می‌کرد؛ یعنی First Paint/First Contentful Paint تا
+     زمان دانلود کامل فونت از یک CDN شخص‌ثالث (که برای برخی کاربران، از
+     جمله کاربران ایرانی، می‌تواند کند یا ناپایدار باشد) معطل می‌ماند.
+     ترفند media="print" + onload یک الگوی استاندارد برای بارگذاری
+     غیرمسدودکننده‌ی CSS است: مرورگر stylesheet را در پس‌زمینه (بدون
+     مسدودکردن رندر) دانلود می‌کند و فقط پس از آماده شدن media را به all
+     تغییر می‌دهد. <noscript> برای مرورگرهای بدون جاوااسکریپت fallback
+     مسدودکننده‌ی معمول را حفظ می‌کند. -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
+  media="print"
+  onload="this.media='all'"
+/>
+<noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+</noscript>
 
 <link rel="manifest" href="./manifest.webmanifest" />
 <meta name="theme-color" content="#12695f" />
 <link rel="icon" href="./assets/icons/icon-192.png" />
 <link rel="stylesheet" href="./widget.css" />
 
-<style>
-  :root { color-scheme: light dark; }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 26px;
-    padding: 40px 16px 60px;
-    font-family: 'Vazirmatn', Tahoma, sans-serif;
-    background: #f2f4f2;
-    color: #191c1b;
-  }
-  @media (prefers-color-scheme: dark) {
-    body { background: #101413; color: #e1e3e0; }
-  }
-  header { text-align: center; max-width: 560px; }
-  header h1 { font-size: 22px; margin-bottom: 6px; }
-  header p { font-size: 14px; color: #6f7975; margin: 0; }
-  .dhw { margin: 0 auto; }
-  .embed-box {
-    max-width: 560px;
-    width: 100%;
-    background: rgba(127,127,127,0.08);
-    border-radius: 16px;
-    padding: 18px 20px;
-    font-size: 13px;
-    line-height: 2;
-  }
-  .embed-box code {
-    display: block;
-    direction: ltr;
-    text-align: left;
-    background: rgba(127,127,127,0.12);
-    border-radius: 10px;
-    padding: 10px 14px;
-    overflow-x: auto;
-    margin-top: 8px;
-    font-family: 'Courier New', monospace;
-  }
-</style>
+<link rel="stylesheet" href="./demo.css" />
 </head>
 <body>
 
@@ -81,7 +56,7 @@
 &lt;script src="widget.js"&gt;&lt;/script&gt;
 &lt;script&gt;new DiyarHadithWidget().init();&lt;/script&gt;</code>
 
-  <strong style="display:block;margin-top:14px;">روش ۲ — جاسازی در Blogfa با iframe:</strong>
+  <strong class="embed-box-subtitle">روش ۲ — جاسازی در Blogfa با iframe:</strong>
   <code>&lt;iframe
   src="https://USERNAME.github.io/diyar-widgets/hadith/"
   style="width:100%;max-width:560px;height:340px;border:0;"
@@ -90,25 +65,44 @@
 &lt;/iframe&gt;</code>
 </div>
 
-<!-- بارگذاری ماژول‌ها به همین ترتیب ضروری است (config قبل از بقیه) -->
-<script src="./config.js"></script>
-<script src="./core/storage.js"></script>
-<script src="./core/cache.js"></script>
-<script src="./core/utils.js"></script>
-<script src="./widget.js"></script>
+<!-- بارگذاری ماژول‌ها به همین ترتیب ضروری است (config قبل از بقیه).
+     defer باعث می‌شود مرورگر همه‌ی این فایل‌ها را به‌صورت موازی دانلود کند
+     (به‌جای دانلود+اجرای سریالی یکی‌یکی که رفتار پیش‌فرض <script src> بدون
+     defer/async است) و اجرای هرکدام تا پایان HTML-parsing و به همان ترتیب
+     نوشته‌شده به تعویق می‌افتد — پس ترتیب صحیح config→...→widget حفظ
+     می‌شود. اسکریپت درون‌خطی زیر هم باید defer شود تا اجرایش تضمیناً بعد
+     از آماده‌شدن DiyarHadithWidget باشد (وگرنه ممکن است قبل از بارگذاری
+     کامل widget.js اجرا شود و ReferenceError بدهد). -->
+<script src="./config.js" defer></script>
+<script src="./core/storage.js" defer></script>
+<script src="./core/cache.js" defer></script>
+<script src="./core/utils.js" defer></script>
+<script src="./widget.js" defer></script>
 <script>
-  new DiyarHadithWidget().init();
+  // نکته‌ی مهم (باگ رفع‌شده در این بازبینی): ویژگی defer روی اسکریپت‌های
+  // *درون‌خطی* (بدون src) طبق مشخصات HTML اصلاً اثری ندارد و نادیده گرفته
+  // می‌شود؛ فقط برای <script src=...> معتبر است. اگر این بلوک هم defer
+  // می‌داشت (که در یک تلاش اول اشتباهاً همین کار انجام شد)، مرورگر آن را
+  // بلافاصله و پیش از تمام‌شدن اجرای اسکریپت‌های خارجیِ defer-شده‌ی بالا
+  // اجرا می‌کرد و به خطای «DiyarHadithWidget is not defined» می‌انجامید
+  // (این خطا با تست واقعی در مرورگر گرفته و اینجا اصلاح شد). راه‌حل درست
+  // و استاندارد، اجرای این بلوک درون DOMContentLoaded است — که تضمین
+  // می‌کند همه‌ی اسکریپت‌های defer شده (که طبق مشخصات باید پیش از این
+  // رویداد و به همان ترتیبِ نوشته‌شده اجرا شوند) از قبل آماده‌اند.
+  document.addEventListener('DOMContentLoaded', function () {
+    new DiyarHadithWidget().init();
 
-  // ثبت Service Worker برای پشتیبانی کامل آفلاین (اختیاری و ایمن؛
-  // در مرورگرهایی که پشتیبانی نمی‌کنند یا داخل iframe با محدودیت
-  // اجرا می‌شوند، بی‌سروصدا نادیده گرفته می‌شود)
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register('./sw.js').catch(function () {
-        // ثبت ناموفق (مثلاً به‌دلیل محدودیت iframe در Blogfa)؛ ویجت بدون آن هم کار می‌کند
+    // ثبت Service Worker برای پشتیبانی کامل آفلاین (اختیاری و ایمن؛
+    // در مرورگرهایی که پشتیبانی نمی‌کنند یا داخل iframe با محدودیت
+    // اجرا می‌شوند، بی‌سروصدا نادیده گرفته می‌شود)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function () {
+          // ثبت ناموفق (مثلاً به‌دلیل محدودیت iframe در Blogfa)؛ ویجت بدون آن هم کار می‌کند
+        });
       });
-    });
-  }
+    }
+  });
 </script>
 </body>
 </html>

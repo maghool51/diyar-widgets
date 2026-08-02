@@ -141,8 +141,14 @@
   font-size: 18px;
   font-weight: 500;
   line-height: 2;
-  opacity: 0;
-  transform: translateY(6px);
+  /* پیش از این opacity:0 بود و فقط با اجرای موفق انیمیشن fade-in نمایان
+     می‌شد؛ اگر به هر دلیلی (کلاس دیرتر اضافه شود، مرورگر انیمیشن CSS را
+     پشتیبانی نکند، یا JS قبل از رسیدن به آن خط خطا بدهد) کلاس dhw-fade
+     اعمال نمی‌شد، متن حدیث برای همیشه نامرئی می‌ماند — یک باگ دسترس‌پذیری/
+     استحکام واقعی. اکنون متن به‌طور پیش‌فرض کاملاً نمایان است و انیمیشن
+     فقط یک جلوهٔ تزئینیِ اضافه (نه پیش‌نیاز نمایان‌شدن) است. */
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .dhw-meta {
@@ -166,11 +172,17 @@
 }
 
 /* ───────────── انیمیشن ظاهر شدن متن ───────────── */
+/* از حالت محو (opacity 0.4) شروع می‌شود نه نامرئی کامل؛ حتی اگر انیمیشن
+   به هر دلیلی miss شود، متن (طبق قانون بالا) از قبل opacity:1 دارد. */
 .dhw-fade .dhw-text {
-  animation: dhw-fade-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: dhw-fade-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @keyframes dhw-fade-in {
+  from {
+    opacity: 0.4;
+    transform: translateY(4px);
+  }
   to {
     opacity: 1;
     transform: translateY(0);
@@ -217,6 +229,32 @@
 .dhw-btn:focus-visible {
   outline: 2px solid var(--md-primary);
   outline-offset: 2px;
+}
+
+/* Fallback برای مرورگرهای قدیمی‌تر (نسخه‌های قدیمی Samsung Internet/
+   Android WebView) که از :focus-visible پشتیبانی نمی‌کنند؛ بدون این
+   قانون، دکمه‌ها در آن مرورگرها هیچ نشانه‌ی فوکوس قابل‌مشاهده‌ای نداشتند
+   (نقض WCAG 2.4.7). فقط وقتی :focus-visible پشتیبانی نمی‌شود فعال است. */
+@supports not selector(:focus-visible) {
+  .dhw-btn:focus {
+    outline: 2px solid var(--md-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* ناحیه‌ی وضعیت مخصوص صفحه‌خوان (بازخورد کپی/اشتراک‌گذاری) — از نظر
+   بصری مخفی است اما توسط صفحه‌خوان‌ها خوانده می‌شود؛ الگوی استاندارد
+   sr-only، بدون هیچ تأثیری بر چیدمان (بدون ریسک Layout Shift). */
+.dhw-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ───────────── حالت بارگذاری (Skeleton) ───────────── */

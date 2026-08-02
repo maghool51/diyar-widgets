@@ -1,0 +1,63 @@
+/**
+ * demo.css
+ * ─────────────────────────────────────────────────────────────
+ * استایل‌های مخصوص صفحه‌ی دموی index.html — نه بخشی از ویجت قابل‌جاسازی.
+ * قبلاً این‌ها به‌صورت <style> درون‌خطی در index.html بودند؛ جدا کردنشان
+ * به یک فایل خارجی، هم جداسازی دغدغه‌ها (پوسته‌ی دمو در برابر ویجت
+ * واقعی) را روشن‌تر می‌کند و هم صفحه را برای سیاست‌های CSP سخت‌گیرانه
+ * (بدون 'unsafe-inline' برای style-src) سازگارتر می‌سازد.
+ * ─────────────────────────────────────────────────────────────
+ */
+:root { color-scheme: light dark; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+  padding: 40px 16px 60px;
+  font-family: 'Vazirmatn', Tahoma, sans-serif;
+  background: #f2f4f2;
+  color: #191c1b;
+}
+
+@media (prefers-color-scheme: dark) {
+  body { background: #101413; color: #e1e3e0; }
+}
+
+header { text-align: center; max-width: 560px; }
+header h1 { font-size: 22px; margin-bottom: 6px; }
+header p { font-size: 14px; color: #6f7975; margin: 0; }
+
+.dhw { margin: 0 auto; }
+
+.embed-box {
+  max-width: 560px;
+  width: 100%;
+  background: rgba(127, 127, 127, 0.08);
+  border-radius: 16px;
+  padding: 18px 20px;
+  font-size: 13px;
+  line-height: 2;
+}
+
+.embed-box-subtitle {
+  display: block;
+  margin-top: 14px;
+}
+
+.embed-box code {
+  display: block;
+  direction: ltr;
+  text-align: left;
+  background: rgba(127, 127, 127, 0.12);
+  border-radius: 10px;
+  padding: 10px 14px;
+  overflow-x: auto;
+  margin-top: 8px;
+  font-family: 'Courier New', monospace;
+}

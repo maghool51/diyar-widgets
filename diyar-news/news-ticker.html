@@ -120,6 +120,14 @@ text-decoration:underline;
 }
 
 
+.news-source{
+
+color:#ffd700;
+font-weight:bold;
+
+}
+
+
 
 .separator{
 
@@ -139,13 +147,6 @@ color:#ffd700;
 
 
 0%{
-
-transform:translateX(0);
-
-}
-
-
-4%{
 
 transform:translateX(0);
 
@@ -277,8 +278,8 @@ return "#";
 // انیمیشن (که با تغییر تعداد اخبار خیلی سریع یا خیلی کند می‌شود)،
 // سرعت به‌صورت پیکسل-بر-ثانیه ثابت نگه داشته می‌شود؛ یعنی صرف نظر
 // از تعداد خبرها، حرکت همیشه با یک آهنگ آرام و خوانا انجام می‌شود.
-var PIXELS_PER_SECOND = 45; // عدد کمتر = حرکت کندتر و خواناتر
-var MIN_DURATION_SECONDS = 60; // حداقل مدت، حتی وقتی خبر کم است
+var PIXELS_PER_SECOND = 75; // عدد کمتر = حرکت کندتر و خواناتر
+var MIN_DURATION_SECONDS = 35; // حداقل مدت، حتی وقتی خبر کم است
 
 fetch(url + "?v=" + Date.now())
 
@@ -295,10 +296,12 @@ if(item.title){
 
 const href = safeLink(item.link);
 
+const sourceLabel = item.source ? `<span class="news-source">${item.flag ? escapeHtml(item.flag) + ' ' : ''}${escapeHtml(item.source)}:</span> ` : '';
+
 html += `
 
 <a class="news-item" href="${href}" target="_blank" rel="noopener noreferrer">
-🔹 ${escapeHtml(item.title)}
+🔹 ${sourceLabel}${escapeHtml(item.title)}
 </a>
 
 <span class="separator">

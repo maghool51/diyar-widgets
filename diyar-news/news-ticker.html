@@ -217,9 +217,9 @@ padding:0 25px;
 <div class="news-ticker">
 
 
-<div class="ticker-title">
+<div class="ticker-title" id="tickerToggle" style="cursor:pointer;user-select:none;" title="برای توقف/ادامه‌ی حرکت ضربه بزنید">
 
-<span class="blink">🔴</span>
+<span class="blink" id="tickerToggleIcon">🔴</span>
 
 خبر فوری
 
@@ -278,8 +278,8 @@ return "#";
 // انیمیشن (که با تغییر تعداد اخبار خیلی سریع یا خیلی کند می‌شود)،
 // سرعت به‌صورت پیکسل-بر-ثانیه ثابت نگه داشته می‌شود؛ یعنی صرف نظر
 // از تعداد خبرها، حرکت همیشه با یک آهنگ آرام و خوانا انجام می‌شود.
-var PIXELS_PER_SECOND = 75; // عدد کمتر = حرکت کندتر و خواناتر
-var MIN_DURATION_SECONDS = 35; // حداقل مدت، حتی وقتی خبر کم است
+var PIXELS_PER_SECOND = 32; // عدد کمتر = حرکت کندتر و خواناتر
+var MIN_DURATION_SECONDS = 70; // حداقل مدت، حتی وقتی خبر کم است
 
 fetch(url + "?v=" + Date.now())
 
@@ -352,6 +352,29 @@ document.getElementById("tickerContent").innerHTML =
 `;
 
 });
+
+
+// توقف/ادامه‌ی حرکت با ضربه (تپ) روی دکمه‌ی «خبر فوری»؛
+// چون حرکت با هاور روی موبایل کار نمی‌کند، این یک راه جایگزین
+// برای لمسی‌هاست تا کاربر بتواند یک خبر را نگه دارد و بخواند.
+(function(){
+
+var toggleBtn = document.getElementById("tickerToggle");
+var toggleIcon = document.getElementById("tickerToggleIcon");
+var tickerEl = document.getElementById("tickerContent");
+var paused = false;
+
+toggleBtn.addEventListener("click", function(){
+
+paused = !paused;
+
+tickerEl.style.animationPlayState = paused ? "paused" : "running";
+toggleIcon.textContent = paused ? "⏸" : "🔴";
+toggleBtn.title = paused ? "برای ادامه‌ی حرکت ضربه بزنید" : "برای توقف حرکت ضربه بزنید";
+
+});
+
+})();
 
 
 </script>

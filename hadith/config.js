@@ -46,6 +46,7 @@
 
     /** نمایش موارد مختلف در کارت */
     ui: {
+      showArabic: true,
       showSource: true,
       showBook: true,
       showCategory: true,

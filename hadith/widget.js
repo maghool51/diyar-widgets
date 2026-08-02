@@ -246,6 +246,7 @@
         '</div>' +
         '<div class="dhw-body">' +
           '<p class="dhw-quote-mark" aria-hidden="true">”</p>' +
+          '<p class="dhw-text-ar" lang="ar" dir="rtl"></p>' +
           '<blockquote class="dhw-text"></blockquote>' +
         '</div>' +
         '<div class="dhw-meta">' +
@@ -267,6 +268,7 @@
       category: el.querySelector('.dhw-chip-category'),
       offlineChip: el.querySelector('.dhw-chip-offline'),
       text: el.querySelector('.dhw-text'),
+      textAr: el.querySelector('.dhw-text-ar'),
       source: el.querySelector('.dhw-source'),
       book: el.querySelector('.dhw-book'),
       actions: el.querySelector('.dhw-actions'),
@@ -339,6 +341,16 @@
     var h = this.current;
     var digits = this.config.usePersianDigits ? Utils.toPersianDigits : function (s) { return s; };
 
+    // متن عربی اصلی (در صورت وجود در داده و فعال‌بودن تنظیم showArabic)
+    // پیش از ترجمه‌ی فارسی نمایش داده می‌شود. اگر آیتمی متن عربی نداشته
+    // باشد، این پاراگراف به‌آرامی مخفی می‌شود (سازگاری با داده‌ی قدیمی
+    // که فیلد arabic را نداشت).
+    var showArabic = this.config.ui.showArabic !== false && !!h.arabic;
+    if (this.refs.textAr) {
+      this.refs.textAr.textContent = showArabic ? h.arabic : '';
+      this.refs.textAr.hidden = !showArabic;
+    }
+
     this.refs.text.textContent = h.text;
     this.refs.source.textContent = this.config.ui.showSource && h.source ? h.source : '';
     this.refs.book.textContent = this.config.ui.showBook && h.book ? digits(h.book) : '';
@@ -367,6 +379,7 @@
       skeleton.hidden = true;
       card.classList.remove('dhw-loading');
       this.refs.text.textContent = message || 'خطایی رخ داد.';
+      if (this.refs.textAr) this.refs.textAr.hidden = true;
       this.refs.source.hidden = true;
       this.refs.book.hidden = true;
       this.refs.category.hidden = true;

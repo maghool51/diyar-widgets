@@ -178,11 +178,32 @@
   pointer-events: none;
 }
 
-.dhw-text {
-  margin: 8px 0 0;
+/*
+ * متن عربی اصلی حدیث — بالای ترجمه‌ی فارسی نمایش داده می‌شود. رنگ کمی
+ * متفاوت (var(--md-on-surface) با وزن بیشتر) و جداکننده‌ی زیرین ظریف
+ * برای تمایز بصری روشن از ترجمه‌ی فارسیِ زیرش استفاده شده است.
+ */
+.dhw-text-ar {
+  margin: 8px 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--md-outline-variant);
   font-size: 18px;
+  font-weight: 600;
+  line-height: 2.1;
+  opacity: 1;
+  transform: translateY(0);
+  /* فونت عربی معمولاً کمی متفاوت از فارسی رندر می‌شود؛ در نبود فونت
+     اختصاصی عربی، به فونت اصلی ویجت (وزیرمتن/سیستم) سقوط می‌کند که
+     پشتیبانی خوبی از حروف عربی هم دارد. */
+  font-family: 'Amiri', 'Vazirmatn', 'Traditional Arabic', Tahoma, serif;
+}
+
+.dhw-text {
+  margin: 0;
+  font-size: 16px;
   font-weight: 500;
   line-height: 2;
+  color: var(--md-on-surface-variant);
   /* پیش از این opacity:0 بود و فقط با اجرای موفق انیمیشن fade-in نمایان
      می‌شد؛ اگر به هر دلیلی (کلاس دیرتر اضافه شود، مرورگر انیمیشن CSS را
      پشتیبانی نکند، یا JS قبل از رسیدن به آن خط خطا بدهد) کلاس dhw-fade
@@ -191,6 +212,15 @@
      فقط یک جلوهٔ تزئینیِ اضافه (نه پیش‌نیاز نمایان‌شدن) است. */
   opacity: 1;
   transform: translateY(0);
+}
+
+/* اگر آیتمی متن عربی نداشته باشد (یا showArabic غیرفعال باشد)، ترجمه‌ی
+   فارسی به‌تنهایی با همان وزن/اندازه‌ی قبلی (سلسله‌مراتب اصلی) نمایش
+   داده می‌شود — سازگاری با داده‌ای که فیلد arabic ندارد. */
+.dhw-text-ar[hidden] + .dhw-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--md-on-surface);
 }
 
 .dhw-meta {
@@ -216,6 +246,7 @@
 /* ───────────── انیمیشن ظاهر شدن متن ───────────── */
 /* از حالت محو (opacity 0.4) شروع می‌شود نه نامرئی کامل؛ حتی اگر انیمیشن
    به هر دلیلی miss شود، متن (طبق قانون بالا) از قبل opacity:1 دارد. */
+.dhw-fade .dhw-text-ar,
 .dhw-fade .dhw-text {
   animation: dhw-fade-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }

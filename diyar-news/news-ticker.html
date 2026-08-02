@@ -247,7 +247,7 @@ padding:0 25px;
 <script>
 
 const url =
-"https://raw.githubusercontent.com/maghool51/diyar-news/main/news.json";
+"https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news.json";
 
 
 // جلوگیری از XSS: عنوان خبر پیش از درج در HTML باید escape شود،
@@ -264,7 +264,7 @@ return String(str)
 
 // اعتبارسنجی امن لینک خبر: فقط آدرس‌های http/https معتبر پذیرفته
 // می‌شوند؛ یک بررسی ساده مثل startsWith("http") قابل دور زدن است
-// (مثلاً با رشته‌ای مثل: http"><script>...</script>)
+// (مثلاً با یک لینک حاوی کاراکترهای خطرناک HTML مانند نقل‌قول و تگ)
 function safeLink(link) {
 try {
 var u = new URL(link, window.location.href);

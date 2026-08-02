@@ -205,7 +205,13 @@
     win.print();
   }
 
-  /** debounce ساده برای جلوگیری از کلیک‌های پیاپی روی دکمه‌ها */
+  /**
+   * debounce ساده (لبه‌ی پایانی/trailing edge). توجه: هر فراخوانی —
+   * حتی تک‌کلیک اول — به‌اندازه‌ی wait میلی‌ثانیه به تأخیر می‌افتد.
+   * برای دکمه‌های ویجت به‌جای این تابع از createClickGuard استفاده کنید؛
+   * این تابع فقط برای مواردی نگه داشته شده که تأخیر واقعاً مطلوب است
+   * (مثلاً محدود کردن نرخ فراخوانی یک رویداد پرتکرار مثل resize/scroll).
+   */
   function debounce(fn, wait) {
     var timer = null;
     return function () {
@@ -213,6 +219,25 @@
       var ctx = this;
       clearTimeout(timer);
       timer = setTimeout(function () { fn.apply(ctx, args); }, wait);
+    };
+  }
+
+  /**
+   * محافظ کلیک (throttle با لبه‌ی ابتدایی/leading edge): برخلاف debounce،
+   * اولین کلیک بلافاصله و بدون هیچ تأخیری اجرا می‌شود — این برای واکنش‌گرا
+   * نگه‌داشتن کارت حدیث مهم است (نباید کاربر ۱۵۰ میلی‌ثانیه صبر کند تا
+   * حدیث بعدی ظاهر شود). کلیک‌های بعدی تا پایان cooldownMs نادیده گرفته
+   * می‌شوند تا از رویدادهای تصادفی/دوبار-کلیک محافظت شود.
+   */
+  function createClickGuard(fn, cooldownMs) {
+    var locked = false;
+    return function () {
+      if (locked) return;
+      locked = true;
+      var args = arguments;
+      var ctx = this;
+      fn.apply(ctx, args);
+      setTimeout(function () { locked = false; }, cooldownMs);
     };
   }
 
@@ -228,6 +253,7 @@
     copyToClipboard: copyToClipboard,
     shareText: shareText,
     printHadith: printHadith,
-    debounce: debounce
+    debounce: debounce,
+    createClickGuard: createClickGuard
   };
 })(typeof window !== 'undefined' ? window : this);

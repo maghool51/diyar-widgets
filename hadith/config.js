@@ -95,9 +95,10 @@
       enabled: true,
       name: 'دیار قدمگاه',
       url: '',
-      /** مسیر فایل لوگو (مثلاً 'assets/icons/diyar-logo.svg')؛ اگر خالی
-       *  بماند، فقط نام‌نشان متنی نمایش داده می‌شود. */
-      logoUrl: null,
+      /** مسیر فایل لوگو (نسخه‌ی بهینه‌شده‌ی ۱۲۰×۱۲۰ برای نمایش سریع در
+       *  ویجت؛ فایل اصلی با کیفیت کامل در assets/logo.png نگه داشته
+       *  شده است). */
+      logoUrl: 'assets/logo-sm.png',
       /** 'below' | 'above' نسبت به کارت */
       position: 'below'
     },

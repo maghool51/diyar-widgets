@@ -10,11 +10,11 @@ const parser = new Parser({
     'Connection': 'keep-alive',
     'Cache-Control': 'no-cache'
   },
-  timeout: 20000,  // افزایش timeout
+  timeout: 20000,
   maxRedirects: 5
 });
 
-// ================ ابزارهای امنیتی (جلوگیری از XSS) ================
+// ================ ابزارهای امنیتی ================
 function escapeHtml(str) {
   if (str === null || str === undefined) return "";
   return String(str)
@@ -122,17 +122,16 @@ function detectCategory(title) {
   return maxScore > 0 ? bestCategory : "متفرقه";
 }
 
-// ================ منابع نهایی (با آدرس‌های تست‌شده) ================
+// ================ منابع نهایی (با آدرس‌های به‌روز و تأییدشده) ================
 const sources = [
   { name: "ایرنا", url: "https://www.irna.ir/rss", flag: "🇮🇷" },
   { name: "ایسنا", url: "https://www.isna.ir/rss", flag: "🇮🇷" },
   { name: "مهر", url: "https://www.mehrnews.com/rss", flag: "🇮🇷" },
   { 
     name: "تسنیم", 
-    url: "http://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories",  // استفاده از http (همان self-link خروجی)
+    url: "http://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories", 
     flag: "🇮🇷" 
   },
-  // { name: "فارس", url: "https://www.farsnews.ir/rss", flag: "🇮🇷" },  // غیرفعال
   { 
     name: "ایلنا", 
     url: "https://www.ilna.ir/feeds", 
@@ -197,10 +196,11 @@ async function getNews() {
   }
 
   if (allNews.length === 0) {
-    console.log("⚠️ هیچ خبری دریافت نشد!");
+    console.log("⚠️ هیچ خبری دریافت نشد! فایل‌های قبلی حفظ می‌شوند.");
     return;
   }
 
+  // حذف تکراری‌ها و مرتب‌سازی
   const seenTitles = new Set();
   allNews = allNews
     .filter(n => n.title && /[\u0600-\u06FF]/.test(n.title))
@@ -229,6 +229,7 @@ async function getNews() {
     console.log(`🕐 آخرین خبر: ${latestDate.toLocaleString("fa-IR")}`);
   }
 
+  // دسته‌بندی
   const categorizedNews = {};
   for (const news of allNews) {
     if (!categorizedNews[news.category]) {
@@ -237,7 +238,7 @@ async function getNews() {
     categorizedNews[news.category].push(news);
   }
 
-  // ================ ساخت news.json ================
+  // ذخیره JSON
   const jsonData = {
     lastUpdate: new Date().toISOString(),
     lastUpdatePersian: new Date().toLocaleString("fa-IR"),
@@ -247,11 +248,10 @@ async function getNews() {
     news: allNews,
     categorizedNews: categorizedNews
   };
-
   fs.writeFileSync("news.json", JSON.stringify(jsonData, null, 2), "utf8");
   console.log(`✅ news.json با ${allNews.length} خبر ذخیره شد`);
 
-  // ================ ساخت index.html ================
+  // ساخت HTML (همان کد قبلی)
   let html = `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -295,35 +295,21 @@ body{font-family:tahoma;background:#f0f2f5;padding:10px}
 <div style="font-size:24px;font-weight:bold;">
 📰 دیار قدمگاه | اخبار فوری ایران
 </div>
-
 <div style="font-size:13px;margin-top:8px;opacity:.95">
 آخرین بروزرسانی: ${new Date().toLocaleString("fa-IR")}
 </div>
-
 <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px">
-
-<span class="count-badge">
-📰 ${allNews.length} خبر
-</span>
-
-<span class="count-badge">
-🗂 ${Object.keys(categorizedNews).length} دسته
-</span>
-
-<span class="count-badge">
-📡 ${sources.length} خبرگزاری
-</span>
-
+<span class="count-badge">📰 ${allNews.length} خبر</span>
+<span class="count-badge">🗂 ${Object.keys(categorizedNews).length} دسته</span>
+<span class="count-badge">📡 ${sources.length} خبرگزاری</span>
 </div>
 </div>
-
 <div class="category-tabs">
   <button class="category-tab active" onclick="filterCategory('all')">📋 همه</button>
   ${Object.keys(categorizedNews).map(cat => 
     `<button class="category-tab" onclick="filterCategory('${cat}')">${categoryEmojis[cat] || '📌'} ${cat}</button>`
   ).join('')}
 </div>
-
 <div id="news-container">`;
 
   for (const [category, newsList] of Object.entries(categorizedNews)) {
@@ -351,13 +337,11 @@ body{font-family:tahoma;background:#f0f2f5;padding:10px}
 
   html += `
 </div>
-
 <div class="footer">
 🔄 آخرین بروزرسانی: ${new Date().toLocaleString("fa-IR")}<br>
 ${failedSources.length ? `⚠️ منابع ناموفق: ${failedSources.join('، ')}` : '✅ همه منابع فعال هستند'}
 </div>
 </div>
-
 <script>
 function filterCategory(category) {
   document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
@@ -366,7 +350,6 @@ function filterCategory(category) {
       tab.classList.add('active');
     }
   });
-  
   document.querySelectorAll('.category-section').forEach(section => {
     if (category === 'all' || section.dataset.category === category) {
       section.style.display = 'block';
@@ -376,7 +359,6 @@ function filterCategory(category) {
   });
 }
 </script>
-
 </body>
 </html>`;
 
@@ -386,7 +368,7 @@ function filterCategory(category) {
   fs.writeFileSync("news.html", html, "utf8");
   console.log(`✅ news.html با ${allNews.length} خبر ذخیره شد`);
 
-  // ================ ساخت news-ticker.html ================
+  // ================ ساخت news-ticker.html (همیشه بازنویسی میشود) ================
   const tickerHtml = `<!DOCTYPE html>
 <html>
 <head>
@@ -402,23 +384,19 @@ function filterCategory(category) {
   white-space: nowrap;
   position: relative;
 }
-
 .news-ticker-content {
   display: inline-block;
   animation: tickerScroll 90s linear infinite;
 }
-
 .news-ticker-content a {
   color: white;
   text-decoration: none;
   margin: 0 15px;
   font-size: 13px;
 }
-
 .news-ticker-content a:hover {
   text-decoration: underline;
 }
-
 .news-ticker .category-badge {
   background: rgba(255,255,255,0.2);
   padding: 2px 10px;
@@ -426,25 +404,20 @@ function filterCategory(category) {
   font-size: 11px;
   margin-left: 5px;
 }
-
 .news-ticker .separator {
   color: #ff6b6b;
   margin: 0 8px;
 }
-
 @keyframes tickerScroll {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
-
 .news-ticker:hover .news-ticker-content {
   animation-play-state: paused;
 }
 </style>
 </head>
-
 <body>
-
 <div class="news-ticker">
   <div class="news-ticker-content">
     ${allNews.map(n => {
@@ -454,12 +427,10 @@ function filterCategory(category) {
       </a>
       <span class="separator">|</span>`;
     }).join('')}
-
     <span style="color:#ff6b6b;">●</span>
     آخرین بروزرسانی: ${new Date().toLocaleString("fa-IR")}
   </div>
 </div>
-
 </body>
 </html>`;
 

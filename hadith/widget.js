@@ -91,6 +91,22 @@
     '<circle cx="110" cy="10" r="2.2" fill="none" stroke-width="1"/>' +
     '</svg>';
 
+  /**
+   * نماد جای‌گیر (placeholder) برای برند «دیار قدمگاه» — یک گل‌بته‌ی
+   * ساده‌ی هشت‌پر به‌سبک تذهیب، تا زمانی که فایل لوگوی واقعی در
+   * config.brand.logoUrl تنظیم شود (آن‌وقت این نماد به‌طور خودکار با
+   * <img> واقعی جایگزین می‌شود؛ نگاه کنید به _buildBrandHTML).
+   */
+  var ORNAMENT_BRAND_MARK =
+    '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.3" aria-hidden="true" focusable="false">' +
+    '<circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none" opacity="0.9"/>' +
+    '<path d="M12 2 L13.4 8.2 L12 12 L10.6 8.2 Z" fill="currentColor" stroke="none" opacity="0.75"/>' +
+    '<path d="M22 12 L15.8 13.4 L12 12 L15.8 10.6 Z" fill="currentColor" stroke="none" opacity="0.75"/>' +
+    '<path d="M12 22 L10.6 15.8 L12 12 L13.4 15.8 Z" fill="currentColor" stroke="none" opacity="0.75"/>' +
+    '<path d="M2 12 L8.2 10.6 L12 12 L8.2 13.4 Z" fill="currentColor" stroke="none" opacity="0.75"/>' +
+    '</svg>';
+
   function DiyarHadithWidget(options) {
     this.config = mergeDeep(Config, options || {});
     this.el = null;
@@ -264,7 +280,7 @@
     // صفحه نباید id تکراری بسازند)
     var titleId = 'dhw-title-' + this.config.containerId;
 
-    el.innerHTML =
+    var cardHTML =
       '<div class="dhw-card" role="region" aria-labelledby="' + titleId + '" aria-live="polite">' +
         '<span class="dhw-corner dhw-corner-tr" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
         '<span class="dhw-corner dhw-corner-tl" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
@@ -298,6 +314,13 @@
         '</div>' +
       '</div>';
 
+    var brandHTML = this._buildBrandHTML();
+    var brandPosition = this._getBrandPosition();
+
+    el.innerHTML = brandPosition === 'above'
+      ? (brandHTML + cardHTML)
+      : (cardHTML + brandHTML);
+
     this.refs = {
       card: el.querySelector('.dhw-card'),
       title: el.querySelector('.dhw-title'),
@@ -314,6 +337,38 @@
 
     this._buildActions();
     this._setupOnlineStatus();
+  };
+
+  /**
+   * ساخت HTML نوار برندینگ («دیار قدمگاه») بالا/پایین کارت.
+   *
+   * اگر config.brand.logoUrl مقداردهی شده باشد، یک <img> از همان مسیر
+   * نمایش داده می‌شود (لوگوی واقعی)؛ در غیر این صورت یک نام‌نشان متنیِ
+   * ساده (placeholder) با یک نماد کوچک تزئینی نمایش داده می‌شود که پس
+   * از دریافت فایل لوگوی واقعی قابل جایگزینی است. تمام متن‌های ورودی
+   * از config با Utils.escapeHTML پاک‌سازی می‌شوند (config می‌تواند
+   * توسط کد میزبان override شود، پس نباید بدون پاک‌سازی درج شود).
+   */
+  /** موقعیت نوار برند نسبت به کارت: 'above' یا 'below' (پیش‌فرض) */
+  DiyarHadithWidget.prototype._getBrandPosition = function () {
+    return (this.config.brand && this.config.brand.position === 'above') ? 'above' : 'below';
+  };
+
+  DiyarHadithWidget.prototype._buildBrandHTML = function () {
+    var brand = this.config.brand;
+    if (!brand || !brand.enabled) return '';
+
+    var brandPos = this._getBrandPosition();
+    var name = Utils.escapeHTML(brand.name || 'دیار قدمگاه');
+    var inner = brand.logoUrl
+      ? '<img class="dhw-brand-logo" src="' + Utils.escapeHTML(brand.logoUrl) + '" alt="' + name + '">'
+      : (ORNAMENT_BRAND_MARK + '<span class="dhw-brand-name">' + name + '</span>');
+
+    if (brand.url) {
+      return '<a class="dhw-brand dhw-brand-' + brandPos + '" href="' + Utils.escapeHTML(brand.url) +
+        '" target="_blank" rel="noopener noreferrer" aria-label="' + name + '">' + inner + '</a>';
+    }
+    return '<div class="dhw-brand dhw-brand-' + brandPos + '" aria-label="' + name + '">' + inner + '</div>';
   };
 
   DiyarHadithWidget.prototype._buildActions = function () {

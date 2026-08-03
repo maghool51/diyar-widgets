@@ -86,6 +86,22 @@
     /** آدرس GitHub Pages برای ساخت کد Embed / iframe */
     embedBaseUrl: 'https://maghool51.github.io/diyar-widgets/hadith/',
 
+    /**
+     * برندینگ/تبلیغ زیر (یا بالای) کارت — لینک به «دیار قدمگاه».
+     * اگر logoUrl مقداردهی شود (مسیر فایل تصویر لوگوی واقعی)، به‌جای
+     * نام‌نشان متنیِ پیش‌فرض، همان تصویر نمایش داده می‌شود.
+     */
+    brand: {
+      enabled: true,
+      name: 'دیار قدمگاه',
+      url: '',
+      /** مسیر فایل لوگو (مثلاً 'assets/icons/diyar-logo.svg')؛ اگر خالی
+       *  بماند، فقط نام‌نشان متنی نمایش داده می‌شود. */
+      logoUrl: null,
+      /** 'below' | 'above' نسبت به کارت */
+      position: 'below'
+    },
+
     /** فراخوانی‌های اختیاری کاربر ویجت */
     callbacks: {
       onReady: null,   // function(hadith)

@@ -34,6 +34,10 @@
    */
   --tazhib-gold: #a9790a;
   --tazhib-gold-soft: rgba(169, 121, 10, 0.32);
+  /* نسخه‌ی تیره‌تر مخصوص متن (نام برند): برخلاف --tazhib-gold که فقط
+     روی SVGهای تزئینی به کار می‌رود و نیازی به کنتراست متنی ندارد،
+     این رنگ باید WCAG AA (۴.۵:۱) را برای متن کوچک رعایت کند. */
+  --tazhib-gold-text: #7d5a08;
 
   --md-font: 'Vazirmatn', 'Samim', 'IRANSans', Tahoma, sans-serif;
 
@@ -58,6 +62,7 @@
   --md-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.35);
   --md-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 26px rgba(0, 0, 0, 0.4);
   --tazhib-gold: #d4af37;
+  --tazhib-gold-text: #d4af37;
   --tazhib-gold-soft: rgba(212, 175, 55, 0.3);
 }
 
@@ -77,6 +82,7 @@
     --md-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.35);
     --md-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 26px rgba(0, 0, 0, 0.4);
     --tazhib-gold: #d4af37;
+    --tazhib-gold-text: #d4af37;
     --tazhib-gold-soft: rgba(212, 175, 55, 0.3);
   }
 }
@@ -506,5 +512,41 @@
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+}
+
+/* ───────────── نوار برندینگ («دیار قدمگاه») بالا/پایین کارت ───────────── */
+.dhw-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tazhib-gold-text);
+  text-decoration: none;
+}
+
+.dhw-brand-below { margin-top: 10px; }
+.dhw-brand-above { margin-bottom: 10px; }
+
+a.dhw-brand:hover {
+  text-decoration: underline;
+}
+
+.dhw-brand-logo {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.dhw-brand-name {
+  line-height: 1;
+}
+
+@media print {
+  .dhw-brand {
+    display: none !important;
   }
 }

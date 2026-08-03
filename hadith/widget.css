@@ -27,6 +27,14 @@
   --md-shape-small: 10px;
   --md-shape-full: 999px;
 
+  /*
+   * رنگ‌های تزئینیِ «تذهیب» — جدا از نقش‌های رنگی کارکردی M3 بالا.
+   * فقط روی عناصر صرفاً تزئینی (گوشه‌های اسلیمی، قاب طلایی، فلاش
+   * جداکننده) استفاده می‌شوند، نه روی متن/دکمه‌های کارکردی.
+   */
+  --tazhib-gold: #a9790a;
+  --tazhib-gold-soft: rgba(169, 121, 10, 0.32);
+
   --md-font: 'Vazirmatn', 'Samim', 'IRANSans', Tahoma, sans-serif;
 
   font-family: var(--md-font);
@@ -49,6 +57,8 @@
   --md-outline-variant: #3f4945;
   --md-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.35);
   --md-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 26px rgba(0, 0, 0, 0.4);
+  --tazhib-gold: #d4af37;
+  --tazhib-gold-soft: rgba(212, 175, 55, 0.3);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -66,6 +76,8 @@
     --md-outline-variant: #3f4945;
     --md-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.35);
     --md-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.45), 0 10px 26px rgba(0, 0, 0, 0.4);
+    --tazhib-gold: #d4af37;
+    --tazhib-gold-soft: rgba(212, 175, 55, 0.3);
   }
 }
 
@@ -99,14 +111,64 @@
   background: var(--md-surface-container);
   color: var(--md-on-surface);
   border-radius: var(--md-shape-large);
-  box-shadow: var(--md-shadow);
-  padding: 28px 28px 22px;
+  /*
+   * قاب دوخطیِ طلایی («جدول»ِ سنتی تذهیب): یک خط نازک طلایی بیرونی،
+   * یک فاصله‌ی هم‌رنگ پس‌زمینه، و یک خط نازک طلایی دوم داخلی‌تر —
+   * کاملاً با box-shadow (بدون تصویر اضافه) پیاده‌سازی شده تا با هر
+   * اندازه‌ی کارتی (بسته به طول متن) به‌درستی مقیاس شود.
+   */
+  box-shadow:
+    var(--md-shadow),
+    inset 0 0 0 1px var(--tazhib-gold-soft),
+    inset 0 0 0 5px var(--md-surface-container),
+    inset 0 0 0 6px var(--tazhib-gold-soft);
+  padding: 30px 32px 22px;
   transition: box-shadow 0.25s ease;
   overflow: hidden;
 }
 
 .dhw-card:hover {
-  box-shadow: var(--md-shadow-hover);
+  box-shadow:
+    var(--md-shadow-hover),
+    inset 0 0 0 1px var(--tazhib-gold-soft),
+    inset 0 0 0 5px var(--md-surface-container),
+    inset 0 0 0 6px var(--tazhib-gold-soft);
+}
+
+/*
+ * گوشه‌های اسلیمیِ تزئینی («تذهیب»). چهار SVG یکسان که با transform
+ * در هرکدام از گوشه‌ها آینه می‌شوند (به‌جای چهار فایل جدا). کاملاً
+ * تزئینی (aria-hidden)، بدون pointer-events تا هرگز مانع کلیک نشوند،
+ * و zIndex پایین‌تر از dhw-content تا هیچ‌وقت روی متن/دکمه‌ها ننشینند.
+ */
+.dhw-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  color: var(--tazhib-gold);
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/*
+ * توجه: عمداً از left/right فیزیکی استفاده شده، نه inset-inline-start/end.
+ * این عناصر صرفاً تزئینی‌اند و جهت‌گیری‌شان (SVG طراحی‌شده برای «گوشه‌ی
+ * بالا-راستِ فیزیکی») باید مستقل از dir=rtl/ltr ثابت بماند؛ استفاده‌ی
+ * قبلی از inset-inline-end باعث می‌شد در حالت RTL، گوشه‌ها با جهت اشتباه
+ * (آینه‌ی نادرست) در سمت مقابل بنشینند.
+ */
+.dhw-corner-tr { top: 0; right: 0; }
+.dhw-corner-tl { top: 0; left: 0; transform: scaleX(-1); }
+.dhw-corner-br { bottom: 0; right: 0; transform: scaleY(-1); }
+.dhw-corner-bl { bottom: 0; left: 0; transform: scale(-1, -1); }
+
+/* محتوای واقعی کارت؛ همیشه بالای گوشه‌های تزئینی می‌نشیند (رفع ریسک
+   پوشانده‌شدن متن توسط عناصر absolute که طبق قواعد چیدمان CSS، بدون
+   این wrapper، می‌توانستند روی محتوای معمولی (غیر-positioned) بنشینند). */
+.dhw-content {
+  position: relative;
+  z-index: 1;
 }
 
 .dhw-top {
@@ -171,8 +233,8 @@
   font-size: 64px;
   line-height: 1;
   margin: 0;
-  color: var(--md-primary);
-  opacity: 0.16;
+  color: var(--tazhib-gold);
+  opacity: 0.22;
   font-family: Georgia, serif;
   user-select: none;
   pointer-events: none;
@@ -180,13 +242,12 @@
 
 /*
  * متن عربی اصلی حدیث — بالای ترجمه‌ی فارسی نمایش داده می‌شود. رنگ کمی
- * متفاوت (var(--md-on-surface) با وزن بیشتر) و جداکننده‌ی زیرین ظریف
- * برای تمایز بصری روشن از ترجمه‌ی فارسیِ زیرش استفاده شده است.
+ * متفاوت (var(--md-on-surface) با وزن بیشتر) استفاده شده تا از ترجمه‌ی
+ * فارسیِ زیرش متمایز باشد؛ جداکننده اکنون یک فلاش تزئینی (dhw-divider)
+ * است، نه یک خط ساده.
  */
 .dhw-text-ar {
-  margin: 8px 0 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px dashed var(--md-outline-variant);
+  margin: 8px 0 0;
   font-size: 18px;
   font-weight: 600;
   line-height: 2.1;
@@ -196,6 +257,30 @@
      اختصاصی عربی، به فونت اصلی ویجت (وزیرمتن/سیستم) سقوط می‌کند که
      پشتیبانی خوبی از حروف عربی هم دارد. */
   font-family: 'Amiri', 'Vazirmatn', 'Traditional Arabic', Tahoma, serif;
+}
+
+/* فلاش تزئینیِ اسلیمی بین متن عربی و ترجمه‌ی فارسی */
+.dhw-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 12px 0;
+  color: var(--tazhib-gold);
+  opacity: 0.75;
+}
+
+/* اگر آیتمی متن عربی نداشته باشد (یا showArabic غیرفعال باشد)، هم
+   فلاش جداکننده مخفی می‌شود و هم ترجمه‌ی فارسی با وزن/رنگ اصلی
+   (سلسله‌مراتب اصلی) نمایش داده می‌شود — سازگاری با داده‌ی بدون فیلد
+   arabic. */
+.dhw-text-ar[hidden] + .dhw-divider {
+  display: none;
+}
+
+.dhw-text-ar[hidden] ~ .dhw-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--md-on-surface);
 }
 
 .dhw-text {
@@ -212,15 +297,6 @@
      فقط یک جلوهٔ تزئینیِ اضافه (نه پیش‌نیاز نمایان‌شدن) است. */
   opacity: 1;
   transform: translateY(0);
-}
-
-/* اگر آیتمی متن عربی نداشته باشد (یا showArabic غیرفعال باشد)، ترجمه‌ی
-   فارسی به‌تنهایی با همان وزن/اندازه‌ی قبلی (سلسله‌مراتب اصلی) نمایش
-   داده می‌شود — سازگاری با داده‌ای که فیلد arabic ندارد. */
-.dhw-text-ar[hidden] + .dhw-text {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--md-on-surface);
 }
 
 .dhw-meta {
@@ -386,6 +462,13 @@
   .dhw-text {
     font-size: 16px;
   }
+  .dhw-text-ar {
+    font-size: 16px;
+  }
+  .dhw-corner {
+    width: 16px;
+    height: 16px;
+  }
   .dhw-actions {
     gap: 6px;
   }
@@ -403,7 +486,8 @@
 @media print {
   .dhw-top,
   .dhw-actions,
-  .dhw-quote-mark {
+  .dhw-quote-mark,
+  .dhw-corner {
     display: none !important;
   }
   .dhw-card {

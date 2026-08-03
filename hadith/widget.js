@@ -62,6 +62,35 @@
       '<polyline points="6 17 6 21 18 21 18 17"/></svg>'
   };
 
+  /**
+   * تزئینات به‌سبک «تذهیب» ایرانی-اسلامی: بته‌جقه/اسلیمیِ گوشه‌ها و یک
+   * فلاش (نماد جداکننده‌ی تزئینی) بین متن عربی و ترجمه‌ی فارسی. طرح‌ها
+   * هندسی/اسلیمیِ عمومی و دست‌ساز هستند (نه کپی از یک نسخه‌ی خطیِ
+   * خاص)، با currentColor تا رنگشان از طریق CSS (متغیر --tazhib-gold)
+   * کنترل شود و با تم روشن/تاریک هماهنگ بماند. کاملاً تزئینی و
+   * aria-hidden هستند؛ هیچ اطلاعاتی حمل نمی‌کنند.
+   */
+  var ORNAMENT_CORNER =
+    '<svg viewBox="0 0 40 40" width="36" height="36" fill="none" stroke="currentColor" ' +
+    'aria-hidden="true" focusable="false">' +
+    '<path d="M40 1 C28 2 18 6 11 14 C5 21 2 29 3 40" stroke-width="1.4" opacity="0.85"/>' +
+    '<path d="M40 9 C30 10 21 15 16 23" stroke-width="1" opacity="0.6"/>' +
+    '<path d="M9 40 C10 30 15 21 23 16" stroke-width="1" opacity="0.6"/>' +
+    '<circle cx="11" cy="14" r="1.8" fill="currentColor" stroke="none"/>' +
+    '<path d="M17 8 Q22 4 27 7 Q24 12 18 13 Q15 11 17 8 Z" fill="currentColor" stroke="none" opacity="0.9"/>' +
+    '</svg>';
+
+  var ORNAMENT_DIVIDER =
+    '<svg viewBox="0 0 220 20" width="150" height="14" fill="none" stroke="currentColor" ' +
+    'aria-hidden="true" focusable="false">' +
+    '<path d="M4 10 Q34 -1 62 10 Q76 15 88 10" stroke-width="1.2" opacity="0.85"/>' +
+    '<path d="M216 10 Q186 -1 158 10 Q144 15 132 10" stroke-width="1.2" opacity="0.85"/>' +
+    '<circle cx="4" cy="10" r="1.6" fill="currentColor" stroke="none"/>' +
+    '<circle cx="216" cy="10" r="1.6" fill="currentColor" stroke="none"/>' +
+    '<path d="M110 3 L117 10 L110 17 L103 10 Z" fill="currentColor" stroke="none"/>' +
+    '<circle cx="110" cy="10" r="2.2" fill="none" stroke-width="1"/>' +
+    '</svg>';
+
   function DiyarHadithWidget(options) {
     this.config = mergeDeep(Config, options || {});
     this.el = null;
@@ -237,28 +266,35 @@
 
     el.innerHTML =
       '<div class="dhw-card" role="region" aria-labelledby="' + titleId + '" aria-live="polite">' +
-        '<div class="dhw-top">' +
-          '<h2 class="dhw-title" id="' + titleId + '">حدیث روز</h2>' +
-          '<div class="dhw-top-meta">' +
-            '<span class="dhw-chip dhw-chip-category"></span>' +
-            '<span class="dhw-chip dhw-chip-offline" hidden>آفلاین</span>' +
+        '<span class="dhw-corner dhw-corner-tr" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
+        '<span class="dhw-corner dhw-corner-tl" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
+        '<span class="dhw-corner dhw-corner-br" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
+        '<span class="dhw-corner dhw-corner-bl" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
+        '<div class="dhw-content">' +
+          '<div class="dhw-top">' +
+            '<h2 class="dhw-title" id="' + titleId + '">حدیث روز</h2>' +
+            '<div class="dhw-top-meta">' +
+              '<span class="dhw-chip dhw-chip-category"></span>' +
+              '<span class="dhw-chip dhw-chip-offline" hidden>آفلاین</span>' +
+            '</div>' +
           '</div>' +
-        '</div>' +
-        '<div class="dhw-body">' +
-          '<p class="dhw-quote-mark" aria-hidden="true">”</p>' +
-          '<p class="dhw-text-ar" lang="ar" dir="rtl"></p>' +
-          '<blockquote class="dhw-text"></blockquote>' +
-        '</div>' +
-        '<div class="dhw-meta">' +
-          '<span class="dhw-source"></span>' +
-          '<span class="dhw-book"></span>' +
-        '</div>' +
-        '<div class="dhw-actions" role="group" aria-label="عملیات روی حدیث"></div>' +
-        '<div class="dhw-status" aria-live="polite" aria-atomic="true"></div>' +
-        '<div class="dhw-skeleton" hidden aria-hidden="true">' +
-          '<div class="dhw-sk-line dhw-sk-80"></div>' +
-          '<div class="dhw-sk-line dhw-sk-100"></div>' +
-          '<div class="dhw-sk-line dhw-sk-60"></div>' +
+          '<div class="dhw-body">' +
+            '<p class="dhw-quote-mark" aria-hidden="true">”</p>' +
+            '<p class="dhw-text-ar" lang="ar" dir="rtl"></p>' +
+            '<div class="dhw-divider" aria-hidden="true">' + ORNAMENT_DIVIDER + '</div>' +
+            '<blockquote class="dhw-text"></blockquote>' +
+          '</div>' +
+          '<div class="dhw-meta">' +
+            '<span class="dhw-source"></span>' +
+            '<span class="dhw-book"></span>' +
+          '</div>' +
+          '<div class="dhw-actions" role="group" aria-label="عملیات روی حدیث"></div>' +
+          '<div class="dhw-status" aria-live="polite" aria-atomic="true"></div>' +
+          '<div class="dhw-skeleton" hidden aria-hidden="true">' +
+            '<div class="dhw-sk-line dhw-sk-80"></div>' +
+            '<div class="dhw-sk-line dhw-sk-100"></div>' +
+            '<div class="dhw-sk-line dhw-sk-60"></div>' +
+          '</div>' +
         '</div>' +
       '</div>';
 

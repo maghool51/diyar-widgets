@@ -116,22 +116,38 @@ function detectCategory(title) {
   return maxScore > 0 ? bestCategory : "متفرقه";
 }
 
-// ================ منابع نهایی ================
+// ================ منابع نهایی (با آدرس‌های به‌روز) ================
 const sources = [
   { name: "ایرنا", url: "https://www.irna.ir/rss", flag: "🇮🇷" },
   { name: "ایسنا", url: "https://www.isna.ir/rss", flag: "🇮🇷" },
   { name: "مهر", url: "https://www.mehrnews.com/rss", flag: "🇮🇷" },
-  { name: "تسنیم", url: "https://www.tasnimnews.com/fa/rss/feed/0/0/0/0", flag: "🇮🇷" },
-  { name: "فارس", url: "https://www.farsnews.ir/rss", flag: "🇮🇷" },
-  { name: "ایلنا", url: "https://www.ilna.ir/fa/rss/allnews", flag: "🇮🇷" },
+  { 
+    name: "تسنیم", 
+    url: "https://www.tasnimnews.com/fa/rss/feeds/70/0/13/1", 
+    flag: "🇮🇷" 
+  },
+  { 
+    name: "فارس", 
+    url: "https://www.farsnews.ir/rss", 
+    flag: "🇮🇷" 
+  },
+  { 
+    name: "ایلنا", 
+    url: "https://www.ilna.ir/rss", 
+    flag: "🇮🇷" 
+  },
   { name: "خبرآنلاین", url: "https://www.khabaronline.ir/rss", flag: "🇮🇷" },
   { name: "ایمنا", url: "https://www.imna.ir/rss", flag: "🇮🇷" },
   { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia/rss", flag: "🌍" },
   { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir/rss", flag: "🌍" },
-  { name: "رادیو فردا", url: "https://www.radiofarda.com/rss", flag: "🌍" }
+  { 
+    name: "رادیو فردا", 
+    url: "https://www.radiofarda.com/rssfeeds", 
+    flag: "🌍" 
+  }
 ];
 
-// ================ منابع پشتیبان ================
+// ================ منابع پشتیبان (به‌روز شده) ================
 const backupSources = [
   { name: "تسنیم", url: "https://www.tasnimnews.com/fa/rss" },
   { name: "فارس", url: "https://farsnews.ir/rss" },

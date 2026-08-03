@@ -116,44 +116,39 @@ function detectCategory(title) {
   return maxScore > 0 ? bestCategory : "متفرقه";
 }
 
-// ================ منابع نهایی (با آدرس‌های به‌روز) ================
+// ================ منابع نهایی (فقط آدرس تسنیم و ایلنا تغییر کرده) ================
 const sources = [
   { name: "ایرنا", url: "https://www.irna.ir/rss", flag: "🇮🇷" },
   { name: "ایسنا", url: "https://www.isna.ir/rss", flag: "🇮🇷" },
   { name: "مهر", url: "https://www.mehrnews.com/rss", flag: "🇮🇷" },
   { 
     name: "تسنیم", 
-    url: "https://www.tasnimnews.com/fa/rss/feeds/70/0/13/1", 
+    url: "https://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories",  // آدرس تأیید شده
     flag: "🇮🇷" 
   },
-  { 
-    name: "فارس", 
-    url: "https://www.farsnews.ir/rss", 
-    flag: "🇮🇷" 
-  },
+  // { name: "فارس", url: "https://www.farsnews.ir/rss", flag: "🇮🇷" },  // RSS عمومی ندارد
   { 
     name: "ایلنا", 
-    url: "https://www.ilna.ir/rss", 
+    url: "https://www.ilna.ir/feeds",  // آدرس تأیید شده
     flag: "🇮🇷" 
   },
   { name: "خبرآنلاین", url: "https://www.khabaronline.ir/rss", flag: "🇮🇷" },
-  { name: "ایمنا", url: "https://www.imna.ir/rss", flag: "🇮🇷" },
-  { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia/rss", flag: "🌍" },
-  { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir/rss", flag: "🌍" },
-  { 
-    name: "رادیو فردا", 
-    url: "https://www.radiofarda.com/rssfeeds", 
-    flag: "🌍" 
-  }
+  { name: "ایمنا", url: "https://www.imna.ir/rss", flag: "🇮🇷" }
+  // منابع زیر RSS عمومی ندارند یا در GitHub Actions با مشکل مواجه می‌شوند
+  // { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia/rss", flag: "🌍" },
+  // { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir/rss", flag: "🌍" },
+  // { name: "رادیو فردا", url: "https://www.radiofarda.com/rssfeeds", flag: "🌍" }
 ];
 
 // ================ منابع پشتیبان (به‌روز شده) ================
 const backupSources = [
-  { name: "تسنیم", url: "https://www.tasnimnews.com/fa/rss" },
-  { name: "فارس", url: "https://farsnews.ir/rss" },
-  { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia" },
-  { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir" },
-  { name: "رادیو فردا", url: "https://www.radiofarda.com" }
+  { name: "تسنیم", url: "https://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories" },
+  { name: "ایلنا", url: "https://www.ilna.ir/feeds" }
+  // منابع غیرفعال شده
+  // { name: "فارس", url: "https://farsnews.ir/rss" },
+  // { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia" },
+  // { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir" },
+  // { name: "رادیو فردا", url: "https://www.radiofarda.com" }
 ];
 
 async function fetchWithRetry(url, retries = 2) {
@@ -187,7 +182,7 @@ async function getNews() {
       }
       
       let count = 0;
-      feed.items.slice(0, 15).forEach(item => {
+      feed.items.slice(0, 20).forEach(item => {  // افزایش به ۲۰ خبر
         if (!item.title || !item.link) return;
         const title = item.title.trim();
         const category = detectCategory(title);
@@ -202,7 +197,8 @@ async function getNews() {
         count++;
       });
       
-      console.log(`✅ ${source.flag} ${source.name}: ${count} خبر دریافت شد`);
+      const latestDate = feed.items[0]?.pubDate || feed.items[0]?.isoDate || "نامشخص";
+      console.log(`✅ ${source.flag} ${source.name}: ${count} خبر دریافت شد (آخرین: ${latestDate})`);
     } catch (e) {
       console.log(`❌ ${source.flag} ${source.name} ناموفق: ${e.message}`);
       failedSources.push(source.name);
@@ -223,7 +219,7 @@ async function getNews() {
         }
         
         let count = 0;
-        feed.items.slice(0, 15).forEach(item => {
+        feed.items.slice(0, 20).forEach(item => {
           if (!item.title || !item.link) return;
           const title = item.title.trim();
           const category = detectCategory(title);
@@ -277,6 +273,10 @@ async function getNews() {
     .slice(0, 100);
 
   console.log(`\n📊 مجموع اخبار دریافتی: ${allNews.length}`);
+  if (allNews.length > 0) {
+    const latestDate = new Date(allNews[0].date);
+    console.log(`🕐 آخرین خبر: ${latestDate.toLocaleString("fa-IR")}`);
+  }
 
   // دسته‌بندی اخبار
   const categorizedNews = {};

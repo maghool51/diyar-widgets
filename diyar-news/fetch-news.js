@@ -3,9 +3,15 @@ const Parser = require("rss-parser");
 
 const parser = new Parser({
   headers: {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+    'Accept-Language': 'fa-IR,fa;q=0.9,en;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Cache-Control': 'no-cache'
   },
-  timeout: 15000
+  timeout: 20000,  // افزایش timeout
+  maxRedirects: 5
 });
 
 // ================ ابزارهای امنیتی (جلوگیری از XSS) ================
@@ -116,39 +122,24 @@ function detectCategory(title) {
   return maxScore > 0 ? bestCategory : "متفرقه";
 }
 
-// ================ منابع نهایی (فقط آدرس تسنیم و ایلنا تغییر کرده) ================
+// ================ منابع نهایی (با آدرس‌های تست‌شده) ================
 const sources = [
   { name: "ایرنا", url: "https://www.irna.ir/rss", flag: "🇮🇷" },
   { name: "ایسنا", url: "https://www.isna.ir/rss", flag: "🇮🇷" },
   { name: "مهر", url: "https://www.mehrnews.com/rss", flag: "🇮🇷" },
   { 
     name: "تسنیم", 
-    url: "https://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories",  // آدرس تأیید شده
+    url: "http://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories",  // استفاده از http (همان self-link خروجی)
     flag: "🇮🇷" 
   },
-  // { name: "فارس", url: "https://www.farsnews.ir/rss", flag: "🇮🇷" },  // RSS عمومی ندارد
+  // { name: "فارس", url: "https://www.farsnews.ir/rss", flag: "🇮🇷" },  // غیرفعال
   { 
     name: "ایلنا", 
-    url: "https://www.ilna.ir/feeds",  // آدرس تأیید شده
+    url: "https://www.ilna.ir/feeds", 
     flag: "🇮🇷" 
   },
   { name: "خبرآنلاین", url: "https://www.khabaronline.ir/rss", flag: "🇮🇷" },
   { name: "ایمنا", url: "https://www.imna.ir/rss", flag: "🇮🇷" }
-  // منابع زیر RSS عمومی ندارند یا در GitHub Actions با مشکل مواجه می‌شوند
-  // { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia/rss", flag: "🌍" },
-  // { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir/rss", flag: "🌍" },
-  // { name: "رادیو فردا", url: "https://www.radiofarda.com/rssfeeds", flag: "🌍" }
-];
-
-// ================ منابع پشتیبان (به‌روز شده) ================
-const backupSources = [
-  { name: "تسنیم", url: "https://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories" },
-  { name: "ایلنا", url: "https://www.ilna.ir/feeds" }
-  // منابع غیرفعال شده
-  // { name: "فارس", url: "https://farsnews.ir/rss" },
-  // { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia" },
-  // { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir" },
-  // { name: "رادیو فردا", url: "https://www.radiofarda.com" }
 ];
 
 async function fetchWithRetry(url, retries = 2) {
@@ -157,6 +148,7 @@ async function fetchWithRetry(url, retries = 2) {
       return await parser.parseURL(url);
     } catch (e) {
       if (i === retries - 1) throw e;
+      console.log(`🔄 تلاش مجدد ${i + 2} برای ${url}...`);
       await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
     }
   }
@@ -169,7 +161,6 @@ async function getNews() {
   let allNews = [];
   const failedSources = [];
 
-  // دریافت از منابع اصلی
   for (const source of sources) {
     try {
       console.log(`⏳ ${source.flag} در حال دریافت ${source.name}...`);
@@ -182,7 +173,7 @@ async function getNews() {
       }
       
       let count = 0;
-      feed.items.slice(0, 20).forEach(item => {  // افزایش به ۲۰ خبر
+      feed.items.slice(0, 20).forEach(item => {
         if (!item.title || !item.link) return;
         const title = item.title.trim();
         const category = detectCategory(title);
@@ -205,46 +196,6 @@ async function getNews() {
     }
   }
 
-  // دریافت از منابع پشتیبان
-  console.log("\n🔄 بررسی منابع پشتیبان...");
-  for (const backup of backupSources) {
-    if (failedSources.includes(backup.name) || !sources.find(s => s.name === backup.name)) {
-      try {
-        console.log(`⏳ در حال دریافت ${backup.name} (پشتیبان)...`);
-        const feed = await fetchWithRetry(backup.url);
-        
-        if (!feed.items || feed.items.length === 0) {
-          console.log(`⚠️ ${backup.name} (پشتیبان) هیچ خبری نداشت`);
-          continue;
-        }
-        
-        let count = 0;
-        feed.items.slice(0, 20).forEach(item => {
-          if (!item.title || !item.link) return;
-          const title = item.title.trim();
-          const category = detectCategory(title);
-          const flag = sources.find(s => s.name === backup.name)?.flag || "🌍";
-          allNews.push({
-            title: title,
-            link: safeLink(item.link),
-            date: item.pubDate || item.isoDate || "",
-            source: backup.name,
-            category: category,
-            flag: flag
-          });
-          count++;
-        });
-        
-        console.log(`✅ ${backup.name} (پشتیبان): ${count} خبر دریافت شد`);
-        const index = failedSources.indexOf(backup.name);
-        if (index > -1) failedSources.splice(index, 1);
-      } catch (e) {
-        console.log(`❌ ${backup.name} (پشتیبان) نیز ناموفق بود: ${e.message}`);
-      }
-    }
-  }
-
-  // پردازش نهایی
   if (allNews.length === 0) {
     console.log("⚠️ هیچ خبری دریافت نشد!");
     return;
@@ -278,7 +229,6 @@ async function getNews() {
     console.log(`🕐 آخرین خبر: ${latestDate.toLocaleString("fa-IR")}`);
   }
 
-  // دسته‌بندی اخبار
   const categorizedNews = {};
   for (const news of allNews) {
     if (!categorizedNews[news.category]) {
@@ -376,7 +326,6 @@ body{font-family:tahoma;background:#f0f2f5;padding:10px}
 
 <div id="news-container">`;
 
-  // نمایش همه اخبار
   for (const [category, newsList] of Object.entries(categorizedNews)) {
     const emoji = categoryEmojis[category] || '📌';
     html += `
@@ -434,11 +383,10 @@ function filterCategory(category) {
   fs.writeFileSync("index.html", html, "utf8");
   console.log(`✅ index.html با ${allNews.length} خبر ذخیره شد`);
 
-  // ================ ساخت news.html ================
   fs.writeFileSync("news.html", html, "utf8");
   console.log(`✅ news.html با ${allNews.length} خبر ذخیره شد`);
 
-  // ================ ساخت news-ticker.html (همیشه بازنویسی میشود) ================
+  // ================ ساخت news-ticker.html ================
   const tickerHtml = `<!DOCTYPE html>
 <html>
 <head>
@@ -515,7 +463,6 @@ function filterCategory(category) {
 </body>
 </html>`;
 
-  // ===== بدون شرط، همیشه بازنویسی میشود =====
   fs.writeFileSync("news-ticker.html", tickerHtml, "utf8");
   console.log(`✅ news-ticker.html با ${allNews.length} خبر به‌روز شد`);
 

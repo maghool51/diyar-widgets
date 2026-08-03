@@ -5,10 +5,10 @@ const parser = new Parser({
   headers: {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   },
-  timeout: 8000 // ۸ ثانیه timeout برای هر منبع
+  timeout: 15000
 });
 
-// ================ ابزارهای امنیتی (جلوگیری از XSS) ================
+// ================ ابزارهای امنیتی ================
 function escapeHtml(str) {
   if (str === null || str === undefined) return "";
   return String(str)
@@ -116,33 +116,35 @@ function detectCategory(title) {
   return maxScore > 0 ? bestCategory : "متفرقه";
 }
 
-// ================ منابع نهایی (فقط منابع با فید معتبر و پاسخگو) ================
+// ================ منابع نهایی (با آدرس‌های تأیید شده) ================
 const sources = [
   { name: "ایرنا", url: "https://www.irna.ir/rss", flag: "🇮🇷" },
   { name: "ایسنا", url: "https://www.isna.ir/rss", flag: "🇮🇷" },
   { name: "مهر", url: "https://www.mehrnews.com/rss", flag: "🇮🇷" },
   { 
     name: "تسنیم", 
-    url: "https://www.tasnimnews.com/fa/rss/feed/0/8/0/",  // آدرس جدید تسنیم
+    url: "https://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories",  // آدرس تأیید شده
     flag: "🇮🇷" 
   },
-  // { name: "فارس", url: "https://www.farsnews.ir/rss", flag: "🇮🇷" },  // RSS عمومی ندارد
+  // { name: "فارس", url: "https://www.farsnews.ir/rss", flag: "🇮🇷" },
   { 
     name: "ایلنا", 
-    url: "https://www.ilna.ir/feeds/",  // آدرس جدید ایلنا
+    url: "https://www.ilna.ir/feeds",  // آدرس تأیید شده
     flag: "🇮🇷" 
   },
   { name: "خبرآنلاین", url: "https://www.khabaronline.ir/rss", flag: "🇮🇷" },
   { name: "ایمنا", url: "https://www.imna.ir/rss", flag: "🇮🇷" }
-  // منابع زیر RSS عمومی ندارند یا پاسخگو نیستند
-  // { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia/rss", flag: "🌍" },
-  // { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir/rss", flag: "🌍" },
-  // { name: "رادیو فردا", url: "https://www.radiofarda.com/rssfeeds", flag: "🌍" }
 ];
 
-async function fetchWithRetry(url) {
-  // فقط یکبار تلاش می‌کنه، بدون retry اضافه
-  return await parser.parseURL(url);
+async function fetchWithRetry(url, retries = 2) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await parser.parseURL(url);
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
+    }
+  }
 }
 
 async function getNews() {
@@ -152,7 +154,6 @@ async function getNews() {
   let allNews = [];
   const failedSources = [];
 
-  // دریافت از منابع اصلی
   for (const source of sources) {
     try {
       console.log(`⏳ ${source.flag} در حال دریافت ${source.name}...`);
@@ -165,7 +166,7 @@ async function getNews() {
       }
       
       let count = 0;
-      feed.items.slice(0, 20).forEach(item => {  // افزایش به ۲۰ خبر از هر منبع
+      feed.items.slice(0, 20).forEach(item => {
         if (!item.title || !item.link) return;
         const title = item.title.trim();
         const category = detectCategory(title);
@@ -180,7 +181,6 @@ async function getNews() {
         count++;
       });
       
-      // نمایش آخرین تاریخ خبر دریافتی
       const latestDate = feed.items[0]?.pubDate || feed.items[0]?.isoDate || "نامشخص";
       console.log(`✅ ${source.flag} ${source.name}: ${count} خبر دریافت شد (آخرین: ${latestDate})`);
     } catch (e) {
@@ -189,7 +189,6 @@ async function getNews() {
     }
   }
 
-  // پردازش نهایی
   if (allNews.length === 0) {
     console.log("⚠️ هیچ خبری دریافت نشد!");
     return;
@@ -223,7 +222,6 @@ async function getNews() {
     console.log(`🕐 آخرین خبر: ${latestDate.toLocaleString("fa-IR")}`);
   }
 
-  // دسته‌بندی اخبار
   const categorizedNews = {};
   for (const news of allNews) {
     if (!categorizedNews[news.category]) {
@@ -321,7 +319,6 @@ body{font-family:tahoma;background:#f0f2f5;padding:10px}
 
 <div id="news-container">`;
 
-  // نمایش همه اخبار
   for (const [category, newsList] of Object.entries(categorizedNews)) {
     const emoji = categoryEmojis[category] || '📌';
     html += `
@@ -379,11 +376,10 @@ function filterCategory(category) {
   fs.writeFileSync("index.html", html, "utf8");
   console.log(`✅ index.html با ${allNews.length} خبر ذخیره شد`);
 
-  // ================ ساخت news.html ================
   fs.writeFileSync("news.html", html, "utf8");
   console.log(`✅ news.html با ${allNews.length} خبر ذخیره شد`);
 
-  // ================ ساخت news-ticker.html ================
+  // ================ ساخت news-ticker.html (همیشه بازنویسی میشود) ================
   const tickerHtml = `<!DOCTYPE html>
 <html>
 <head>

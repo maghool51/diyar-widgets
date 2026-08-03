@@ -9,9 +9,6 @@ const parser = new Parser({
 });
 
 // ================ ابزارهای امنیتی (جلوگیری از XSS) ================
-// عنوان، منبع و سایر متن‌های آزاد که از RSS خارجی می‌آیند هرگز نباید
-// بدون escape مستقیماً داخل HTML قرار بگیرند؛ در غیر این صورت یک منبع
-// خبری آلوده (یا حمله MITM روی فید RSS) می‌تواند کد جاوااسکریپت اجرا کند.
 function escapeHtml(str) {
   if (str === null || str === undefined) return "";
   return String(str)
@@ -22,18 +19,13 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-// لینک خبر را اعتبارسنجی می‌کند: فقط http/https معتبر پذیرفته می‌شود.
-// startsWith("http") به‌تنهایی کافی نیست چون رشته‌ای مثل
-// `http"><script>...</script>` هم آن تست را قبول می‌کند.
 function safeLink(url) {
   try {
     const u = new URL(url);
     if (u.protocol === "http:" || u.protocol === "https:") {
       return u.href;
     }
-  } catch (e) {
-    // لینک نامعتبر است
-  }
+  } catch (e) {}
   return "#";
 }
 
@@ -49,7 +41,7 @@ const categoryEmojis = {
   "متفرقه": "📌"
 };
 
-// ================ دسته‌بندی با کلمات کلیدی (متوازن) ================
+// ================ دسته‌بندی با کلمات کلیدی ================
 const categories = {
   "سیاسی": [
     "رئیسی", "وزیر", "رئیس‌جمهور", "مجلس", "نماینده", "انتخابات",
@@ -98,7 +90,6 @@ const categories = {
   ]
 };
 
-// تابع تشخیص دسته‌بندی خبر
 function detectCategory(title) {
   const lowerTitle = title.toLowerCase();
   const scores = {};
@@ -127,85 +118,26 @@ function detectCategory(title) {
 
 // ================ منابع نهایی ================
 const sources = [
-  {
-    name: "ایرنا",
-    url: "https://www.irna.ir/rss",
-    flag: "🇮🇷"
-  },
-  {
-    name: "ایسنا",
-    url: "https://www.isna.ir/rss",
-    flag: "🇮🇷"
-  },
-  {
-    name: "مهر",
-    url: "https://www.mehrnews.com/rss",
-    flag: "🇮🇷"
-  },
-  {
-    name: "تسنیم",
-    url: "https://www.tasnimnews.com/fa/rss/feed/0/0/0/0",
-    flag: "🇮🇷"
-  },
-  {
-    name: "فارس",
-    url: "https://www.farsnews.ir/rss",
-    flag: "🇮🇷"
-  },
-  {
-    name: "ایلنا",
-    url: "https://www.ilna.ir/fa/rss/allnews",
-    flag: "🇮🇷"
-  },
-  {
-    name: "خبرآنلاین",
-    url: "https://www.khabaronline.ir/rss",
-    flag: "🇮🇷"
-  },
-  {
-    name: "ایمنا",
-    url: "https://www.imna.ir/rss",
-    flag: "🇮🇷"
-  },
-  {
-    name: "بی‌بی‌سی فارسی",
-    url: "https://www.bbc.com/persia/rss",
-    flag: "🌍"
-  },
-  {
-    name: "دویچه‌وله فارسی",
-    url: "https://www.dw.com/fa-ir/rss",
-    flag: "🌍"
-  },
-  {
-    name: "رادیو فردا",
-    url: "https://www.radiofarda.com/rss",
-    flag: "🌍"
-  }
+  { name: "ایرنا", url: "https://www.irna.ir/rss", flag: "🇮🇷" },
+  { name: "ایسنا", url: "https://www.isna.ir/rss", flag: "🇮🇷" },
+  { name: "مهر", url: "https://www.mehrnews.com/rss", flag: "🇮🇷" },
+  { name: "تسنیم", url: "https://www.tasnimnews.com/fa/rss/feed/0/0/0/0", flag: "🇮🇷" },
+  { name: "فارس", url: "https://www.farsnews.ir/rss", flag: "🇮🇷" },
+  { name: "ایلنا", url: "https://www.ilna.ir/fa/rss/allnews", flag: "🇮🇷" },
+  { name: "خبرآنلاین", url: "https://www.khabaronline.ir/rss", flag: "🇮🇷" },
+  { name: "ایمنا", url: "https://www.imna.ir/rss", flag: "🇮🇷" },
+  { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia/rss", flag: "🌍" },
+  { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir/rss", flag: "🌍" },
+  { name: "رادیو فردا", url: "https://www.radiofarda.com/rss", flag: "🌍" }
 ];
 
 // ================ منابع پشتیبان ================
 const backupSources = [
-  {
-    name: "تسنیم",
-    url: "https://www.tasnimnews.com/fa/rss"
-  },
-  {
-    name: "فارس",
-    url: "https://farsnews.ir/rss"
-  },
-  {
-    name: "بی‌بی‌سی فارسی",
-    url: "https://www.bbc.com/persia"
-  },
-  {
-    name: "دویچه‌وله فارسی",
-    url: "https://www.dw.com/fa-ir"
-  },
-  {
-    name: "رادیو فردا",
-    url: "https://www.radiofarda.com"
-  }
+  { name: "تسنیم", url: "https://www.tasnimnews.com/fa/rss" },
+  { name: "فارس", url: "https://farsnews.ir/rss" },
+  { name: "بی‌بی‌سی فارسی", url: "https://www.bbc.com/persia" },
+  { name: "دویچه‌وله فارسی", url: "https://www.dw.com/fa-ir" },
+  { name: "رادیو فردا", url: "https://www.radiofarda.com" }
 ];
 
 async function fetchWithRetry(url, retries = 2) {
@@ -226,7 +158,7 @@ async function getNews() {
   let allNews = [];
   const failedSources = [];
 
-  // ================ دریافت از منابع اصلی ================
+  // دریافت از منابع اصلی
   for (const source of sources) {
     try {
       console.log(`⏳ ${source.flag} در حال دریافت ${source.name}...`);
@@ -241,10 +173,8 @@ async function getNews() {
       let count = 0;
       feed.items.slice(0, 15).forEach(item => {
         if (!item.title || !item.link) return;
-        
         const title = item.title.trim();
         const category = detectCategory(title);
-        
         allNews.push({
           title: title,
           link: safeLink(item.link),
@@ -260,11 +190,10 @@ async function getNews() {
     } catch (e) {
       console.log(`❌ ${source.flag} ${source.name} ناموفق: ${e.message}`);
       failedSources.push(source.name);
-      continue;
     }
   }
 
-  // ================ دریافت از منابع پشتیبان ================
+  // دریافت از منابع پشتیبان
   console.log("\n🔄 بررسی منابع پشتیبان...");
   for (const backup of backupSources) {
     if (failedSources.includes(backup.name) || !sources.find(s => s.name === backup.name)) {
@@ -299,12 +228,11 @@ async function getNews() {
         if (index > -1) failedSources.splice(index, 1);
       } catch (e) {
         console.log(`❌ ${backup.name} (پشتیبان) نیز ناموفق بود: ${e.message}`);
-        continue;
       }
     }
   }
 
-  // ================ پردازش نهایی ================
+  // پردازش نهایی
   if (allNews.length === 0) {
     console.log("⚠️ هیچ خبری دریافت نشد!");
     return;
@@ -319,7 +247,6 @@ async function getNews() {
         .replace(/[«»،:؛!?]/g, "")
         .trim()
         .toLowerCase();
-
       if (seenTitles.has(key)) return false;
       seenTitles.add(key);
       return true;
@@ -335,7 +262,7 @@ async function getNews() {
 
   console.log(`\n📊 مجموع اخبار دریافتی: ${allNews.length}`);
 
-  // ================ دسته‌بندی اخبار ================
+  // دسته‌بندی اخبار
   const categorizedNews = {};
   for (const news of allNews) {
     if (!categorizedNews[news.category]) {
@@ -344,7 +271,7 @@ async function getNews() {
     categorizedNews[news.category].push(news);
   }
 
-  // ================ ساخت فایل news.json ================
+  // ================ ساخت news.json ================
   const jsonData = {
     lastUpdate: new Date().toISOString(),
     lastUpdatePersian: new Date().toLocaleString("fa-IR"),
@@ -495,9 +422,8 @@ function filterCategory(category) {
   fs.writeFileSync("news.html", html, "utf8");
   console.log(`✅ news.html با ${allNews.length} خبر ذخیره شد`);
 
-  // ================ ساخت news-ticker.html ================
-// ================ ساخت news-ticker.html ================
-const tickerHtml = `<!DOCTYPE html>
+  // ================ ساخت news-ticker.html (همیشه بازنویسی میشود) ================
+  const tickerHtml = `<!DOCTYPE html>
 <html>
 <head>
 <style>
@@ -573,21 +499,10 @@ const tickerHtml = `<!DOCTYPE html>
 </body>
 </html>`;
 
-
-// فقط اگر فایل وجود نداشته باشد ساخته می‌شود
-// تغییرات دستی شما روی نیوزتیکر حفظ خواهد شد
-if (!fs.existsSync("news-ticker.html")) {
-
+  // ===== بدون شرط، همیشه بازنویسی میشود =====
   fs.writeFileSync("news-ticker.html", tickerHtml, "utf8");
+  console.log(`✅ news-ticker.html با ${allNews.length} خبر به‌روز شد`);
 
-  console.log(`✅ news-ticker.html ساخته شد (${allNews.length} خبر)`);
-
-} else {
-
-  console.log("ℹ️ news-ticker.html موجود است؛ بازنویسی نشد.");
-
-}
-  
   console.log("\n🎉 عملیات با موفقیت کامل شد!");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 }

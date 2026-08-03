@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: diyar-news/package-lock.json
 
@@ -43,7 +43,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          # همیشه آخرین تغییرات remote رو بگیر (بدون rebase)
+          # همیشه آخرین نسخه remote رو بگیر (بدون rebase)
           git fetch origin main
           git reset --hard origin/main
           
@@ -57,5 +57,5 @@ jobs:
           
           git commit -m "Auto-update news: $(date +'%Y-%m-%d %H:%M:%S')"
           
-          # با force push بفرست (تغییرات قبلی رو بازنویسی کن)
+          # Force push برای جلوگیری از Conflict
           git push --force origin HEAD:main

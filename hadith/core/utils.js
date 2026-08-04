@@ -45,6 +45,30 @@
     return list.filter(isValidHadith);
   }
 
+  /**
+   * استخراج مقادیر یکتا و مرتب‌شده‌ی یک فیلد از لیست احادیث — برای پر
+   * کردن گزینه‌های منوی کشویی «بر اساس معصوم» / «بر اساس موضوع».
+   */
+  function uniqueValues(list, key) {
+    if (!Array.isArray(list)) return [];
+    var seen = Object.create(null);
+    var out = [];
+    list.forEach(function (item) {
+      var v = item && item[key];
+      if (v && !seen[v]) {
+        seen[v] = true;
+        out.push(v);
+      }
+    });
+    return out.sort(function (a, b) { return a.localeCompare(b, 'fa'); });
+  }
+
+  /** فیلتر کردن لیست احادیث بر اساس برابری یک فیلد با مقدار داده‌شده */
+  function filterByField(list, key, value) {
+    if (!Array.isArray(list) || !value) return list;
+    return list.filter(function (item) { return item && item[key] === value; });
+  }
+
   /** شماره‌ی روز سال میلادی جاری (۱ تا ۳۶۵/۳۶۶) */
   function dayOfYear(date) {
     date = date || new Date();
@@ -250,6 +274,8 @@
     toPersianDigits: toPersianDigits,
     escapeHTML: escapeHTML,
     sanitizeHadithList: sanitizeHadithList,
+    uniqueValues: uniqueValues,
+    filterByField: filterByField,
     dayOfYear: dayOfYear,
     seededShuffle: seededShuffle,
     pickDailyHadith: pickDailyHadith,

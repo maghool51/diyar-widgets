@@ -46,6 +46,8 @@
 
     /** نمایش موارد مختلف در کارت */
     ui: {
+      /** نمایش منوی کشویی «انتخاب نوع حدیث» (منتخب/بر اساس معصوم/بر اساس موضوع) */
+      showTypeSelector: true,
       showArabic: true,
       showSource: true,
       showBook: true,

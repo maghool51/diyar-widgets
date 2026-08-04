@@ -49,7 +49,7 @@ var DATA_FILES = {
  * است)؛ اما به‌خاطر Stale-While-Revalidate پایین، حتی بدون تغییر این
  * عدد هم بروزرسانی‌های عادی حداکثر با یک بار بازدید اضافه اعمال می‌شوند.
  */
-var CACHE_VERSION = 4;
+var CACHE_VERSION = 5;
 var CACHE_NAME = 'diyar-hadith-shell-v' + CACHE_VERSION;
 
 var SHELL_FILES = [

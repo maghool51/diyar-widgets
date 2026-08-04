@@ -8,17 +8,17 @@
  */
 
 .dhw {
-  --md-primary: #12695f;
+  --md-primary: #0b6a42;
   --md-on-primary: #ffffff;
-  --md-primary-container: #a6f2e4;
-  --md-on-primary-container: #00201c;
+  --md-primary-container: #a0e8c4;
+  --md-on-primary-container: #002110;
   --md-surface: #fbfdfa;
-  --md-surface-container: #eef2ee;
-  --md-surface-container-high: #e3e8e3;
-  --md-on-surface: #191c1b;
-  --md-on-surface-variant: #3f4945;
-  --md-outline: #6f7975;
-  --md-outline-variant: #bfc9c4;
+  --md-surface-container: #bfe8d3;
+  --md-surface-container-high: #a8ddc0;
+  --md-on-surface: #14261d;
+  --md-on-surface-variant: #2f4a3a;
+  --md-outline: #3d5c48;
+  --md-outline-variant: #9dcdb3;
   --md-shadow: 0 1px 2px rgba(0, 0, 0, 0.10), 0 4px 14px rgba(0, 0, 0, 0.08);
   --md-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.12), 0 8px 22px rgba(0, 0, 0, 0.12);
 
@@ -52,9 +52,9 @@
   --md-on-primary: #003731;
   --md-primary-container: #004f47;
   --md-on-primary-container: #a6f2e4;
-  --md-surface: #101413;
-  --md-surface-container: #1d211f;
-  --md-surface-container-high: #282e2b;
+  --md-surface: #0e1a14;
+  --md-surface-container: #16261e;
+  --md-surface-container-high: #203a2c;
   --md-on-surface: #e1e3e0;
   --md-on-surface-variant: #bfc9c4;
   --md-outline: #89938e;
@@ -72,9 +72,9 @@
     --md-on-primary: #003731;
     --md-primary-container: #004f47;
     --md-on-primary-container: #a6f2e4;
-    --md-surface: #101413;
-    --md-surface-container: #1d211f;
-    --md-surface-container-high: #282e2b;
+    --md-surface: #0e1a14;
+    --md-surface-container: #16261e;
+    --md-surface-container-high: #203a2c;
     --md-on-surface: #e1e3e0;
     --md-on-surface-variant: #bfc9c4;
     --md-outline: #89938e;
@@ -175,6 +175,49 @@
 .dhw-content {
   position: relative;
   z-index: 1;
+}
+
+/*
+ * منوی کشویی «انتخاب نوع حدیث». از عنصر بومی <select> استفاده شده
+ * (نه یک لیست باز/بسته‌شونده‌ی سفارشی) تا به‌صورت پیش‌فرض با صفحه‌کلید
+ * و صفحه‌خوان کاملاً کار کند؛ ظاهرش با appearance:none و یک شورون
+ * سفارشی به‌سبک M3 بازطراحی شده است.
+ */
+.dhw-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.dhw-select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  background-color: var(--md-surface);
+  color: var(--md-on-surface);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-shape-medium);
+  padding: 10px 40px 10px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f4a3a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  background-size: 16px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dhw-select:hover {
+  border-color: var(--md-outline);
+}
+
+.dhw-select:focus-visible {
+  outline: none;
+  border-color: var(--md-primary);
+  box-shadow: 0 0 0 2px var(--tazhib-gold-soft);
 }
 
 .dhw-top {
@@ -401,6 +444,10 @@
     outline: 2px solid var(--md-primary);
     outline-offset: 2px;
   }
+  .dhw-select:focus {
+    outline: 2px solid var(--md-primary);
+    outline-offset: 1px;
+  }
 }
 
 /* ناحیه‌ی وضعیت مخصوص صفحه‌خوان (بازخورد کپی/اشتراک‌گذاری) — از نظر
@@ -423,6 +470,7 @@
    اکنون فقط بخش‌های وابسته به داده (چیپ دسته‌بندی/آفلاین) حین بارگذاری
    مخفی می‌شوند؛ عنوان «حدیث روز» ثابت و همیشه قابل مشاهده می‌ماند تا
    سلسله‌مراتب بصری و برندینگ حین لودینگ هم حفظ شود. */
+.dhw-loading .dhw-selector,
 .dhw-loading .dhw-top-meta,
 .dhw-loading .dhw-body,
 .dhw-loading .dhw-meta,

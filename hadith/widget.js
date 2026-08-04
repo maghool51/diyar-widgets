@@ -112,6 +112,7 @@
     this.el = null;
     this.refs = {};
     this.hadiths = [];
+    this._fullHadiths = [];
     this.current = null;
     this.offline = false;
     this._initialized = false;
@@ -120,6 +121,8 @@
     // چند نمونه‌ی هم‌زمان از ویجت روی یک صفحه (مثلاً یک ویجت با تم روشن
     // و یکی با تم تاریک) تاریخچه‌ی یکدیگر را خراب نکنند.
     this._recentKey = 'state:recent-random-ids:' + this.config.containerId;
+    // state منوی کشویی «انتخاب نوع حدیث»: 'daily' | 'narrator' | 'category'
+    this._selectorMode = 'daily';
   }
 
   /**
@@ -204,6 +207,10 @@
         // fetch به دلایل دیگری (نه لزوماً قطعی کامل اینترنت) شکست بخورد.
         self.offline = !!result.offline;
         self.hadiths = Utils.sanitizeHadithList(result.hadiths);
+        // نسخه‌ی کامل (پیش از فیلتر category تنظیمات) برای منوی کشویی
+        // «انتخاب نوع حدیث» نگه‌داشته می‌شود تا کاربر بتواند مستقل از
+        // config.category هر معصوم/موضوعی را مرور کند.
+        self._fullHadiths = self.hadiths.slice();
 
         if (self.config.category && self.config.category !== 'all') {
           self.hadiths = self.hadiths.filter(function (h) { return h.category === self.config.category; });
@@ -280,6 +287,19 @@
     // صفحه نباید id تکراری بسازند)
     var titleId = 'dhw-title-' + this.config.containerId;
 
+    var selectorHTML = this.config.ui.showTypeSelector
+      ? (
+        '<div class="dhw-selector">' +
+          '<select class="dhw-select dhw-select-type" aria-label="انتخاب نوع حدیث">' +
+            '<option value="daily">حدیث منتخب</option>' +
+            '<option value="narrator">نمایش حدیث بر اساس معصوم</option>' +
+            '<option value="category">نمایش حدیث بر اساس موضوع</option>' +
+          '</select>' +
+          '<select class="dhw-select dhw-select-secondary" hidden aria-label="انتخاب مورد"></select>' +
+        '</div>'
+      )
+      : '';
+
     var cardHTML =
       '<div class="dhw-card" role="region" aria-labelledby="' + titleId + '" aria-live="polite">' +
         '<span class="dhw-corner dhw-corner-tr" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
@@ -287,6 +307,7 @@
         '<span class="dhw-corner dhw-corner-br" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
         '<span class="dhw-corner dhw-corner-bl" aria-hidden="true">' + ORNAMENT_CORNER + '</span>' +
         '<div class="dhw-content">' +
+          selectorHTML +
           '<div class="dhw-top">' +
             '<h2 class="dhw-title" id="' + titleId + '">حدیث روز</h2>' +
             '<div class="dhw-top-meta">' +
@@ -332,11 +353,14 @@
       book: el.querySelector('.dhw-book'),
       actions: el.querySelector('.dhw-actions'),
       status: el.querySelector('.dhw-status'),
-      skeleton: el.querySelector('.dhw-skeleton')
+      skeleton: el.querySelector('.dhw-skeleton'),
+      typeSelect: el.querySelector('.dhw-select-type'),
+      secondarySelect: el.querySelector('.dhw-select-secondary')
     };
 
     this._buildActions();
     this._setupOnlineStatus();
+    this._bindSelector();
   };
 
   /**
@@ -503,6 +527,85 @@
     // ثبت برای پاک‌سازی کامل در destroy() (رفع نشتی listener سطح window)
     this._listeners.push({ el: window, type: 'online', handler: onOnline });
     this._listeners.push({ el: window, type: 'offline', handler: onOffline });
+  };
+
+  /**
+   * اتصال رویدادهای منوی کشویی «انتخاب نوع حدیث». اگر ui.showTypeSelector
+   * غیرفعال باشد (یا به هر دلیلی عنصر در DOM نباشد)، بی‌سروصدا خارج
+   * می‌شود — این منو کاملاً اختیاری و افزوده بر معماری اصلی است.
+   */
+  DiyarHadithWidget.prototype._bindSelector = function () {
+    var self = this;
+    if (!this.refs.typeSelect) return;
+
+    var onTypeChange = function () { self._onTypeSelectChange(); };
+    var onSecondaryChange = function () { self._onSecondarySelectChange(); };
+
+    this.refs.typeSelect.addEventListener('change', onTypeChange);
+    this._listeners.push({ el: this.refs.typeSelect, type: 'change', handler: onTypeChange });
+
+    if (this.refs.secondarySelect) {
+      this.refs.secondarySelect.addEventListener('change', onSecondaryChange);
+      this._listeners.push({ el: this.refs.secondarySelect, type: 'change', handler: onSecondaryChange });
+    }
+  };
+
+  /**
+   * واکنش به تغییر گزینه‌ی اصلی منو:
+   *  'daily'    → بازگشت به رفتار پیش‌فرض (حدیث روز/تصادفی روی کل داده)
+   *  'narrator' → نمایش منوی ثانویه با فهرست معصومین (source)
+   *  'category' → نمایش منوی ثانویه با فهرست موضوعات (category)
+   */
+  DiyarHadithWidget.prototype._onTypeSelectChange = function () {
+    var mode = this.refs.typeSelect.value;
+    this._selectorMode = mode;
+
+    if (mode === 'daily') {
+      if (this.refs.secondarySelect) {
+        this.refs.secondarySelect.hidden = true;
+        this.refs.secondarySelect.innerHTML = '';
+      }
+      // بازگشت به مجموعه‌ی کامل (یا فیلترشده‌ی config.category اولیه)
+      var initialCategory = this.config.category;
+      this.hadiths = (initialCategory && initialCategory !== 'all')
+        ? this._fullHadiths.filter(function (h) { return h.category === initialCategory; })
+        : this._fullHadiths.slice();
+      this._selectInitial();
+      return;
+    }
+
+    var field = (mode === 'narrator') ? 'source' : 'category';
+    this._populateSecondarySelect(field);
+  };
+
+  /** پر کردن منوی ثانویه با مقادیر یکتای فیلد مربوطه (source یا category) */
+  DiyarHadithWidget.prototype._populateSecondarySelect = function (field) {
+    if (!this.refs.secondarySelect) return;
+    var values = Utils.uniqueValues(this._fullHadiths, field);
+    var placeholder = (field === 'source') ? 'یک معصوم را انتخاب کنید' : 'یک موضوع را انتخاب کنید';
+
+    var optionsHTML = '<option value="">' + Utils.escapeHTML(placeholder) + '</option>';
+    values.forEach(function (v) {
+      optionsHTML += '<option value="' + Utils.escapeHTML(v) + '">' + Utils.escapeHTML(v) + '</option>';
+    });
+
+    this.refs.secondarySelect.innerHTML = optionsHTML;
+    this.refs.secondarySelect.setAttribute('data-field', field);
+    this.refs.secondarySelect.hidden = false;
+  };
+
+  /** واکنش به انتخاب یک مقدار مشخص (یک معصوم یا یک موضوع) در منوی ثانویه */
+  DiyarHadithWidget.prototype._onSecondarySelectChange = function () {
+    var field = this.refs.secondarySelect.getAttribute('data-field');
+    var value = this.refs.secondarySelect.value;
+
+    if (!value) return; // گزینه‌ی placeholder انتخاب شده؛ کاری نکن
+
+    var filtered = Utils.filterByField(this._fullHadiths, field, value);
+    if (!filtered.length) return;
+
+    this.hadiths = filtered;
+    this._pickRandom();
   };
 
   /**

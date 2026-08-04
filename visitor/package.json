@@ -1,45 +1,74 @@
 {
   "name": "@diyar-widgets/visitor",
-  "version": "1.0.0",
-  "description": "Material Design 3 visitor statistics widget for Diyar Widgets — RTL, Persian UI, mock data with a future-ready API architecture.",
+  "version": "1.1.0",
+  "description": "A modular, dependency-free Material Design 3 widget that displays live-feeling visitor statistics with full RTL Persian support, animated Light/Dark/Auto theming, and zero framework overhead.",
+  "keywords": [
+    "widget",
+    "visitor-stats",
+    "analytics-widget",
+    "rtl",
+    "persian",
+    "farsi",
+    "material-design-3",
+    "vanilla-javascript",
+    "dark-mode",
+    "diyar-widgets"
+  ],
+  "homepage": "https://github.com/diyar-widgets/diyar-widgets/tree/main/visitor#readme",
+  "bugs": {
+    "url": "https://github.com/diyar-widgets/diyar-widgets/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diyar-widgets/diyar-widgets.git",
+    "directory": "visitor"
+  },
+  "license": "MIT",
+  "author": "Diyar Widgets Contributors",
   "main": "visitor.js",
   "files": [
     "index.html",
     "visitor.css",
+    "demo.css",
     "visitor.js",
+    "embed.js",
     "config.js",
+    "utils.js",
+    "theme.js",
+    "animations.js",
+    "stats.json",
     "icons",
+    "assets",
     "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
-    "start": "npx --yes serve . -l 5500",
-    "lint": "npx --yes eslint visitor.js config.js"
-  },
-  "keywords": [
-    "widget",
-    "visitor-stats",
-    "material-design-3",
-    "rtl",
-    "persian",
-    "vanilla-js",
-    "diyar-widgets"
-  ],
-  "author": "Diyar Widgets Contributors",
-  "license": "MIT",
-  "homepage": "https://github.com/diyar-widgets/diyar-widgets/tree/main/visitor",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/diyar-widgets/diyar-widgets.git",
-    "directory": "visitor"
-  },
-  "bugs": {
-    "url": "https://github.com/diyar-widgets/diyar-widgets/issues"
+    "start": "npx --yes serve . -l 5050",
+    "serve": "npx --yes serve . -l 5050",
+    "lint": "npx --yes eslint \"*.js\" --no-eslintrc --env browser,es2023 --parser-options=ecmaVersion:2023,sourceType:script",
+    "format": "npx --yes prettier --write \"**/*.{js,css,html,md,json}\"",
+    "format:check": "npx --yes prettier --check \"**/*.{js,css,html,md,json}\""
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "not op_mini all"
+  ],
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "sideEffects": [
+    "visitor.js",
+    "theme.js",
+    "config.js",
+    "utils.js",
+    "animations.js",
+    "embed.js"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

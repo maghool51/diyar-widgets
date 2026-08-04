@@ -1,141 +1,107 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <meta name="description" content="ویجت آمار بازدیدکنندگان دیار - نمایش زنده آمار بازدید سایت">
-    <meta name="theme-color" content="#6750A4">
-    <title>آمار بازدید | Diyar Widgets</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>ویجت آمار بازدید دیار | Diyar Visitor Widget</title>
+  <meta name="description" content="ویجت سبک و زیبای نمایش آمار بازدیدکنندگان با پشتیبانی از راست‌به‌چپ، حالت روشن/تیره و انیمیشن‌های نرم." />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#4C6EF5" />
 
-    <!-- Google Fonts: Vazirmatn (Persian optimized font) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Widget Styles -->
-    <link rel="stylesheet" href="visitor.css">
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css"
+  />
+  <link rel="stylesheet" href="./visitor.css" />
+  <link rel="stylesheet" href="./demo.css" />
 </head>
 <body>
+  <!--
+    ============================================================
+    SVG Sprite — every icon used by the widget is defined once
+    here as a <symbol> and referenced elsewhere via <use>. This
+    keeps markup lean and lets every icon inherit `currentColor`.
+    Standalone copies of the same artwork live in /icons for use
+    outside this page (READMEs, design tools, etc.).
+    ============================================================
+  -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="icon-eye" viewBox="0 0 24 24" fill="none">
+        <path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/>
+      </symbol>
 
-    <!-- ==========================================================
-         VISITOR STATISTICS WIDGET
-         Root container - theme is applied via data-theme attribute
-         and toggled dynamically by visitor.js
-    =========================================================== -->
-    <main
-        class="visitor-widget"
-        id="visitorWidget"
-        data-theme="auto"
-        role="region"
-        aria-label="ویجت آمار بازدیدکنندگان"
-    >
+      <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M3 9.5H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M8 3V6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M16 3V6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="8" cy="13.5" r="1.1" fill="currentColor"/>
+        <circle cx="12" cy="13.5" r="1.1" fill="currentColor"/>
+        <circle cx="16" cy="13.5" r="1.1" fill="currentColor"/>
+      </symbol>
 
-        <!-- ==================== HEADER ==================== -->
-        <header class="visitor-widget__header">
-            <h1 class="visitor-widget__title">
-                <span class="visitor-widget__title-icon" aria-hidden="true">📊</span>
-                <span>آمار بازدید</span>
-            </h1>
+      <symbol id="icon-globe" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M3 12H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      </symbol>
 
-            <div class="visitor-widget__header-actions">
-                <!-- Live status indicator -->
-                <div class="visitor-widget__status" role="status" aria-live="polite">
-                    <span class="visitor-widget__status-dot" aria-hidden="true"></span>
-                    <span class="visitor-widget__status-text">زنده</span>
-                </div>
+      <symbol id="icon-online" viewBox="0 0 24 24" fill="none">
+        <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.6394 3.43857 15.1768 4.2 16.5L3 21L7.5 19.8C8.82316 20.5614 10.3606 21 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        <circle cx="9" cy="12" r="1.1" fill="currentColor"/>
+        <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
+        <circle cx="15" cy="12" r="1.1" fill="currentColor"/>
+      </symbol>
 
-                <!-- Theme toggle -->
-                <button
-                    type="button"
-                    class="visitor-widget__theme-toggle"
-                    id="visitorThemeToggle"
-                    aria-label="تغییر حالت نمایش (روشن/تیره)"
-                    title="تغییر حالت نمایش"
-                >
-                    <span class="visitor-widget__theme-icon" aria-hidden="true">🌓</span>
-                </button>
-            </div>
-        </header>
+      <symbol id="icon-chart" viewBox="0 0 24 24" fill="none">
+        <path d="M4 20V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M10 20V4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M16 20V13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M20.5 8.5L16 13L12.5 9.5L9 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
 
-        <!-- ==================== STATS GRID ==================== -->
-        <section
-            class="visitor-widget__grid"
-            id="visitorGrid"
-            aria-label="آمار تفصیلی بازدیدکنندگان"
-        >
+      <symbol id="icon-clock" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 7V12L15.5 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
 
-            <!-- Today -->
-            <article class="visitor-card" data-stat="today" tabindex="0" aria-label="بازدید امروز">
-                <div class="visitor-card__icon" aria-hidden="true">👁</div>
-                <div class="visitor-card__content">
-                    <span class="visitor-card__label">امروز</span>
-                    <span class="visitor-card__value" data-count-target="0">۰</span>
-                </div>
-            </article>
+      <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none">
+        <path d="M4 12C4 7.58172 7.58172 4 12 4C15.0637 4 17.7238 5.72916 19.0426 8.27002" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M20 12C20 16.4183 16.4183 20 12 20C8.93627 20 6.27618 18.2708 4.95736 15.73" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M19.5 4.5V8.5H15.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4.5 19.5V15.5H8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
 
-            <!-- Yesterday -->
-            <article class="visitor-card" data-stat="yesterday" tabindex="0" aria-label="بازدید دیروز">
-                <div class="visitor-card__icon" aria-hidden="true">📅</div>
-                <div class="visitor-card__content">
-                    <span class="visitor-card__label">دیروز</span>
-                    <span class="visitor-card__value" data-count-target="0">۰</span>
-                </div>
-            </article>
+  <main class="diyar-page">
+    <div class="diyar-page__backdrop" aria-hidden="true"></div>
 
-            <!-- This Week -->
-            <article class="visitor-card" data-stat="week" tabindex="0" aria-label="بازدید این هفته">
-                <div class="visitor-card__icon" aria-hidden="true">📈</div>
-                <div class="visitor-card__content">
-                    <span class="visitor-card__label">این هفته</span>
-                    <span class="visitor-card__value" data-count-target="0">۰</span>
-                </div>
-            </article>
+    <section class="diyar-page__intro">
+      <h1 class="diyar-page__heading">Diyar Visitor Widget</h1>
+      <p class="diyar-page__subheading">
+        ویجت سبک، ماژولار و بدون وابستگی برای نمایش زیبای آمار بازدیدکنندگان سایت.
+      </p>
+    </section>
 
-            <!-- This Month -->
-            <article class="visitor-card" data-stat="month" tabindex="0" aria-label="بازدید این ماه">
-                <div class="visitor-card__icon" aria-hidden="true">🗓</div>
-                <div class="visitor-card__content">
-                    <span class="visitor-card__label">این ماه</span>
-                    <span class="visitor-card__value" data-count-target="0">۰</span>
-                </div>
-            </article>
+    <!-- Widget mounts here automatically on DOMContentLoaded -->
+    <div id="diyar-visitor-widget"></div>
 
-            <!-- Total -->
-            <article class="visitor-card visitor-card--highlight" data-stat="total" tabindex="0" aria-label="کل بازدید">
-                <div class="visitor-card__icon" aria-hidden="true">🌍</div>
-                <div class="visitor-card__content">
-                    <span class="visitor-card__label">کل بازدید</span>
-                    <span class="visitor-card__value" data-count-target="0">۰</span>
-                </div>
-            </article>
+    <p class="diyar-page__note">
+      نسخه‌ی نمایشی با داده‌های <code>stats.json</code> اجرا می‌شود. برای اتصال به یک منبع داده‌ی
+      دیگر (بک‌اند واقعی)، کافیست مقدار <code>DATA_URL</code> در فایل <code>config.js</code>
+      ویرایش شود.
+    </p>
+  </main>
 
-            <!-- Online Now -->
-            <article class="visitor-card visitor-card--online" data-stat="online" tabindex="0" aria-label="کاربران آنلاین">
-                <div class="visitor-card__icon" aria-hidden="true">🟢</div>
-                <div class="visitor-card__content">
-                    <span class="visitor-card__label">کاربران آنلاین</span>
-                    <span class="visitor-card__value" data-count-target="0">۰</span>
-                </div>
-            </article>
-
-        </section>
-
-        <!-- ==================== FOOTER ==================== -->
-        <footer class="visitor-widget__footer">
-            <span class="visitor-widget__footer-label">آخرین بروزرسانی:</span>
-            <time class="visitor-widget__footer-time" id="visitorUpdatedTime" datetime="">
-                --:--
-            </time>
-        </footer>
-
-    </main>
-
-    <!-- ==========================================================
-         SCRIPTS
-         config.js must load before visitor.js (dependency order)
-    =========================================================== -->
-    <script src="config.js"></script>
-    <script src="visitor.js"></script>
-
+  <script src="./config.js"></script>
+  <script src="./utils.js"></script>
+  <script src="./theme.js"></script>
+  <script src="./animations.js"></script>
+  <script src="./visitor.js"></script>
 </body>
 </html>

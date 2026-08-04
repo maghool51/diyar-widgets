@@ -109,18 +109,25 @@
   }
 
   /**
-   * Attaches a Material Design ripple effect to a clickable element.
-   * The ripple element is created on demand and removed after its
-   * transition completes to keep the DOM clean.
+   * Attaches a Material-style pointer ripple to an interactive element.
+   * Safe to call more than once on the same element — a second call is
+   * a no-op, guarded by the `__diyarRippleAttached` marker.
    *
-   * @param {HTMLElement} el - Element to receive the ripple (needs
-   *   `position: relative` and `overflow: hidden`, provided by CSS).
+   * @param {HTMLElement} el
+   * @returns {() => void} A detach function that removes the ripple
+   *   listener and clears the attached-marker, allowing `attachRipple`
+   *   to be legitimately re-applied to the same element later (e.g.
+   *   after a widget instance is destroyed and re-mounted). Calling the
+   *   returned function more than once, or calling it when nothing was
+   *   ever attached, is always safe and a no-op.
    */
   function attachRipple(el) {
-    if (!el || el.__diyarRippleAttached) return;
+    if (!el) return () => {};
+    if (el.__diyarRippleAttached) return el.__diyarRippleDetach || (() => {});
+
     el.__diyarRippleAttached = true;
 
-    el.addEventListener('pointerdown', (event) => {
+    const handlePointerDown = (event) => {
       if (prefersReducedMotion()) return;
 
       const rect = el.getBoundingClientRect();
@@ -137,7 +144,18 @@
 
       el.appendChild(ripple);
       ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
-    });
+    };
+
+    el.addEventListener('pointerdown', handlePointerDown);
+
+    const detach = () => {
+      el.removeEventListener('pointerdown', handlePointerDown);
+      el.__diyarRippleAttached = false;
+      el.__diyarRippleDetach = undefined;
+    };
+
+    el.__diyarRippleDetach = detach;
+    return detach;
   }
 
   /**

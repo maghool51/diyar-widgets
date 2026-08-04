@@ -1,0 +1,96 @@
+/* ==========================================================================
+   Diyar Visitor Widget — Demo Page Shell
+   ==========================================================================
+   Styling for the bundled `index.html` demo page ONLY: the page
+   background, backdrop gradient, and intro copy that surround the
+   widget in the repository's own demo. This file is intentionally
+   loaded only by `index.html` — `embed.js` never references it and
+   never loads it onto a third-party host page.
+
+   Unlike `visitor.css`, global selectors (`html`, `body`) are safe
+   here, because this file only ever runs on the page it ships with.
+   Do not import this file into `embed.js`'s loading chain.
+   ========================================================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+  background: #F2F4FA;
+  color: #1B1D29;
+}
+
+.diyar-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 56px 20px 72px;
+  overflow-x: hidden;
+}
+
+.diyar-page__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(760px 420px at 15% -8%, rgba(76, 110, 245, 0.16), transparent 60%),
+    radial-gradient(680px 460px at 100% 10%, rgba(124, 77, 255, 0.14), transparent 55%),
+    radial-gradient(900px 600px at 50% 120%, rgba(0, 168, 150, 0.10), transparent 60%);
+}
+
+.diyar-page__intro {
+  max-width: 640px;
+  text-align: center;
+}
+
+.diyar-page__heading {
+  font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  font-weight: 800;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #4C6EF5, #7C4DFF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.diyar-page__subheading {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.9;
+  color: #5B5E71;
+}
+
+.diyar-page__note {
+  max-width: 520px;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: #5B5E71;
+}
+
+.diyar-page__note code {
+  background: rgba(27, 29, 41, 0.10);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  direction: ltr;
+  display: inline-block;
+}
+
+/* Small tablets / large phones */
+@media (max-width: 640px) {
+  .diyar-page {
+    padding: 40px 14px 56px;
+    gap: 22px;
+  }
+}

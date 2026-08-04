@@ -545,7 +545,7 @@ auto-init اختیاری برای سازگاری بهتر با CSP، و جداس
   بارگذاری فایل ۵۱۲px کامل برای یک آیکون کوچک — تفاوت عملکردی
   محسوسی دارد).
 - در `config.js → brand.logoUrl` به `assets/logo-sm.png` اشاره شده و
-  `brand.url` به وبلاگ رسمی «دیار قدمگاه» (`https://diyareghadamgah.blogfa.com`)
+  `brand.url` به وبلاگ رسمی «دیار قدمگاه» (`https://diyareghadamgah.blogfa.com/`)
   وصل است — لوگو اکنون یک لینک قابل‌کلیک (`<a target="_blank"
   rel="noopener noreferrer">`) است که در تب جدید باز می‌شود.
 

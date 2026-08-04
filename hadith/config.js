@@ -97,7 +97,7 @@
       enabled: true,
       name: 'دیار قدمگاه',
       /** وبلاگ رسمی «دیار قدمگاه» — معرفی امامزاده سید محمد ساغند (ع) */
-      url: 'https://diyareghadamgah.blogfa.com',
+      url: 'https://diyareghadamgah.blogfa.com/',
       /** مسیر فایل لوگو (نسخه‌ی بهینه‌شده‌ی ۱۲۰×۱۲۰ برای نمایش سریع در
        *  ویجت؛ فایل اصلی با کیفیت کامل در assets/logo.png نگه داشته
        *  شده است). */

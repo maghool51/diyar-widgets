@@ -544,10 +544,10 @@ auto-init اختیاری برای سازگاری بهتر با CSP، و جداس
   که در نوار برند زیر ویجت و در هدر `embed.html` استفاده می‌شود (به‌جای
   بارگذاری فایل ۵۱۲px کامل برای یک آیکون کوچک — تفاوت عملکردی
   محسوسی دارد).
-- در `config.js → brand.logoUrl` به `assets/logo-sm.png` اشاره شده.
-  اگر می‌خواهید نوار برند لینک هم داشته باشد، `brand.url` را با آدرس
-  سایت «دیار قدمگاه» پر کنید (فعلاً خالی است، یعنی فقط یک `div`
-  غیرقابل‌کلیک نمایش داده می‌شود).
+- در `config.js → brand.logoUrl` به `assets/logo-sm.png` اشاره شده و
+  `brand.url` به وبلاگ رسمی «دیار قدمگاه» (`https://diyareghadamgah.blogfa.com`)
+  وصل است — لوگو اکنون یک لینک قابل‌کلیک (`<a target="_blank"
+  rel="noopener noreferrer">`) است که در تب جدید باز می‌شود.
 
 آیکون‌های PWA (`manifest.webmanifest`) هم با فایل‌های واقعی
 (`icon-32`, `icon-180` برای Apple/favicon، `icon-192`/`icon-512` برای

@@ -42,7 +42,7 @@ Aggregator خودکار اخبار ایران و جهان از ۱۱ منبع م�
 فایل `news.json` از طریق CORS-friendly `raw.githubusercontent.com` قابل fetch از هر دامنه‌ای است:
 
 ```
-https://raw.githubusercontent.com/maghool51/diyar-news/main/news.json
+https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news.json
 ```
 
 ساختار خروجی:
@@ -75,6 +75,22 @@ https://raw.githubusercontent.com/maghool51/diyar-news/main/news.json
 - تمام خروجی‌های HTML (`index.html`, `news.html`, `news-ticker.html`) قبل از انتشار، عنوان/منبع/لینک خبر را escape می‌کنند.
 - لینک‌ها با `new URL()` اعتبارسنجی می‌شوند و فقط پروتکل‌های `http`/`https` پذیرفته می‌شوند.
 - هیچ کلید API یا Secret در کد یا خروجی‌ها ذخیره نمی‌شود؛ تنها Secret مصرفی، `GITHUB_TOKEN` پیش‌فرض GitHub Actions است که در Runner تزریق می‌شود و در کد ظاهر نمی‌شود.
+
+## 📂 موقعیت این پروژه در مخزن
+
+این پوشه (`diyar-news`) یک **زیرپوشه** داخل مخزن بزرگ‌تر `diyar-widgets` است، نه یک مخزن مستقل:
+
+```
+diyar-widgets/                      ← ریشه‌ی مخزن
+├── .github/workflows/update-news.yml   ← باید اینجا باشد (نه داخل diyar-news)
+└── diyar-news/                     ← همین پوشه
+    ├── fetch-news.js
+    ├── news.json
+    ├── index.html
+    └── ...
+```
+
+⚠️ چون GitHub Actions فقط workflow های داخل `.github/workflows/` در **ریشه‌ی مخزن** را اجرا می‌کند، فایل workflow این پروژه باید در `diyar-widgets/.github/workflows/update-news.yml` قرار بگیرد. برای همین در آن فایل از `working-directory: diyar-news` استفاده شده تا دستورات (`npm ci`, `node fetch-news.js`) داخل پوشه‌ی درست اجرا شوند.
 
 ## 🛠 توسعه محلی
 

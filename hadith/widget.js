@@ -59,7 +59,13 @@
       '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
       'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
       '<polyline points="6 9 6 3 18 3 18 9"/><rect x="4" y="9" width="16" height="8" rx="2"/>' +
-      '<polyline points="6 17 6 21 18 21 18 17"/></svg>'
+      '<polyline points="6 17 6 21 18 21 18 17"/></svg>',
+    source:
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+      '<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/>' +
+      '<path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>' +
+      '</svg>'
   };
 
   /**
@@ -415,6 +421,14 @@
     if (ui.showPrintButton) {
       buttons.push(this._makeButton('print', 'چاپ', ICONS.print, function () { self._print(); }));
     }
+    if (ui.showSourceLinkButton) {
+      var sourceBtn = this._makeButton('source', 'مشاهده منبع', ICONS.source, function () { self._openReference(); });
+      // پیش‌فرض مخفی؛ فقط وقتی حدیث جاری reference.url معتبر داشته باشد
+      // در _render() نمایان می‌شود (نگاه کنید به _updateSourceButton).
+      sourceBtn.hidden = true;
+      this.refs.sourceBtn = sourceBtn;
+      buttons.push(sourceBtn);
+    }
 
     buttons.forEach(function (btn) { self.refs.actions.appendChild(btn); });
   };
@@ -473,10 +487,38 @@
     this.refs.category.hidden = !(this.config.ui.showCategory && h.category);
     this.refs.source.hidden = !this.refs.source.textContent;
     this.refs.book.hidden = !this.refs.book.textContent;
+    this._updateSourceButton();
 
     this.refs.card.classList.remove('dhw-fade');
     void this.refs.card.offsetWidth; // ری‌استارت انیمیشن
     this.refs.card.classList.add('dhw-fade');
+  };
+
+  /**
+   * نمایش/مخفی‌سازی دکمه‌ی «مشاهده منبع» بر اساس معتبر بودن
+   * reference.url حدیث جاری. اعتبارسنجی با Utils.isSafeUrl انجام
+   * می‌شود (فقط http/https مجازند) — حتی اگر داده‌ی JSON دستکاری یا
+   * خراب شده باشد، دکمه هرگز به یک URL ناامن لینک نمی‌دهد.
+   */
+  DiyarHadithWidget.prototype._updateSourceButton = function () {
+    if (!this.refs.sourceBtn) return;
+    var ref = this.current && this.current.reference;
+    var url = ref && ref.url;
+    this.refs.sourceBtn.hidden = !Utils.isSafeUrl(url);
+  };
+
+  /**
+   * باز کردن منبع حدیث جاری در تب جدید. اعتبارسنجی URL دوباره همین‌جا
+   * هم تکرار می‌شود (دفاع در عمق): حتی اگر _updateSourceButton به هر
+   * دلیلی دکمه را اشتباهاً نمایان نگه‌دارد (مثلاً به‌خاطر تغییر دستی
+   * DOM توسط کد میزبان)، کلیک روی آن هرگز یک URL ناامن باز نمی‌کند.
+   */
+  DiyarHadithWidget.prototype._openReference = function () {
+    var ref = this.current && this.current.reference;
+    var url = ref && ref.url;
+    if (!Utils.isSafeUrl(url)) return;
+    var win = window.open(url, '_blank', 'noopener,noreferrer');
+    if (win) win.opener = null; // دفاع اضافی در برابر tabnabbing در مرورگرهای قدیمی‌تر
   };
 
   DiyarHadithWidget.prototype._setState = function (state, message) {

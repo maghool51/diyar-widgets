@@ -55,6 +55,10 @@
       showShareButton: true,
       showCopyButton: true,
       showPrintButton: true,
+      /** دکمه‌ی «مشاهده منبع» — فقط وقتی حدیث جاری reference.url معتبر
+       *  (http/https) داشته باشد نمایش داده می‌شود، حتی اگر این تنظیم
+       *  true باشد. */
+      showSourceLinkButton: true,
       showNextButton: true,
       showRandomButton: true,
       /**

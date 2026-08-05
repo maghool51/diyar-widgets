@@ -22,6 +22,30 @@
    * چون در widget.js همه‌جا از textContent استفاده می‌شود این تابع
    * به‌عنوان یک لایه‌ی دفاعی دوم برای مواردی است که innerHTML لازم شود.
    */
+  /**
+   * اعتبارسنجی امنیتی URL پیش از باز کردن آن (برای دکمه‌ی «مشاهده‌ی
+   * منبع»). چون reference.url از داده‌ی JSON می‌آید — که می‌تواند توسط
+   * هر کسی که به مخزن دسترسی نوشتن دارد ویرایش شود — باید مثل هر ورودی
+   * غیرقابل‌اعتماد دیگر پیش از استفاده اعتبارسنجی شود. این تابع صرفاً
+   * پروتکل‌های http/https را مجاز می‌داند و هر چیز دیگر (از جمله
+   * javascript:، data:، file:، vbscript: و مقادیر ناقص/نامعتبر) را رد
+   * می‌کند — پیش‌گیری از حمله‌ی کلاسیک XSS-via-href.
+   * @param {string} url
+   * @returns {boolean}
+   */
+  function isSafeUrl(url) {
+    if (typeof url !== 'string' || !url.trim()) return false;
+    try {
+      // URL دوم (base) برای مقادیر نسبی لازم است؛ location.href در
+      // Node/Worker موجود نیست، پس یک fallback ساده در نظر گرفته شده.
+      var base = (typeof location !== 'undefined' && location.href) || 'https://example.com/';
+      var parsed = new URL(url, base);
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch (err) {
+      return false;
+    }
+  }
+
   function escapeHTML(str) {
     if (typeof str !== 'string') return '';
     return str
@@ -273,6 +297,7 @@
   global.HadithUtils = {
     toPersianDigits: toPersianDigits,
     escapeHTML: escapeHTML,
+    isSafeUrl: isSafeUrl,
     sanitizeHadithList: sanitizeHadithList,
     uniqueValues: uniqueValues,
     filterByField: filterByField,

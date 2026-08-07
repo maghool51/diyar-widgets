@@ -4,6 +4,39 @@ All notable changes to the **Diyar Visitor Widget** are documented in this
 file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] — 2026-08-06
+
+### Added
+
+- **A fully original icon set** (`icons/calendar.svg`, `chart.svg`, `eye.svg`,
+  `globe.svg`, `online.svg`, `favicon.svg`), designed from scratch around a
+  single unifying "Signal" language: a minimal rounded silhouette plus
+  exactly one solid accent dot per icon, representing a visitor data point.
+  Consistent `viewBox="0 0 24 24"`, `stroke-width="1.8"`, round line caps
+  and joins, and `currentColor` throughout. None of the shapes are copied
+  from any icon library.
+- A distinctive `favicon.svg` brand mark — a rounded "D" monogram with an
+  embedded accent dot — replacing the previous generic icon.
+
+### Changed
+
+- The inline SVG sprites in both `index.html` and `embed.js` were migrated
+  to the new icon geometry. Symbol ids (`icon-eye`, `icon-calendar`,
+  `icon-chart`, `icon-globe`, `icon-online`) and everything downstream in
+  `visitor.js` are unchanged — this was a pure visual swap.
+- The standalone files under `icons/` use `currentColor` with an inline
+  `style="color:..."` fallback, so they stay theme-adaptable when used by
+  the sprite while still rendering with a sensible color when viewed
+  standalone (e.g. in a file browser or this README).
+
+### Verified
+
+- Geometry cross-checked programmatically across `icons/*.svg`,
+  `index.html`'s sprite, and `embed.js`'s sprite — confirmed byte-for-byte
+  identical in all three locations for every migrated icon.
+- No hardcoded colors remain inside either sprite; `visitor.js` was not
+  modified.
+
 ## [1.1.0] — 2026-08-03
 
 ### Added
@@ -112,5 +145,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete project scaffolding: `README.md`, `CHANGELOG.md`, MIT `LICENSE`,
   `package.json`, `.gitignore`, and a standalone SVG icon set.
 
-[1.1.0]: https://github.com/diyar-widgets/diyar-widgets/releases/tag/visitor-v1.1.0
-[1.0.0]: https://github.com/diyar-widgets/diyar-widgets/releases/tag/visitor-v1.0.0
+[1.2.0]: https://github.com/maghool51/diyar-widgets/releases/tag/visitor-v1.2.0
+[1.1.0]: https://github.com/maghool51/diyar-widgets/releases/tag/visitor-v1.1.0
+[1.0.0]: https://github.com/maghool51/diyar-widgets/releases/tag/visitor-v1.0.0

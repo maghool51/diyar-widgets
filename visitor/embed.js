@@ -223,34 +223,29 @@
       'focusable="false" data-diyar-visitor-sprite="' + EMBED_VERSION + '">' +
       '<defs>' +
       '<symbol id="icon-eye" viewBox="0 0 24 24" fill="none">' +
-      '<path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
-      '<circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/>' +
+      '<path d="M4 12C4 8.5 7.8 6 12 6C16.2 6 20 8.5 20 12C20 15.5 16.2 18 12 18C7.8 18 4 15.5 4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<circle cx="12" cy="12" r="2.4" fill="currentColor"/>' +
       '</symbol>' +
       '<symbol id="icon-calendar" viewBox="0 0 24 24" fill="none">' +
-      '<rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>' +
-      '<path d="M3 9.5H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-      '<path d="M8 3V6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-      '<path d="M16 3V6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-      '<circle cx="8" cy="13.5" r="1.1" fill="currentColor"/>' +
-      '<circle cx="12" cy="13.5" r="1.1" fill="currentColor"/>' +
-      '<circle cx="16" cy="13.5" r="1.1" fill="currentColor"/>' +
+      '<rect x="4" y="5" width="16" height="15" rx="3.5" stroke="currentColor" stroke-width="1.8"/>' +
+      '<path d="M4 10H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<path d="M8.5 3.5V6.5M15.5 3.5V6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<circle cx="12" cy="15" r="1.6" fill="currentColor"/>' +
       '</symbol>' +
       '<symbol id="icon-globe" viewBox="0 0 24 24" fill="none">' +
-      '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>' +
-      '<path d="M3 12H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-      '<path d="M12 3C14.5 5.7 15.8 8.8 15.8 12C15.8 15.2 14.5 18.3 12 21C9.5 18.3 8.2 15.2 8.2 12C8.2 8.8 9.5 5.7 12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>' +
+      '<circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"/>' +
+      '<path d="M4 12H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<path d="M12 4C15.5 7 15.5 17 12 20C8.5 17 8.5 7 12 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>' +
+      '<circle cx="16.5" cy="7.5" r="1.5" fill="currentColor"/>' +
       '</symbol>' +
       '<symbol id="icon-online" viewBox="0 0 24 24" fill="none">' +
-      '<path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.6394 3.43857 15.1768 4.2 16.5L3 21L7.5 19.8C8.82316 20.5614 10.3606 21 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>' +
-      '<circle cx="9" cy="12" r="1.1" fill="currentColor"/>' +
-      '<circle cx="12" cy="12" r="1.1" fill="currentColor"/>' +
-      '<circle cx="15" cy="12" r="1.1" fill="currentColor"/>' +
+      '<circle cx="11" cy="9" r="3.4" stroke="currentColor" stroke-width="1.8"/>' +
+      '<path d="M5 19.5C5 15.5 7.8 13 11.3 13C12.5 13 13.6 13.3 14.6 13.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<circle cx="17.5" cy="17.5" r="2.7" fill="currentColor"/>' +
       '</symbol>' +
       '<symbol id="icon-chart" viewBox="0 0 24 24" fill="none">' +
-      '<path d="M4 20V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-      '<path d="M10 20V4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-      '<path d="M16 20V13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
-      '<path d="M20.5 8.5L16 13L12.5 9.5L9 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M4 16L9 11L13 14L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<circle cx="20" cy="6" r="1.8" fill="currentColor"/>' +
       '</symbol>' +
       '<symbol id="icon-clock" viewBox="0 0 24 24" fill="none">' +
       '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>' +

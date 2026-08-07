@@ -4,13 +4,13 @@
 visitor statistics — with first-class RTL Persian support, animated theming,
 and zero framework overhead.**
 
-Part of the [`diyar-widgets`](https://github.com/diyar-widgets/diyar-widgets)
+Part of the [`diyar-widgets`](https://github.com/maghool51/diyar-widgets)
 collection. This package lives at `diyar-widgets/visitor`.
 
 ![Diyar Visitor Widget preview](./preview.png)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-4C6EF5.svg)](./LICENSE)
-[![Version](https://img.shields.io/badge/version-1.1.0-7C4DFF.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.0-7C4DFF.svg)](./CHANGELOG.md)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-00A896.svg)](./package.json)
 [![Vanilla JS](https://img.shields.io/badge/JavaScript-ES2023%20Vanilla-2BA84A.svg)](#-code-quality)
 
@@ -98,7 +98,7 @@ directly:
 ### Option 3 — Clone the monorepo
 
 ```bash
-git clone https://github.com/diyar-widgets/diyar-widgets.git
+git clone https://github.com/maghool51/diyar-widgets.git
 cd diyar-widgets/visitor
 npm run serve
 ```
@@ -366,7 +366,7 @@ Contributions are welcome! To propose a change:
 3. Match the existing code style: strict mode, JSDoc on every exported
    function, and CSS custom properties for anything themeable.
 4. Run `npm run format` before committing.
-5. Open a pull request against `diyar-widgets/diyar-widgets` describing
+5. Open a pull request against `maghool51/diyar-widgets` describing
    the motivation and behavior of your change.
 6. Update `CHANGELOG.md` under an `[Unreleased]` heading.
 

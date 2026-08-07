@@ -809,7 +809,7 @@
     this._toastTimer = setTimeout(function (t) { t.classList.remove("diyar-show"); }, 2200, this.toastEl);
   };
 
-  /* ---------- نقشه (Leaflet) با Lazy Loading و مدیریت خطا ---------- */
+  /* ---------- نقشه: انتخاب موتور نقشه (Google Maps Embed یا Leaflet) با Lazy Loading و مدیریت خطا ---------- */
   DiyarMapWidget.prototype.setupLazyMap = function () {
     if (!this.mapEl) return;
     var self = this;
@@ -829,18 +829,98 @@
     observer.observe(this.mapEl);
   };
 
+  /**
+   * نمایش پیام جایگزین نهایی وقتی هیچ موتور نقشه‌ای در دسترس نبود.
+   * ویجت در این حالت هم کاملاً فعال می‌ماند؛ فقط دکمه‌های مسیریابی نمایش داده می‌شوند.
+   */
+  DiyarMapWidget.prototype.showMapFallbackMessage = function () {
+    if (!this.mapEl) return;
+    this.mapEl.innerHTML = "";
+    this.mapEl.appendChild(el("div", { class: "diyar-widget__map-fallback" }, [
+      document.createTextNode("نقشه در دسترس نیست؛ از دکمه‌های مسیریابی زیر استفاده کنید.")
+    ]));
+  };
+
+  /**
+   * نقطه‌ی ورود انتخاب موتور نقشه. طبق config.js → map.provider:
+   * - "google": تلاش برای Google Maps Embed؛ در صورت شکست، به map.fallback
+   *   (پیش‌فرض: "leaflet") سوییچ می‌شود.
+   * - هر مقدار دیگر (یا نبود map در config): همان رفتار قبلی، یعنی Leaflet.
+   * اگر هر دو موتور شکست بخورند، فقط دکمه‌های مسیریابی نمایش داده می‌شوند.
+   */
   DiyarMapWidget.prototype.initMap = function () {
     if (this.mapInitialized) return;
     this.mapInitialized = true;
-    var self = this;
-
-    function showFallback() {
-      if (!self.mapEl) return;
-      self.mapEl.innerHTML = "";
-      self.mapEl.appendChild(el("div", { class: "diyar-widget__map-fallback" }, [
-        document.createTextNode("نقشه در دسترس نیست؛ از دکمه‌های مسیریابی زیر استفاده کنید.")
-      ]));
+    var provider = (this.cfg.map && this.cfg.map.provider) || "leaflet";
+    if (provider === "google") {
+      this.initGoogleEmbedMap();
+    } else {
+      this.initLeafletMap();
     }
+  };
+
+  /**
+   * ساخت آدرس Google Maps Embed.
+   * اولویت با map.googleEmbedUrl (لینک دقیق از «اشتراک‌گذاری → جاسازی نقشه» در
+   * خود گوگل‌مپ؛ این هم بدون API Key کار می‌کند و می‌تواند به یک POI/Place
+   * دقیق اشاره کند). اگر خالی بود، از روی coordinates و بدون هیچ API Key‌ای
+   * ساخته می‌شود (روش رایگان و رسمی output=embed گوگل‌مپ).
+   */
+  DiyarMapWidget.prototype.buildGoogleEmbedUrl = function () {
+    var cfg = this.cfg, m = cfg.map || {};
+    if (typeof m.googleEmbedUrl === "string" && m.googleEmbedUrl.trim()) {
+      return m.googleEmbedUrl.trim();
+    }
+    var c = cfg.coordinates;
+    return "https://maps.google.com/maps?q=" + c.lat + "," + c.lng + "&z=" + (cfg.mapZoom || 15) + "&output=embed";
+  };
+
+  DiyarMapWidget.prototype.initGoogleEmbedMap = function () {
+    if (!this.mapEl) return;
+    var self = this, cfg = this.cfg;
+    var fallbackMode = (cfg.map && cfg.map.fallback) || "leaflet";
+    var settled = false;
+
+    function goFallback(reason) {
+      if (settled) return;
+      settled = true;
+      if (reason) console.warn("[DiyarMapWidget] Google Maps Embed در دسترس نبود (" + reason + ")؛ در حال سوییچ به fallback.");
+      if (fallbackMode === "leaflet") {
+        self.mapInitialized = false; // اجازه بده initMap دوباره موتور Leaflet را راه بیندازد
+        self.initLeafletMap();
+      } else {
+        self.showMapFallbackMessage();
+      }
+    }
+
+    try {
+      this.mapEl.innerHTML = "";
+      var iframe = el("iframe", {
+        class: "diyar-widget__map-iframe",
+        src: this.buildGoogleEmbedUrl(),
+        loading: "lazy",
+        referrerpolicy: "no-referrer-when-downgrade",
+        title: "نقشه‌ی گوگل‌مپ موقعیت " + (cfg.placeName || ""),
+        "aria-label": "نقشه‌ی گوگل‌مپ موقعیت " + (cfg.placeName || "")
+      });
+      iframe.addEventListener("load", function () { settled = true; });
+      iframe.addEventListener("error", function () { goFallback("رویداد error روی iframe"); });
+      this.mapEl.appendChild(iframe);
+
+      // iframeهای cross-origin نمی‌توانند خطای بارگذاری داخل صفحه‌ی گوگل‌مپ را
+      // (مثلاً بلاک‌شدن دامنه توسط فیلترینگ) به جاوااسکریپت گزارش بدهند، پس یک
+      // تایم‌اوت محافظه‌کارانه هم می‌گذاریم: اگر «load» تا ۶ ثانیه شلیک نشد، فرض
+      // می‌کنیم Google Maps در دسترس نیست و به fallback سوییچ می‌کنیم.
+      setTimeout(function () {
+        if (!settled) goFallback("timeout پس از ۶ ثانیه");
+      }, 6000);
+    } catch (e) {
+      goFallback("خطای اجرا: " + (e && e.message));
+    }
+  };
+
+  DiyarMapWidget.prototype.initLeafletMap = function () {
+    var self = this;
 
     if (window.L && window.L.map) {
       this.drawLeafletMap();
@@ -860,18 +940,19 @@
     script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
     script.async = true;
     script.onload = function () {
-      try { self.drawLeafletMap(); } catch (e) { console.warn("[DiyarMapWidget] خطا در رسم نقشه:", e); showFallback(); }
+      try { self.drawLeafletMap(); } catch (e) { console.warn("[DiyarMapWidget] خطا در رسم نقشه:", e); self.showMapFallbackMessage(); }
     };
     script.onerror = function () {
       console.warn("[DiyarMapWidget] بارگذاری Leaflet ناموفق بود؛ نمایش حالت جایگزین.");
-      showFallback();
+      self.showMapFallbackMessage();
     };
     document.body.appendChild(script);
 
-    // اگر پس از ۶ ثانیه هنوز نقشه بارگذاری نشده، به‌صورت خودکار fallback نمایش داده شود
+    // اگر پس از ۶ ثانیه هنوز نقشه بارگذاری نشده، به‌صورت خودکار fallback نمایش داده شود.
+    // (فقط در صورتی که یک نقشه‌ی Leaflet واقعاً با موفقیت رندر شده باشد از این کار صرف‌نظر می‌کنیم)
     setTimeout(function () {
-      if (!window.L || !self.mapEl || self.mapEl.querySelector(".leaflet-container")) return;
-      showFallback();
+      if (self.mapEl && self.mapEl.querySelector(".leaflet-container")) return;
+      self.showMapFallbackMessage();
     }, 6000);
   };
 

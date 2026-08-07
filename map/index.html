@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diyar Map Widget — نقشه، مسیریابی و اشتراک‌گذاری موقعیت</title>
+<meta name="description" content="ویجت نقشه، مسیریابی و اشتراک‌گذاری موقعیت — سازگار با Blogfa و هر وبلاگ استاتیک دیگر">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="widget.css">
+
+<style>
+  body {
+    font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+    background: #f4eff7;
+    margin: 0;
+    padding: 32px 16px;
+    color: #1c1b1f;
+  }
+  .page-wrap { max-width: 640px; margin: 0 auto; }
+  .page-header { text-align: center; margin-bottom: 24px; }
+  .page-header h1 { font-size: 1.5rem; margin-bottom: 6px; }
+  .page-header p { color: #555; font-size: .95rem; }
+  .code-box {
+    background: #1c1b1f;
+    color: #e6e1e5;
+    border-radius: 14px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: .82rem;
+    overflow-x: auto;
+    margin-top: 32px;
+    direction: ltr;
+    text-align: left;
+  }
+  footer { text-align: center; margin-top: 40px; font-size: .8rem; color: #777; }
+  footer a { color: #6750A4; }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <h1>Diyar Map Widget</h1>
+    <p>نمونه‌ی زنده‌ی ویجت نقشه، مسیریابی و اشتراک‌گذاری موقعیت — کاملاً استاتیک و سازگار با Blogfa</p>
+  </div>
+
+  <!-- محل قرارگیری ویجت -->
+  <div id="diyar-map-widget"></div>
+
+  <div class="code-box">
+&lt;div id="diyar-map-widget"&gt;&lt;/div&gt;
+&lt;link rel="stylesheet" href="widget.css"&gt;
+&lt;script src="config.js"&gt;&lt;/script&gt;
+&lt;script src="widget.js"&gt;&lt;/script&gt;
+  </div>
+
+  <footer>
+    برای راهنمای کامل استقرار روی GitHub Pages و استفاده در Blogfa، فایل
+    <a href="README.md">README.md</a> را مطالعه کنید.
+  </footer>
+</div>
+
+<script src="config.js"></script>
+<script src="widget.js"></script>
+</body>
+</html>

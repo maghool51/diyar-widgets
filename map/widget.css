@@ -1,0 +1,250 @@
+/*!
+ * Diyar Map Widget - widget.css
+ * سازگار با Blogfa - بدون وابستگی خارجی (به‌جز فونت وزیرمتن، اختیاری)
+ */
+
+.diyar-widget {
+  --diyar-primary: #6750A4;
+  --diyar-on-primary: #ffffff;
+  --diyar-surface: #fffbfe;
+  --diyar-on-surface: #1c1b1f;
+  --diyar-surface-variant: #f4eff7;
+  --diyar-outline: #79747e;
+  --diyar-radius-lg: 20px;
+  --diyar-radius-md: 14px;
+  --diyar-radius-sm: 10px;
+  --diyar-shadow-1: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+  --diyar-shadow-2: 0 4px 14px rgba(0,0,0,.14), 0 2px 4px rgba(0,0,0,.08);
+  --diyar-font: 'Vazirmatn', Tahoma, Arial, sans-serif;
+
+  direction: rtl;
+  font-family: var(--diyar-font);
+  color: var(--diyar-on-surface);
+  background: var(--diyar-surface);
+  border-radius: var(--diyar-radius-lg);
+  box-shadow: var(--diyar-shadow-1);
+  max-width: 480px;
+  width: 100%;
+  margin: 16px auto;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: box-shadow .25s ease, background-color .3s ease, color .3s ease;
+}
+.diyar-widget * { box-sizing: border-box; }
+.diyar-widget:hover { box-shadow: var(--diyar-shadow-2); }
+
+/* حالت تاریک */
+.diyar-widget.diyar-dark {
+  --diyar-surface: #1c1b1f;
+  --diyar-on-surface: #e6e1e5;
+  --diyar-surface-variant: #2b2930;
+  --diyar-outline: #938f99;
+}
+
+/* تصویر */
+.diyar-widget__image-wrap {
+  width: 100%;
+  aspect-ratio: 16/8;
+  background: var(--diyar-surface-variant);
+  overflow: hidden;
+  position: relative;
+}
+.diyar-widget__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.diyar-widget__image.diyar-loaded { opacity: 1; }
+
+/* بدنه */
+.diyar-widget__body { padding: 16px 18px 18px; }
+
+.diyar-widget__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--diyar-on-surface);
+}
+.diyar-widget__address {
+  font-size: .88rem;
+  color: var(--diyar-outline);
+  margin: 0 0 8px;
+  line-height: 1.6;
+}
+.diyar-widget__desc {
+  font-size: .92rem;
+  line-height: 1.7;
+  margin: 0 0 14px;
+}
+
+/* نقشه */
+.diyar-widget__map {
+  width: 100%;
+  height: 200px;
+  border-radius: var(--diyar-radius-md);
+  overflow: hidden;
+  margin-bottom: 14px;
+  background: var(--diyar-surface-variant);
+  position: relative;
+}
+.diyar-widget__map.diyar-hidden { display: none; }
+.diyar-widget__map-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: .85rem;
+  color: var(--diyar-outline);
+  text-align: center;
+  padding: 8px;
+}
+
+/* فاصله و جهت */
+.diyar-widget__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .85rem;
+  color: var(--diyar-on-surface);
+  background: var(--diyar-surface-variant);
+  border-radius: var(--diyar-radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 14px;
+}
+.diyar-widget__meta.diyar-hidden { display: none; }
+.diyar-widget__direction-arrow {
+  display: inline-flex;
+  transition: transform .3s ease;
+  color: var(--diyar-primary);
+}
+
+/* دکمه‌های مسیریابی */
+.diyar-widget__buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.diyar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 4px;
+  font-family: inherit;
+  font-size: .74rem;
+  font-weight: 600;
+  color: var(--diyar-on-surface);
+  background: var(--diyar-surface-variant);
+  border: 1px solid transparent;
+  border-radius: var(--diyar-radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .15s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.diyar-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+.diyar-btn:hover { background: var(--diyar-primary); color: var(--diyar-on-primary); transform: translateY(-2px); box-shadow: var(--diyar-shadow-1); }
+.diyar-btn:hover svg { color: var(--diyar-on-primary); }
+.diyar-btn:focus-visible {
+  outline: 2px solid var(--diyar-primary);
+  outline-offset: 2px;
+}
+.diyar-btn:active { transform: translateY(0); }
+
+/* ردیف اقدامات ثانویه */
+.diyar-widget__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.diyar-action-btn {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--diyar-primary);
+  background: transparent;
+  border: 1.5px solid var(--diyar-primary);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease;
+}
+.diyar-action-btn svg { width: 16px; height: 16px; }
+.diyar-action-btn:hover { background: var(--diyar-primary); color: var(--diyar-on-primary); }
+.diyar-action-btn:focus-visible { outline: 2px solid var(--diyar-primary); outline-offset: 2px; }
+
+/* QR Code */
+.diyar-widget__qr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--diyar-surface-variant);
+  border-radius: var(--diyar-radius-sm);
+}
+.diyar-widget__qr.diyar-hidden { display: none; }
+.diyar-widget__qr canvas { border-radius: 6px; background: #fff; }
+.diyar-widget__qr-text { font-size: .78rem; color: var(--diyar-outline); }
+
+/* Toast */
+.diyar-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--diyar-on-surface);
+  color: var(--diyar-surface);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: .85rem;
+  box-shadow: var(--diyar-shadow-2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999999;
+}
+.diyar-toast.diyar-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* اسکلت بارگذاری (Lazy) */
+.diyar-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  color: var(--diyar-outline);
+  font-size: .85rem;
+}
+
+.diyar-widget__error {
+  padding: 14px;
+  font-size: .85rem;
+  color: #b3261e;
+  background: #fdecea;
+  border-radius: var(--diyar-radius-sm);
+  margin: 0 18px 16px;
+}
+
+/* واکنش‌گرا */
+@media (max-width: 380px) {
+  .diyar-widget__buttons { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* احترام به کاربرانی که کاهش انیمیشن می‌خواهند */
+@media (prefers-reduced-motion: reduce) {
+  .diyar-widget, .diyar-widget *, .diyar-toast { transition: none !important; }
+}

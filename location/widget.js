@@ -672,19 +672,53 @@
     return "https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng;
   };
 
-  DiyarMapWidget.prototype.getRouteButtons = function () {
-    var cfg = this.cfg, c = cfg.coordinates, btns = cfg.buttons || {};
-    var name = encodeURIComponent(cfg.placeName || "");
-    var all = [
-      { key: "googleMaps", label: "گوگل‌مپ", icon: ICONS.googleMaps, url: "https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng },
-      { key: "googleNavigation", label: "مسیریابی گوگل", icon: ICONS.googleNavigation, url: "https://www.google.com/maps/dir/?api=1&destination=" + c.lat + "," + c.lng + "&travelmode=driving" },
-      { key: "waze", label: "ویز", icon: ICONS.waze, url: "https://waze.com/ul?ll=" + c.lat + "," + c.lng + "&navigate=yes" },
-      { key: "neshan", label: "نشان", icon: ICONS.neshan, url: "https://neshan.org/maps?zoom=16&lat=" + c.lat + "&lng=" + c.lng },
-      { key: "balad", label: "بلد", icon: ICONS.balad, url: "https://balad.ir/routing?lat=" + c.lat + "&lng=" + c.lng },
-      { key: "appleMaps", label: "اپل‌مپ", icon: ICONS.appleMaps, url: "https://maps.apple.com/?q=" + name + "&ll=" + c.lat + "," + c.lng }
-    ];
-    return all.filter(function (b) { return btns[b.key] !== false; });
-  };
+DiyarMapWidget.prototype.getRouteButtons = function () {
+  var cfg = this.cfg, c = cfg.coordinates, btns = cfg.buttons || {};
+  var name = encodeURIComponent(cfg.placeName || "");
+
+  var all = [
+    {
+      key: "googleMaps",
+      label: "گوگل‌مپ",
+      icon: ICONS.googleMaps,
+      url: "https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng
+    },
+    {
+      key: "googleNavigation",
+      label: "مسیریابی گوگل",
+      icon: ICONS.googleNavigation,
+      url: "https://www.google.com/maps/dir/?api=1&destination=" + c.lat + "," + c.lng + "&travelmode=driving"
+    },
+    {
+      key: "waze",
+      label: "ویز",
+      icon: ICONS.waze,
+      url: "https://waze.com/ul?ll=" + c.lat + "," + c.lng + "&navigate=yes"
+    },
+    {
+      key: "neshan",
+      label: "نشان",
+      icon: ICONS.neshan,
+      url: "https://neshan.org/maps?zoom=16&lat=" + c.lat + "&lng=" + c.lng
+    },
+    {
+      key: "balad",
+      label: "بلد",
+      icon: ICONS.balad,
+      url: "https://balad.ir/mapp?lat=" + c.lat + "&lng=" + c.lng + "&zoom=16"
+    },
+    {
+      key: "appleMaps",
+      label: "اپل‌مپ",
+      icon: ICONS.appleMaps,
+      url: "https://maps.apple.com/?q=" + name + "&ll=" + c.lat + "," + c.lng
+    }
+  ];
+
+  return all.filter(function (b) {
+    return btns[b.key] !== false;
+  });
+};
 
   DiyarMapWidget.prototype.handleShare = function () {
     var cfg = this.cfg, self = this;

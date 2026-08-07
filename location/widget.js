@@ -516,7 +516,8 @@
     share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-3.8M8.6 13.5l6.8 3.8"/></svg>',
     copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>',
     pin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg>',
-    arrow: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L4.5 20 12 16l7.5 4z"/></svg>'
+    arrow: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L4.5 20 12 16l7.5 4z"/></svg>',
+    myLocation: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>'
   };
 
   /* ============================================================
@@ -645,6 +646,14 @@
         self.handleCopy(cfg.coordinates.lat + ", " + cfg.coordinates.lng, labels.copySuccess);
       }
     }));
+    if (cfg.features && cfg.features.showMyLocationShare !== false && "geolocation" in navigator) {
+      actions.appendChild(el("button", {
+        type: "button",
+        class: "diyar-action-btn",
+        html: ICONS.myLocation + "<span>" + (labels.shareMyLocation || "اشتراک‌گذاری موقعیت من") + "</span>",
+        onclick: function () { self.handleShareMyLocation(); }
+      }));
+    }
     body.appendChild(actions);
 
     // QR Code
@@ -672,53 +681,72 @@
     return "https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng;
   };
 
-DiyarMapWidget.prototype.getRouteButtons = function () {
-  var cfg = this.cfg, c = cfg.coordinates, btns = cfg.buttons || {};
-  var name = encodeURIComponent(cfg.placeName || "");
+  /**
+   * سیستم ساخت لینک مسیریابی با اولویت:
+   * ۱) اگر در config.js یک لینک اختصاصی در routes[key] داده شده باشد، همان استفاده می‌شود.
+   * ۲) در غیر این‌صورت، در صورت وجود یک فرمت رسمی و مطمئن، لینک از روی مختصات ساخته می‌شود.
+   * ۳) اگر هیچ‌کدام از این دو ممکن نبود (مثل بلد که فرمت رسمی و قابل‌اتکایی برای
+   *    ساخت لینک از روی مختصات ندارد)، آن دکمه اصلاً نمایش داده نمی‌شود —
+   *    هرگز یک لینک حدسی/شکسته تولید نمی‌شود.
+   */
+  DiyarMapWidget.prototype.getRouteButtons = function () {
+    var cfg = this.cfg, c = cfg.coordinates, btns = cfg.buttons || {}, routes = cfg.routes || {};
+    var name = encodeURIComponent(cfg.placeName || "");
 
-  var all = [
-    {
-      key: "googleMaps",
-      label: "گوگل‌مپ",
-      icon: ICONS.googleMaps,
-      url: "https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng
-    },
-    {
-      key: "googleNavigation",
-      label: "مسیریابی گوگل",
-      icon: ICONS.googleNavigation,
-      url: "https://www.google.com/maps/dir/?api=1&destination=" + c.lat + "," + c.lng + "&travelmode=driving"
-    },
-    {
-      key: "waze",
-      label: "ویز",
-      icon: ICONS.waze,
-      url: "https://waze.com/ul?ll=" + c.lat + "," + c.lng + "&navigate=yes"
-    },
-    {
-      key: "neshan",
-      label: "نشان",
-      icon: ICONS.neshan,
-      url: "https://neshan.org/maps?zoom=16&lat=" + c.lat + "&lng=" + c.lng
-    },
-    {
-      key: "balad",
-      label: "بلد",
-      icon: ICONS.balad,
-      url: "https://balad.ir/mapp?lat=" + c.lat + "&lng=" + c.lng + "&zoom=16"
-    },
-    {
-      key: "appleMaps",
-      label: "اپل‌مپ",
-      icon: ICONS.appleMaps,
-      url: "https://maps.apple.com/?q=" + name + "&ll=" + c.lat + "," + c.lng
+    function customOrNull(key) {
+      var v = routes[key];
+      return (typeof v === "string" && v.trim()) ? v.trim() : null;
     }
-  ];
 
-  return all.filter(function (b) {
-    return btns[b.key] !== false;
-  });
-};
+    var all = [
+      {
+        key: "googleMaps",
+        label: "گوگل‌مپ",
+        icon: ICONS.googleMaps,
+        url: customOrNull("google") || ("https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng)
+      },
+      {
+        key: "googleNavigation",
+        label: "مسیریابی گوگل",
+        icon: ICONS.googleNavigation,
+        url: customOrNull("navigation") || ("https://www.google.com/maps/dir/?api=1&destination=" + c.lat + "," + c.lng + "&travelmode=driving")
+      },
+      {
+        key: "waze",
+        label: "ویز",
+        icon: ICONS.waze,
+        url: customOrNull("waze") || ("https://waze.com/ul?ll=" + c.lat + "," + c.lng + "&navigate=yes")
+      },
+      {
+        // فرمت رسمی نشان طبق مستندات platform.neshan.org/api/ برای نمایش یک نقطه:
+        // https://nshn.ir/?lat=..&lng=.. (فرمت قبلی neshan.org/maps?... رسمی نبود و ۴۰۴ می‌داد)
+        key: "neshan",
+        label: "نشان",
+        icon: ICONS.neshan,
+        url: customOrNull("neshan") || ("https://nshn.ir/?lat=" + c.lat + "&lng=" + c.lng)
+      },
+      {
+        // بلد فرمت رسمی و مستندی برای ساخت لینک از روی مختصات ندارد (اشتراک‌گذاری
+        // در اپ بلد از طریق توکن کوتاه تصادفی انجام می‌شود، نه یک الگوی URL قابل پیش‌بینی).
+        // به همین دلیل این دکمه فقط زمانی ساخته می‌شود که یک لینک واقعی در
+        // routes.balad داده شده باشد (از داخل اپ بلد → دکمه اشتراک‌گذاری → کپی لینک).
+        key: "balad",
+        label: "بلد",
+        icon: ICONS.balad,
+        url: customOrNull("balad")
+      },
+      {
+        key: "appleMaps",
+        label: "اپل‌مپ",
+        icon: ICONS.appleMaps,
+        url: customOrNull("apple") || ("https://maps.apple.com/?q=" + name + "&ll=" + c.lat + "," + c.lng)
+      }
+    ];
+
+    return all.filter(function (b) {
+      return btns[b.key] !== false && !!b.url;
+    });
+  };
 
   DiyarMapWidget.prototype.handleShare = function () {
     var cfg = this.cfg, self = this;
@@ -732,6 +760,33 @@ DiyarMapWidget.prototype.getRouteButtons = function () {
     } else {
       this.handleCopy(shareData.url, (cfg.labels && cfg.labels.copySuccess));
     }
+  };
+
+  /**
+   * اشتراک‌گذاری موقعیت فعلی خود کاربر (نه مقصد ویجت).
+   * حریم خصوصی: موقعیت هرگز ذخیره یا به هیچ سروری ارسال نمی‌شود؛ فقط با
+   * اجازه‌ی لحظه‌ای مرورگر خوانده و بلافاصله در قالب لینک به اشتراک گذاشته می‌شود.
+   */
+  DiyarMapWidget.prototype.handleShareMyLocation = function () {
+    var self = this, labels = this.cfg.labels || {};
+    if (!("geolocation" in navigator)) {
+      this.showToast(labels.locationUnsupported || "مرورگر شما از موقعیت‌یابی پشتیبانی نمی‌کند.");
+      return;
+    }
+    this.showToast(labels.locationLoading || "در حال دریافت موقعیت شما…");
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      var lat = pos.coords.latitude, lng = pos.coords.longitude;
+      var url = "https://www.google.com/maps?q=" + lat + "," + lng;
+      var text = (labels.myLocationText || "📍 موقعیت فعلی من:") + "\n" + url;
+      if (navigator.share) {
+        navigator.share({ title: labels.myLocationText || "موقعیت فعلی من", text: text, url: url })
+          .catch(function () { /* کاربر لغو کرد؛ نیازی به اقدام نیست */ });
+      } else {
+        self.handleCopy(url, labels.copySuccess);
+      }
+    }, function () {
+      self.showToast(labels.locationDenied || "برای اشتراک‌گذاری موقعیت، اجازه دسترسی مکانی را فعال کنید.");
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
   };
 
   DiyarMapWidget.prototype.handleCopy = function (text, successMsg) {

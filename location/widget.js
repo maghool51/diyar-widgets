@@ -726,20 +726,7 @@
         this.pickerCoordsEl
       ]);
 
-      this.pickerGoogleLink = el("a", {
-        class: "diyar-action-btn",
-        target: "_blank",
-        rel: "noopener noreferrer",
-        href: "#",
-        html: ICONS.googleMaps + "<span>" + (labels.pointPickerOpenGoogle || "باز کردن در Google Maps") + "</span>"
-      });
-      this.pickerRouteLink = el("a", {
-        class: "diyar-action-btn",
-        target: "_blank",
-        rel: "noopener noreferrer",
-        href: "#",
-        html: ICONS.googleNavigation + "<span>" + (labels.pointPickerRoute || "مسیریابی به این نقطه") + "</span>"
-      });
+      this.pickerRoutesWrap = el("div", { class: "diyar-widget__buttons diyar-picker-routes diyar-hidden" });
       var pickerShareBtn = el("button", {
         type: "button",
         class: "diyar-action-btn",
@@ -753,7 +740,7 @@
         onclick: function () { self.handleCopyPointCoords(); }
       });
       this.pickerActionsWrap = el("div", { class: "diyar-widget__actions diyar-picker-actions diyar-hidden" }, [
-        pickerShareBtn, pickerCopyBtn, this.pickerGoogleLink, this.pickerRouteLink
+        pickerShareBtn, pickerCopyBtn
       ]);
 
       var pickerHintText = labels.pointPickerHint || "برای انتخاب نقطه، روی نقشه کلیک کنید";
@@ -774,7 +761,7 @@
         ]);
       }
 
-      var pickerPanelChildren = [this.pickerMapEl, this.pickerInfoWrap, this.pickerActionsWrap];
+      var pickerPanelChildren = [this.pickerMapEl, this.pickerInfoWrap, this.pickerRoutesWrap, this.pickerActionsWrap];
       if (this.pickerQrWrap) pickerPanelChildren.push(this.pickerQrWrap);
       this.pickerPanel = el("div", { class: "diyar-picker-panel diyar-hidden" }, pickerPanelChildren);
 
@@ -857,6 +844,60 @@
     return all.filter(function (b) {
       return btns[b.key] !== false && !!b.url;
     });
+  };
+
+  /**
+   * همان منطق getRouteButtons ولی برای یک نقطه‌ی دلخواه (lat/lng دلخواه، نه
+   * لزوماً مقصد اصلی ویجت). برای گوگل‌مپ/مسیریابی‌گوگل/اپل‌مپ/نشان همیشه از
+   * فرمول رسمی همان سرویس روی مختصات نقطه استفاده می‌شود (این سرویس‌ها فرمت
+   * رسمی مبتنی بر مختصات دارند، پس برای هر نقطه‌ی دلخواهی هم معتبرند).
+   * بلد استثناست: چون فرمت رسمی مبتنی بر مختصات ندارد، فقط زمانی در فهرست
+   * نقطه ظاهر می‌شود که routes.balad یک لینک واقعی و دستی باشد؛ در غیر
+   * این‌صورت اصلاً نمایش داده نمی‌شود (برخلاف ردیف مسیریابی مکان اصلی، این‌جا
+   * هدایت به صفحه‌ی عمومی balad.ir برای «این نقطه‌ی خاص» بی‌معنی است، پس
+   * ترجیح داده شد اصلاً نمایش داده نشود تا گمراه‌کننده نباشد).
+   */
+  DiyarMapWidget.prototype.getPointRouteButtons = function (lat, lng) {
+    var cfg = this.cfg, routes = cfg.routes || {};
+
+    function customOrNull(key) {
+      var v = routes[key];
+      return (typeof v === "string" && v.trim()) ? v.trim() : null;
+    }
+
+    var all = [
+      {
+        key: "googleMaps",
+        label: "گوگل‌مپ",
+        icon: ICONS.googleMaps,
+        url: "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng
+      },
+      {
+        key: "googleNavigation",
+        label: "مسیریابی گوگل",
+        icon: ICONS.googleNavigation,
+        url: "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lng + "&travelmode=driving"
+      },
+      {
+        key: "appleMaps",
+        label: "اپل‌مپ",
+        icon: ICONS.appleMaps,
+        url: "https://maps.apple.com/?ll=" + lat + "," + lng
+      },
+      {
+        key: "neshan",
+        label: "نشان",
+        icon: ICONS.neshan,
+        url: "https://nshn.ir/?lat=" + lat + "&lng=" + lng
+      }
+    ];
+
+    var baladLink = customOrNull("balad");
+    if (baladLink) {
+      all.push({ key: "balad", label: "بلد", icon: ICONS.balad, url: baladLink });
+    }
+
+    return all;
   };
 
   DiyarMapWidget.prototype.handleShare = function () {
@@ -1193,7 +1234,6 @@
     this.pickerMarker = window.L.marker([lat, lng]).addTo(this.pickerMap);
 
     var mapsLink = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng;
-    var routeLink = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lng + "&travelmode=driving";
 
     if (this.pickerCoordsEl) {
       this.pickerCoordsEl.innerHTML = "";
@@ -1201,8 +1241,22 @@
     }
     if (this.pickerInfoWrap) this.pickerInfoWrap.classList.remove("diyar-hidden");
     if (this.pickerActionsWrap) this.pickerActionsWrap.classList.remove("diyar-hidden");
-    if (this.pickerGoogleLink) this.pickerGoogleLink.setAttribute("href", mapsLink);
-    if (this.pickerRouteLink) this.pickerRouteLink.setAttribute("href", routeLink);
+
+    if (this.pickerRoutesWrap) {
+      this.pickerRoutesWrap.innerHTML = "";
+      var self = this;
+      this.getPointRouteButtons(lat, lng).forEach(function (b) {
+        self.pickerRoutesWrap.appendChild(el("a", {
+          class: "diyar-btn",
+          href: b.url,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          "aria-label": b.label,
+          html: b.icon + "<span>" + b.label + "</span>"
+        }));
+      });
+      this.pickerRoutesWrap.classList.remove("diyar-hidden");
+    }
 
     if (this.pickerQrWrap && this.pickerQrCanvas) {
       this.pickerQrWrap.classList.remove("diyar-hidden");

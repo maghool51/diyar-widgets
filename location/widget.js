@@ -503,6 +503,39 @@
     });
   }
 
+  /**
+   * بارگذاری مشترک Leaflet (CSS+JS از CDN)، هم برای نقشه‌ی اصلی (در حالت
+   * fallback) و هم برای نقشه‌ی «انتخاب نقطه‌ی دلخواه» استفاده می‌شود؛ اگر
+   * Leaflet قبلاً بارگذاری شده یا در حال بارگذاری باشد، دوباره درخواست
+   * نمی‌شود. onReady/onFail حداکثر یک‌بار صدا زده می‌شوند.
+   */
+  function ensureLeaflet(onReady, onFail) {
+    if (window.L && window.L.map) { onReady(); return; }
+
+    if (!document.getElementById("diyar-leaflet-css")) {
+      var link = document.createElement("link");
+      link.id = "diyar-leaflet-css";
+      link.rel = "stylesheet";
+      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      document.head.appendChild(link);
+    }
+
+    var existing = document.getElementById("diyar-leaflet-js");
+    if (existing) {
+      existing.addEventListener("load", onReady);
+      existing.addEventListener("error", function () { onFail && onFail(); });
+      return;
+    }
+
+    var script = document.createElement("script");
+    script.id = "diyar-leaflet-js";
+    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    script.async = true;
+    script.onload = onReady;
+    script.onerror = function () { onFail && onFail(); };
+    document.body.appendChild(script);
+  }
+
   /* ============================================================
    * 3) آیکون‌های SVG
    * ============================================================ */
@@ -654,9 +687,20 @@
         onclick: function () { self.handleShareMyLocation(); }
       }));
     }
+    if (cfg.features && cfg.features.showPointPicker !== false) {
+      this.pickerToggleBtn = el("button", {
+        type: "button",
+        class: "diyar-action-btn",
+        "aria-pressed": "false",
+        "aria-expanded": "false",
+        html: ICONS.pin + "<span>" + (labels.pointPickerToggle || "انتخاب نقطه روی نقشه") + "</span>",
+        onclick: function () { self.togglePointPicker(); }
+      });
+      actions.appendChild(this.pickerToggleBtn);
+    }
     body.appendChild(actions);
 
-    // QR Code
+    // QR Code (مکان اصلی)
     if (cfg.features && cfg.features.showQRCode !== false) {
       var qrCanvas = el("canvas", { width: "96", height: "96", "aria-hidden": "true" });
       this.qrWrap = el("div", { class: "diyar-widget__qr" }, [
@@ -672,6 +716,71 @@
       }
     }
 
+    // بخش «اشتراک‌گذاری نقطه‌ی دلخواه» — کاملاً مستقل از نقشه‌ی اصلی (که ممکن
+    // است Google Maps Embed باشد)؛ همیشه با یک نقشه‌ی Leaflet/OpenStreetMap
+    // جداگانه کار می‌کند تا هیچ تلاشی برای خواندن کلیک از داخل iframe گوگل لازم نباشد.
+    if (cfg.features && cfg.features.showPointPicker !== false) {
+      this.pickerCoordsEl = el("span", { class: "diyar-picker-coords" });
+      this.pickerInfoWrap = el("div", { class: "diyar-picker-info diyar-hidden", "aria-live": "polite" }, [
+        document.createTextNode((labels.pointPickerCoordsPrefix || "مختصات نقطه‌ی انتخاب‌شده:") + " "),
+        this.pickerCoordsEl
+      ]);
+
+      this.pickerGoogleLink = el("a", {
+        class: "diyar-action-btn",
+        target: "_blank",
+        rel: "noopener noreferrer",
+        href: "#",
+        html: ICONS.googleMaps + "<span>" + (labels.pointPickerOpenGoogle || "باز کردن در Google Maps") + "</span>"
+      });
+      this.pickerRouteLink = el("a", {
+        class: "diyar-action-btn",
+        target: "_blank",
+        rel: "noopener noreferrer",
+        href: "#",
+        html: ICONS.googleNavigation + "<span>" + (labels.pointPickerRoute || "مسیریابی به این نقطه") + "</span>"
+      });
+      var pickerShareBtn = el("button", {
+        type: "button",
+        class: "diyar-action-btn",
+        html: ICONS.share + "<span>" + (labels.pointPickerShare || "اشتراک‌گذاری نقطه") + "</span>",
+        onclick: function () { self.handleSharePoint(); }
+      });
+      var pickerCopyBtn = el("button", {
+        type: "button",
+        class: "diyar-action-btn",
+        html: ICONS.copy + "<span>" + (labels.pointPickerCopy || "کپی مختصات") + "</span>",
+        onclick: function () { self.handleCopyPointCoords(); }
+      });
+      this.pickerActionsWrap = el("div", { class: "diyar-widget__actions diyar-picker-actions diyar-hidden" }, [
+        pickerShareBtn, pickerCopyBtn, this.pickerGoogleLink, this.pickerRouteLink
+      ]);
+
+      var pickerHintText = labels.pointPickerHint || "برای انتخاب نقطه، روی نقشه کلیک کنید";
+      this.pickerMapEl = el("div", {
+        class: "diyar-widget__map diyar-picker-map",
+        id: cfg.containerId + "-picker-map",
+        role: "img",
+        "aria-label": pickerHintText
+      }, [el("div", { class: "diyar-skeleton" }, [document.createTextNode(pickerHintText)])]);
+
+      var pickerQrCanvas = null;
+      if (cfg.features && cfg.features.showQRCode !== false) {
+        pickerQrCanvas = el("canvas", { width: "96", height: "96", "aria-hidden": "true" });
+        this.pickerQrCanvas = pickerQrCanvas;
+        this.pickerQrWrap = el("div", { class: "diyar-widget__qr diyar-hidden" }, [
+          pickerQrCanvas,
+          el("span", { class: "diyar-widget__qr-text" }, [document.createTextNode(labels.pointPickerQrTitle || "اسکن نقطه‌ی انتخاب‌شده")])
+        ]);
+      }
+
+      var pickerPanelChildren = [this.pickerMapEl, this.pickerInfoWrap, this.pickerActionsWrap];
+      if (this.pickerQrWrap) pickerPanelChildren.push(this.pickerQrWrap);
+      this.pickerPanel = el("div", { class: "diyar-picker-panel diyar-hidden" }, pickerPanelChildren);
+
+      body.appendChild(el("div", { class: "diyar-widget__point-picker" }, [this.pickerPanel]));
+    }
+
     this.container.appendChild(body);
     this.container.appendChild(el("div", { class: "diyar-widget__error diyar-hidden" }));
   };
@@ -685,9 +794,13 @@
    * سیستم ساخت لینک مسیریابی با اولویت:
    * ۱) اگر در config.js یک لینک اختصاصی در routes[key] داده شده باشد، همان استفاده می‌شود.
    * ۲) در غیر این‌صورت، در صورت وجود یک فرمت رسمی و مطمئن، لینک از روی مختصات ساخته می‌شود.
-   * ۳) اگر هیچ‌کدام از این دو ممکن نبود (مثل بلد که فرمت رسمی و قابل‌اتکایی برای
-   *    ساخت لینک از روی مختصات ندارد)، آن دکمه اصلاً نمایش داده نمی‌شود —
-   *    هرگز یک لینک حدسی/شکسته تولید نمی‌شود.
+   * ۳) بلد استثناست: هیچ فرمت رسمی/مستندی برای ساخت لینک از روی مختصات دلخواه
+   *    ندارد (اشتراک‌گذاری در اپ بلد یک توکن کوتاه تصادفی تولید می‌کند که از
+   *    قبل قابل پیش‌بینی نیست). به همین دلیل این‌جا هرگز یک URL حدسی مبتنی بر
+   *    مختصات برای بلد ساخته نمی‌شود. اگر routes.balad خالی باشد، دکمه‌ی بلد
+   *    باز هم نمایش داده می‌شود ولی به آدرس رسمی و همیشه‌معتبر balad.ir
+   *    (نه یک لینک ساختگی برای این مکان خاص) هدایت می‌کند تا کاربر بتواند
+   *    خودش داخل اپ/سایت بلد این مکان را جست‌وجو کند.
    */
   DiyarMapWidget.prototype.getRouteButtons = function () {
     var cfg = this.cfg, c = cfg.coordinates, btns = cfg.buttons || {}, routes = cfg.routes || {};
@@ -703,13 +816,13 @@
         key: "googleMaps",
         label: "گوگل‌مپ",
         icon: ICONS.googleMaps,
-        url: customOrNull("google") || ("https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng)
+        url: customOrNull("googleMaps") || ("https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng)
       },
       {
         key: "googleNavigation",
         label: "مسیریابی گوگل",
         icon: ICONS.googleNavigation,
-        url: customOrNull("navigation") || ("https://www.google.com/maps/dir/?api=1&destination=" + c.lat + "," + c.lng + "&travelmode=driving")
+        url: customOrNull("googleNavigation") || ("https://www.google.com/maps/dir/?api=1&destination=" + c.lat + "," + c.lng + "&travelmode=driving")
       },
       {
         key: "waze",
@@ -726,20 +839,18 @@
         url: customOrNull("neshan") || ("https://nshn.ir/?lat=" + c.lat + "&lng=" + c.lng)
       },
       {
-        // بلد فرمت رسمی و مستندی برای ساخت لینک از روی مختصات ندارد (اشتراک‌گذاری
-        // در اپ بلد از طریق توکن کوتاه تصادفی انجام می‌شود، نه یک الگوی URL قابل پیش‌بینی).
-        // به همین دلیل این دکمه فقط زمانی ساخته می‌شود که یک لینک واقعی در
-        // routes.balad داده شده باشد (از داخل اپ بلد → دکمه اشتراک‌گذاری → کپی لینک).
+        // توضیح کامل بالای تابع: بدون routes.balad معتبر، به آدرس رسمی balad.ir
+        // (نه یک لینک ساختگی مخصوص این مکان) هدایت می‌شود؛ هرگز ۴۰۴ نمی‌دهد.
         key: "balad",
         label: "بلد",
         icon: ICONS.balad,
-        url: customOrNull("balad")
+        url: customOrNull("balad") || "https://balad.ir/"
       },
       {
         key: "appleMaps",
         label: "اپل‌مپ",
         icon: ICONS.appleMaps,
-        url: customOrNull("apple") || ("https://maps.apple.com/?q=" + name + "&ll=" + c.lat + "," + c.lng)
+        url: customOrNull("appleMaps") || ("https://maps.apple.com/?q=" + name + "&ll=" + c.lat + "," + c.lng)
       }
     ];
 
@@ -922,33 +1033,15 @@
   DiyarMapWidget.prototype.initLeafletMap = function () {
     var self = this;
 
-    if (window.L && window.L.map) {
-      this.drawLeafletMap();
-      return;
-    }
-
-    // بارگذاری CSS
-    if (!document.getElementById("diyar-leaflet-css")) {
-      var link = document.createElement("link");
-      link.id = "diyar-leaflet-css";
-      link.rel = "stylesheet";
-      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-      document.head.appendChild(link);
-    }
-
-    var script = document.createElement("script");
-    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-    script.async = true;
-    script.onload = function () {
+    ensureLeaflet(function () {
       try { self.drawLeafletMap(); } catch (e) { console.warn("[DiyarMapWidget] خطا در رسم نقشه:", e); self.showMapFallbackMessage(); }
-    };
-    script.onerror = function () {
+    }, function () {
       console.warn("[DiyarMapWidget] بارگذاری Leaflet ناموفق بود؛ نمایش حالت جایگزین.");
       self.showMapFallbackMessage();
-    };
-    document.body.appendChild(script);
+    });
 
-    // اگر پس از ۶ ثانیه هنوز نقشه بارگذاری نشده، به‌صورت خودکار fallback نمایش داده شود.
+    // اگر پس از ۶ ثانیه هنوز نقشه بارگذاری نشده (مثلاً اسکریپت گیر کرده و نه
+    // load نه error شلیک شده)، به‌صورت خودکار fallback نمایش داده شود.
     // (فقط در صورتی که یک نقشه‌ی Leaflet واقعاً با موفقیت رندر شده باشد از این کار صرف‌نظر می‌کنیم)
     setTimeout(function () {
       if (self.mapEl && self.mapEl.querySelector(".leaflet-container")) return;
@@ -1012,6 +1105,134 @@
       arrow.style.transform = "rotate(" + bearing + "deg)";
       this.metaEl.appendChild(arrow);
     }
+  };
+
+  /* ---------- اشتراک‌گذاری «نقطه‌ی دلخواه» — نقشه‌ی مستقل Leaflet/OpenStreetMap ---------- */
+
+  /**
+   * باز/بسته کردن پنل انتخاب نقطه. نقشه‌ی این بخش کاملاً از نقشه‌ی اصلی
+   * (که ممکن است Google Maps Embed داخل iframe باشد) جداست؛ چون به دلایل
+   * Cross-Origin نمی‌توان کلیک داخل iframe گوگل را با جاوااسکریپت خواند،
+   * این بخش همیشه با یک نقشه‌ی Leaflet/OpenStreetمستقل کار می‌کند.
+   */
+  DiyarMapWidget.prototype.togglePointPicker = function () {
+    if (!this.pickerPanel) return;
+    var isHidden = this.pickerPanel.classList.contains("diyar-hidden");
+    if (isHidden) {
+      this.pickerPanel.classList.remove("diyar-hidden");
+      if (this.pickerToggleBtn) {
+        this.pickerToggleBtn.setAttribute("aria-pressed", "true");
+        this.pickerToggleBtn.setAttribute("aria-expanded", "true");
+      }
+      this.initPointPickerMap();
+    } else {
+      this.pickerPanel.classList.add("diyar-hidden");
+      if (this.pickerToggleBtn) {
+        this.pickerToggleBtn.setAttribute("aria-pressed", "false");
+        this.pickerToggleBtn.setAttribute("aria-expanded", "false");
+      }
+    }
+  };
+
+  DiyarMapWidget.prototype.showPickerMapFallback = function () {
+    if (!this.pickerMapEl || this.pickerMap) return; // اگر خودِ نقشه موفق شده، دست نمی‌زنیم
+    this.pickerMapEl.innerHTML = "";
+    this.pickerMapEl.appendChild(el("div", { class: "diyar-widget__map-fallback" }, [
+      document.createTextNode("نقشه‌ی انتخاب نقطه در دسترس نیست؛ دوباره تلاش کنید.")
+    ]));
+  };
+
+  DiyarMapWidget.prototype.initPointPickerMap = function () {
+    if (this.pickerMapInitialized || !this.pickerMapEl) return;
+    this.pickerMapInitialized = true;
+    var self = this, cfg = this.cfg, c = cfg.coordinates;
+
+    ensureLeaflet(function () {
+      try {
+        self.pickerMapEl.innerHTML = "";
+        self.pickerMap = window.L.map(self.pickerMapEl, {
+          center: [c.lat, c.lng],
+          zoom: cfg.mapZoom || 15,
+          scrollWheelZoom: false
+        });
+        window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: "&copy; مشارکت‌کنندگان OpenStreetMap"
+        }).addTo(self.pickerMap);
+        self.pickerMap.on("click", function (e) {
+          self.setPickedPoint(e.latlng.lat, e.latlng.lng);
+        });
+      } catch (e) {
+        console.warn("[DiyarMapWidget] خطا در راه‌اندازی نقشه‌ی انتخاب نقطه:", e);
+        self.showPickerMapFallback();
+      }
+    }, function () {
+      console.warn("[DiyarMapWidget] بارگذاری Leaflet برای انتخاب نقطه ناموفق بود.");
+      self.showPickerMapFallback();
+    });
+
+    // اگر پس از ۶ ثانیه نقشه‌ی انتخاب نقطه راه‌اندازی نشد (اسکریپت گیر کرده)، پیام جایگزین نشان بده
+    setTimeout(function () {
+      if (self.pickerMap) return; // موفق بود
+      self.showPickerMapFallback();
+    }, 6000);
+  };
+
+  /**
+   * ثبت نقطه‌ی انتخاب‌شده توسط کاربر روی نقشه‌ی مستقل، به‌همراه به‌روزرسانی
+   * Marker، نمایش مختصات، فعال‌سازی دکمه‌های اقدام و (در صورت فعال بودن) QR.
+   * هیچ نقطه‌ای ذخیره یا به سروری ارسال نمی‌شود؛ فقط در حافظه‌ی همین صفحه می‌ماند.
+   */
+  DiyarMapWidget.prototype.setPickedPoint = function (lat, lng) {
+    if (!this.pickerMap || !window.L) return;
+    this.pickedPoint = { lat: lat, lng: lng };
+
+    if (this.pickerMarker) {
+      this.pickerMap.removeLayer(this.pickerMarker);
+    }
+    this.pickerMarker = window.L.marker([lat, lng]).addTo(this.pickerMap);
+
+    var mapsLink = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng;
+    var routeLink = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lng + "&travelmode=driving";
+
+    if (this.pickerCoordsEl) {
+      this.pickerCoordsEl.innerHTML = "";
+      this.pickerCoordsEl.appendChild(document.createTextNode(lat.toFixed(6) + ", " + lng.toFixed(6)));
+    }
+    if (this.pickerInfoWrap) this.pickerInfoWrap.classList.remove("diyar-hidden");
+    if (this.pickerActionsWrap) this.pickerActionsWrap.classList.remove("diyar-hidden");
+    if (this.pickerGoogleLink) this.pickerGoogleLink.setAttribute("href", mapsLink);
+    if (this.pickerRouteLink) this.pickerRouteLink.setAttribute("href", routeLink);
+
+    if (this.pickerQrWrap && this.pickerQrCanvas) {
+      this.pickerQrWrap.classList.remove("diyar-hidden");
+      try {
+        DiyarQR.render(this.pickerQrCanvas, mapsLink, 96);
+      } catch (e) {
+        this.pickerQrWrap.classList.add("diyar-hidden");
+        console.warn("[DiyarMapWidget] تولید QR Code برای نقطه ممکن نشد:", e);
+      }
+    }
+  };
+
+  DiyarMapWidget.prototype.handleSharePoint = function () {
+    if (!this.pickedPoint) return;
+    var labels = this.cfg.labels || {};
+    var lat = this.pickedPoint.lat, lng = this.pickedPoint.lng;
+    var url = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng;
+    var text = (labels.pointShareText || "📌 نقطه‌ی انتخاب‌شده:") + "\n" + url;
+    if (navigator.share) {
+      navigator.share({ title: labels.pointShareText || "نقطه‌ی انتخاب‌شده", text: text, url: url })
+        .catch(function () { /* کاربر لغو کرد؛ نیازی به اقدام نیست */ });
+    } else {
+      this.handleCopy(url, labels.copySuccess);
+    }
+  };
+
+  DiyarMapWidget.prototype.handleCopyPointCoords = function () {
+    if (!this.pickedPoint) return;
+    var labels = this.cfg.labels || {};
+    this.handleCopy(this.pickedPoint.lat + ", " + this.pickedPoint.lng, labels.copySuccess);
   };
 
   /* ============================================================

@@ -1,0 +1,71 @@
+name: Publish Visitor Stats
+
+# ==============================================================================
+# Reads the live aggregate from the Cloudflare Worker (worker/) and commits it
+# to visitor/stats.json — the exact file GitHub Pages serves and the Blogfa
+# template's embedded widget reads. Uses the workflow's own built-in
+# GITHUB_TOKEN (auto-scoped to this repo, short-lived) to push the commit,
+# so no long-lived Personal Access Token ever has to be handed to anything
+# outside GitHub.
+# ==============================================================================
+
+"on":
+  schedule:
+    # Every 10 minutes. GitHub documents scheduled workflows as best-effort —
+    # actual runs can lag behind this, especially for low-activity public
+    # repos. Treat the resulting update frequency as "at least every ~10-30
+    # minutes in practice," not a real-time guarantee.
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {} # lets you trigger a manual run from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-stats
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch aggregated stats from the Cloudflare Worker
+        env:
+          PUBLISH_SECRET: ${{ secrets.DIYAR_PUBLISH_SECRET }}
+          WORKER_URL: ${{ secrets.DIYAR_WORKER_URL }}
+        run: |
+          set -euo pipefail
+          curl -sf \
+            -H "X-Publish-Secret: ${PUBLISH_SECRET}" \
+            "${WORKER_URL}/aggregate" \
+            -o visitor/stats.json
+          echo "Fetched visitor/stats.json:"
+          cat visitor/stats.json
+
+      - name: Validate the fetched file before committing anything
+        run: |
+          node -e "
+            const fs = require('fs');
+            const stats = JSON.parse(fs.readFileSync('visitor/stats.json', 'utf8'));
+            const requiredKeys = ['today','yesterday','week','month','total','online','updatedAt'];
+            for (const key of requiredKeys) {
+              if (!(key in stats)) throw new Error('Missing required key: ' + key);
+            }
+            console.log('visitor/stats.json is valid JSON with the expected shape.');
+          "
+
+      - name: Commit and push if the file actually changed
+        run: |
+          set -euo pipefail
+          git config user.name "diyar-stats-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add visitor/stats.json
+          if git diff --cached --quiet; then
+            echo "No change in visitor/stats.json — nothing to commit."
+          else
+            git commit -m "chore: update visitor stats.json"
+            git push
+          fi

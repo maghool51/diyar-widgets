@@ -10,7 +10,7 @@ collection. This package lives at `diyar-widgets/visitor`.
 ![Diyar Visitor Widget preview](./preview.png)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-4C6EF5.svg)](./LICENSE)
-[![Version](https://img.shields.io/badge/version-1.2.0-7C4DFF.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-7C4DFF.svg)](./CHANGELOG.md)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-00A896.svg)](./package.json)
 [![Vanilla JS](https://img.shields.io/badge/JavaScript-ES2023%20Vanilla-2BA84A.svg)](#-code-quality)
 
@@ -219,6 +219,13 @@ automatically:
 
 ## 🗂️ Folder Structure
 
+This file describes `visitor/` itself — everything GitHub Pages actually
+serves. As of v1.3.0, the repository also has two sibling folders at its
+root (`worker/` and `.github/workflows/`) that implement the real-time
+data backend described above; they're deployed separately and are not
+part of what GitHub Pages publishes. See
+[Deploying the real-time backend](#deploying-the-real-time-backend).
+
 ```
 visitor/
 ├── index.html          # Demo page + SVG icon sprite + script loading order
@@ -230,7 +237,7 @@ visitor/
 ├── utils.js                   # Formatters, easing, and the isolated data layer
 ├── theme.js                    # Light/Dark/Auto theme engine + persistence
 ├── animations.js                 # Counter, entrance, ripple & skeleton engine
-├── stats.json                     # The widget's actual data source
+├── stats.json                     # Published automatically by the real-time backend
 ├── README.md
 ├── CHANGELOG.md
 ├── LICENSE
@@ -266,31 +273,77 @@ visitor/
 
 ---
 
-## 🔌 Data Layer & Future Backends
+## 🔌 Data Layer & Real-Time Backend
 
-The widget's real data source today is **`stats.json`**, fetched by
-`utils.js`'s `fetchVisitorStats()` from the URL in `config.DATA_URL`
-(defaults to `./stats.json`, resolved automatically to an absolute URL
-when loaded via `embed.js` on a third-party page). It supports either a
-flat or a versioned/nested schema (both are auto-detected — see the
-schema documentation at the top of `utils.js`),
-retries automatically on failure (`config.API_RETRY_COUNT`), and falls
-back to the last successfully cached snapshot — or to `DEFAULT_DATA` if
-nothing has ever loaded — if every attempt fails. See
-[Customization](#-customization) for the full list of related config keys.
+The widget's data source is **`stats.json`**, fetched by `utils.js`'s
+`fetchVisitorStats()` from the URL in `config.DATA_URL` (defaults to
+`./stats.json`, resolved automatically to an absolute URL when loaded via
+`embed.js` on a third-party page). It supports either a flat or a
+versioned/nested schema (both are auto-detected — see the schema
+documentation at the top of `utils.js`), retries automatically on failure
+(`config.API_RETRY_COUNT`), and falls back to the last successfully cached
+snapshot — or to `DEFAULT_DATA` if nothing has ever loaded — if every
+attempt fails. See [Customization](#-customization) for related config keys.
 
-Because `visitor.js` only ever calls `fetchVisitorStats()` and never
-inspects where the data came from, swapping the static file for a live
-backend (a REST API, a Cloudflare Worker, Supabase, Firebase, or a
-GitHub Action that regenerates `stats.json` on a schedule) requires
-editing **only `requestStatsJsonOnce` inside `utils.js`** — no changes to
-rendering, animation, theming, or `visitor.js` itself.
+**As of v1.3.0, `stats.json` is populated with real, deduplicated visit
+data** — not a static demo file — by two components that live alongside
+`visitor/` in the repository but are deployed separately (`visitor.js`
+and every other widget file are completely unaware of any of this; they
+only ever see the resulting JSON file):
+
+- **`worker/`** — a Cloudflare Worker that records one privacy-respecting,
+  deduplicated visit per visitor per day (`POST /hit`, called by
+  `embed.js`'s beacon) and exposes an authenticated aggregate-stats
+  endpoint (`GET /aggregate`).
+- **`.github/workflows/publish-stats.yml`** — a scheduled GitHub Actions
+  workflow that reads that aggregate and commits it to
+  `visitor/stats.json`, which GitHub Pages then serves exactly as before.
+
+### Deploying the real-time backend
+
+1. **Create the Worker's database:**
+   ```bash
+   cd worker
+   wrangler d1 create diyar_visitor_db
+   ```
+   Copy the `database_id` it prints into `worker/wrangler.toml`.
+
+2. **Load the schema:**
+   ```bash
+   wrangler d1 execute diyar_visitor_db --remote --file=./schema.sql
+   ```
+
+3. **Set the publish secret** (any long random string — this is what
+   authenticates the GitHub Actions workflow to the Worker's
+   `/aggregate` endpoint):
+   ```bash
+   wrangler secret put PUBLISH_SECRET
+   ```
+
+4. **Deploy the Worker:**
+   ```bash
+   wrangler deploy
+   ```
+   Note the URL it prints, e.g.
+   `https://diyar-visitor-tracker.<your-subdomain>.workers.dev`.
+
+5. **Point `embed.js` at your Worker:** open `visitor/embed.js` and
+   replace the `TRACK_ENDPOINT` placeholder near the top of the file with
+   `https://<your-worker-url>/hit`, then commit and push.
+
+6. **Add two GitHub Actions secrets** (repository Settings → Secrets and
+   variables → Actions):
+   - `DIYAR_WORKER_URL` — your Worker's base URL (no trailing slash, no `/hit`).
+   - `DIYAR_PUBLISH_SECRET` — the exact same value you set in step 3.
+
+7. **Done.** The `publish-stats.yml` workflow starts running on its own
+   schedule (every ~10 minutes); you can also trigger it manually from
+   the Actions tab to verify it immediately.
 
 **Planned for future releases:**
 
-- [ ] Optional WebSocket transport for real-time "online users" updates.
-- [ ] Pluggable data adapters (REST, GraphQL, Firebase) selectable via config.
-- [ ] Historical trend sparkline per card.
+- [ ] Historical trend sparkline per card, backed by the same D1 data.
+- [ ] Pluggable data adapters (REST, GraphQL, Firebase) as an alternative to the Worker.
 - [ ] Multi-language copy (English / Arabic) alongside the Persian default.
 - [ ] A CLI scaffolding tool for generating new `diyar-widgets` packages.
 

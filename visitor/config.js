@@ -38,7 +38,7 @@
  */
 const DiyarVisitorConfig = Object.freeze({
   /** Semantic version of the widget, surfaced in the footer & console banner. */
-  VERSION: '1.2.0',
+  VERSION: '1.3.0',
 
   /** Human-readable widget name, used for logging and the DOM data attribute. */
   NAME: 'Diyar Visitor Widget',

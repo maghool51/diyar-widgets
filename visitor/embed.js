@@ -15,6 +15,13 @@
  * the public `window.DiyarVisitor.mount()` API that `visitor.js` already
  * exposes — no changes to any other file are required or made.
  *
+ * It also fires a single, fire-and-forget visit-tracking beacon at a
+ * Cloudflare Worker endpoint (see the TRACK_ENDPOINT constant and
+ * `sendVisitBeacon()` below) so real visits can be counted — this is the
+ * ONLY outbound request in the entire widget that goes to a domain other
+ * than wherever these files are hosted, and its failure is always silent
+ * and never affects whether the widget itself renders.
+ *
  * OWN-URL DETECTION
  * --------------------------------------------------------------------------
  * `document.currentScript` reliably points at the `<script>` element
@@ -89,6 +96,19 @@
 (function (global, document) {
   const EMBED_VERSION = '1.0.0';
   const SCRIPT_FILENAME = 'embed.js';
+
+  /**
+   * Absolute URL of the real-time visit-tracking Worker's `/hit` endpoint.
+   * REPLACE THIS after deploying your own Worker (see worker/wrangler.toml)
+   * — the placeholder below will simply fail silently (see
+   * `sendVisitBeacon`'s error handling) until you do.
+   *
+   * This is intentionally NOT read from config.js: config.js describes the
+   * widget's own display settings, while this endpoint is specifically an
+   * embed-time concern — sending a tracking beacon is something only
+   * `embed.js` does, so it owns this constant.
+   */
+  const TRACK_ENDPOINT = 'https://REPLACE-WITH-YOUR-WORKER.workers.dev/hit';
 
   /**
    * Modules loaded, in this exact order, before a widget can be mounted.
@@ -443,10 +463,52 @@
   }
 
   /**
+   * Fires a single, fire-and-forget "visit" signal at the tracking Worker's
+   * `/hit` endpoint. This is the ONLY thing in the whole widget that talks
+   * to a domain other than wherever the widget's own files are hosted —
+   * everything else (CSS, icon sprite, the five dependency scripts,
+   * `stats.json` itself) still only ever touches the widget's own origin.
+   *
+   * Uses `navigator.sendBeacon` where available — the browser-native API
+   * built exactly for this ("send this small thing, don't wait for a
+   * response, and don't block page unload"). Falls back to a
+   * `fetch(..., { keepalive: true })` call for the rare environment
+   * without `sendBeacon`. Every failure mode (missing API, network error,
+   * the placeholder URL never having been replaced) is swallowed
+   * silently — a visitor must never see a console error, and a tracking
+   * failure must never prevent the widget itself from rendering.
+   *
+   * @returns {void}
+   */
+  function sendVisitBeacon() {
+    try {
+      if (!TRACK_ENDPOINT || TRACK_ENDPOINT.indexOf('REPLACE-WITH-YOUR-WORKER') !== -1) {
+        // No real Worker configured yet — nothing to send to.
+        return;
+      }
+
+      if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+        // An empty-but-valid payload is enough; the Worker reads visitor
+        // identity from request headers (IP, User-Agent), not the body.
+        navigator.sendBeacon(TRACK_ENDPOINT, new Blob([], { type: 'text/plain' }));
+        return;
+      }
+
+      if (typeof fetch === 'function') {
+        fetch(TRACK_ENDPOINT, { method: 'POST', keepalive: true, mode: 'cors' }).catch(() => {});
+      }
+    } catch (error) {
+      embedLog('warn', 'Visit beacon failed (widget rendering is unaffected):', error);
+    }
+  }
+
+  /**
    * Entry point executed every time this file runs (i.e. once per
    * `<script src="embed.js">` tag present on the page).
    */
   function init() {
+    sendVisitBeacon();
+
     const scriptEl = getOwnScriptElement();
 
     if (!scriptEl) {

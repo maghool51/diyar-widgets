@@ -4,6 +4,55 @@ All notable changes to the **Diyar Visitor Widget** are documented in this
 file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] — 2026-08-08
+
+### Added
+
+- **A real, working data backend.** `visitor/stats.json` is no longer a
+  static demo file — it's now published automatically from real,
+  deduplicated visit counts. Two new components, living outside the
+  `visitor/` folder GitHub Pages serves, make this possible:
+  - `worker/` — a Cloudflare Worker (`src/index.js`) with two routes:
+    `POST /hit` (called once per real page load to record a
+    privacy-respecting, deduplicated visit) and `GET /aggregate`
+    (authenticated, returns live `today`/`yesterday`/`week`/`month`/
+    `total`/`online`/`updatedAt` computed from a Cloudflare D1 database).
+  - `.github/workflows/publish-stats.yml` — a scheduled GitHub Actions
+    workflow (every ~10 minutes) that reads the Worker's aggregate and
+    commits it to `visitor/stats.json` using the workflow's own built-in,
+    short-lived `GITHUB_TOKEN` — no external token is ever exposed.
+- `embed.js` now sends a single, fire-and-forget visit beacon
+  (`navigator.sendBeacon`, with a `fetch` fallback) to the new Worker on
+  load. This is the only addition to any widget file — see "Changed"
+  below for the exact scope.
+
+### Changed
+
+- `embed.js`: added the `TRACK_ENDPOINT` constant and `sendVisitBeacon()`,
+  called once at the very start of `init()`. Every failure mode (missing
+  `sendBeacon`, network error, an unconfigured placeholder URL) is
+  swallowed silently and can never block or delay widget rendering.
+
+### Unchanged (by design)
+
+- `visitor.js`, `utils.js`, `theme.js`, `animations.js`, `config.js`,
+  `index.html`, `visitor.css`, `demo.css` — zero changes. The widget still
+  consumes `stats.json` through the exact same `fetchVisitorStats()` path
+  it always has; it has no idea the file is now real instead of static.
+- The `stats.json` schema — still exactly `{ today, yesterday, week,
+  month, total, online, updatedAt }`, nothing added or renamed.
+- The Blogfa template — still only ever needs the one `<script
+  src=".../embed.js">` tag it already has.
+
+### Privacy & Security Notes
+
+- Visit deduplication uses `SHA-256(IP + User-Agent + calendar day)`. The
+  raw IP address is **never** written to the database — only its
+  daily-rotating hash.
+- The Worker's `/aggregate` endpoint (which exposes real numbers before
+  they're public in `stats.json`) requires a shared-secret header, known
+  only to the GitHub Actions workflow.
+
 ## [1.2.0] — 2026-08-06
 
 ### Added
@@ -145,6 +194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete project scaffolding: `README.md`, `CHANGELOG.md`, MIT `LICENSE`,
   `package.json`, `.gitignore`, and a standalone SVG icon set.
 
+[1.3.0]: https://github.com/maghool51/diyar-widgets/releases/tag/visitor-v1.3.0
 [1.2.0]: https://github.com/maghool51/diyar-widgets/releases/tag/visitor-v1.2.0
 [1.1.0]: https://github.com/maghool51/diyar-widgets/releases/tag/visitor-v1.1.0
 [1.0.0]: https://github.com/maghool51/diyar-widgets/releases/tag/visitor-v1.0.0

@@ -108,7 +108,7 @@
    * embed-time concern — sending a tracking beacon is something only
    * `embed.js` does, so it owns this constant.
    */
-  const TRACK_ENDPOINT = 'https://REPLACE-WITH-YOUR-WORKER.workers.dev/hit';
+  const TRACK_ENDPOINT = 'https://diyar-visitor-tracker.diyar-visitor.workers.dev/hit';
 
   /**
    * Modules loaded, in this exact order, before a widget can be mounted.

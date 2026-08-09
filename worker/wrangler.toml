@@ -1,0 +1,29 @@
+# ==============================================================================
+# Diyar Visitor Widget — Cloudflare Worker configuration
+# ==============================================================================
+# Deploy with:  wrangler deploy   (run from inside the worker/ directory)
+#
+# Before deploying:
+#   1. Create the D1 database:
+#        wrangler d1 create diyar_visitor_db
+#      Copy the "database_id" it prints into [[d1_databases]] below.
+#   2. Load the schema:
+#        wrangler d1 execute diyar_visitor_db --remote --file=./schema.sql
+#   3. Set the publish secret (used by the GitHub Actions workflow to
+#      authenticate reads from /aggregate — pick any long random string):
+#        wrangler secret put PUBLISH_SECRET
+#   4. Deploy:
+#        wrangler deploy
+#   5. Note the resulting URL (e.g. https://diyar-visitor-tracker.<you>.workers.dev)
+#      — you'll need it in two places: this repo's embed.js (TRACK_ENDPOINT
+#      constant) and the DIYAR_WORKER_URL GitHub Actions secret.
+# ==============================================================================
+
+name = "diyar-visitor-tracker"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+[[d1_databases]]
+binding = "DIYAR_DB"
+database_name = "diyar_visitor_db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"

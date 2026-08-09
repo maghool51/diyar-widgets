@@ -115,10 +115,13 @@ const DiyarVisitorConfig = Object.freeze({
   DATA_URL: './stats.json',
 
   /**
-   * Endpoint the data layer will call once a real backend is available.
-   * Left intentionally generic — swapping MOCK data for a live API is a
-   * one-line change inside `utils.js` (`fetchVisitorStats`) and touches
-   * nothing in the rendering or animation layers.
+   * NOT CURRENTLY USED BY ANY CODE PATH. Left over from an earlier design
+   * that considered a direct live-API integration inside `utils.js`
+   * before the real backend (`worker/` + `.github/workflows/publish-stats.yml`,
+   * see the project README) was built in v1.3.0. The actual integration
+   * point today is `embed.js`'s `TRACK_ENDPOINT` constant, not this
+   * field. Kept only for backward compatibility with anyone who may have
+   * already referenced this key; safe to ignore.
    */
   API_ENDPOINT: 'https://api.diyar-widgets.example.com/v1/visitor-stats',
 

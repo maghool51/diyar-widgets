@@ -299,6 +299,15 @@ only ever see the resulting JSON file):
   workflow that reads that aggregate and commits it to
   `visitor/stats.json`, which GitHub Pages then serves exactly as before.
 
+> **About the `stats.json` shipped in this repository/ZIP:** it contains
+> `{ today: 0, yesterday: 0, week: 0, month: 0, total: 0, online: 0,
+> updatedAt: "" }` — genuine zeros, not placeholder/demo numbers. This is
+> the correct, honest state *before* the backend has been deployed and
+> has recorded its first real visit. Once you complete the deployment
+> steps above, the GitHub Actions workflow overwrites this file with real
+> counts on its own schedule — you never need to (and shouldn't) hand-edit
+> it with made-up numbers.
+
 ### Deploying the real-time backend
 
 1. **Create the Worker's database:**
@@ -404,7 +413,11 @@ CSS custom properties, `backdrop-filter`, `Intl.DateTimeFormat`,
   into any HTML page, static site generator, CMS, or server-rendered app.
 - **Professional inline documentation** — every exported function carries
   a JSDoc block describing its contract.
-- **No TODOs, no placeholders, no dead code.**
+- **No TODOs, no dead code.** Two values are intentionally left as
+  deployment placeholders you fill in yourself — `embed.js`'s
+  `TRACK_ENDPOINT` and `worker/wrangler.toml`'s `database_id` — both
+  fail silently and safely until configured; see
+  [Deploying the real-time backend](#deploying-the-real-time-backend).
 
 ---
 

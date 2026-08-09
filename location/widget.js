@@ -536,6 +536,37 @@
     document.body.appendChild(script);
   }
 
+  /**
+   * یک آیتم از getRouteButtons()/getPointRouteButtons() را به یک عنصر DOM
+   * تبدیل می‌کند. اگر لینک واقعی داشته باشد (b.disabled falsy)، یک `<a>`
+   * قابل‌کلیک با target=_blank+rel=noopener است؛ اگر لینک واقعی نداشته باشد
+   * (فعلاً فقط برای بلد بدون routes.balad رخ می‌دهد)، یک `<button disabled>`
+   * واقعی و غیرقابل‌کلیک ساخته می‌شود — هرگز یک لینک ساختگی/حدسی تولید
+   * نمی‌شود، و دکمه از نظر شکل و اندازه دقیقاً هم‌ردیف بقیه‌ی دکمه‌هاست تا
+   * ردیف/جدول سرویس‌ها به‌هم‌ریخته به نظر نرسد.
+   */
+  function renderRouteButtonEl(b, labels) {
+    if (b.disabled) {
+      return el("button", {
+        type: "button",
+        class: "diyar-btn diyar-btn--disabled",
+        disabled: "disabled",
+        "aria-disabled": "true",
+        "aria-label": b.label,
+        title: (labels && labels.baladDisabledTitle) || "برای فعال‌شدن این دکمه، لینک واقعی بلد را در config.js → routes.balad وارد کنید.",
+        html: b.icon + "<span>" + b.label + "</span>"
+      });
+    }
+    return el("a", {
+      class: "diyar-btn",
+      href: b.url,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      "aria-label": b.label,
+      html: b.icon + "<span>" + b.label + "</span>"
+    });
+  }
+
   /* ============================================================
    * 3) آیکون‌های SVG
    * ============================================================ */
@@ -642,14 +673,7 @@
     var buttonsWrap = el("div", { class: "diyar-widget__buttons" });
     var btnDefs = this.getRouteButtons();
     btnDefs.forEach(function (b) {
-      buttonsWrap.appendChild(el("a", {
-        class: "diyar-btn",
-        href: b.url,
-        target: "_blank",
-        rel: "noopener noreferrer",
-        "aria-label": b.label,
-        html: b.icon + "<span>" + b.label + "</span>"
-      }));
+      buttonsWrap.appendChild(renderRouteButtonEl(b, labels));
     });
     body.appendChild(buttonsWrap);
 
@@ -782,21 +806,24 @@
    * ۱) اگر در config.js یک لینک اختصاصی در routes[key] داده شده باشد، همان استفاده می‌شود.
    * ۲) در غیر این‌صورت، در صورت وجود یک فرمت رسمی و مطمئن، لینک از روی مختصات ساخته می‌شود.
    * ۳) بلد استثناست: هیچ فرمت رسمی/مستندی برای ساخت لینک از روی مختصات دلخواه
-   *    ندارد (اشتراک‌گذاری در اپ بلد یک توکن کوتاه تصادفی تولید می‌کند که از
-   *    قبل قابل پیش‌بینی نیست). به همین دلیل این‌جا هرگز یک URL حدسی مبتنی بر
-   *    مختصات برای بلد ساخته نمی‌شود. اگر routes.balad خالی باشد، دکمه‌ی بلد
-   *    باز هم نمایش داده می‌شود ولی به آدرس رسمی و همیشه‌معتبر balad.ir
-   *    (نه یک لینک ساختگی برای این مکان خاص) هدایت می‌کند تا کاربر بتواند
-   *    خودش داخل اپ/سایت بلد این مکان را جست‌وجو کند.
+   *    ندارد (طبق بلاگ رسمی بلد، تنها روش رسمی گرفتن لینک یک مکان، گرفتنش از
+   *    خودِ اپ بلد است). به همین دلیل این‌جا هرگز یک URL حدسی مبتنی بر مختصات
+   *    برای بلد ساخته نمی‌شود. دکمه‌ی بلد همیشه در ردیف نمایش داده می‌شود
+   *    (برای یکدستی ظاهر جدول با Google Maps/Google Navigation/Apple Maps/
+   *    Neshan)؛ اگر routes.balad خالی باشد، این دکمه به‌صورت واقعاً
+   *    غیرفعال (`<button disabled>`، نه یک `<a>` با لینک ساختگی) رندر
+   *    می‌شود تا کلیک روی آن هرگز کاربر را به‌جایی نبرد.
    */
   DiyarMapWidget.prototype.getRouteButtons = function () {
-    var cfg = this.cfg, c = cfg.coordinates, btns = cfg.buttons || {}, routes = cfg.routes || {};
+    var cfg = this.cfg, c = cfg.coordinates, btns = cfg.buttons || {}, routes = cfg.routes || {}, labels = cfg.labels || {};
     var name = encodeURIComponent(cfg.placeName || "");
 
     function customOrNull(key) {
       var v = routes[key];
       return (typeof v === "string" && v.trim()) ? v.trim() : null;
     }
+
+    var baladLink = customOrNull("balad");
 
     var all = [
       {
@@ -826,12 +853,11 @@
         url: customOrNull("neshan") || ("https://nshn.ir/?lat=" + c.lat + "&lng=" + c.lng)
       },
       {
-        // توضیح کامل بالای تابع: بدون routes.balad معتبر، به آدرس رسمی balad.ir
-        // (نه یک لینک ساختگی مخصوص این مکان) هدایت می‌شود؛ هرگز ۴۰۴ نمی‌دهد.
         key: "balad",
-        label: "بلد",
+        label: baladLink ? "بلد" : (labels.baladNeedsSetup || "بلد — لینک نیازمند تنظیم"),
         icon: ICONS.balad,
-        url: customOrNull("balad") || "https://balad.ir/"
+        url: baladLink,
+        disabled: !baladLink
       },
       {
         key: "appleMaps",
@@ -842,7 +868,7 @@
     ];
 
     return all.filter(function (b) {
-      return btns[b.key] !== false && !!b.url;
+      return btns[b.key] !== false;
     });
   };
 
@@ -851,14 +877,13 @@
    * لزوماً مقصد اصلی ویجت). برای گوگل‌مپ/مسیریابی‌گوگل/اپل‌مپ/نشان همیشه از
    * فرمول رسمی همان سرویس روی مختصات نقطه استفاده می‌شود (این سرویس‌ها فرمت
    * رسمی مبتنی بر مختصات دارند، پس برای هر نقطه‌ی دلخواهی هم معتبرند).
-   * بلد استثناست: چون فرمت رسمی مبتنی بر مختصات ندارد، فقط زمانی در فهرست
-   * نقطه ظاهر می‌شود که routes.balad یک لینک واقعی و دستی باشد؛ در غیر
-   * این‌صورت اصلاً نمایش داده نمی‌شود (برخلاف ردیف مسیریابی مکان اصلی، این‌جا
-   * هدایت به صفحه‌ی عمومی balad.ir برای «این نقطه‌ی خاص» بی‌معنی است، پس
-   * ترجیح داده شد اصلاً نمایش داده نشود تا گمراه‌کننده نباشد).
+   * بلد استثناست: چون فرمت رسمی مبتنی بر مختصات ندارد، دکمه‌ی بلد همیشه در
+   * فهرست ظاهر می‌شود (برای یکدستی ظاهر با بقیه‌ی سرویس‌ها)، ولی بدون
+   * routes.balad واقعی به‌صورت غیرفعال (`<button disabled>`) رندر می‌شود —
+   * هرگز یک لینک ساختگی/حدسی برای این نقطه‌ی به‌خصوص ساخته نمی‌شود.
    */
   DiyarMapWidget.prototype.getPointRouteButtons = function (lat, lng) {
-    var cfg = this.cfg, routes = cfg.routes || {};
+    var cfg = this.cfg, routes = cfg.routes || {}, labels = cfg.labels || {};
 
     function customOrNull(key) {
       var v = routes[key];
@@ -893,9 +918,13 @@
     ];
 
     var baladLink = customOrNull("balad");
-    if (baladLink) {
-      all.push({ key: "balad", label: "بلد", icon: ICONS.balad, url: baladLink });
-    }
+    all.push({
+      key: "balad",
+      label: baladLink ? "بلد" : (labels.baladNeedsSetup || "بلد — لینک نیازمند تنظیم"),
+      icon: ICONS.balad,
+      url: baladLink,
+      disabled: !baladLink
+    });
 
     return all;
   };
@@ -1226,6 +1255,7 @@
    */
   DiyarMapWidget.prototype.setPickedPoint = function (lat, lng) {
     if (!this.pickerMap || !window.L) return;
+    var self = this;
     this.pickedPoint = { lat: lat, lng: lng };
 
     if (this.pickerMarker) {
@@ -1244,16 +1274,9 @@
 
     if (this.pickerRoutesWrap) {
       this.pickerRoutesWrap.innerHTML = "";
-      var self = this;
+      var labels = this.cfg.labels || {};
       this.getPointRouteButtons(lat, lng).forEach(function (b) {
-        self.pickerRoutesWrap.appendChild(el("a", {
-          class: "diyar-btn",
-          href: b.url,
-          target: "_blank",
-          rel: "noopener noreferrer",
-          "aria-label": b.label,
-          html: b.icon + "<span>" + b.label + "</span>"
-        }));
+        self.pickerRoutesWrap.appendChild(renderRouteButtonEl(b, labels));
       });
       this.pickerRoutesWrap.classList.remove("diyar-hidden");
     }

@@ -95,7 +95,7 @@ window.DiyarMapConfig = {
     googleNavigation: "",
     waze: "",
     neshan: "",
-    balad: "",
+    balad: "https://balad.ir/p/PUEEFI1f0KUil7",
     appleMaps: ""
   },
 
@@ -151,6 +151,14 @@ window.DiyarMapConfig = {
 
     qrTitle:
       "اسکن برای مسیریابی سریع",
+
+    // وقتی routes.balad خالی است، دکمه‌ی بلد به‌جای لینک ساختگی، با همین
+    // برچسب و به‌صورت غیرفعال (disabled) نمایش داده می‌شود
+    baladNeedsSetup:
+      "بلد — لینک نیازمند تنظیم",
+
+    baladDisabledTitle:
+      "برای فعال‌شدن این دکمه، لینک واقعی بلد را در routes.balad وارد کنید.",
 
     shareMyLocation:
       "اشتراک‌گذاری موقعیت من",

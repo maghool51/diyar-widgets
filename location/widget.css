@@ -141,6 +141,7 @@
   justify-content: center;
   gap: 4px;
   padding: 10px 4px;
+  width: 100%;
   font-family: inherit;
   font-size: .74rem;
   font-weight: 600;
@@ -150,6 +151,9 @@
   border-radius: var(--diyar-radius-sm);
   cursor: pointer;
   text-decoration: none;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
   transition: transform .15s ease, background-color .2s ease, box-shadow .2s ease;
 }
 .diyar-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
@@ -160,6 +164,21 @@
   outline-offset: 2px;
 }
 .diyar-btn:active { transform: translateY(0); }
+
+/* دکمه‌ی غیرفعال در ردیف مسیریابی (مثلاً بلد بدون routes.balad واقعی) —
+   از نظر اندازه و چیدمان دقیقاً هم‌شکل بقیه‌ی دکمه‌هاست تا ردیف به‌هم‌ریخته
+   به نظر نرسد، ولی کاملاً غیرقابل‌کلیک است (عنصر <button disabled> واقعی،
+   نه یک لینک با href ساختگی). */
+.diyar-btn--disabled,
+.diyar-btn--disabled:hover {
+  opacity: .5;
+  cursor: not-allowed;
+  background: var(--diyar-surface-variant);
+  color: var(--diyar-on-surface);
+  transform: none;
+  box-shadow: none;
+}
+.diyar-btn--disabled:hover svg { color: currentColor; }
 
 /* ردیف اقدامات ثانویه */
 .diyar-widget__actions {

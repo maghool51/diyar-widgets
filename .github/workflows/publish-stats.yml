@@ -57,11 +57,11 @@ jobs:
             console.log('Fetched aggregate is valid JSON with the expected shape.');
           "
 
-      # Only the six real statistics decide whether anything changed.
+      # Only the five primary statistics decide whether anything changed.
       # `updatedAt` is NEVER part of this comparison — comparing it would
       # mean every single run "changes" (the Worker always computes a
       # fresh timestamp), which defeats the point of this step entirely.
-      # If none of the six values differ from what's already committed,
+      # If none of the five primary values differ from what's already committed,
       # visitor/stats.json is left completely untouched — including its
       # existing updatedAt — so the commit step below correctly sees no
       # diff and skips.
@@ -69,7 +69,7 @@ jobs:
         run: |
           node -e "
             const fs = require('fs');
-            const STAT_KEYS = ['today', 'yesterday', 'week', 'month', 'total', 'online'];
+            const STAT_KEYS = ['today', 'yesterday', 'week', 'month', 'total'];
 
             const newStats = JSON.parse(fs.readFileSync('/tmp/new-stats.json', 'utf8'));
 

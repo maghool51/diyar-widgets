@@ -33,6 +33,37 @@
    * @param {string} url
    * @returns {boolean}
    */
+  /**
+   * استخراج نام قابل‌نمایش منبع از hadith.source — با پشتیبانی از هر
+   * دو شکل داده: رشته‌ی ساده (schema قدیمی، مثلاً "پیامبر اکرم (ص)")
+   * یا آبجکت جدید {name, type} (schema نسخه‌ی ۲.۰.۰ پایگاه‌داده).
+   * این تابع تنها تغییر لازم در JS برای سازگاری با schema جدید
+   * data-layer است — نه بازطراحی، فقط یک لایه‌ی نگاشت کوچک.
+   * @param {object} hadith
+   * @returns {string}
+   */
+  function getSourceName(hadith) {
+    var s = hadith && hadith.source;
+    if (!s) return '';
+    if (typeof s === 'string') return s;
+    if (typeof s === 'object' && typeof s.name === 'string') return s.name;
+    return '';
+  }
+
+  /**
+   * استخراج نام کتاب/مجموعه از حدیث — با پشتیبانی از هر دو شکل داده:
+   * فیلد سطح‌بالای قدیمی hadith.book (schema نسخه‌های قبلی)، یا
+   * hadith.reference.collection (schema جدید نسخه‌ی ۲.۰.۰).
+   * @param {object} hadith
+   * @returns {string}
+   */
+  function getBookName(hadith) {
+    if (!hadith) return '';
+    if (hadith.book) return hadith.book;
+    if (hadith.reference && hadith.reference.collection) return hadith.reference.collection;
+    return '';
+  }
+
   function isSafeUrl(url) {
     if (typeof url !== 'string' || !url.trim()) return false;
     try {
@@ -73,12 +104,26 @@
    * استخراج مقادیر یکتا و مرتب‌شده‌ی یک فیلد از لیست احادیث — برای پر
    * کردن گزینه‌های منوی کشویی «بر اساس معصوم» / «بر اساس موضوع».
    */
+  /**
+   * استخراج مقدار قابل‌مقایسه‌ی یک فیلد؛ اگر مقدار یک رشته باشد همان
+   * برگردانده می‌شود (رفتار قبلی، بدون تغییر)، و اگر آبجکتی با فیلد
+   * name باشد (مثل source جدید: {name, type})، مقدار name برگردانده
+   * می‌شود. این یعنی uniqueValues/filterByField برای فیلدهای رشته‌ای
+   * (category) و فیلدهای آبجکتی (source) هر دو یکسان کار می‌کنند.
+   */
+  function comparableFieldValue(item, key) {
+    var v = item && item[key];
+    if (typeof v === 'string') return v;
+    if (v && typeof v === 'object' && typeof v.name === 'string') return v.name;
+    return null;
+  }
+
   function uniqueValues(list, key) {
     if (!Array.isArray(list)) return [];
     var seen = Object.create(null);
     var out = [];
     list.forEach(function (item) {
-      var v = item && item[key];
+      var v = comparableFieldValue(item, key);
       if (v && !seen[v]) {
         seen[v] = true;
         out.push(v);
@@ -87,10 +132,10 @@
     return out.sort(function (a, b) { return a.localeCompare(b, 'fa'); });
   }
 
-  /** فیلتر کردن لیست احادیث بر اساس برابری یک فیلد با مقدار داده‌شده */
+  /** فیلتر کردن لیست احادیث بر اساس برابری یک فیلد (رشته یا آبجکت {name}) با مقدار داده‌شده */
   function filterByField(list, key, value) {
     if (!Array.isArray(list) || !value) return list;
-    return list.filter(function (item) { return item && item[key] === value; });
+    return list.filter(function (item) { return comparableFieldValue(item, key) === value; });
   }
 
   /** شماره‌ی روز سال میلادی جاری (۱ تا ۳۶۵/۳۶۶) */
@@ -179,8 +224,10 @@
     if (hadith.arabic) parts.push(hadith.arabic);
     parts.push(hadith.text);
     var meta = [];
-    if (hadith.source) meta.push(hadith.source);
-    if (hadith.book) meta.push(hadith.book);
+    var sourceName = getSourceName(hadith);
+    var bookName = getBookName(hadith);
+    if (sourceName) meta.push(sourceName);
+    if (bookName) meta.push(bookName);
     if (meta.length) parts.push('— ' + meta.join('، '));
     return parts.join('\n');
   }
@@ -238,8 +285,8 @@
 
     var safeArabic = hadith.arabic ? escapeHTML(hadith.arabic) : '';
     var safeText = escapeHTML(hadith.text);
-    var safeSource = escapeHTML(hadith.source || '');
-    var safeBook = escapeHTML(hadith.book || '');
+    var safeSource = escapeHTML(getSourceName(hadith));
+    var safeBook = escapeHTML(getBookName(hadith));
 
     win.document.open();
     win.document.write(
@@ -298,6 +345,8 @@
     toPersianDigits: toPersianDigits,
     escapeHTML: escapeHTML,
     isSafeUrl: isSafeUrl,
+    getSourceName: getSourceName,
+    getBookName: getBookName,
     sanitizeHadithList: sanitizeHadithList,
     uniqueValues: uniqueValues,
     filterByField: filterByField,

@@ -481,8 +481,10 @@
     }
 
     this.refs.text.textContent = h.text;
-    this.refs.source.textContent = this.config.ui.showSource && h.source ? h.source : '';
-    this.refs.book.textContent = this.config.ui.showBook && h.book ? digits(h.book) : '';
+    var sourceName = Utils.getSourceName(h);
+    var bookName = Utils.getBookName(h);
+    this.refs.source.textContent = this.config.ui.showSource && sourceName ? sourceName : '';
+    this.refs.book.textContent = this.config.ui.showBook && bookName ? digits(bookName) : '';
     this.refs.category.textContent = this.config.ui.showCategory && h.category ? h.category : '';
     this.refs.category.hidden = !(this.config.ui.showCategory && h.category);
     this.refs.source.hidden = !this.refs.source.textContent;

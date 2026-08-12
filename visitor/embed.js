@@ -380,10 +380,26 @@
       await ensureStylesheetLoaded(baseUrl);
       ensureIconSpriteInjected();
 
-      const scriptUrls = DEPENDENCY_SCRIPTS.map((file) => baseUrl + file);
-      await loadScriptsSequentially(scriptUrls);
-
+      // config.js must finish loading — and DATA_URL must already be
+      // corrected to an absolute URL — BEFORE visitor.js runs, because
+      // visitor.js's own autoInit() fires its first fetchVisitorStats()
+      // call synchronously as soon as it finishes loading. Previously,
+      // all five scripts (including visitor.js) loaded first, and only
+      // THEN was DATA_URL corrected — so on a third-party page the very
+      // first fetch always resolved the still-relative './stats.json'
+      // against the HOST page's own origin (e.g. a Blogfa domain),
+      // 404'd there, and silently fell back to config.js's DEFAULT_DATA
+      // placeholder numbers for that first render. Loading config.js by
+      // itself first, correcting DATA_URL right away, and only then
+      // loading the remaining four scripts in their required order
+      // closes that race without changing anything else about how or
+      // in what order the modules load.
+      const [configScript, ...remainingScripts] = DEPENDENCY_SCRIPTS;
+      await loadScript(baseUrl + configScript);
       resolveDataUrlForEmbeddedContext(baseUrl);
+
+      const remainingUrls = remainingScripts.map((file) => baseUrl + file);
+      await loadScriptsSequentially(remainingUrls);
     })().catch((error) => {
       embedLog('error', 'Failed to load one or more widget dependencies:', error);
       // Re-throw so callers awaiting this promise (the mount step) know

@@ -771,8 +771,8 @@
       this.pickerMapEl = el("div", {
         class: "diyar-widget__map diyar-picker-map",
         id: cfg.containerId + "-picker-map",
-        role: "img",
-        "aria-label": pickerHintText
+        role: "group",
+        "aria-label": pickerHintText + " (این نقشه فقط با کلیک یا لمس، نه صفحه‌کلید، قابل استفاده است)"
       }, [el("div", { class: "diyar-skeleton" }, [document.createTextNode(pickerHintText)])]);
 
       var pickerQrCanvas = null;
@@ -881,9 +881,12 @@
    * فهرست ظاهر می‌شود (برای یکدستی ظاهر با بقیه‌ی سرویس‌ها)، ولی بدون
    * routes.balad واقعی به‌صورت غیرفعال (`<button disabled>`) رندر می‌شود —
    * هرگز یک لینک ساختگی/حدسی برای این نقطه‌ی به‌خصوص ساخته نمی‌شود.
+   * از همان کلیدهای config.buttons (روشن/خاموش هر سرویس) که ردیف مسیریابیِ
+   * مکان اصلی استفاده می‌کند پیروی می‌کند، تا اگر ادمین سرویسی را در آن‌جا
+   * غیرفعال کرده، این‌جا هم مخفی بماند.
    */
   DiyarMapWidget.prototype.getPointRouteButtons = function (lat, lng) {
-    var cfg = this.cfg, routes = cfg.routes || {}, labels = cfg.labels || {};
+    var cfg = this.cfg, routes = cfg.routes || {}, labels = cfg.labels || {}, btns = cfg.buttons || {};
 
     function customOrNull(key) {
       var v = routes[key];
@@ -914,19 +917,19 @@
         label: "نشان",
         icon: ICONS.neshan,
         url: "https://nshn.ir/?lat=" + lat + "&lng=" + lng
+      },
+      {
+        key: "balad",
+        label: customOrNull("balad") ? "بلد" : (labels.baladNeedsSetup || "بلد — لینک نیازمند تنظیم"),
+        icon: ICONS.balad,
+        url: customOrNull("balad"),
+        disabled: !customOrNull("balad")
       }
     ];
 
-    var baladLink = customOrNull("balad");
-    all.push({
-      key: "balad",
-      label: baladLink ? "بلد" : (labels.baladNeedsSetup || "بلد — لینک نیازمند تنظیم"),
-      icon: ICONS.balad,
-      url: baladLink,
-      disabled: !baladLink
+    return all.filter(function (b) {
+      return btns[b.key] !== false;
     });
-
-    return all;
   };
 
   DiyarMapWidget.prototype.handleShare = function () {
@@ -1067,7 +1070,9 @@
       settled = true;
       if (reason) console.warn("[DiyarMapWidget] Google Maps Embed در دسترس نبود (" + reason + ")؛ در حال سوییچ به fallback.");
       if (fallbackMode === "leaflet") {
-        self.mapInitialized = false; // اجازه بده initMap دوباره موتور Leaflet را راه بیندازد
+        // توجه: عمداً از self.initMap() استفاده نمی‌کنیم، چون آن متد دوباره
+        // provider را چک می‌کند (که هنوز "google" است) و دوباره همین مسیر را
+        // اجرا می‌کرد؛ initLeafletMap() مستقیماً موتور Leaflet را می‌سازد.
         self.initLeafletMap();
       } else {
         self.showMapFallbackMessage();

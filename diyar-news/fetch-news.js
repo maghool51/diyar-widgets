@@ -180,6 +180,49 @@ const sources = [
     flag: "🇮🇷"
   },
   {
+    // اخبار عمومی و به‌روز (۱۲ ساعت اخیر، بدون فیلتر دسته‌بندی خاص).
+    // ساختار XML این فید مستقیماً توسط کاربر تأیید و برای من ارسال شد.
+    name: "خبر فوری",
+    url: "https://www.khabarfoori.com/fa/feeds/?p=ZGF0ZVJhbmdlJTVCc3RhcnQlNUQ9LTQzMjAw",
+    flag: "🇮🇷"
+  },
+  {
+    // آدرس عمومی (همه‌ی اخبار) به‌جای /rss/tp/280 که یک دسته‌بندی خاص
+    // به‌نظر می‌رسد (کد 280) — طبق کاربر ارائه شد، هر دو گزینه بودند.
+    name: "قدس آنلاین",
+    url: "https://qudsonline.ir/rss",
+    flag: "🇮🇷"
+  },
+  {
+    // تأییدشده از چند منبع مستقل (از جمله آرشیو RSS معتبر awesome-rss-feeds)
+    name: "عصر ایران",
+    url: "https://www.asriran.com/fa/rss/allnews",
+    flag: "🇮🇷"
+  },
+  {
+    // تأییدشده از چند منبع مستقل (از جمله آرشیو RSS معتبر awesome-rss-feeds)
+    name: "تابناک",
+    url: "https://www.tabnak.ir/fa/rss/allnews",
+    flag: "🇮🇷"
+  },
+  {
+    // الگوی /api/z... دقیقاً مثل رادیو فردا (هر دو از خانواده‌ی رسانه‌ی
+    // دولتی آمریکا USAGM هستند) — صفحه‌ی رسمی ir.voanews.com/rssfeeds
+    // وجود چنین فیدهایی («persian top stories») را تأیید می‌کند.
+    name: "صدای آمریکا فارسی",
+    url: "https://ir.voanews.com/api/zuiypl-vomx-tpeggtm",
+    flag: "🌍"
+  },
+  {
+    // ⚠️ اطمینان کمتر: نتوانستم این آدرس خاص را مستقیم تأیید کنم
+    // (دسترسی خودکار به ettelaat.com هم مسدود بود)، ولی «اطلاعات»
+    // یک روزنامه‌ی معتبر و قدیمی (۹۷+ سال) است و الگوی /rss/tp/{id}
+    // با سایر منابع پروژه (مثل قدس آنلاین) هم‌خوانی دارد.
+    name: "اطلاعات",
+    url: "https://www.ettelaat.com/rss/tp/62",
+    flag: "🇮🇷"
+  },
+  {
     // آدرس قبلی یک اشتباه تایپی داشت: «persia» به‌جای «persian»، و
     // دامنه‌ی bbc.com هم اصلاً دامنه‌ی درست فیدهای BBC نیست. آدرس
     // درست بر اساس الگوی رسمی BBC (feeds.bbci.co.uk/<service>/rss.xml).

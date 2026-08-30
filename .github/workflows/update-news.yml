@@ -5,8 +5,7 @@ on:
     - cron: '*/10 * * * *'
   workflow_dispatch:
 
-# جلوگیری از اجرای همزمان چند run (که می‌تواند باعث push شکست‌خورده یا
-# commit های تداخلی شود) — اجرای بعدی صبر می‌کند تا اجرای فعلی تمام شود.
+# جلوگیری از اجرای همزمان چند run
 concurrency:
   group: update-news
   cancel-in-progress: false
@@ -14,49 +13,103 @@ concurrency:
 permissions:
   contents: write
 
-# ⚠️ diyar-news یک زیرپوشه داخل مخزن diyar-widgets است، نه یک مخزن
-# مستقل. این فایل باید در ریشه‌ی diyar-widgets قرار بگیرد
-# (.github/workflows/update-news.yml) و همه‌ی دستورات باید داخل
-# زیرپوشه‌ی diyar-news اجرا شوند.
+# diyar-news زیرپوشه مخزن اصلی است
 defaults:
   run:
     working-directory: diyar-news
 
 jobs:
+
   update-news:
+
     runs-on: ubuntu-latest
+
     timeout-minutes: 10
 
     steps:
+
+      # ==========================================
+      # دریافت مخزن
+      # ==========================================
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
+
+      # ==========================================
+      # نصب Node.js
+      # ==========================================
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
+
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: diyar-news/package-lock.json
 
+
+      # ==========================================
+      # نصب وابستگی‌های موجود پروژه
+      # ==========================================
+
       - name: Install dependencies
         run: npm ci
+
+
+      # ==========================================
+      # دریافت و پردازش اخبار
+      # ==========================================
 
       - name: Run news script
         run: node fetch-news.js
 
+
+      # ==========================================
+      # تولید چکیده خبرها
+      # ==========================================
+
+      - name: Generate news summaries
+        run: node generate-summaries.js
+
+
+      # ==========================================
+      # ثبت تغییرات در GitHub
+      # ==========================================
+
       - name: Commit and push changes
         run: |
+
           git config --local user.email "action@github.com"
+
           git config --local user.name "GitHub Action"
-          git add index.html news.html news.json news-ticker.html
+
+
+          git add \
+            index.html \
+            news.html \
+            news.json \
+            news-ticker.html \
+            news-summary.json
+
+
           if git diff --staged --quiet; then
+
             echo "No changes to commit."
+
             exit 0
+
           fi
-          git commit -m "Auto-update news: $(date +'%Y-%m-%d %H:%M:%S')"
-          # ابتدا تغییرات احتمالی جدید روی main را می‌گیریم تا در صورت push
-          # موازی از یک اجرای دیگر، push رد نشود.
-          # ⚠️ اگر branch اصلی مخزن شما «master» است نه «main»، هر دو خط
-          # زیر را به «master» تغییر دهید.
+
+
+          git commit \
+            -m "Auto-update news and summaries: $(date +'%Y-%m-%d %H:%M:%S')"
+
+
+          # دریافت تغییرات احتمالی جدید
+          # قبل از push
+
           git pull --rebase origin main
+
+
           git push origin HEAD:main

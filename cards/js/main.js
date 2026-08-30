@@ -33,26 +33,40 @@
     try {
       data = await window.DiyarCardData.loadAllData('data/');
     } catch (err) {
-      U.$('categoryGrid').textContent = '';
-      const p = document.createElement('p');
-      p.textContent = 'مشکلی در بارگذاری اطلاعات کارت‌پستال پیش آمد. لطفاً صفحه را دوباره بارگذاری کنید.';
-      U.$('categoryGrid').appendChild(p);
+      showFatalError();
       return;
     }
 
-    // نگاشت مسطح id → تمپلیت (برای دسترسی سریع از حالت Viewer یا هر جای دیگر)
-    const templatesById = {};
-    Object.keys(data.templates).forEach((group) => {
-      data.templates[group].forEach((tpl) => { templatesById[tpl.id] = Object.assign({ group }, tpl); });
-    });
+    try {
+      // نگاشت مسطح id → تمپلیت (برای دسترسی سریع از حالت Viewer یا هر جای دیگر)
+      // «_comment» در templates.json یک رشته‌ی مستندسازی است، نه یک گروه
+      // Template؛ باید هنگام پیمایش گروه‌ها نادیده گرفته شود.
+      const templatesById = {};
+      Object.keys(data.templates).forEach((group) => {
+        if (!Array.isArray(data.templates[group])) return;
+        data.templates[group].forEach((tpl) => { templatesById[tpl.id] = Object.assign({ group }, tpl); });
+      });
 
-    const sharedState = window.DiyarCardUrl.readStateFromUrl();
-    if (sharedState && sharedState.templateId && templatesById[sharedState.templateId]) {
-      initViewer(sharedState, templatesById);
-    } else {
-      initBuilder(data, templatesById);
+      const sharedState = window.DiyarCardUrl.readStateFromUrl();
+      if (sharedState && sharedState.templateId && templatesById[sharedState.templateId]) {
+        initViewer(sharedState, templatesById);
+      } else {
+        initBuilder(data, templatesById);
+      }
+    } catch (err) {
+      showFatalError();
     }
   });
+
+  function showFatalError() {
+    const grid = U.$('categoryGrid');
+    if (grid) {
+      grid.textContent = '';
+      const p = document.createElement('p');
+      p.textContent = 'مشکلی در بارگذاری اطلاعات کارت‌پستال پیش آمد. لطفاً صفحه را دوباره بارگذاری کنید.';
+      grid.appendChild(p);
+    }
+  }
 
   /* ============================ حالت مشاهده (لینک اشتراک‌گذاری‌شده) ============================ */
   function initViewer(state, templatesById) {

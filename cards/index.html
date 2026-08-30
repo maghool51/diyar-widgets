@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>کارت‌پستال دیجیتال دیار قدمگاه</title>
+<meta name="description" content="بهانه‌ای برای گفتن یک حس خوب — کارت‌پستال دیجیتال دیار قدمگاه. مناسبت را انتخاب کنید، پیام دلخواه بنویسید و لینک کارت را با عزیزانتان به اشتراک بگذارید." />
+<meta name="theme-color" content="#8a5a2b" />
+<link rel="canonical" href="https://maghool51.github.io/diyar-widgets/cards/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="کارت‌پستال دیجیتال دیار قدمگاه" />
+<meta property="og:description" content="بهانه‌ای برای گفتن یک حس خوب... 🌷 کارت‌پستال دیجیتال دیار قدمگاه" />
+<meta property="og:url" content="https://maghool51.github.io/diyar-widgets/cards/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="کارت‌پستال دیجیتال دیار قدمگاه" />
+<meta name="twitter:description" content="بهانه‌ای برای گفتن یک حس خوب... 🌷" />
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/palettes.css" />
+<link rel="stylesheet" href="css/layouts.css" />
+</head>
+<body>
+<a class="dq-skip-link" href="#dqMain">رفتن به محتوای اصلی</a>
+
+<div class="dq-app">
+  <button id="themeToggle" class="dq-theme-toggle" aria-label="تغییر پوسته روشن/تیره" title="روشن/تیره">
+    <span id="themeIcon" aria-hidden="true">🌙</span>
+  </button>
+
+  <header class="dq-header">
+    <p class="dq-header__brand">🏡 دیار قدمگاه</p>
+    <h1 class="dq-header__title">کارت‌پستال دیجیتال</h1>
+    <p class="dq-header__subtitle">بهانه‌ای برای گفتن یک حس خوب... 🌷</p>
+  </header>
+
+  <main id="dqMain">
+    <!-- ===================== حالت ساخت کارت (Builder) ===================== -->
+    <div id="dqBuilder">
+      <ul class="dq-steps" id="dqSteps" aria-hidden="true">
+        <li data-step="category"></li>
+        <li data-step="template"></li>
+        <li data-step="form"></li>
+        <li data-step="share"></li>
+      </ul>
+
+      <section class="dq-panel" id="panelCategory" data-panel="category">
+        <h2 class="dq-panel__title">مناسبت را انتخاب کنید</h2>
+        <div class="dq-grid" id="categoryGrid" role="list" aria-label="لیست مناسبت‌ها"></div>
+      </section>
+
+      <section class="dq-panel" id="panelOccasion" data-panel="occasion">
+        <button type="button" class="dq-back-btn" data-back="category">→ بازگشت</button>
+        <h2 class="dq-panel__title" id="occasionTitle">مناسبت مذهبی را انتخاب کنید</h2>
+        <div class="dq-occasion-list" id="occasionList" role="list" aria-label="لیست مناسبت‌های مذهبی"></div>
+      </section>
+
+      <section class="dq-panel" id="panelTemplate" data-panel="template">
+        <button type="button" class="dq-back-btn" data-back="category">→ بازگشت</button>
+        <h2 class="dq-panel__title">یک طرح انتخاب کنید</h2>
+        <div class="dq-grid dq-template-grid" id="templateGrid" role="list" aria-label="لیست طرح‌های کارت"></div>
+      </section>
+
+      <section class="dq-panel" id="panelForm" data-panel="form">
+        <button type="button" class="dq-back-btn" data-back="template">→ بازگشت</button>
+        <h2 class="dq-panel__title">اطلاعات کارت را وارد کنید</h2>
+
+        <div class="dq-preview-wrap">
+          <div id="formPreview"></div>
+        </div>
+
+        <form id="cardForm" novalidate>
+          <div class="dq-field">
+            <label for="fieldTo">نام گیرنده</label>
+            <input type="text" id="fieldTo" name="to" maxlength="40" placeholder="مثلاً زهرا خانم" autocomplete="off" />
+          </div>
+          <div class="dq-field">
+            <label for="fieldTitle">عنوان</label>
+            <input type="text" id="fieldTitle" name="title" maxlength="60" placeholder="مثلاً دوست عزیزم" autocomplete="off" />
+          </div>
+          <div class="dq-field">
+            <label id="chipsLabel">متن‌های آماده</label>
+            <div class="dq-message-chips" id="messageChips" aria-labelledby="chipsLabel"></div>
+            <label for="fieldMessage" class="dq-visually-hidden">متن پیام</label>
+            <textarea id="fieldMessage" name="message" maxlength="400" placeholder="پیام دلخواه خود را بنویسید…"></textarea>
+            <p class="dq-field__hint">می‌توانید از متن‌های آماده استفاده کنید یا پیام خودتان را بنویسید.</p>
+          </div>
+          <div class="dq-field">
+            <label for="fieldFrom">نام فرستنده</label>
+            <input type="text" id="fieldFrom" name="from" maxlength="40" placeholder="مثلاً عباس" autocomplete="off" />
+          </div>
+          <button type="submit" class="dq-btn dq-btn--primary">مشاهده و اشتراک‌گذاری کارت</button>
+        </form>
+      </section>
+
+      <section class="dq-panel" id="panelShare" data-panel="share">
+        <button type="button" class="dq-back-btn" data-back="form">→ ویرایش کارت</button>
+        <h2 class="dq-panel__title">کارت شما آماده است 🎉</h2>
+
+        <div class="dq-preview-wrap">
+          <div id="sharePreview"></div>
+        </div>
+
+        <div class="dq-actions-sticky">
+          <div class="dq-btn-row dq-btn-row--3">
+            <button type="button" class="dq-btn dq-btn--ghost" id="btnCopyLink">🔗 کپی لینک</button>
+            <button type="button" class="dq-btn dq-btn--ghost" id="btnShare">📤 اشتراک‌گذاری</button>
+            <button type="button" class="dq-btn dq-btn--ghost" id="btnSavePng">🖼️ ذخیره کارت</button>
+          </div>
+          <div class="dq-btn-row">
+            <button type="button" class="dq-btn dq-btn--primary" id="btnNewCard">ساخت کارت‌پستال جدید</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== حالت مشاهده کارت (لینک اشتراک‌گذاری‌شده) ===================== -->
+    <div id="dqViewer" class="dq-viewer" hidden>
+      <div class="dq-preview-wrap">
+        <div id="viewerPreview"></div>
+      </div>
+      <div class="dq-btn-row dq-btn-row--3">
+        <button type="button" class="dq-btn dq-btn--ghost" id="viewerCopyLink">🔗 کپی لینک</button>
+        <button type="button" class="dq-btn dq-btn--ghost" id="viewerShare">📤 اشتراک‌گذاری</button>
+        <button type="button" class="dq-btn dq-btn--ghost" id="viewerSavePng">🖼️ ذخیره کارت</button>
+      </div>
+      <p class="dq-viewer-cta">
+        <a href="./" id="viewerMakeOwn">🌷 ساخت کارت‌پستال من</a>
+      </p>
+    </div>
+  </main>
+
+  <p class="dq-signoff">🏡 دیار قدمگاه · <a href="https://diyareghadamgah.blogfa.com/" rel="noopener">diyareghadamgah.blogfa.com</a></p>
+</div>
+
+<div class="dq-toast" id="dqToast" role="status" aria-live="polite"></div>
+
+<script src="js/core/utils.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/url.js"></script>
+<script src="js/core/share.js"></script>
+<script src="js/core/export-png.js"></script>
+<script src="js/core/render.js"></script>
+<script src="js/data-loader.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

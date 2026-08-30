@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>اخبار دیار قدمگاه | آماده‌سازی برای روبیکا</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Tahoma, Arial, sans-serif;
+    background: #f5f7fa;
+    color: #263238;
+}
+
+.container {
+    max-width: 760px;
+    margin: auto;
+    padding: 18px;
+}
+
+.header {
+    background: linear-gradient(135deg, #263238, #455a64);
+    color: white;
+    border-radius: 18px;
+    padding: 22px 18px;
+    text-align: center;
+    box-shadow: 0 5px 18px rgba(0,0,0,.12);
+}
+
+.header h1 {
+    margin: 0 0 8px;
+    font-size: 23px;
+}
+
+.header p {
+    margin: 0;
+    opacity: .9;
+    font-size: 13px;
+}
+
+.controls {
+    margin-top: 15px;
+    background: white;
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+}
+
+.categories {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    border: 1px solid #d8dee3;
+    background: #fff;
+    color: #455a64;
+    border-radius: 20px;
+    padding: 8px 13px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.category-btn.active {
+    background: #37474f;
+    color: white;
+    border-color: #37474f;
+}
+
+.action-row {
+    display: flex;
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.action-btn {
+    flex: 1;
+    border: 0;
+    border-radius: 12px;
+    padding: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.copy-btn {
+    background: #1565c0;
+    color: white;
+}
+
+.refresh-btn {
+    background: #eceff1;
+    color: #263238;
+}
+
+.update {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #78909c;
+    text-align: center;
+}
+
+.news-list {
+    margin-top: 15px;
+}
+
+.news-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+}
+
+.news-number {
+    display: inline-block;
+    background: #eceff1;
+    color: #455a64;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    font-size: 13px;
+    margin-left: 5px;
+}
+
+.news-title {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.9;
+    margin-top: 8px;
+}
+
+.meta {
+    margin-top: 9px;
+    color: #607d8b;
+    font-size: 12px;
+    line-height: 2;
+}
+
+.read-link {
+    display: block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #1565c0;
+    font-size: 13px;
+}
+
+.status {
+    text-align: center;
+    padding: 25px;
+    color: #78909c;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    padding: 20px 10px;
+    color: #607d8b;
+    font-size: 13px;
+}
+
+.footer strong {
+    color: #37474f;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #263238;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    display: none;
+    z-index: 1000;
+}
+
+@media (max-width: 500px) {
+    .container {
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .news-title {
+        font-size: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <h1>📰 اخبار دیار قدمگاه</h1>
+        <p>آماده‌سازی اخبار برای انتشار در گروه روبیکا</p>
+    </header>
+
+    <section class="controls">
+
+        <div id="categories" class="categories">
+            <button class="category-btn active" data-category="all">
+                همه اخبار
+            </button>
+        </div>
+
+        <div class="action-row">
+            <button id="copyBtn" class="action-btn copy-btn">
+                📋 کپی برای روبیکا
+            </button>
+
+            <button id="refreshBtn" class="action-btn refresh-btn">
+                🔄 بروزرسانی
+            </button>
+        </div>
+
+        <div id="updateInfo" class="update">
+            در حال دریافت اخبار...
+        </div>
+
+    </section>
+
+    <main id="newsList" class="news-list">
+        <div class="status">در حال دریافت اخبار...</div>
+    </main>
+
+    <footer class="footer">
+        🏡 <strong>دیار قدمگاه</strong><br>
+        ✍️ معقول
+    </footer>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+
+const NEWS_URL =
+    "https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news.json";
+
+const NEWS_COUNT = 10;
+
+let allNews = [];
+let currentCategory = "all";
+
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function toPersianDigits(value) {
+    return String(value)
+        .replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+}
+
+
+function formatDate(dateString) {
+
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
+        return dateString || "";
+    }
+
+    return new Intl.DateTimeFormat("fa-IR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+    }).format(date);
+}
+
+
+async function loadNews() {
+
+    const newsList = document.getElementById("newsList");
+    const updateInfo = document.getElementById("updateInfo");
+
+    newsList.innerHTML =
+        '<div class="status">در حال دریافت اخبار...</div>';
+
+    try {
+
+        const response = await fetch(
+            NEWS_URL + "?t=" + Date.now(),
+            {
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("خطا در دریافت news.json");
+        }
+
+        const data = await response.json();
+
+        allNews = Array.isArray(data.news)
+            ? data.news
+            : [];
+
+        buildCategories(data.categories || []);
+
+        renderNews();
+
+        if (data.lastUpdatePersian) {
+            updateInfo.textContent =
+                "آخرین بروزرسانی اخبار: " +
+                data.lastUpdatePersian;
+        } else {
+            updateInfo.textContent =
+                "تعداد اخبار: " +
+                toPersianDigits(allNews.length);
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        newsList.innerHTML =
+            '<div class="status">❌ دریافت اخبار با مشکل روبه‌رو شد.</div>';
+
+        updateInfo.textContent =
+            "خطا در دریافت اطلاعات";
+    }
+}
+
+
+function buildCategories(categories) {
+
+    const container =
+        document.getElementById("categories");
+
+    container.innerHTML = "";
+
+    const allButton =
+        document.createElement("button");
+
+    allButton.className =
+        "category-btn active";
+
+    allButton.dataset.category = "all";
+
+    allButton.textContent = "همه اخبار";
+
+    allButton.onclick = () => {
+        currentCategory = "all";
+        setActiveCategory(allButton);
+        renderNews();
+    };
+
+    container.appendChild(allButton);
+
+
+    categories.forEach(category => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "category-btn";
+
+        button.dataset.category = category;
+
+        button.textContent = category;
+
+        button.onclick = () => {
+
+            currentCategory = category;
+
+            setActiveCategory(button);
+
+            renderNews();
+        };
+
+        container.appendChild(button);
+
+    });
+}
+
+
+function setActiveCategory(button) {
+
+    document
+        .querySelectorAll(".category-btn")
+        .forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+    button.classList.add("active");
+}
+
+
+function getVisibleNews() {
+
+    if (currentCategory === "all") {
+        return allNews.slice(0, NEWS_COUNT);
+    }
+
+    return allNews
+        .filter(news => news.category === currentCategory)
+        .slice(0, NEWS_COUNT);
+}
+
+
+function renderNews() {
+
+    const container =
+        document.getElementById("newsList");
+
+    const news =
+        getVisibleNews();
+
+    if (!news.length) {
+
+        container.innerHTML =
+            '<div class="status">خبری برای نمایش وجود ندارد.</div>';
+
+        return;
+    }
+
+    container.innerHTML =
+        news.map((item, index) => {
+
+            const title =
+                escapeHTML(item.title);
+
+            const source =
+                escapeHTML(item.source || "منبع نامشخص");
+
+            const category =
+                escapeHTML(item.category || "متفرقه");
+
+            const date =
+                escapeHTML(formatDate(item.date));
+
+            const link =
+                escapeHTML(item.link);
+
+            const flag =
+                escapeHTML(item.flag || "📰");
+
+            return `
+                <article class="news-card">
+
+                    <div>
+                        <span class="news-number">
+                            ${toPersianDigits(index + 1)}
+                        </span>
+
+                        ${flag}
+                    </div>
+
+                    <div class="news-title">
+                        ${title}
+                    </div>
+
+                    <div class="meta">
+                        📰 ${source}
+                        <br>
+                        🏷 ${category}
+                        <br>
+                        📅 ${date}
+                    </div>
+
+                    <a
+                        class="read-link"
+                        href="${link}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        🔗 مطالعه متن کامل خبر
+                    </a>
+
+                </article>
+            `;
+
+        }).join("");
+}
+
+
+function createRubikaText() {
+
+    const news =
+        getVisibleNews();
+
+    if (!news.length) {
+        return "";
+    }
+
+    let text =
+        "📰 مهم‌ترین اخبار روز | دیار قدمگاه\n\n";
+
+    news.forEach((item, index) => {
+
+        text +=
+            "🔴 " +
+            toPersianDigits(index + 1) +
+            ". " +
+            (item.title || "") +
+            "\n";
+
+        text +=
+            "📰 " +
+            (item.source || "منبع نامشخص") +
+            " | 🏷 " +
+            (item.category || "متفرقه") +
+            "\n";
+
+        text +=
+            "🔗 مطالعه خبر:\n" +
+            (item.link || "") +
+            "\n\n";
+    });
+
+    text +=
+        "ــــــــــــــــــــــــــــ\n" +
+        "🏡 دیار قدمگاه\n" +
+        "✍️ معقول";
+
+    return text;
+}
+
+
+async function copyForRubika() {
+
+    const text =
+        createRubikaText();
+
+    if (!text) {
+        showToast("خبری برای کپی وجود ندارد.");
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(text);
+
+        showToast(
+            "✅ متن اخبار برای روبیکا کپی شد."
+        );
+
+    } catch (error) {
+
+        const textarea =
+            document.createElement("textarea");
+
+        textarea.value = text;
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+
+        document.execCommand("copy");
+
+        textarea.remove();
+
+        showToast(
+            "✅ متن اخبار کپی شد."
+        );
+    }
+}
+
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.style.display = "block";
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer =
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 2500);
+}
+
+
+document
+    .getElementById("copyBtn")
+    .addEventListener(
+        "click",
+        copyForRubika
+    );
+
+
+document
+    .getElementById("refreshBtn")
+    .addEventListener(
+        "click",
+        loadNews
+    );
+
+
+loadNews();
+
+</script>
+
+</body>
+</html>

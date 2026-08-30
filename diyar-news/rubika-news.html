@@ -221,6 +221,7 @@ body {
         </div>
 
         <div class="action-row">
+
             <button id="copyBtn" class="action-btn copy-btn">
                 📋 کپی برای روبیکا
             </button>
@@ -228,6 +229,7 @@ body {
             <button id="refreshBtn" class="action-btn refresh-btn">
                 🔄 بروزرسانی
             </button>
+
         </div>
 
         <div id="updateInfo" class="update">
@@ -237,7 +239,9 @@ body {
     </section>
 
     <main id="newsList" class="news-list">
-        <div class="status">در حال دریافت اخبار...</div>
+        <div class="status">
+            در حال دریافت اخبار...
+        </div>
     </main>
 
     <footer class="footer">
@@ -254,6 +258,9 @@ body {
 const NEWS_URL =
     "https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news.json";
 
+const RUBIKA_PAGE_URL =
+    "https://maghool51.github.io/diyar-widgets/diyar-news/rubika-news.html";
+
 const NEWS_COUNT = 10;
 
 let allNews = [];
@@ -261,6 +268,7 @@ let currentCategory = "all";
 
 
 function escapeHTML(value) {
+
     return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -271,6 +279,7 @@ function escapeHTML(value) {
 
 
 function toPersianDigits(value) {
+
     return String(value)
         .replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
 }
@@ -296,8 +305,11 @@ function formatDate(dateString) {
 
 async function loadNews() {
 
-    const newsList = document.getElementById("newsList");
-    const updateInfo = document.getElementById("updateInfo");
+    const newsList =
+        document.getElementById("newsList");
+
+    const updateInfo =
+        document.getElementById("updateInfo");
 
     newsList.innerHTML =
         '<div class="status">در حال دریافت اخبار...</div>';
@@ -312,27 +324,38 @@ async function loadNews() {
         );
 
         if (!response.ok) {
-            throw new Error("خطا در دریافت news.json");
+            throw new Error(
+                "خطا در دریافت news.json"
+            );
         }
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
-        allNews = Array.isArray(data.news)
-            ? data.news
-            : [];
+        allNews =
+            Array.isArray(data.news)
+                ? data.news
+                : [];
 
-        buildCategories(data.categories || []);
+        buildCategories(
+            data.categories || []
+        );
 
         renderNews();
 
         if (data.lastUpdatePersian) {
+
             updateInfo.textContent =
                 "آخرین بروزرسانی اخبار: " +
                 data.lastUpdatePersian;
+
         } else {
+
             updateInfo.textContent =
                 "تعداد اخبار: " +
-                toPersianDigits(allNews.length);
+                toPersianDigits(
+                    allNews.length
+                );
         }
 
     } catch (error) {
@@ -340,7 +363,9 @@ async function loadNews() {
         console.error(error);
 
         newsList.innerHTML =
-            '<div class="status">❌ دریافت اخبار با مشکل روبه‌رو شد.</div>';
+            '<div class="status">' +
+            '❌ دریافت اخبار با مشکل روبه‌رو شد.' +
+            '</div>';
 
         updateInfo.textContent =
             "خطا در دریافت اطلاعات";
@@ -361,17 +386,26 @@ function buildCategories(categories) {
     allButton.className =
         "category-btn active";
 
-    allButton.dataset.category = "all";
+    allButton.dataset.category =
+        "all";
 
-    allButton.textContent = "همه اخبار";
+    allButton.textContent =
+        "همه اخبار";
 
     allButton.onclick = () => {
+
         currentCategory = "all";
-        setActiveCategory(allButton);
+
+        setActiveCategory(
+            allButton
+        );
+
         renderNews();
     };
 
-    container.appendChild(allButton);
+    container.appendChild(
+        allButton
+    );
 
 
     categories.forEach(category => {
@@ -379,22 +413,30 @@ function buildCategories(categories) {
         const button =
             document.createElement("button");
 
-        button.className = "category-btn";
+        button.className =
+            "category-btn";
 
-        button.dataset.category = category;
+        button.dataset.category =
+            category;
 
-        button.textContent = category;
+        button.textContent =
+            category;
 
         button.onclick = () => {
 
-            currentCategory = category;
+            currentCategory =
+                category;
 
-            setActiveCategory(button);
+            setActiveCategory(
+                button
+            );
 
             renderNews();
         };
 
-        container.appendChild(button);
+        container.appendChild(
+            button
+        );
 
     });
 }
@@ -405,29 +447,48 @@ function setActiveCategory(button) {
     document
         .querySelectorAll(".category-btn")
         .forEach(btn => {
-            btn.classList.remove("active");
+
+            btn.classList.remove(
+                "active"
+            );
+
         });
 
-    button.classList.add("active");
+    button.classList.add(
+        "active"
+    );
 }
 
 
 function getVisibleNews() {
 
     if (currentCategory === "all") {
-        return allNews.slice(0, NEWS_COUNT);
+
+        return allNews.slice(
+            0,
+            NEWS_COUNT
+        );
     }
 
     return allNews
-        .filter(news => news.category === currentCategory)
-        .slice(0, NEWS_COUNT);
+        .filter(
+            news =>
+                news.category ===
+                currentCategory
+        )
+        .slice(
+            0,
+            NEWS_COUNT
+        );
 }
 
 
 function renderNews() {
 
     const container =
-        document.getElementById("newsList");
+        document.getElementById(
+            "newsList"
+        );
 
     const news =
         getVisibleNews();
@@ -435,70 +496,102 @@ function renderNews() {
     if (!news.length) {
 
         container.innerHTML =
-            '<div class="status">خبری برای نمایش وجود ندارد.</div>';
+            '<div class="status">' +
+            'خبری برای نمایش وجود ندارد.' +
+            '</div>';
 
         return;
     }
 
     container.innerHTML =
-        news.map((item, index) => {
+        news.map(
+            (item, index) => {
 
-            const title =
-                escapeHTML(item.title);
+                const title =
+                    escapeHTML(
+                        item.title
+                    );
 
-            const source =
-                escapeHTML(item.source || "منبع نامشخص");
+                const source =
+                    escapeHTML(
+                        item.source ||
+                        "منبع نامشخص"
+                    );
 
-            const category =
-                escapeHTML(item.category || "متفرقه");
+                const category =
+                    escapeHTML(
+                        item.category ||
+                        "متفرقه"
+                    );
 
-            const date =
-                escapeHTML(formatDate(item.date));
+                const date =
+                    escapeHTML(
+                        formatDate(
+                            item.date
+                        )
+                    );
 
-            const link =
-                escapeHTML(item.link);
+                const link =
+                    escapeHTML(
+                        item.link
+                    );
 
-            const flag =
-                escapeHTML(item.flag || "📰");
+                const flag =
+                    escapeHTML(
+                        item.flag ||
+                        "📰"
+                    );
 
-            return `
-                <article class="news-card">
+                return `
+                    <article class="news-card">
 
-                    <div>
-                        <span class="news-number">
-                            ${toPersianDigits(index + 1)}
-                        </span>
+                        <div>
+                            <span class="news-number">
+                                ${toPersianDigits(
+                                    index + 1
+                                )}
+                            </span>
 
-                        ${flag}
-                    </div>
+                            ${flag}
+                        </div>
 
-                    <div class="news-title">
-                        ${title}
-                    </div>
+                        <div class="news-title">
+                            ${title}
+                        </div>
 
-                    <div class="meta">
-                        📰 ${source}
-                        <br>
-                        🏷 ${category}
-                        <br>
-                        📅 ${date}
-                    </div>
+                        <div class="meta">
+                            📰 ${source}
+                            <br>
+                            🏷 ${category}
+                            <br>
+                            📅 ${date}
+                        </div>
 
-                    <a
-                        class="read-link"
-                        href="${link}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        🔗 مطالعه متن کامل خبر
-                    </a>
+                        <a
+                            class="read-link"
+                            href="${link}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            🔗 مطالعه متن کامل خبر
+                        </a>
 
-                </article>
-            `;
+                    </article>
+                `;
 
-        }).join("");
+            }
+        ).join("");
 }
 
+
+/*
+ * ساخت متن مخصوص روبیکا
+ *
+ * نکته مهم:
+ * لینک تک‌تک خبرها عمداً در متن کپی نمی‌شوند.
+ * فقط یک لینک به صفحه اخبار دیار قدمگاه
+ * در انتهای پیام قرار می‌گیرد.
+ */
 
 function createRubikaText() {
 
@@ -512,32 +605,39 @@ function createRubikaText() {
     let text =
         "📰 مهم‌ترین اخبار روز | دیار قدمگاه\n\n";
 
-    news.forEach((item, index) => {
 
-        text +=
-            "🔴 " +
-            toPersianDigits(index + 1) +
-            ". " +
-            (item.title || "") +
-            "\n";
+    news.forEach(
+        (item, index) => {
 
-        text +=
-            "📰 " +
-            (item.source || "منبع نامشخص") +
-            " | 🏷 " +
-            (item.category || "متفرقه") +
-            "\n";
+            text +=
+                "🔴 " +
+                toPersianDigits(
+                    index + 1
+                ) +
+                ". " +
+                (item.title || "") +
+                "\n";
 
-        text +=
-            "🔗 مطالعه خبر:\n" +
-            (item.link || "") +
-            "\n\n";
-    });
+            text +=
+                "📰 " +
+                (item.source ||
+                "منبع نامشخص") +
+                " | 🏷 " +
+                (item.category ||
+                "متفرقه") +
+                "\n\n";
+        }
+    );
+
 
     text +=
         "ــــــــــــــــــــــــــــ\n" +
+        "📰 مشاهده متن کامل اخبار:\n" +
+        RUBIKA_PAGE_URL +
+        "\n\n" +
         "🏡 دیار قدمگاه\n" +
         "✍️ معقول";
+
 
     return text;
 }
@@ -549,13 +649,20 @@ async function copyForRubika() {
         createRubikaText();
 
     if (!text) {
-        showToast("خبری برای کپی وجود ندارد.");
+
+        showToast(
+            "خبری برای کپی وجود ندارد."
+        );
+
         return;
     }
 
+
     try {
 
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(
+            text
+        );
 
         showToast(
             "✅ متن اخبار برای روبیکا کپی شد."
@@ -564,15 +671,22 @@ async function copyForRubika() {
     } catch (error) {
 
         const textarea =
-            document.createElement("textarea");
+            document.createElement(
+                "textarea"
+            );
 
-        textarea.value = text;
+        textarea.value =
+            text;
 
-        document.body.appendChild(textarea);
+        document.body.appendChild(
+            textarea
+        );
 
         textarea.select();
 
-        document.execCommand("copy");
+        document.execCommand(
+            "copy"
+        );
 
         textarea.remove();
 
@@ -586,18 +700,30 @@ async function copyForRubika() {
 function showToast(message) {
 
     const toast =
-        document.getElementById("toast");
+        document.getElementById(
+            "toast"
+        );
 
-    toast.textContent = message;
+    toast.textContent =
+        message;
 
-    toast.style.display = "block";
+    toast.style.display =
+        "block";
 
-    clearTimeout(window.toastTimer);
+    clearTimeout(
+        window.toastTimer
+    );
 
     window.toastTimer =
-        setTimeout(() => {
-            toast.style.display = "none";
-        }, 2500);
+        setTimeout(
+            () => {
+
+                toast.style.display =
+                    "none";
+
+            },
+            2500
+        );
 }
 
 

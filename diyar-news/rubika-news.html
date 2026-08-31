@@ -2,306 +2,280 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#263238">
-
 <title>اخبار دیار قدمگاه</title>
 
 <style>
-*{
-    box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
-    margin:0;
-    padding:0;
-    background:#f1f4f6;
-    color:#263238;
-    font-family:Tahoma,Arial,sans-serif;
-    line-height:1.8;
+margin:0;
+padding:0;
+background:#f1f4f6;
+color:#263238;
+font-family:Tahoma,Arial,sans-serif;
+line-height:1.8
 }
 
 .container{
-    width:100%;
-    max-width:780px;
-    margin:auto;
-    padding:8px;
+width:100%;
+max-width:780px;
+margin:auto;
+padding:7px
 }
 
-/* ================= HEADER ================= */
+/* ===== HEADER ===== */
 
 .header{
-    position:relative;
-    overflow:hidden;
-    text-align:center;
-    color:#fff;
-    padding:18px 10px;
-    border-radius:20px;
-    background:linear-gradient(135deg,#263238,#455a64);
-    box-shadow:0 5px 18px rgba(0,0,0,.14);
+position:relative;
+overflow:hidden;
+text-align:center;
+color:#fff;
+padding:18px 12px;
+border-radius:20px;
+background:linear-gradient(135deg,#263238,#455a64);
+box-shadow:0 5px 18px rgba(0,0,0,.14)
 }
 
 .header h1{
-    margin:0;
-    font-size:22px;
+margin:0;
+font-size:21px
 }
 
 .header-subtitle{
-    margin-top:3px;
-    font-size:12px;
-    opacity:.9;
+margin-top:3px;
+font-size:12px;
+opacity:.9
 }
 
 .live-light,
 .news-light{
-    display:inline-block;
-    border-radius:50%;
-    background:#ff1744;
-    box-shadow:
-        0 0 5px #ff1744,
-        0 0 12px rgba(255,23,68,.8);
-    animation:blink 1.2s infinite;
+display:inline-block;
+border-radius:50%;
+background:#ff1744;
+box-shadow:0 0 5px #ff1744,0 0 12px rgba(255,23,68,.8);
+animation:blink 1.2s infinite
 }
 
 .live-light{
-    width:12px;
-    height:12px;
-    margin-left:5px;
+width:12px;
+height:12px;
+margin-left:5px
 }
 
 .news-light{
-    width:8px;
-    height:8px;
-    margin-left:4px;
+width:8px;
+height:8px;
+margin-left:4px
 }
 
 @keyframes blink{
-    0%,100%{
-        opacity:1;
-        transform:scale(1);
-    }
-    50%{
-        opacity:.25;
-        transform:scale(.8);
-    }
+0%,100%{opacity:1;transform:scale(1)}
+50%{opacity:.25;transform:scale(.8)}
 }
 
-/* ================= CONTROLS ================= */
+/* ===== CONTROLS ===== */
 
 .controls{
-    margin-top:9px;
-    padding:10px;
-    border-radius:16px;
-    background:#fff;
-    box-shadow:0 3px 12px rgba(0,0,0,.07);
+margin-top:8px;
+padding:9px;
+border-radius:16px;
+background:#fff;
+box-shadow:0 3px 12px rgba(0,0,0,.07)
 }
 
 .categories{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
+display:flex;
+flex-wrap:wrap;
+gap:6px
 }
 
 .category-btn{
-    border:1px solid #d7dde0;
-    background:#fff;
-    color:#455a64;
-    padding:5px 10px;
-    border-radius:20px;
-    font-family:inherit;
-    font-size:11px;
-    cursor:pointer;
+border:1px solid #d7dde0;
+background:#fff;
+color:#455a64;
+padding:5px 10px;
+border-radius:20px;
+font-family:inherit;
+font-size:11px;
+cursor:pointer
 }
 
 .category-btn.active{
-    color:#fff;
-    background:#37474f;
-    border-color:#37474f;
+color:#fff;
+background:#37474f;
+border-color:#37474f
 }
 
 .action-row{
-    display:flex;
-    gap:7px;
-    margin-top:9px;
+display:flex;
+gap:7px;
+margin-top:8px
 }
 
 .action-btn{
-    flex:1;
-    border:0;
-    border-radius:12px;
-    padding:9px;
-    font-family:inherit;
-    font-size:12px;
-    cursor:pointer;
+flex:1;
+border:0;
+border-radius:12px;
+padding:9px;
+font-family:inherit;
+font-size:12px;
+cursor:pointer
 }
 
 .copy-btn{
-    color:#fff;
-    background:#1565c0;
+color:#fff;
+background:#1565c0
 }
 
 .refresh-btn{
-    color:#263238;
-    background:#eceff1;
+color:#263238;
+background:#eceff1
 }
 
 .update{
-    margin-top:7px;
-    color:#78909c;
-    text-align:center;
-    font-size:10px;
+margin-top:6px;
+color:#78909c;
+text-align:center;
+font-size:10px
 }
 
-/* ================= NEWS ================= */
+/* ===== NEWS ===== */
 
 .news-list{
-    margin-top:9px;
+margin-top:8px
 }
 
 .news-card{
-    position:relative;
-    overflow:hidden;
-    margin-bottom:7px;
-    padding:11px 12px;
-    border-radius:15px;
-    background:#fff;
-    box-shadow:0 2px 9px rgba(0,0,0,.06);
+position:relative;
+overflow:hidden;
+margin-bottom:7px;
+padding:10px 12px;
+border-radius:15px;
+background:#fff;
+box-shadow:0 2px 9px rgba(0,0,0,.06)
 }
 
 .news-card::before{
-    content:"";
-    position:absolute;
-    top:0;
-    right:0;
-    width:3px;
-    height:100%;
-    background:#e53935;
+content:"";
+position:absolute;
+top:0;
+right:0;
+width:3px;
+height:100%;
+background:#e53935
 }
 
 .news-title{
-    font-size:14px;
-    font-weight:bold;
-    line-height:1.85;
+font-size:14px;
+font-weight:bold;
+line-height:1.85
 }
 
 .news-number{
-    color:#d32f2f;
+color:#d32f2f
 }
 
 .meta{
-    margin-top:2px;
-    color:#607d8b;
-    font-size:11px;
+margin-top:2px;
+color:#607d8b;
+font-size:11px
 }
 
 .summary{
-    margin-top:5px;
-    padding:5px 8px;
-    border-right:3px solid #90a4ae;
-    border-radius:6px;
-    background:#f7f9fa;
-    color:#455a64;
-    font-size:11px;
-    line-height:1.8;
+margin-top:5px;
+padding:5px 8px;
+border-right:3px solid #90a4ae;
+border-radius:6px;
+background:#f7f9fa;
+color:#455a64;
+font-size:11px;
+line-height:1.8
 }
 
 .read-link{
-    display:block;
-    margin-top:5px;
-    color:#1565c0;
-    font-size:11px;
-    text-decoration:none;
+display:block;
+margin-top:5px;
+color:#1565c0;
+font-size:11px;
+text-decoration:none
 }
 
 .fresh-badge{
-    display:inline-block;
-    margin-right:5px;
-    padding:1px 6px;
-    border-radius:9px;
-    color:#fff;
-    background:#e53935;
-    font-size:9px;
+display:inline-block;
+margin-right:5px;
+padding:1px 6px;
+border-radius:9px;
+color:#fff;
+background:#e53935;
+font-size:9px
 }
 
 .news-card.new-news{
-    animation:newGlow 2.2s infinite;
+animation:newGlow 2.2s infinite
 }
 
 @keyframes newGlow{
-    0%,100%{
-        box-shadow:0 2px 9px rgba(0,0,0,.06);
-    }
-    50%{
-        box-shadow:0 3px 16px rgba(211,47,47,.18);
-    }
+0%,100%{box-shadow:0 2px 9px rgba(0,0,0,.06)}
+50%{box-shadow:0 3px 16px rgba(211,47,47,.18)}
 }
-
-/* ================= STATUS ================= */
 
 .status{
-    padding:25px 10px;
-    border-radius:15px;
-    background:#fff;
-    color:#78909c;
-    text-align:center;
-    font-size:13px;
+padding:25px 10px;
+border-radius:15px;
+background:#fff;
+color:#78909c;
+text-align:center;
+font-size:13px
 }
 
-/* ================= FOOTER ================= */
+/* ===== FOOTER ===== */
 
 .footer{
-    padding:15px 8px;
-    color:#607d8b;
-    text-align:center;
-    font-size:11px;
+padding:15px 8px;
+color:#607d8b;
+text-align:center;
+font-size:11px
 }
 
-/* ================= TOAST ================= */
+/* ===== TOAST ===== */
 
 .toast{
-    position:fixed;
-    z-index:9999;
-    right:50%;
-    bottom:18px;
-    transform:translateX(50%);
-    display:none;
-    max-width:90%;
-    padding:9px 15px;
-    border-radius:11px;
-    color:#fff;
-    background:#263238;
-    box-shadow:0 4px 15px rgba(0,0,0,.25);
-    font-size:11px;
-    text-align:center;
+position:fixed;
+z-index:9999;
+right:50%;
+bottom:18px;
+transform:translateX(50%);
+display:none;
+max-width:90%;
+padding:9px 15px;
+border-radius:11px;
+color:#fff;
+background:#263238;
+box-shadow:0 4px 15px rgba(0,0,0,.25);
+font-size:11px;
+text-align:center
 }
 
 @media(max-width:520px){
 
-    .container{
-        padding:6px;
-    }
+.container{padding:6px}
 
-    .header{
-        padding:17px 8px;
-    }
+.header{padding:17px 8px}
 
-    .header h1{
-        font-size:19px;
-    }
+.header h1{font-size:19px}
 
-    .action-row{
-        flex-direction:column;
-    }
+.action-row{flex-direction:column}
 }
 
 @media(prefers-reduced-motion:reduce){
 
-    *,
-    *::before,
-    *::after{
-        animation:none!important;
-        transition:none!important;
-    }
+*,
+*::before,
+*::after{
+animation:none!important
+}
 }
 </style>
 </head>
@@ -312,57 +286,51 @@ body{
 
 <header class="header">
 
-    <h1>
-        <span class="live-light"></span>
-        📰 مهم‌ترین اخبار روز
-    </h1>
+<h1>
+<span class="live-light"></span>
+📰 مهم‌ترین اخبار روز
+</h1>
 
-    <div id="dateText" class="header-subtitle">
-        🏡 دیار قدمگاه
-    </div>
+<div id="dateText" class="header-subtitle">
+🏡 دیار قدمگاه
+</div>
 
 </header>
 
 <section class="controls">
 
-    <div id="categories" class="categories"></div>
+<div id="categories" class="categories"></div>
 
-    <div class="action-row">
+<div class="action-row">
 
-        <button
-            id="copyBtn"
-            class="action-btn copy-btn"
-            type="button">
-            📋 کپی برای روبیکا
-        </button>
+<button id="copyBtn" class="action-btn copy-btn" type="button">
+📋 کپی برای روبیکا
+</button>
 
-        <button
-            id="refreshBtn"
-            class="action-btn refresh-btn"
-            type="button">
-            🔄 بروزرسانی
-        </button>
+<button id="refreshBtn" class="action-btn refresh-btn" type="button">
+🔄 بروزرسانی
+</button>
 
-    </div>
+</div>
 
-    <div id="updateInfo" class="update">
-        در حال دریافت اخبار...
-    </div>
+<div id="updateInfo" class="update">
+در حال دریافت اخبار...
+</div>
 
 </section>
 
 <main id="newsList" class="news-list">
 
-    <div class="status">
-        📰 در حال دریافت مهم‌ترین اخبار...
-    </div>
+<div class="status">
+📰 در حال دریافت مهم‌ترین اخبار...
+</div>
 
 </main>
 
 <footer class="footer">
-    🏡 دیار قدمگاه
-    <br>
-    ✍️ معقول
+🏡 دیار قدمگاه
+<br>
+✍️ معقول
 </footer>
 
 </div>
@@ -372,7 +340,6 @@ body{
 <script>
 
 "use strict";
-
 
 /* =====================================================
    SETTINGS
@@ -384,27 +351,13 @@ const SUMMARY_URL =
 const RUBIKA_PAGE_URL =
 "https://maghool51.github.io/diyar-widgets/diyar-news/rubika-news.html";
 
-const NEWS_COUNT = 10;
+const NEWS_COUNT=10;
 
-const MAX_SUMMARY_LENGTH = 150;
+const MAX_SUMMARY_LENGTH=150;
 
-let allNews = [];
+let allNews=[];
 
-let currentCategory = "all";
-
-
-/* =====================================================
-   PERSIAN DIGITS
-===================================================== */
-
-function toPersianDigits(value){
-
-    return String(value ?? "")
-        .replace(
-            /\d/g,
-            d => "۰۱۲۳۴۵۶۷۸۹"[d]
-        );
-}
+let currentCategory="all";
 
 
 /* =====================================================
@@ -413,30 +366,46 @@ function toPersianDigits(value){
 
 function normalizeText(value){
 
-    return String(value ?? "")
-        .replace(/ي/g,"ی")
-        .replace(/ى/g,"ی")
-        .replace(/ك/g,"ک")
-        .replace(/ۀ/g,"ه")
-        .replace(/\u200c/g," ")
-        .replace(/\s+/g," ")
-        .trim()
-        .toLowerCase();
+return String(value??"")
+.replace(/ي/g,"ی")
+.replace(/ى/g,"ی")
+.replace(/ك/g,"ک")
+.replace(/\u200c/g," ")
+.replace(/\s+/g," ")
+.trim()
+.toLowerCase();
+
 }
 
 
 /* =====================================================
-   ESCAPE HTML
+   ESCAPE
 ===================================================== */
 
 function escapeHTML(value){
 
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   PERSIAN DIGITS
+===================================================== */
+
+function toPersianDigits(value){
+
+return String(value??"")
+.replace(
+/\d/g,
+d=>"۰۱۲۳۴۵۶۷۸۹"[d]
+);
+
 }
 
 
@@ -446,281 +415,331 @@ function escapeHTML(value){
 
 function smartCategory(item){
 
-    const title =
-        normalizeText(item.title);
+const title=normalizeText(item.title);
 
-    const original =
-        normalizeText(item.category);
+const original=normalizeText(item.category);
 
 
-    const groups = {
+/* ---------- ورزش ---------- */
 
-        "ورزشی":[
-            "فوتبال",
-            "والیبال",
-            "بسکتبال",
-            "فوتسال",
-            "تنیس",
-            "کشتی",
-            "ورزش",
-            "ورزشی",
-            "لیگ برتر",
-            "جام جهانی",
-            "جام‌جهانی",
-            "فینال",
-            "بازیکن",
-            "مربی",
-            "گلزنی",
-            "استقلال",
-            "پرسپولیس",
-            "سپاهان",
-            "تراکتور",
-            "رئال مادرید",
-            "بارسلونا",
-            "منچستر",
-            "منچستریونایتد",
-            "فوتبال ساحلی"
-        ],
+const sportKeywords=[
 
+"فوتبال",
+"والیبال",
+"بسکتبال",
+"فوتسال",
+"تنیس",
+"کشتی",
+"ورزش",
+"ورزشی",
+"لیگ برتر",
+"جام جهانی",
+"جام‌جهانی",
+"فینال",
+"بازیکن",
+"مربی",
+"گلزنی",
+"استقلال",
+"پرسپولیس",
+"سپاهان",
+"تراکتور",
+"رئال مادرید",
+"بارسلونا",
+"منچستر",
+"منچستریونایتد",
+"فوتبال ساحلی"
 
-        "اقتصادی":[
-            "اقتصاد",
-            "اقتصادی",
-            "مشاغل خانگی",
-            "اعتبارات",
-            "اعتبار",
-            "کسب و کار",
-            "کسب‌وکار",
-            "وام",
-            "تسهیلات",
-            "بانک",
-            "بانکی",
-            "دلار",
-            "یورو",
-            "ارز",
-            "طلا",
-            "سکه",
-            "بورس",
-            "تورم",
-            "قیمت",
-            "گرانی",
-            "مالیات",
-            "صادرات",
-            "واردات",
-            "سرمایه گذاری",
-            "سرمایه‌گذاری",
-            "مسکن",
-            "اجاره",
-            "خودرو",
-            "نفت",
-            "گاز",
-            "پتروشیمی",
-            "تولید",
-            "اشتغال",
-            "کارآفرینی"
-        ],
+];
+
+if(
+sportKeywords.some(
+k=>title.includes(normalizeText(k))
+)
+)
+return "ورزشی";
 
 
-        "علمی و فناوری":[
-            "هوش مصنوعی",
-            "فناوری",
-            "تکنولوژی",
-            "اینترنت",
-            "موبایل",
-            "گوشی هوشمند",
-            "کامپیوتر",
-            "رایانه",
-            "نرم افزار",
-            "نرم‌افزار",
-            "سخت افزار",
-            "سخت‌افزار",
-            "ربات",
-            "رباتیک",
-            "علمی",
-            "دانشگاه",
-            "دانشجو",
-            "پژوهش",
-            "تحقیقات",
-            "فضا",
-            "ماهواره",
-            "نجوم",
-            "استارتاپ",
-            "دیجیتال",
-            "سایبری",
-            "اپلیکیشن",
-            "برنامه نویسی",
-            "برنامه‌نویسی",
-            "شرکت‌های فناور",
-            "شرکت فناور"
-        ],
+/* ---------- اقتصاد ---------- */
+
+const economyKeywords=[
+
+"اقتصاد",
+"اقتصادی",
+"مشاغل خانگی",
+"اعتبارات",
+"اعتبار",
+"کسب و کار",
+"کسب‌وکار",
+"وام",
+"تسهیلات",
+"بانک",
+"بانکی",
+"دلار",
+"یورو",
+"ارز",
+"طلا",
+"سکه",
+"بورس",
+"تورم",
+"قیمت",
+"گرانی",
+"مالیات",
+"صادرات",
+"واردات",
+"سرمایه گذاری",
+"سرمایه‌گذاری",
+"مسکن",
+"اجاره",
+"خودرو",
+"نفت",
+"گاز",
+"پتروشیمی",
+"تولید",
+"اشتغال",
+"کارآفرینی"
+
+];
+
+if(
+economyKeywords.some(
+k=>title.includes(normalizeText(k))
+)
+)
+return "اقتصادی";
 
 
-        "بین‌الملل":[
-            "آمریکا",
-            "آمریکایی",
-            "آلمان",
-            "فرانسه",
-            "انگلیس",
-            "بریتانیا",
-            "روسیه",
-            "اوکراین",
-            "چین",
-            "هند",
-            "قرقیزستان",
-            "اسرائیل",
-            "اسرائیلی",
-            "فلسطین",
-            "فلسطینی",
-            "غزه",
-            "لبنان",
-            "لبنانی",
-            "حزب الله",
-            "حزب‌الله",
-            "سوریه",
-            "عراق",
-            "افغانستان",
-            "پاکستان",
-            "ترکیه",
-            "اردن",
-            "یمن",
-            "سازمان ملل",
-            "ناتو",
-            "کاخ سفید",
-            "اتحادیه اروپا",
-            "گروه ۷",
-            "گروه هفت",
-            "بین الملل",
-            "بین‌الملل",
-            "نشست سازمان همکاری شانگهای",
-            "سران هند",
-            "سران قرقیزستان"
-        ],
+/* ---------- فناوری ---------- */
+
+const technologyKeywords=[
+
+"هوش مصنوعی",
+"فناوری",
+"تکنولوژی",
+"اینترنت",
+"موبایل",
+"گوشی هوشمند",
+"کامپیوتر",
+"رایانه",
+"نرم افزار",
+"نرم‌افزار",
+"سخت افزار",
+"سخت‌افزار",
+"ربات",
+"رباتیک",
+"علمی",
+"دانشگاه",
+"دانشجو",
+"پژوهش",
+"تحقیقات",
+"فضا",
+"ماهواره",
+"نجوم",
+"استارتاپ",
+"دیجیتال",
+"سایبری",
+"اپلیکیشن",
+"برنامه نویسی",
+"برنامه‌نویسی",
+"فناور",
+"فناوری"
+
+];
+
+if(
+technologyKeywords.some(
+k=>title.includes(normalizeText(k))
+)
+)
+return "علمی و فناوری";
 
 
-        "اجتماعی":[
-            "تصادف",
-            "سانحه",
-            "حادثه",
-            "کشته",
-            "مصدوم",
-            "مصدومان",
-            "مجروح",
-            "مجروحان",
-            "آتش سوزی",
-            "آتش‌سوزی",
-            "حریق",
-            "فرونشست",
-            "ایمن سازی",
-            "ایمن‌سازی",
-            "مدرسه",
-            "مدارس",
-            "دانش آموز",
-            "دانش‌آموز",
-            "معلم",
-            "آموزش و پرورش",
-            "بیمارستان",
-            "پزشکی",
-            "درمان",
-            "سلامت",
-            "بهداشت",
-            "شهرداری",
-            "خیابان",
-            "روستا",
-            "شهرستان",
-            "ترافیک",
-            "رانندگی",
-            "محور",
-            "جاده",
-            "زلزله",
-            "سیل",
-            "بارندگی",
-            "آبگرفتگی",
-            "آلودگی هوا",
-            "محیط زیست",
-            "تجمعات",
-            "زائران",
-            "خانواده زندانیان",
-            "زندانیان",
-            "خیرین",
-            "خانواده",
-            "سرعت‌کاه",
-            "سرعت کاه",
-            "وحدت اسلامی",
-            "همبستگی",
-            "آرامش اجتماعی"
-        ],
+/* ---------- بین الملل ---------- */
+
+const internationalKeywords=[
+
+"آمریکا",
+"آمریکایی",
+"آلمان",
+"فرانسه",
+"انگلیس",
+"بریتانیا",
+"روسیه",
+"اوکراین",
+"چین",
+"هند",
+"قرقیزستان",
+"اسرائیل",
+"اسرائیلی",
+"فلسطین",
+"فلسطینی",
+"غزه",
+"لبنان",
+"لبنانی",
+"حزب الله",
+"حزب‌الله",
+"سوریه",
+"عراق",
+"افغانستان",
+"پاکستان",
+"ترکیه",
+"اردن",
+"یمن",
+"سازمان ملل",
+"ناتو",
+"کاخ سفید",
+"اتحادیه اروپا",
+"گروه ۷",
+"گروه هفت",
+"بین الملل",
+"بین‌الملل",
+"شانگهای",
+"جنگ علیه ایران"
+
+];
+
+if(
+internationalKeywords.some(
+k=>title.includes(normalizeText(k))
+)
+)
+return "بین‌الملل";
 
 
-        "سیاسی":[
-            "سیاسی",
-            "دولت",
-            "مجلس",
-            "نماینده مجلس",
-            "وزیر",
-            "وزارت",
-            "رئیس جمهور",
-            "رئیس‌جمهور",
-            "رییس جمهور",
-            "رییس‌جمهور",
-            "انتخابات",
-            "انتخاباتی",
-            "قانون",
-            "مذاکره",
-            "دیپلماسی",
-            "دیپلمات",
-            "استاندار",
-            "استانداری",
-            "فرماندار",
-            "فرمانداری",
-            "رئیس مجلس",
-            "رییس مجلس",
-            "رهبر انقلاب",
-            "رهبر",
-            "دولت چهاردهم",
-            "پزشکیان",
-            "پرونده سیاسی"
-        ]
+/* ---------- اجتماعی ---------- */
 
-    };
+const socialKeywords=[
+
+"تصادف",
+"سانحه",
+"حادثه",
+"کشته",
+"مصدوم",
+"مصدومان",
+"مجروح",
+"مجروحان",
+"آتش سوزی",
+"آتش‌سوزی",
+"حریق",
+"فرونشست",
+"ایمن سازی",
+"ایمن‌سازی",
+"مدرسه",
+"مدارس",
+"دانش آموز",
+"دانش‌آموز",
+"معلم",
+"آموزش و پرورش",
+"بیمارستان",
+"پزشکی",
+"درمان",
+"سلامت",
+"بهداشت",
+"شهرداری",
+"خیابان",
+"روستا",
+"شهرستان",
+"ترافیک",
+"رانندگی",
+"محور",
+"جاده",
+"زلزله",
+"سیل",
+"بارندگی",
+"آبگرفتگی",
+"آلودگی هوا",
+"محیط زیست",
+"تجمعات",
+"بازنشسته",
+"زائران",
+"خانواده زندانیان",
+"زندانیان",
+"خیرین",
+"خانواده",
+"سرعت‌کاه",
+"سرعت کاه",
+"وحدت اسلامی",
+"همبستگی",
+"آرامش اجتماعی",
+"ورودی شهری",
+"ساماندهی ورودی"
+
+];
+
+if(
+socialKeywords.some(
+k=>title.includes(normalizeText(k))
+)
+)
+return "اجتماعی";
 
 
-    /*
-       ابتدا دسته‌بندی هوشمند بر اساس عنوان.
-    */
+/* ---------- سیاسی ---------- */
 
-    for(
-        const [category,keywords]
-        of Object.entries(groups)
-    ){
+const politicalKeywords=[
 
-        if(
-            keywords.some(
-                keyword =>
-                    title.includes(
-                        normalizeText(keyword)
-                    )
-            )
-        ){
+"سیاسی",
+"دولت",
+"مجلس",
+"نماینده مجلس",
+"وزیر",
+"وزارت",
+"رئیس جمهور",
+"رئیس‌جمهور",
+"رییس جمهور",
+"رییس‌جمهور",
+"انتخابات",
+"انتخاباتی",
+"قانون",
+"مذاکره",
+"دیپلماسی",
+"دیپلمات",
+"استاندار",
+"استانداری",
+"فرماندار",
+"فرمانداری",
+"رئیس مجلس",
+"رییس مجلس",
+"رهبر انقلاب",
+"رهبر",
+"دولت چهاردهم",
+"پزشکیان",
+"دادگاه",
+"دادگستری",
+"قضایی",
+"قضائی",
+"پرونده",
+"سردار",
+"سپاه",
+"نیروهای مسلح",
+"وزیر نیرو"
 
-            return category;
-        }
-    }
+];
+
+if(
+politicalKeywords.some(
+k=>title.includes(normalizeText(k))
+)
+)
+return "سیاسی";
 
 
-    const map = {
+/* ---------- دسته‌بندی اصلی JSON ---------- */
 
-        "سیاسی":"سیاسی",
-        "اقتصادی":"اقتصادی",
-        "اجتماعی":"اجتماعی",
-        "بین الملل":"بین‌الملل",
-        "بین‌الملل":"بین‌الملل",
-        "ورزشی":"ورزشی",
-        "علم و فناوری":"علمی و فناوری",
-        "علمی و فناوری":"علمی و فناوری"
-    };
+const map={
 
+"سیاسی":"سیاسی",
+"اقتصادی":"اقتصادی",
+"اجتماعی":"اجتماعی",
+"بین الملل":"بین‌الملل",
+"بین‌الملل":"بین‌الملل",
+"ورزشی":"ورزشی",
+"علم و فناوری":"علمی و فناوری",
+"علمی و فناوری":"علمی و فناوری"
 
-    return map[original] || "متفرقه";
+};
+
+return map[original]||"متفرقه";
+
 }
 
 
@@ -730,153 +749,80 @@ function smartCategory(item){
 
 function cleanSummary(text){
 
-    let result =
-        String(text || "")
-            .replace(/\s+/g," ")
-            .replace(
-                /^(📝|خلاصه:|چکیده:)\s*/i,
-                ""
-            )
-            .trim();
+let result=String(text||"")
+.replace(/\s+/g," ")
+.replace(
+/^(📝|خلاصه:|چکیده:)\s*/i,
+""
+)
+.trim();
 
 
-    /*
-       حذف محل خبر در ابتدای خلاصه
-       مانند:
-       تهران-
-       شیراز-
-       مشهد-
-       اصفهان-
-    */
-
-    result =
-        result.replace(
-            /^[^،:]{2,20}\s*[-–—]\s*/,
-            ""
-        );
+result=result.replace(
+/^[^،:]{2,20}\s*[-–—]\s*/,
+""
+);
 
 
-    /*
-       حذف عبارت‌های ابتدایی رایج
-    */
-
-    result =
-        result.replace(
-            /^(گفت|اظهار کرد|اعلام کرد|بیان کرد)\s*[:：]\s*/i,
-            ""
-        );
+result=result.replace(
+/^(گفت|اظهار کرد|اعلام کرد|بیان کرد)\s*[:：]\s*/i,
+""
+);
 
 
-    if(
-        result.length >
-        MAX_SUMMARY_LENGTH
-    ){
+if(
+result.length>MAX_SUMMARY_LENGTH
+){
 
-        result =
-            result.substring(
-                0,
-                MAX_SUMMARY_LENGTH
-            );
+result=result.substring(
+0,
+MAX_SUMMARY_LENGTH
+);
 
+const lastSpace=result.lastIndexOf(" ");
 
-        const lastSpace =
-            result.lastIndexOf(" ");
+if(lastSpace>80){
 
+result=result.substring(
+0,
+lastSpace
+);
 
-        if(lastSpace > 80){
+}
 
-            result =
-                result.substring(
-                    0,
-                    lastSpace
-                );
-        }
+result+="…";
 
+}
 
-        result += "…";
-    }
+return result;
 
-
-    return result;
 }
 
 
 /* =====================================================
-   PERSIAN DATE
+   DATE
 ===================================================== */
 
 function getPersianDate(){
 
-    try{
+try{
 
-        const parts =
-            new Intl.DateTimeFormat(
-                "fa-IR-u-ca-persian",
-                {
-                    weekday:"long",
-                    year:"numeric",
-                    month:"long",
-                    day:"numeric"
-                }
-            ).formatToParts(
-                new Date()
-            );
+return new Intl.DateTimeFormat(
+"fa-IR-u-ca-persian",
+{
+weekday:"long",
+year:"numeric",
+month:"long",
+day:"numeric"
+}
+).format(new Date());
 
+}catch{
 
-        let weekday = "";
-        let day = "";
-        let month = "";
-        let year = "";
+return "";
 
+}
 
-        parts.forEach(
-            part => {
-
-                if(
-                    part.type ===
-                    "weekday"
-                )
-                    weekday = part.value;
-
-
-                if(
-                    part.type ===
-                    "day"
-                )
-                    day = part.value;
-
-
-                if(
-                    part.type ===
-                    "month"
-                )
-                    month = part.value;
-
-
-                if(
-                    part.type ===
-                    "year"
-                )
-                    year = part.value;
-
-            }
-        );
-
-
-        return (
-            weekday +
-            " " +
-            day +
-            " " +
-            month +
-            " " +
-            year
-        );
-
-    }catch{
-
-        return "";
-    }
 }
 
 
@@ -886,43 +832,32 @@ function getPersianDate(){
 
 function formatDate(value){
 
-    if(!value){
+if(!value)return "";
 
-        return "";
-    }
+const date=new Date(value);
 
+if(Number.isNaN(date.getTime()))
+return String(value);
 
-    const date =
-        new Date(value);
+try{
 
+return new Intl.DateTimeFormat(
+"fa-IR",
+{
+year:"numeric",
+month:"2-digit",
+day:"2-digit",
+hour:"2-digit",
+minute:"2-digit"
+}
+).format(date);
 
-    if(
-        Number.isNaN(
-            date.getTime()
-        )
-    ){
+}catch{
 
-        return String(value);
-    }
+return String(value);
 
+}
 
-    try{
-
-        return new Intl.DateTimeFormat(
-            "fa-IR",
-            {
-                year:"numeric",
-                month:"2-digit",
-                day:"2-digit",
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        ).format(date);
-
-    }catch{
-
-        return String(value);
-    }
 }
 
 
@@ -932,113 +867,90 @@ function formatDate(value){
 
 async function loadNews(){
 
-    const newsList =
-        document.getElementById(
-            "newsList"
-        );
+const newsList=
+document.getElementById("newsList");
+
+const updateInfo=
+document.getElementById("updateInfo");
 
 
-    const updateInfo =
-        document.getElementById(
-            "updateInfo"
-        );
+newsList.innerHTML=`
+<div class="status">
+📰 در حال دریافت مهم‌ترین اخبار...
+</div>
+`;
 
 
-    newsList.innerHTML = `
-        <div class="status">
-            📰 در حال دریافت مهم‌ترین اخبار...
-        </div>
-    `;
+try{
+
+const response=
+await fetch(
+SUMMARY_URL+
+"?t="+Date.now(),
+{
+cache:"no-store"
+}
+);
 
 
-    try{
-
-        const response =
-            await fetch(
-                SUMMARY_URL +
-                "?t=" +
-                Date.now(),
-                {
-                    cache:"no-store"
-                }
-            );
+if(!response.ok)
+throw new Error("JSON error");
 
 
-        if(!response.ok){
-
-            throw new Error(
-                "JSON error"
-            );
-        }
+const data=
+await response.json();
 
 
-        const data =
-            await response.json();
+if(Array.isArray(data))
+allNews=data;
+
+else if(Array.isArray(data.news))
+allNews=data.news;
+
+else if(Array.isArray(data.items))
+allNews=data.items;
+
+else
+allNews=[];
 
 
-        if(Array.isArray(data)){
+buildCategories();
 
-            allNews = data;
-
-        }else if(
-            Array.isArray(data.news)
-        ){
-
-            allNews = data.news;
-
-        }else if(
-            Array.isArray(data.items)
-        ){
-
-            allNews = data.items;
-
-        }else{
-
-            allNews = [];
-        }
+renderNews();
 
 
-        buildCategories();
+if(data.lastUpdate){
 
-        renderNews();
+updateInfo.textContent=
+"🕐 آخرین بروزرسانی: "+
+formatDate(data.lastUpdate);
 
+}else{
 
-        if(data.lastUpdate){
+updateInfo.textContent=
+"📰 "+
+toPersianDigits(allNews.length)+
+" خبر دریافت شد";
 
-            updateInfo.textContent =
-                "🕐 آخرین بروزرسانی: " +
-                formatDate(
-                    data.lastUpdate
-                );
+}
 
-        }else{
+}catch(error){
 
-            updateInfo.textContent =
-                "📰 " +
-                toPersianDigits(
-                    allNews.length
-                ) +
-                " خبر دریافت شد";
-        }
+console.error(error);
 
+newsList.innerHTML=`
+<div class="status">
+❌ دریافت اخبار با مشکل مواجه شد.
+<br><br>
+لطفاً دوباره تلاش کنید.
+</div>
+`;
 
-    }catch(error){
+updateInfo.textContent=
+"❌ خطا در دریافت اخبار";
 
-        console.error(error);
+}
 
-
-        newsList.innerHTML = `
-            <div class="status">
-                ❌ دریافت اخبار با مشکل مواجه شد.
-                <br><br>
-                لطفاً دوباره تلاش کنید.
-            </div>
-        `;
-
-
-        updateInfo.textContent =
-            "❌ خطا در دریافت اخبار";
-    }
 }
 
 
@@ -1048,97 +960,66 @@ async function loadNews(){
 
 function buildCategories(){
 
-    const container =
-        document.getElementById(
-            "categories"
-        );
+const container=
+document.getElementById("categories");
+
+container.innerHTML="";
 
 
-    container.innerHTML = "";
+const categories=[
+
+["all","📰 همه"],
+["سیاسی","🏛 سیاسی"],
+["اقتصادی","💰 اقتصادی"],
+["اجتماعی","👥 اجتماعی"],
+["بین‌الملل","🌍 بین‌الملل"],
+["ورزشی","⚽ ورزشی"],
+["علمی و فناوری","💻 فناوری"],
+["متفرقه","📌 متفرقه"]
+
+];
 
 
-    const categories = [
+categories.forEach(category=>{
 
-        ["all","📰 همه"],
-        ["سیاسی","🏛 سیاسی"],
-        ["اقتصادی","💰 اقتصادی"],
-        ["اجتماعی","👥 اجتماعی"],
-        ["بین‌الملل","🌍 بین‌الملل"],
-        ["ورزشی","⚽ ورزشی"],
-        ["علمی و فناوری","💻 فناوری"],
-        ["متفرقه","📌 متفرقه"]
+const button=
+document.createElement("button");
 
-    ];
+button.type="button";
+
+button.className="category-btn";
+
+button.textContent=category[1];
 
 
-    categories.forEach(
-        category => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
+if(category[0]===currentCategory)
+button.classList.add("active");
 
 
-            button.type =
-                "button";
+button.addEventListener(
+"click",
+()=>{
+
+currentCategory=category[0];
+
+document
+.querySelectorAll(".category-btn")
+.forEach(btn=>
+btn.classList.remove("active")
+);
+
+button.classList.add("active");
+
+renderNews();
+
+}
+);
 
 
-            button.className =
-                "category-btn";
+container.appendChild(button);
 
+});
 
-            button.textContent =
-                category[1];
-
-
-            if(
-                category[0] ===
-                currentCategory
-            ){
-
-                button.classList.add(
-                    "active"
-                );
-            }
-
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    currentCategory =
-                        category[0];
-
-
-                    document
-                        .querySelectorAll(
-                            ".category-btn"
-                        )
-                        .forEach(
-                            btn =>
-                                btn.classList.remove(
-                                    "active"
-                                )
-                        );
-
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    renderNews();
-                }
-            );
-
-
-            container.appendChild(
-                button
-            );
-
-        }
-    );
 }
 
 
@@ -1148,32 +1029,24 @@ function buildCategories(){
 
 function getVisibleNews(){
 
-    let filtered;
+let filtered;
 
 
-    if(
-        currentCategory ===
-        "all"
-    ){
+if(currentCategory==="all")
+filtered=allNews;
 
-        filtered =
-            allNews;
-
-    }else{
-
-        filtered =
-            allNews.filter(
-                item =>
-                    smartCategory(item) ===
-                    currentCategory
-            );
-    }
+else
+filtered=
+allNews.filter(
+item=>smartCategory(item)===currentCategory
+);
 
 
-    return filtered.slice(
-        0,
-        NEWS_COUNT
-    );
+return filtered.slice(
+0,
+NEWS_COUNT
+);
+
 }
 
 
@@ -1183,209 +1056,166 @@ function getVisibleNews(){
 
 function isNewNews(item){
 
-    if(!item){
+if(!item)return false;
 
-        return false;
-    }
+if(item.isNew===true)return true;
 
+if(item.new===true)return true;
 
-    if(item.isNew === true){
+if(item.publishedAt){
 
-        return true;
-    }
+const date=
+new Date(item.publishedAt);
 
+if(!Number.isNaN(date.getTime())){
 
-    if(item.new === true){
+const hours=
+(Date.now()-date.getTime())/
+3600000;
 
-        return true;
-    }
+return hours>=0&&hours<=6;
 
+}
 
-    if(item.publishedAt){
+}
 
-        const date =
-            new Date(
-                item.publishedAt
-            );
+return false;
 
-
-        if(
-            !Number.isNaN(
-                date.getTime()
-            )
-        ){
-
-            const hours =
-                (
-                    Date.now() -
-                    date.getTime()
-                ) /
-                3600000;
-
-
-            return (
-                hours >= 0 &&
-                hours <= 6
-            );
-        }
-    }
-
-
-    return false;
 }
 
 
 /* =====================================================
-   RENDER NEWS
+   RENDER
 ===================================================== */
 
 function renderNews(){
 
-    const container =
-        document.getElementById(
-            "newsList"
-        );
+const container=
+document.getElementById("newsList");
+
+const news=
+getVisibleNews();
 
 
-    const news =
-        getVisibleNews();
+if(!news.length){
+
+container.innerHTML=`
+<div class="status">
+📭 خبری برای این دسته وجود ندارد.
+</div>
+`;
+
+return;
+
+}
 
 
-    if(!news.length){
+container.innerHTML=
+news.map((item,index)=>{
 
-        container.innerHTML = `
-            <div class="status">
-                📭 خبری برای این دسته وجود ندارد.
-            </div>
-        `;
+const title=
+escapeHTML(item.title);
 
-        return;
-    }
+const source=
+escapeHTML(
+item.source||
+"منبع نامشخص"
+);
 
+const category=
+escapeHTML(
+smartCategory(item)
+);
 
-    container.innerHTML =
-        news.map(
-            (item,index) => {
+const link=
+escapeHTML(
+item.link||"#"
+);
 
-                const title =
-                    escapeHTML(
-                        item.title
-                    );
+const summary=
+cleanSummary(item.summary);
 
-
-                const source =
-                    escapeHTML(
-                        item.source ||
-                        "منبع نامشخص"
-                    );
-
-
-                const category =
-                    escapeHTML(
-                        smartCategory(item)
-                    );
+const fresh=
+isNewNews(item);
 
 
-                const link =
-                    escapeHTML(
-                        item.link ||
-                        "#"
-                    );
+return`
 
+<article class="news-card ${fresh?"new-news":""}">
 
-                const summary =
-                    cleanSummary(
-                        item.summary
-                    );
+<div class="news-title">
 
+<span class="news-light"></span>
 
-                const fresh =
-                    isNewNews(item);
+<span class="news-number">
+${toPersianDigits(index+1)}.
+</span>
 
+${title}
 
-                return `
+${fresh?
+`<span class="fresh-badge">تازه</span>`:
+""}
 
-                <article
-                    class="news-card ${fresh ? "new-news" : ""}">
+</div>
 
-                    <div class="news-title">
+<div class="meta">
 
-                        <span class="news-light"></span>
+📰 ${source}
+&nbsp; • &nbsp;
+🏷 ${category}
 
-                        <span class="news-number">
-                            ${toPersianDigits(index + 1)}.
-                        </span>
+</div>
 
-                        ${title}
+${
+summary?
+`
+<div class="summary">
+📝 ${escapeHTML(summary)}
+</div>
+`:
+""
+}
 
-                        ${
-                            fresh
-                            ?
-                            `<span class="fresh-badge">تازه</span>`
-                            :
-                            ""
-                        }
+${
+link!=="#"?
+`
+<a
+class="read-link"
+href="${link}"
+target="_blank"
+rel="noopener noreferrer">
 
-                    </div>
+🔗 مطالعه متن کامل خبر
 
-                    <div class="meta">
+</a>
+`:
+""
+}
 
-                        📰 ${source}
-                        &nbsp; • &nbsp;
-                        🏷 ${category}
+</article>
 
-                    </div>
+`;
 
-                    ${
-                        summary
-                        ?
-                        `
-                        <div class="summary">
-                            📝 ${escapeHTML(summary)}
-                        </div>
-                        `
-                        :
-                        ""
-                    }
+}).join("");
 
-                    ${
-                        link !== "#"
-                        ?
-                        `
-                        <a
-                            class="read-link"
-                            href="${link}"
-                            target="_blank"
-                            rel="noopener noreferrer">
-
-                            🔗 مطالعه متن کامل خبر
-
-                        </a>
-                        `
-                        :
-                        ""
-                    }
-
-                </article>
-
-                `;
-
-            }
-        ).join("");
 }
 
 
 /* =====================================================
    RUBIKA HEADER
-   طراحی مخصوص کپی در روبیکا
+   نسخه ۳.۵
 ===================================================== */
 
 function rubikaHeader(){
 
-    return `┌────────────────────┐
-│ 📰 مهم‌ترین اخبار روز │
-│   ✨ دیار قدمگاه ✨   │
-└────────────────────┘`;
+return`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                            ┃
+┃    📰 مهم‌ترین اخبار روز    ┃
+┃      ✨ دیار قدمگاه ✨      ┃
+┃                            ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
+
 }
 
 
@@ -1395,106 +1225,98 @@ function rubikaHeader(){
 
 function rubikaFooter(){
 
-    return `┌────────────────────┐
-│    📖 متن کامل اخبار   │
-└────────────────────┘
+return`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                            ┃
+┃       📖 متن کامل اخبار      ┃
+┃                            ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 🔗 ${RUBIKA_PAGE_URL}
 
 🏡 دیار قدمگاه
 ✍️ معقول`;
+
 }
 
 
 /* =====================================================
-   RUBIKA TEXT
+   CREATE RUBIKA TEXT
 ===================================================== */
 
 function createRubikaText(){
 
-    const news =
-        getVisibleNews();
+const news=getVisibleNews();
+
+if(!news.length)return "";
 
 
-    if(!news.length){
-
-        return "";
-    }
-
-
-    let text =
-        rubikaHeader() +
-        `
+let text=
+rubikaHeader()+
+`
 
 📅 ${getPersianDate()}
 
 `;
 
 
-    news.forEach(
-        (item,index) => {
+news.forEach((item,index)=>{
 
-            const title =
-                String(
-                    item.title || ""
-                )
-                .replace(/\s+/g," ")
-                .trim();
+const title=
+String(item.title||"")
+.replace(/\s+/g," ")
+.trim();
 
 
-            const source =
-                String(
-                    item.source ||
-                    "منبع نامشخص"
-                )
-                .replace(/\s+/g," ")
-                .trim();
+const source=
+String(
+item.source||
+"منبع نامشخص"
+)
+.replace(/\s+/g," ")
+.trim();
 
 
-            const category =
-                smartCategory(item);
+const category=
+smartCategory(item);
 
 
-            const summary =
-                cleanSummary(
-                    item.summary
-                );
+const summary=
+cleanSummary(item.summary);
 
 
-            text +=
-`🔴 ${toPersianDigits(index + 1)}. ${title}
+text+=
+`🔴 ${toPersianDigits(index+1)}. ${title}
    📰 ${source}  •  🏷 ${category}`;
 
 
-            if(summary){
+if(summary){
 
-                text +=
+text+=
 `\n   📝 ${summary}`;
-            }
+
+}
 
 
-            if(
-                index <
-                news.length - 1
-            ){
+if(index<news.length-1){
 
-                text +=
-`\n────────────────────\n\n`;
-            }else{
+text+=
+`\n────────────────────────────\n\n`;
 
-                text +=
-`\n`;
-            }
+}else{
 
-        }
-    );
+text+=`\n`;
+
+}
+
+});
 
 
-    text +=
+text+=
 `\n${rubikaFooter()}`;
 
 
-    return text;
+return text;
+
 }
 
 
@@ -1504,83 +1326,65 @@ function createRubikaText(){
 
 async function copyForRubika(){
 
-    const text =
-        createRubikaText();
+const text=
+createRubikaText();
 
 
-    if(!text){
+if(!text){
 
-        showToast(
-            "📭 خبری برای کپی وجود ندارد."
-        );
+showToast(
+"📭 خبری برای کپی وجود ندارد."
+);
 
-        return;
-    }
+return;
 
-
-    try{
-
-        await navigator.clipboard.writeText(
-            text
-        );
+}
 
 
-        showToast(
-            "✅ متن آماده روبیکا کپی شد."
-        );
+try{
+
+await navigator.clipboard.writeText(text);
+
+showToast(
+"✅ متن آماده روبیکا کپی شد."
+);
+
+}catch(error){
+
+const textarea=
+document.createElement("textarea");
+
+textarea.value=text;
+
+textarea.style.position="fixed";
+textarea.style.left="-9999px";
+
+document.body.appendChild(textarea);
+
+textarea.focus();
+textarea.select();
 
 
-    }catch(error){
+try{
 
-        const textarea =
-            document.createElement(
-                "textarea"
-            );
+document.execCommand("copy");
 
+showToast(
+"✅ متن آماده روبیکا کپی شد."
+);
 
-        textarea.value =
-            text;
+}catch{
 
+showToast(
+"❌ کپی خودکار انجام نشد."
+);
 
-        textarea.style.position =
-            "fixed";
+}
 
+textarea.remove();
 
-        textarea.style.left =
-            "-9999px";
+}
 
-
-        document.body.appendChild(
-            textarea
-        );
-
-
-        textarea.focus();
-
-        textarea.select();
-
-
-        try{
-
-            document.execCommand(
-                "copy"
-            );
-
-
-            showToast(
-                "✅ متن آماده روبیکا کپی شد."
-            );
-
-        }catch{
-
-            showToast(
-                "❌ کپی خودکار انجام نشد."
-            );
-        }
-
-
-        textarea.remove();
-    }
 }
 
 
@@ -1590,35 +1394,23 @@ async function copyForRubika(){
 
 function showToast(message){
 
-    const toast =
-        document.getElementById(
-            "toast"
-        );
+const toast=
+document.getElementById("toast");
 
+toast.textContent=message;
 
-    toast.textContent =
-        message;
+toast.style.display="block";
 
+clearTimeout(window.toastTimer);
 
-    toast.style.display =
-        "block";
+window.toastTimer=
+setTimeout(
+()=>{
+toast.style.display="none";
+},
+2500
+);
 
-
-    clearTimeout(
-        window.toastTimer
-    );
-
-
-    window.toastTimer =
-        setTimeout(
-            () => {
-
-                toast.style.display =
-                    "none";
-
-            },
-            2500
-        );
 }
 
 
@@ -1626,27 +1418,24 @@ function showToast(message){
    INIT
 ===================================================== */
 
-document
-    .getElementById("dateText")
-    .textContent =
-        "🏡 دیار قدمگاه | " +
-        getPersianDate();
+document.getElementById("dateText")
+.textContent=
+"🏡 دیار قدمگاه | "+
+getPersianDate();
 
 
-document
-    .getElementById("copyBtn")
-    .addEventListener(
-        "click",
-        copyForRubika
-    );
+document.getElementById("copyBtn")
+.addEventListener(
+"click",
+copyForRubika
+);
 
 
-document
-    .getElementById("refreshBtn")
-    .addEventListener(
-        "click",
-        loadNews
-    );
+document.getElementById("refreshBtn")
+.addEventListener(
+"click",
+loadNews
+);
 
 
 loadNews();

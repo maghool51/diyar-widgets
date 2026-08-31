@@ -4,13 +4,19 @@
  * و کوتاه با Web Audio API «تولید» می‌شود — سبک، بدون هیچ فایل
  * خارجی، و بدون محدودیت مجوز.
  *
- * پخش همیشه از داخل خودِ Click Handler دکمه شروع می‌شود، یعنی همان
- * لمس اول کاربر است — دقیقاً مطابق محدودیت Autoplay مرورگرها.
- *
- * برای افزودن یک فایل صوتی واقعی در آینده، به‌جای این ماژول می‌توان
- * از یک عنصر <audio src="assets/music/..."> استفاده کرد؛ ساختار
- * assets/music/ برای همین منظور از قبل آماده است (به README همان
- * پوشه مراجعه کنید).
+ * سازگاری با WebViewهای داخل‌اپ (روبیکا، اینستاگرام و مشابه):
+ * این WebViewها معمولاً روی Android WebView مبتنی بر Chromium‌اند و
+ * Web Audio API را پشتیبانی می‌کنند، اما سیاست Autoplay را سخت‌گیرانه‌تر
+ * اعمال می‌کنند و گاهی resume() کُند یا ناموفق است. برای همین:
+ *   - AudioContext فقط داخل خودِ Click Handler ساخته می‌شود (نه زودتر).
+ *   - قبل از شروع ملودی، منتظر resume() واقعی می‌مانیم (نه موازی).
+ *   - اگر بعد از یک مهلت کوتاه Context هنوز suspended بود (یعنی این
+ *     WebView خاص اجازه نمی‌دهد)، دکمه به‌جای گیر کردن، پیام Fallback
+ *     «پخش موسیقی در این مرورگر ممکن نیست» را نشان می‌دهد.
+ *   - قبل از اولین کلیک، یک راهنمای کوچک «برای پخش موسیقی لمس کنید»
+ *     کنار دکمه نمایش داده می‌شود.
+ *   - با ترک/بستن صفحه (pagehide/beforeunload)، AudioContext کامل
+ *     Close می‌شود تا هیچ منبعی باز نماند.
  */
 (function (global) {
   'use strict';
@@ -23,6 +29,7 @@
   const NOTES = [523.25, 659.25, 783.99, 659.25, 880.00, 783.99, 659.25, 523.25]; // C5 E5 G5 E5 A5 G5 E5 C5
   const NOTE_DURATION = 0.9; // ثانیه
   const GAP = 0.15;
+  const RESUME_TIMEOUT_MS = 900; // اگر تا این مدت Context بیدار نشد، یعنی این مرورگر اجازه نمی‌دهد
 
   function createPlayer() {
     const Ctx = global.AudioContext || global.webkitAudioContext;
@@ -56,10 +63,25 @@
     }
 
     return {
-      play() {
+      /** برمی‌گرداند: 'playing' یا 'blocked' (اگر مرورگر بعد از تلاش هنوز اجازه‌ی پخش نداد) */
+      async play() {
         stopped = false;
-        if (ctx.state === 'suspended') ctx.resume();
+        if (ctx.state === 'suspended') {
+          try {
+            await Promise.race([
+              ctx.resume(),
+              new Promise((resolve) => setTimeout(resolve, RESUME_TIMEOUT_MS))
+            ]);
+          } catch (e) {
+            // ادامه می‌دهیم؛ وضعیت واقعی را در ادامه از ctx.state می‌خوانیم
+          }
+        }
+        if (ctx.state !== 'running') {
+          stopped = true;
+          return 'blocked';
+        }
         scheduleLoop();
+        return 'playing';
       },
       stop() {
         stopped = true;
@@ -84,6 +106,10 @@
 
     let player = null;
     let playing = false;
+    let everClicked = false;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'dq-music-toggle-inner';
 
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -92,7 +118,23 @@
     btn.setAttribute('aria-label', 'پخش موسیقی پس‌زمینه');
     btn.textContent = '🎵';
 
+    const hint = document.createElement('span');
+    hint.className = 'dq-music-hint';
+    hint.textContent = 'برای پخش موسیقی لمس کنید';
+
+    function setBlockedState() {
+      btn.textContent = '🔇';
+      btn.disabled = true;
+      btn.classList.remove('dq-music-toggle--playing');
+      btn.setAttribute('aria-pressed', 'false');
+      btn.setAttribute('aria-label', 'پخش موسیقی در این مرورگر ممکن نیست');
+      hint.textContent = 'پخش موسیقی در این مرورگر ممکن نیست';
+      hint.hidden = false;
+    }
+
     btn.addEventListener('click', () => {
+      everClicked = true;
+      hint.hidden = true;
       try {
         if (!player) player = createPlayer();
         if (playing) {
@@ -103,12 +145,19 @@
           btn.setAttribute('aria-pressed', 'false');
           btn.setAttribute('aria-label', 'پخش موسیقی پس‌زمینه');
         } else {
-          player.play();
-          playing = true;
-          btn.textContent = '🔊';
-          btn.classList.add('dq-music-toggle--playing');
-          btn.setAttribute('aria-pressed', 'true');
-          btn.setAttribute('aria-label', 'قطع موسیقی پس‌زمینه');
+          btn.disabled = true; // تا نتیجه‌ی resume مشخص شود از دوبار-کلیک جلوگیری کن
+          player.play().then((result) => {
+            btn.disabled = false;
+            if (result === 'blocked') {
+              setBlockedState();
+              return;
+            }
+            playing = true;
+            btn.textContent = '🔊';
+            btn.classList.add('dq-music-toggle--playing');
+            btn.setAttribute('aria-pressed', 'true');
+            btn.setAttribute('aria-label', 'قطع موسیقی پس‌زمینه');
+          });
         }
       } catch (e) {
         // اگر پخش با خطا مواجه شد، بی‌صدا دکمه را مخفی می‌کنیم؛ کارت باید بدون موسیقی هم کامل قابل‌استفاده بماند
@@ -116,7 +165,14 @@
       }
     });
 
-    container.appendChild(btn);
+    wrap.appendChild(btn);
+    wrap.appendChild(hint);
+    container.appendChild(wrap);
+
+    // با ترک/بستن صفحه، AudioContext را کامل آزاد کن تا هیچ منبعی باز نماند
+    const cleanup = () => { if (player) player.dispose(); };
+    global.addEventListener('pagehide', cleanup);
+    global.addEventListener('beforeunload', cleanup);
   }
 
   global.DiyarCardMusic = { createMusicToggle };

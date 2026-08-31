@@ -8,9 +8,7 @@
 <title>اخبار دیار قدمگاه</title>
 
 <style>
-*{
-    box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
     margin:0;
@@ -28,28 +26,25 @@ body{
     padding:8px;
 }
 
-/* ===== HEADER ===== */
-
+/* HEADER */
 .header{
     position:relative;
     overflow:hidden;
     text-align:center;
     color:#fff;
-    padding:20px 12px;
+    padding:19px 12px;
     border-radius:20px;
     background:linear-gradient(135deg,#263238,#455a64);
     box-shadow:0 5px 18px rgba(0,0,0,.14);
 }
 
 .header h1{
-    position:relative;
     margin:0;
     font-size:22px;
 }
 
 .header-subtitle{
-    position:relative;
-    margin-top:4px;
+    margin-top:3px;
     font-size:12px;
     opacity:.9;
 }
@@ -86,8 +81,7 @@ body{
     }
 }
 
-/* ===== CONTROLS ===== */
-
+/* CONTROLS */
 .controls{
     margin-top:9px;
     padding:10px;
@@ -152,8 +146,7 @@ body{
     font-size:10px;
 }
 
-/* ===== NEWS ===== */
-
+/* NEWS */
 .news-list{
     margin-top:9px;
 }
@@ -161,8 +154,8 @@ body{
 .news-card{
     position:relative;
     overflow:hidden;
-    margin-bottom:8px;
-    padding:12px;
+    margin-bottom:7px;
+    padding:11px 12px;
     border-radius:15px;
     background:#fff;
     box-shadow:0 2px 9px rgba(0,0,0,.06);
@@ -181,7 +174,7 @@ body{
 .news-title{
     font-size:14px;
     font-weight:bold;
-    line-height:1.9;
+    line-height:1.85;
 }
 
 .news-number{
@@ -189,20 +182,20 @@ body{
 }
 
 .meta{
-    margin-top:3px;
+    margin-top:2px;
     color:#607d8b;
     font-size:11px;
 }
 
 .summary{
-    margin-top:6px;
-    padding:6px 8px;
+    margin-top:5px;
+    padding:5px 8px;
     border-right:3px solid #90a4ae;
     border-radius:6px;
     background:#f7f9fa;
     color:#455a64;
     font-size:11px;
-    line-height:1.85;
+    line-height:1.8;
 }
 
 .read-link{
@@ -236,8 +229,7 @@ body{
     }
 }
 
-/* ===== STATUS ===== */
-
+/* STATUS */
 .status{
     padding:25px 10px;
     border-radius:15px;
@@ -247,8 +239,7 @@ body{
     font-size:13px;
 }
 
-/* ===== FOOTER ===== */
-
+/* FOOTER */
 .footer{
     padding:15px 8px;
     color:#607d8b;
@@ -256,8 +247,7 @@ body{
     font-size:11px;
 }
 
-/* ===== TOAST ===== */
-
+/* TOAST */
 .toast{
     position:fixed;
     z-index:9999;
@@ -369,7 +359,6 @@ body{
 
 <div id="toast" class="toast"></div>
 
-
 <script>
 
 "use strict";
@@ -387,7 +376,7 @@ const RUBIKA_PAGE_URL =
 
 const NEWS_COUNT = 10;
 
-const MAX_SUMMARY_LENGTH = 190;
+const MAX_SUMMARY_LENGTH = 170;
 
 let allNews = [];
 
@@ -427,7 +416,7 @@ function normalizeText(value){
 
 
 /* =====================================================
-   ESCAPE
+   ESCAPE HTML
 ===================================================== */
 
 function escapeHTML(value){
@@ -442,7 +431,7 @@ function escapeHTML(value){
 
 
 /* =====================================================
-   CATEGORY
+   SMART CATEGORY
 ===================================================== */
 
 function smartCategory(item){
@@ -454,15 +443,19 @@ function smartCategory(item){
         normalizeText(item.category);
 
 
+    /* اولویت مهم:
+       عبارات اختصاصی‌تر قبل از کلمات عمومی
+    */
+
     const groups = {
 
         "ورزشی":[
             "فوتبال","والیبال","بسکتبال",
             "فوتسال","تنیس","کشتی",
             "ورزش","ورزشی","لیگ برتر",
-            "جام جهانی","فینال",
-            "بازیکن","مربی","گلزنی",
-            "استقلال","پرسپولیس",
+            "جام جهانی","جام‌جهانی",
+            "فینال","بازیکن","مربی",
+            "گلزنی","استقلال","پرسپولیس",
             "سپاهان","تراکتور",
             "رئال مادرید","بارسلونا",
             "منچستر","منچستریونایتد",
@@ -470,13 +463,12 @@ function smartCategory(item){
         ],
 
         "اقتصادی":[
-            "اقتصاد","اقتصادی","اعتبارات",
-            "اعتبار","مشاغل خانگی",
-            "کسب و کار","کسب‌وکار",
-            "وام","تسهیلات","بانک",
-            "بانکی","دلار","یورو",
-            "ارز","طلا","سکه","بورس",
-            "تورم","قیمت","گرانی",
+            "اقتصاد","اقتصادی",
+            "مشاغل خانگی","اعتبارات",
+            "اعتبار","کسب و کار","کسب‌وکار",
+            "وام","تسهیلات","بانک","بانکی",
+            "دلار","یورو","ارز","طلا","سکه",
+            "بورس","تورم","قیمت","گرانی",
             "مالیات","صادرات","واردات",
             "سرمایه گذاری","سرمایه‌گذاری",
             "مسکن","اجاره","خودرو",
@@ -485,33 +477,37 @@ function smartCategory(item){
         ],
 
         "علمی و فناوری":[
-            "فناوری","تکنولوژی",
-            "هوش مصنوعی","اینترنت",
-            "موبایل","گوشی هوشمند",
+            "هوش مصنوعی","فناوری","تکنولوژی",
+            "اینترنت","موبایل","گوشی هوشمند",
             "کامپیوتر","رایانه",
             "نرم افزار","نرم‌افزار",
             "سخت افزار","سخت‌افزار",
             "ربات","رباتیک","علمی",
             "دانشگاه","دانشجو",
-            "پژوهش","تحقیقات",
-            "فضا","ماهواره",
-            "نجوم","استارتاپ",
+            "پژوهش","تحقیقات","فضا",
+            "ماهواره","نجوم","استارتاپ",
             "دیجیتال","سایبری",
-            "اپلیکیشن","برنامه نویسی"
+            "اپلیکیشن","برنامه نویسی",
+            "برنامه‌نویسی"
         ],
 
         "بین‌الملل":[
             "آمریکا","آمریکایی","آلمان",
             "فرانسه","انگلیس","بریتانیا",
             "روسیه","اوکراین","چین",
+            "هند","قرقیزستان",
             "اسرائیل","اسرائیلی",
             "فلسطین","فلسطینی","غزه",
             "لبنان","لبنانی","حزب الله",
             "حزب‌الله","سوریه","عراق",
             "افغانستان","پاکستان","ترکیه",
             "اردن","یمن","سازمان ملل",
-            "ناتو","کاخ سفید","بین الملل",
-            "بین‌الملل"
+            "ناتو","کاخ سفید",
+            "اتحادیه اروپا",
+            "گروه ۷","گروه هفت",
+            "بین الملل","بین‌الملل",
+            "نشست سازمان همکاری شانگهای",
+            "سران هند","سران قرقیزستان"
         ],
 
         "سیاسی":[
@@ -526,7 +522,8 @@ function smartCategory(item){
             "فرمانداری","بخشدار",
             "رئیس مجلس","رییس مجلس",
             "رهبر انقلاب","رهبر",
-            "دولت چهاردهم","پزشکیان"
+            "دولت چهاردهم","پزشکیان",
+            "جلسات دادگاه","پرونده"
         ],
 
         "اجتماعی":[
@@ -541,17 +538,24 @@ function smartCategory(item){
             "معلم","آموزش و پرورش",
             "بیمارستان","پزشکی",
             "درمان","سلامت","بهداشت",
-            "اجتماعی","شهرداری",
-            "خیابان","روستا","شهرستان",
-            "ترافیک","رانندگی",
-            "محور","جاده","زلزله",
-            "سیل","بارندگی","آبگرفتگی",
-            "آلودگی هوا","محیط زیست",
-            "تجمعات","زائران"
+            "شهرداری","خیابان",
+            "روستا","شهرستان","ترافیک",
+            "رانندگی","محور","جاده",
+            "زلزله","سیل","بارندگی",
+            "آبگرفتگی","آلودگی هوا",
+            "محیط زیست","تجمعات",
+            "زائران","خانواده زندانیان",
+            "زندانیان","خیرین","خانواده",
+            "سرعت‌کاه","سرعت کاه"
         ]
 
     };
 
+
+    /*
+       اگر عنوان مستقیماً نشان‌دهنده یک موضوع باشد،
+       دسته هوشمند انتخاب می‌شود.
+    */
 
     for(
         const [category,keywords]
@@ -621,7 +625,7 @@ function cleanSummary(text){
             result.lastIndexOf(" ");
 
 
-        if(lastSpace > 100){
+        if(lastSpace > 90){
 
             result =
                 result.substring(
@@ -640,22 +644,60 @@ function cleanSummary(text){
 
 
 /* =====================================================
-   DATE
+   PERSIAN DATE
 ===================================================== */
 
 function getPersianDate(){
 
     try{
 
-        return new Intl.DateTimeFormat(
-            "fa-IR-u-ca-persian",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
+        const parts =
+            new Intl.DateTimeFormat(
+                "fa-IR-u-ca-persian",
+                {
+                    weekday:"long",
+                    year:"numeric",
+                    month:"long",
+                    day:"numeric"
+                }
+            ).formatToParts(
+                new Date()
+            );
+
+
+        let weekday = "";
+        let day = "";
+        let month = "";
+        let year = "";
+
+
+        parts.forEach(
+            part => {
+
+                if(part.type === "weekday")
+                    weekday = part.value;
+
+                if(part.type === "day")
+                    day = part.value;
+
+                if(part.type === "month")
+                    month = part.value;
+
+                if(part.type === "year")
+                    year = part.value;
             }
-        ).format(new Date());
+        );
+
+
+        return (
+            weekday +
+            " " +
+            day +
+            " " +
+            month +
+            " " +
+            year
+        );
 
     }catch{
 
@@ -711,7 +753,7 @@ function formatDate(value){
 
 
 /* =====================================================
-   LOAD
+   LOAD NEWS
 ===================================================== */
 
 async function loadNews(){
@@ -1019,7 +1061,7 @@ function isNewNews(item){
 
 
 /* =====================================================
-   RENDER
+   RENDER NEWS
 ===================================================== */
 
 function renderNews(){
@@ -1159,7 +1201,7 @@ function renderNews(){
 
 
 /* =====================================================
-   RUBIKA COPY
+   RUBIKA TEXT
 ===================================================== */
 
 function createRubikaText(){
@@ -1233,10 +1275,8 @@ function createRubikaText(){
             ){
 
                 text +=
-`\n
-━━━━━━━━━━━━━━━━━━━━━━
+`\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n\n`;
 
-`;
             }else{
 
                 text +=
@@ -1290,7 +1330,7 @@ async function copyForRubika(){
 
 
         showToast(
-            "✅ متن شکیل و آماده روبیکا کپی شد."
+            "✅ متن آماده روبیکا کپی شد."
         );
 
 
@@ -1332,7 +1372,7 @@ async function copyForRubika(){
 
 
             showToast(
-                "✅ متن شکیل و آماده روبیکا کپی شد."
+                "✅ متن آماده روبیکا کپی شد."
             );
 
         }catch{
@@ -1418,4 +1458,4 @@ loadNews();
 </script>
 
 </body>
-</html>
+    </html>

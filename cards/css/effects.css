@@ -1,0 +1,109 @@
+/**
+ * effects.css — جلوه‌های بصری ظریف و اختیاری. این فایل فقط ظاهر
+ * عناصری را تعریف می‌کند که js/core/effects.js به‌صورت پویا داخل
+ * ".dq-card__fx" می‌سازد؛ اگر آن عناصر ساخته نشوند (یعنی Template
+ * فیلد "effects" نداشته باشد)، این فایل هیچ اثری روی صفحه ندارد.
+ *
+ * قانون prefers-reduced-motion به‌صورت سراسری در base.css همه‌ی
+ * انیمیشن‌ها (از‌جمله این‌ها) را خنثی می‌کند؛ علاوه بر آن،
+ * js/core/effects.js اصلاً این عناصر را در آن حالت نمی‌سازد.
+ */
+
+/* ---------- درخشش ملایم دور کارت (Glow) ---------- */
+.dq-fx-glow {
+  animation: dq-fx-glow-pulse 3.2s ease-in-out infinite;
+}
+@keyframes dq-fx-glow-pulse {
+  0%, 100% { box-shadow: var(--dq-shadow-lg); }
+  50% { box-shadow: var(--dq-shadow-lg), 0 0 28px 4px var(--c-accent-soft); }
+}
+
+/* ---------- ستاره‌های کوچک چشمک‌زن ---------- */
+.dq-fx-star {
+  position: absolute;
+  font-size: 10px;
+  color: var(--c-accent);
+  opacity: 0;
+  animation: dq-fx-twinkle 2.6s ease-in-out infinite;
+  user-select: none;
+}
+@keyframes dq-fx-twinkle {
+  0%, 100% { opacity: 0; transform: scale(.6); }
+  50% { opacity: .9; transform: scale(1); }
+}
+
+/* ---------- بادکنک‌های شناور ---------- */
+.dq-fx-balloon {
+  position: absolute;
+  bottom: -10%;
+  font-size: 22px;
+  opacity: 0;
+  animation: dq-fx-float-up 7s ease-in infinite;
+  user-select: none;
+}
+@keyframes dq-fx-float-up {
+  0%   { transform: translateY(0) translateX(0) rotate(-4deg); opacity: 0; }
+  10%  { opacity: .95; }
+  90%  { opacity: .85; }
+  100% { transform: translateY(-260%) translateX(12px) rotate(4deg); opacity: 0; }
+}
+
+/* ---------- ذرات نور محو ---------- */
+.dq-fx-spark {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  opacity: 0;
+  animation: dq-fx-spark-rise 3.8s ease-out infinite;
+}
+@keyframes dq-fx-spark-rise {
+  0%   { transform: translateY(0); opacity: 0; }
+  15%  { opacity: .8; }
+  100% { transform: translateY(-70%); opacity: 0; }
+}
+
+/* ---------- ذرات کنفتی (فقط یک‌بار، هنگام ورود کارت) ---------- */
+.dq-fx-confetti {
+  position: absolute;
+  top: -6%;
+  width: 6px; height: 10px;
+  border-radius: 1px;
+  opacity: 0;
+  animation: dq-fx-confetti-fall 2.4s ease-in forwards;
+}
+@keyframes dq-fx-confetti-fall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  8%   { opacity: 1; }
+  100% { transform: translateY(420%) rotate(340deg); opacity: 0; }
+}
+
+/* ---------- افکت ملایم روی متن سرتیتر ---------- */
+.dq-card__headline.dq-fx-headline {
+  animation: dq-fx-headline-in .7s ease .15s both;
+}
+@keyframes dq-fx-headline-in {
+  from { opacity: 0; transform: translateY(-6px); letter-spacing: 2px; }
+  to   { opacity: 1; transform: translateY(0); letter-spacing: normal; }
+}
+
+/* ---------- دکمه‌ی موسیقی پس‌زمینه ---------- */
+.dq-music-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--dq-surface);
+  box-shadow: var(--dq-shadow);
+  font-size: 1.1rem;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.dq-music-toggle:hover { transform: scale(1.06); }
+.dq-music-toggle--playing {
+  box-shadow: var(--dq-shadow), 0 0 0 3px var(--dq-accent-gold, #a9790a);
+  animation: dq-music-pulse 1.8s ease-in-out infinite;
+}
+@keyframes dq-music-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.dq-music-toggle-wrap { display: flex; justify-content: center; margin: 10px 0 2px; }

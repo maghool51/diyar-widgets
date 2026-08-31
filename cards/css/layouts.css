@@ -34,6 +34,17 @@
   position: absolute; display: block;
   font-size: 0; line-height: 1; color: transparent;
 }
+/* لایه‌ی جلوه‌های بصری اختیاری (کنفتی/بادکنک/ستاره) — فقط توسط
+   js/core/effects.js و فقط برای Templateهایی با فیلد "effects" پر
+   می‌شود؛ برای بقیه‌ی Templateها همیشه خالی و بی‌اثر می‌ماند. */
+.dq-card__fx { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; border-radius: inherit; }
+
+.dq-card__headline {
+  font-size: 1.3rem; font-weight: 800; margin: 0 0 6px;
+  position: relative; z-index: 1; color: var(--c-accent);
+}
+.dq-card__headline:empty { display: none; margin: 0; }
+
 .dq-card__icon { font-size: 2.1rem; margin-bottom: 10px; position: relative; z-index: 1; }
 .dq-card__to { font-size: 1.05rem; font-weight: 700; margin: 0 0 2px; position: relative; z-index: 1; }
 .dq-card__title { font-size: .92rem; color: var(--c-text-soft); margin: 0 0 14px; position: relative; z-index: 1; }
@@ -65,6 +76,8 @@
 .dq-card-mini .dq-card__message { font-size: .6rem; line-height: 1.5; }
 .dq-card-mini .dq-card__from { font-size: .56rem; }
 .dq-card-mini .dq-card__brand { display: none; }
+.dq-card-mini .dq-card__headline { display: none; }
+.dq-card-mini .dq-card__fx { display: none; }
 
 /* ============ 1) classic-center: قاب دو-خطی کلاسیک ============ */
 [data-layout='classic-center'] { border: 1px solid var(--c-line); }

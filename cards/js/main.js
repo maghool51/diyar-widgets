@@ -77,9 +77,11 @@
     const tpl = templatesById[state.templateId];
     const cardEl = R.buildCardSkeleton(U.$('viewerPreview'));
     R.updateCard(cardEl, {
-      layout: tpl.layout, palette: tpl.palette, icon: tpl.icon,
+      layout: tpl.layout, palette: tpl.palette, icon: tpl.icon, templateId: tpl.id, headline: tpl.headline,
       to: state.to, title: state.title, message: state.message, from: state.from
     });
+    if (window.DiyarCardEffects) window.DiyarCardEffects.playCardEffects(cardEl, tpl.effects);
+    if (window.DiyarCardMusic) window.DiyarCardMusic.createMusicToggle(U.$('viewerMusicToggle'), tpl.music);
 
     const shareUrl = location.href;
     U.$('viewerCopyLink').addEventListener('click', async () => {
@@ -206,7 +208,7 @@
       const tpl = templatesById[store.get().templateId];
       if (!tpl || !formCardEl) return;
       R.updateCard(formCardEl, Object.assign({}, store.get(), {
-        layout: tpl.layout, palette: tpl.palette, icon: tpl.icon
+        layout: tpl.layout, palette: tpl.palette, icon: tpl.icon, headline: tpl.headline
       }));
     }
 
@@ -230,8 +232,10 @@
       const tpl = templatesById[store.get().templateId];
       const shareCardEl = R.buildCardSkeleton(U.$('sharePreview'));
       R.updateCard(shareCardEl, Object.assign({}, store.get(), {
-        layout: tpl.layout, palette: tpl.palette, icon: tpl.icon
+        layout: tpl.layout, palette: tpl.palette, icon: tpl.icon, headline: tpl.headline
       }));
+      if (window.DiyarCardEffects) window.DiyarCardEffects.playCardEffects(shareCardEl, tpl.effects);
+      if (window.DiyarCardMusic) window.DiyarCardMusic.createMusicToggle(U.$('shareMusicToggle'), tpl.music);
       wireShareActions(shareCardEl);
       showPanel('share');
     });

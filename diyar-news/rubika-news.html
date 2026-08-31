@@ -11,6 +11,10 @@
 
 <style>
 
+/* =====================================================
+   BASE
+===================================================== */
+
 *{
     box-sizing:border-box;
 }
@@ -383,6 +387,10 @@ body{
 <div class="container">
 
 
+<!-- ===================================================
+     HEADER
+=================================================== -->
+
 <header class="header">
 
     <h1>
@@ -403,6 +411,10 @@ body{
 
 </header>
 
+
+<!-- ===================================================
+     CONTROLS
+=================================================== -->
 
 <section class="controls">
 
@@ -447,6 +459,10 @@ body{
 </section>
 
 
+<!-- ===================================================
+     NEWS LIST
+=================================================== -->
+
 <main
     id="newsList"
     class="news-list">
@@ -459,6 +475,10 @@ body{
 
 </main>
 
+
+<!-- ===================================================
+     FOOTER
+=================================================== -->
 
 <footer class="footer">
 
@@ -473,6 +493,10 @@ body{
 
 </div>
 
+
+<!-- ===================================================
+     TOAST
+=================================================== -->
 
 <div
     id="toast"
@@ -492,12 +516,15 @@ body{
 const SUMMARY_URL =
 "https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news-summary.json";
 
+
 const RUBIKA_PAGE_URL =
 "https://maghool51.github.io/diyar-widgets/diyar-news/rubika-news.html";
+
 
 const NEWS_COUNT = 10;
 
 const MAX_SUMMARY_LENGTH = 150;
+
 
 let allNews = [];
 
@@ -511,6 +538,7 @@ let currentCategory = "all";
 function normalizeText(value){
 
     return String(value ?? "")
+
         .replace(/ي/g,"ی")
         .replace(/ى/g,"ی")
         .replace(/ك/g,"ک")
@@ -530,6 +558,7 @@ function normalizeText(value){
 function escapeHTML(value){
 
     return String(value ?? "")
+
         .replace(/&/g,"&amp;")
         .replace(/</g,"&lt;")
         .replace(/>/g,"&gt;")
@@ -546,6 +575,7 @@ function escapeHTML(value){
 function toPersianDigits(value){
 
     return String(value ?? "")
+
         .replace(
             /\d/g,
             d => "۰۱۲۳۴۵۶۷۸۹"[d]
@@ -558,7 +588,10 @@ function toPersianDigits(value){
    KEYWORD SCORE
 ===================================================== */
 
-function keywordScore(title,keywords){
+function keywordScore(
+    title,
+    keywords
+){
 
     let score = 0;
 
@@ -597,6 +630,10 @@ function smartCategory(item){
         title + " " + summary;
 
 
+    /* -----------------------------------------------
+       SPORT
+    ------------------------------------------------ */
+
     const sport = [
 
         "فوتبال",
@@ -628,8 +665,15 @@ function smartCategory(item){
     ];
 
     const sportScore =
-        keywordScore(title,sport);
+        keywordScore(
+            title,
+            sport
+        );
 
+
+    /* -----------------------------------------------
+       ECONOMY
+    ------------------------------------------------ */
 
     const economy = [
 
@@ -671,8 +715,15 @@ function smartCategory(item){
     ];
 
     const economyScore =
-        keywordScore(title,economy);
+        keywordScore(
+            title,
+            economy
+        );
 
+
+    /* -----------------------------------------------
+       TECHNOLOGY
+    ------------------------------------------------ */
 
     const tech = [
 
@@ -709,8 +760,15 @@ function smartCategory(item){
     ];
 
     const techScore =
-        keywordScore(title,tech);
+        keywordScore(
+            title,
+            tech
+        );
 
+
+    /* -----------------------------------------------
+       INTERNATIONAL
+    ------------------------------------------------ */
 
     const international = [
 
@@ -755,8 +813,15 @@ function smartCategory(item){
     ];
 
     const internationalScore =
-        keywordScore(title,international);
+        keywordScore(
+            title,
+            international
+        );
 
+
+    /* -----------------------------------------------
+       SOCIAL
+    ------------------------------------------------ */
 
     const social = [
 
@@ -820,8 +885,15 @@ function smartCategory(item){
     ];
 
     const socialScore =
-        keywordScore(title,social);
+        keywordScore(
+            title,
+            social
+        );
 
+
+    /* -----------------------------------------------
+       POLITICAL
+    ------------------------------------------------ */
 
     const political = [
 
@@ -864,8 +936,15 @@ function smartCategory(item){
     ];
 
     const politicalScore =
-        keywordScore(title,political);
+        keywordScore(
+            title,
+            political
+        );
 
+
+    /* -----------------------------------------------
+       PRIORITY RULES
+    ------------------------------------------------ */
 
     if(
         socialScore >= 2 &&
@@ -942,6 +1021,10 @@ function smartCategory(item){
 
     }
 
+
+    /* -----------------------------------------------
+       ORIGINAL CATEGORY
+    ------------------------------------------------ */
 
     const original =
         normalizeText(item.category);
@@ -1061,26 +1144,95 @@ function cleanSummary(text){
 
 
 /* =====================================================
-   PERSIAN DATE
+   PERSIAN DATE - FIXED ORDER
 ===================================================== */
 
 function getPersianDate(){
 
     try{
 
-        return new Intl.DateTimeFormat(
-            "fa-IR-u-ca-persian",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
+        const now =
+            new Date();
+
+
+        const parts =
+            new Intl.DateTimeFormat(
+                "fa-IR-u-ca-persian",
+                {
+                    timeZone:"Asia/Tehran",
+                    weekday:"long",
+                    year:"numeric",
+                    month:"long",
+                    day:"numeric"
+                }
+            ).formatToParts(now);
+
+
+        let weekday = "";
+        let day = "";
+        let month = "";
+        let year = "";
+
+
+        parts.forEach(part => {
+
+            if(
+                part.type === "weekday"
+            ){
+
+                weekday =
+                    part.value;
+
             }
-        ).format(
-            new Date()
+
+
+            if(
+                part.type === "day"
+            ){
+
+                day =
+                    part.value;
+
+            }
+
+
+            if(
+                part.type === "month"
+            ){
+
+                month =
+                    part.value;
+
+            }
+
+
+            if(
+                part.type === "year"
+            ){
+
+                year =
+                    part.value;
+
+            }
+
+        });
+
+
+        return (
+
+            weekday +
+            " " +
+            day +
+            " " +
+            month +
+            " " +
+            year
+
         );
 
-    }catch{
+    }catch(error){
+
+        console.error(error);
 
         return "";
 
@@ -1090,7 +1242,7 @@ function getPersianDate(){
 
 
 /* =====================================================
-   PERSIAN TIME
+   PERSIAN TIME - TEHRAN
 ===================================================== */
 
 function getPersianTime(){
@@ -1100,6 +1252,7 @@ function getPersianTime(){
         return new Intl.DateTimeFormat(
             "fa-IR",
             {
+                timeZone:"Asia/Tehran",
                 hour:"2-digit",
                 minute:"2-digit",
                 hour12:false
@@ -1108,36 +1261,13 @@ function getPersianTime(){
             new Date()
         );
 
-    }catch{
+    }catch(error){
+
+        console.error(error);
 
         return "";
 
     }
-
-}
-
-
-/* =====================================================
-   RUBIKA SAFE DATE
-   کنترل جهت برای جلوگیری از جابجایی
-===================================================== */
-
-function rubikaDate(){
-
-    const date =
-        getPersianDate();
-
-    /*
-       RLM در ابتدا و انتها باعث می‌شود
-       روبیکا ترتیب عبارت فارسی را
-       به‌صورت RTL نگه دارد.
-    */
-
-    return (
-        "\u200F" +
-        date +
-        "\u200F"
-    );
 
 }
 
@@ -1248,7 +1378,8 @@ async function loadNews(){
             Array.isArray(data)
         ){
 
-            allNews = data;
+            allNews =
+                data;
 
         }
 
@@ -1272,7 +1403,8 @@ async function loadNews(){
 
         else{
 
-            allNews = [];
+            allNews =
+                [];
 
         }
 
@@ -1282,10 +1414,14 @@ async function loadNews(){
         renderNews();
 
 
-        if(data.lastUpdate){
+        if(
+            data.lastUpdate
+        ){
 
             updateInfo.textContent =
+
                 "🕐 آخرین بروزرسانی: " +
+
                 formatDate(
                     data.lastUpdate
                 );
@@ -1293,10 +1429,13 @@ async function loadNews(){
         }else{
 
             updateInfo.textContent =
+
                 "📰 " +
+
                 toPersianDigits(
                     allNews.length
                 ) +
+
                 " خبر دریافت شد";
 
         }
@@ -1375,7 +1514,8 @@ function buildCategories(){
                 );
 
 
-            button.type = "button";
+            button.type =
+                "button";
 
 
             button.className =
@@ -1498,7 +1638,9 @@ function isNewNews(item){
         return true;
 
 
-    if(item.publishedAt){
+    if(
+        item.publishedAt
+    ){
 
         const date =
             new Date(
@@ -1513,6 +1655,7 @@ function isNewNews(item){
         ){
 
             const hours =
+
                 (
                     Date.now() -
                     date.getTime()
@@ -1521,8 +1664,10 @@ function isNewNews(item){
 
 
             return (
+
                 hours >= 0 &&
                 hours <= 6
+
             );
 
         }
@@ -1551,7 +1696,9 @@ function renderNews(){
         getVisibleNews();
 
 
-    if(!news.length){
+    if(
+        !news.length
+    ){
 
         container.innerHTML = `
 
@@ -1627,7 +1774,9 @@ function renderNews(){
                             <span
                                 class="news-number"
                             >
+
                                 ${toPersianDigits(index+1)}.
+
                             </span>
 
                             ${title}
@@ -1702,16 +1851,13 @@ function renderNews(){
 
 
 /* =====================================================
-   RUBIKA HEADER — VERSION 3.5
+   RUBIKA HEADER - VERSION 3.5
 ===================================================== */
 
 function rubikaHeader(){
 
-    const date =
-        rubikaDate();
-
-    const time =
-        getPersianTime();
+    const NL =
+        "\r\n";
 
 
     return [
@@ -1722,24 +1868,30 @@ function rubikaHeader(){
 
         "",
 
-        "       📅 " + date,
+        "        📅 " +
+        getPersianDate(),
 
-        "              🕐 " + time,
+        "             🕐 " +
+        getPersianTime(),
 
         "",
 
         "╚══════════════════════════╝"
 
-    ].join("\r\n");
+    ].join(NL);
 
 }
 
 
 /* =====================================================
-   RUBIKA FOOTER — VERSION 3.5
+   RUBIKA FOOTER - VERSION 3.5
 ===================================================== */
 
 function rubikaFooter(){
+
+    const NL =
+        "\r\n";
+
 
     return [
 
@@ -1749,9 +1901,10 @@ function rubikaFooter(){
 
         "",
 
-        "     🔗 مشاهده و مطالعه خبرها:",
+        "       🔗 مشاهده و مطالعه خبرها:",
 
-        "     " + RUBIKA_PAGE_URL,
+        "       " +
+        RUBIKA_PAGE_URL,
 
         "",
 
@@ -1763,7 +1916,7 @@ function rubikaFooter(){
 
         "✍️ معقول"
 
-    ].join("\r\n");
+    ].join(NL);
 
 }
 
@@ -1778,13 +1931,23 @@ function createRubikaText(){
         getVisibleNews();
 
 
-    if(!news.length)
+    if(
+        !news.length
+    )
         return "";
 
 
     const NL =
         "\r\n";
 
+
+    /*
+       سربرگ شامل:
+       نام دیار قدمگاه
+       تاریخ
+       روز
+       ساعت
+    */
 
     let text =
 
@@ -1825,7 +1988,9 @@ function createRubikaText(){
 
             const category =
 
-                smartCategory(item);
+                smartCategory(
+                    item
+                );
 
 
             const summary =
@@ -1834,6 +1999,10 @@ function createRubikaText(){
                     item.summary
                 );
 
+
+            /*
+               عنوان خبر
+            */
 
             text +=
 
@@ -1850,6 +2019,10 @@ function createRubikaText(){
                 NL;
 
 
+            /*
+               منبع و دسته
+            */
+
             text +=
 
                 "   📰 " +
@@ -1861,7 +2034,13 @@ function createRubikaText(){
                 category;
 
 
-            if(summary){
+            /*
+               خلاصه خبر
+            */
+
+            if(
+                summary
+            ){
 
                 text +=
 
@@ -1873,6 +2052,10 @@ function createRubikaText(){
 
             }
 
+
+            /*
+               جداکننده
+            */
 
             if(
                 index <
@@ -1899,6 +2082,10 @@ function createRubikaText(){
     );
 
 
+    /*
+       کادر پایانی و لینک
+    */
+
     text +=
 
         NL +
@@ -1921,7 +2108,9 @@ async function copyForRubika(){
         createRubikaText();
 
 
-    if(!text){
+    if(
+        !text
+    ){
 
         showToast(
             "📭 خبری برای کپی وجود ندارد."
@@ -1931,6 +2120,11 @@ async function copyForRubika(){
 
     }
 
+
+    /*
+       روش اول:
+       ClipboardItem
+    */
 
     try{
 
@@ -1943,6 +2137,7 @@ async function copyForRubika(){
                 new ClipboardItem({
 
                     "text/plain":
+
                         new Blob(
                             [text],
                             {
@@ -1978,6 +2173,11 @@ async function copyForRubika(){
     }
 
 
+    /*
+       روش دوم:
+       writeText
+    */
+
     try{
 
         if(
@@ -2008,6 +2208,11 @@ async function copyForRubika(){
 
     }
 
+
+    /*
+       روش سوم:
+       textarea
+    */
 
     const textarea =
         document.createElement(
@@ -2063,7 +2268,9 @@ async function copyForRubika(){
             );
 
 
-        if(success){
+        if(
+            success
+        ){
 
             showToast(
                 "✅ متن آماده روبیکا کپی شد."
@@ -2175,4 +2382,4 @@ loadNews();
 
 </body>
 
-    </html>
+</html>

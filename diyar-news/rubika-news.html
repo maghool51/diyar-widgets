@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>اخبار دیار قدمگاه</title>
 
 <style>
@@ -138,7 +139,10 @@ const MAX_NEWS = 10;
 const SUMMARY_MAX_LENGTH = 170;
 
 
-/* تبدیل اعداد انگلیسی به فارسی */
+/* ═══════════════════════════════
+   تبدیل اعداد انگلیسی به فارسی
+   ═══════════════════════════════ */
+
 function toPersianDigits(text){
 
     const en = "0123456789";
@@ -147,49 +151,118 @@ function toPersianDigits(text){
     return String(text).replace(/[0-9]/g,function(d){
         return fa[en.indexOf(d)];
     });
+
 }
 
 
-/* کوتاه کردن خلاصه */
+/* ═══════════════════════════════
+   کوتاه کردن خلاصه خبر
+   ═══════════════════════════════ */
+
 function shorten(text,max){
 
     if(!text) return "";
 
-    text = text.replace(/\s+/g," ").trim();
+    text = text
+        .replace(/\s+/g," ")
+        .trim();
 
     if(text.length <= max)
         return text;
 
-    return text.substring(0,max).trim() + "…";
+    /*
+       قطع در آخرین فاصله
+       تا کلمه نصف نشود
+    */
+
+    let result =
+        text.substring(0,max);
+
+    const lastSpace =
+        result.lastIndexOf(" ");
+
+    if(lastSpace > max - 40){
+
+        result =
+            result.substring(0,lastSpace);
+
+    }
+
+    return result.trim() + "…";
+
 }
 
 
-/* تاریخ شمسی */
-function getPersianDate(){
+/* ═══════════════════════════════
+   تاریخ شمسی با کنترل RTL
+   ═══════════════════════════════ */
+
+function getPersianDateParts(){
 
     const now = new Date();
 
     try{
 
-        return new Intl.DateTimeFormat(
-            "fa-IR-u-ca-persian",
-            {
-                weekday:"long",
-                year:"numeric",
-                month:"long",
-                day:"numeric"
-            }
-        ).format(now);
+        const formatter =
+            new Intl.DateTimeFormat(
+                "fa-IR-u-ca-persian",
+                {
+                    weekday:"long",
+                    year:"numeric",
+                    month:"long",
+                    day:"numeric"
+                }
+            );
+
+        const parts =
+            formatter.formatToParts(now);
+
+        let weekday = "";
+        let day = "";
+        let month = "";
+        let year = "";
+
+        parts.forEach(function(part){
+
+            if(part.type === "weekday")
+                weekday = part.value;
+
+            if(part.type === "day")
+                day = part.value;
+
+            if(part.type === "month")
+                month = part.value;
+
+            if(part.type === "year")
+                year = part.value;
+
+        });
+
+        return {
+            weekday:weekday,
+            day:day,
+            month:month,
+            year:year
+        };
 
     }catch(e){
 
-        return "";
+        return {
+            weekday:"",
+            day:"",
+            month:"",
+            year:""
+        };
 
     }
+
 }
 
 
-/* ساعت */
+/* ═══════════════════════════════
+   ساعت
+   ═══════════════════════════════ */
+
 function getPersianTime(){
 
     const now = new Date();
@@ -207,55 +280,169 @@ function getPersianTime(){
 
     }catch(e){
 
-        return "";
+        const h =
+            String(now.getHours())
+            .padStart(2,"0");
+
+        const m =
+            String(now.getMinutes())
+            .padStart(2,"0");
+
+        return toPersianDigits(
+            h + ":" + m
+        );
 
     }
+
 }
 
 
-/* خط جداکننده */
+/* ═══════════════════════════════
+   کنترل جهت متن
+   RLM = Right-to-Left Mark
+   LRM = Left-to-Right Mark
+   ═══════════════════════════════ */
+
+const RLM = "\u200F";
+const LRM = "\u200E";
+
+
+/* ═══════════════════════════════
+   ساخت تاریخ مخصوص روبیکا
+   ═══════════════════════════════ */
+
+function makeRubikaDate(){
+
+    const d =
+        getPersianDateParts();
+
+    /*
+       ترتیب نهایی:
+
+       📅 تاریخ: ۹ شهریور ۱۴۰۵ | دوشنبه
+
+       استفاده از LRM/RLM باعث می‌شود
+       اعداد و متن در روبیکا جابه‌جا نشوند.
+    */
+
+    return (
+        RLM +
+        "📅 تاریخ: " +
+        RLM +
+        d.day +
+        " " +
+        d.month +
+        " " +
+        d.year +
+        RLM +
+        " | " +
+        d.weekday +
+        RLM
+    );
+
+}
+
+
+/* ═══════════════════════════════
+   ساخت ساعت مخصوص روبیکا
+   ═══════════════════════════════ */
+
+function makeRubikaTime(){
+
+    const time =
+        getPersianTime();
+
+    return (
+        RLM +
+        "🕐 ساعت: " +
+        LRM +
+        time +
+        LRM +
+        RLM
+    );
+
+}
+
+
+/* ═══════════════════════════════
+   خط جداکننده
+   ═══════════════════════════════ */
+
 function separator(){
 
     return "────────────────────────────";
+
 }
 
 
-/* سربرگ روبیکا */
+/* ═══════════════════════════════
+   سربرگ مخصوص روبیکا
+   ═══════════════════════════════ */
+
 function makeHeader(){
 
     return [
+
         "╔══════════════════════════╗",
+
         "     🌸🕌💫 اخبار دیار قدمگاه 💫🕌🌸",
+
         "",
-        "       📅 " + getPersianDate(),
-        "              🕐 " + getPersianTime(),
+
+        makeRubikaDate(),
+
+        makeRubikaTime(),
+
         "",
+
         "╚══════════════════════════╝",
+
         ""
+
     ].join("\n");
+
 }
 
 
-/* کادر انتهایی */
+/* ═══════════════════════════════
+   کادر انتهایی
+   ═══════════════════════════════ */
+
 function makeFooter(){
 
     return [
+
         "",
+
         "╔══════════════════════════╗",
+
         "          📖 متن کامل اخبار",
+
         "",
+
         " 🔗 مشاهده و مطالعه خبرها:",
+
         " https://maghool51.github.io/diyar-widgets/diyar-news/rubika-news.html",
+
         "",
+
         "╚══════════════════════════╝",
+
         "",
+
         "🏡 دیار قدمگاه",
+
         "✍️ معقول"
+
     ].join("\n");
+
 }
 
 
-/* ساخت متن هر خبر */
+/* ═══════════════════════════════
+   ساخت متن هر خبر
+   ═══════════════════════════════ */
+
 function makeNewsText(news,index){
 
     const number =
@@ -284,7 +471,10 @@ function makeNewsText(news,index){
     const lines = [];
 
     lines.push(
-        "🔴 " + number + ". " + title
+        "🔴 " +
+        number +
+        ". " +
+        title
     );
 
     lines.push(
@@ -297,48 +487,76 @@ function makeNewsText(news,index){
     if(summary){
 
         lines.push(
-            "   📝 " + summary
+            "   📝 " +
+            summary
         );
 
     }
 
     return lines.join("\n");
+
 }
 
 
-/* ساخت متن نهایی */
+/* ═══════════════════════════════
+   ساخت متن نهایی روبیکا
+   ═══════════════════════════════ */
+
 function buildRubikaText(newsList){
 
     const output = [];
 
-    output.push(makeHeader());
+    output.push(
+        makeHeader()
+    );
 
     const list =
-        newsList.slice(0,MAX_NEWS);
-
-    list.forEach(function(news,index){
-
-        output.push(
-            makeNewsText(news,index)
+        newsList.slice(
+            0,
+            MAX_NEWS
         );
 
-        if(index < list.length - 1){
+    list.forEach(
+        function(news,index){
 
-            output.push("");
-            output.push(separator());
-            output.push("");
+            output.push(
+                makeNewsText(
+                    news,
+                    index
+                )
+            );
+
+            if(
+                index <
+                list.length - 1
+            ){
+
+                output.push("");
+
+                output.push(
+                    separator()
+                );
+
+                output.push("");
+
+            }
 
         }
+    );
 
-    });
-
-    output.push(makeFooter());
+    output.push(
+        makeFooter()
+    );
 
     return output.join("\n");
+
 }
 
 
-/* نمایش اخبار در صفحه */
+/* ═══════════════════════════════
+   نمایش اخبار در صفحه وب
+   ═══════════════════════════════ */
+
 function renderNews(newsList){
 
     const container =
@@ -350,57 +568,68 @@ function renderNews(newsList){
 
     newsList
         .slice(0,MAX_NEWS)
-        .forEach(function(news,index){
+        .forEach(
+            function(news,index){
 
-            const div =
-                document.createElement("div");
+                const div =
+                    document.createElement(
+                        "div"
+                    );
 
-            div.className = "news";
+                div.className =
+                    "news";
 
-            const title =
-                news.title || "";
+                const title =
+                    news.title || "";
 
-            const source =
-                news.source || "";
+                const source =
+                    news.source || "";
 
-            const category =
-                news.category || "";
+                const category =
+                    news.category || "";
 
-            const summary =
-                shorten(
-                    news.summary ||
-                    news.description ||
-                    "",
-                    SUMMARY_MAX_LENGTH
+                const summary =
+                    shorten(
+                        news.summary ||
+                        news.description ||
+                        "",
+                        SUMMARY_MAX_LENGTH
+                    );
+
+                div.innerHTML =
+
+                    `<div class="title">
+                        🔴 ${toPersianDigits(index+1)}. ${title}
+                    </div>
+
+                    <div class="info">
+                        📰 ${source} &nbsp; • &nbsp; 🏷 ${category}
+                    </div>
+
+                    ${
+                        summary
+                        ?
+                        `<div class="summary">
+                            📝 ${summary}
+                        </div>`
+                        :
+                        ""
+                    }`;
+
+                container.appendChild(
+                    div
                 );
 
-            div.innerHTML =
+            }
+        );
 
-                `<div class="title">
-                    🔴 ${toPersianDigits(index+1)}. ${title}
-                </div>
-
-                <div class="info">
-                    📰 ${source} &nbsp; • &nbsp; 🏷 ${category}
-                </div>
-
-                ${
-                    summary
-                    ?
-                    `<div class="summary">
-                        📝 ${summary}
-                    </div>`
-                    :
-                    ""
-                }`;
-
-            container.appendChild(div);
-
-        });
 }
 
 
-/* دریافت اخبار */
+/* ═══════════════════════════════
+   دریافت اخبار
+   ═══════════════════════════════ */
+
 async function loadNews(){
 
     try{
@@ -412,35 +641,47 @@ async function loadNews(){
                 Date.now()
             );
 
-        if(!response.ok)
+        if(!response.ok){
+
             throw new Error(
                 "خطا در دریافت اخبار"
             );
+
+        }
 
         const data =
             await response.json();
 
         const newsList =
             Array.isArray(data)
-            ? data
-            : (
+            ?
+            data
+            :
+            (
                 data.news ||
                 data.items ||
                 data.articles ||
                 []
             );
 
-        if(!newsList.length)
+        if(!newsList.length){
+
             throw new Error(
                 "هیچ خبری پیدا نشد"
             );
 
-        renderNews(newsList);
+        }
+
+        renderNews(
+            newsList
+        );
 
         document.getElementById(
             "rubikaText"
         ).value =
-            buildRubikaText(newsList);
+            buildRubikaText(
+                newsList
+            );
 
     }catch(error){
 
@@ -449,13 +690,19 @@ async function loadNews(){
         ).innerHTML =
             "❌ خطا در دریافت اخبار";
 
-        console.error(error);
+        console.error(
+            error
+        );
 
     }
+
 }
 
 
-/* کپی متن مخصوص روبیکا */
+/* ═══════════════════════════════
+   کپی متن مخصوص روبیکا
+   ═══════════════════════════════ */
+
 async function copyRubikaNews(){
 
     const textarea =
@@ -464,8 +711,8 @@ async function copyRubikaNews(){
         );
 
     /*
-       قبل از کپی دوباره متن ساخته می‌شود
-       تا ساعت کاملاً به‌روز باشد.
+       هنگام کپی، اخبار دوباره خوانده می‌شود
+       تا ساعت دقیق همان لحظه ثبت شود.
     */
 
     try{
@@ -482,28 +729,40 @@ async function copyRubikaNews(){
 
         const newsList =
             Array.isArray(data)
-            ? data
-            : (
+            ?
+            data
+            :
+            (
                 data.news ||
                 data.items ||
                 data.articles ||
                 []
             );
 
-        textarea.value =
-            buildRubikaText(newsList);
+        if(newsList.length){
+
+            textarea.value =
+                buildRubikaText(
+                    newsList
+                );
+
+        }
 
     }catch(e){
 
         /*
-           اگر هنگام کپی اینترنت در دسترس نبود،
+           در صورت خطای شبکه،
            متن قبلی حفظ می‌شود.
         */
 
     }
 
+
     const text =
         textarea.value;
+
+
+    /* روش اصلی کپی */
 
     try{
 
@@ -513,11 +772,18 @@ async function copyRubikaNews(){
 
     }catch(e){
 
+        /* روش جایگزین */
+
         textarea.removeAttribute(
             "readonly"
         );
 
         textarea.select();
+
+        textarea.setSelectionRange(
+            0,
+            textarea.value.length
+        );
 
         document.execCommand(
             "copy"
@@ -530,6 +796,7 @@ async function copyRubikaNews(){
 
     }
 
+
     const status =
         document.getElementById(
             "status"
@@ -538,27 +805,54 @@ async function copyRubikaNews(){
     status.style.display =
         "block";
 
-    setTimeout(function(){
 
-        status.style.display =
-            "none";
+    setTimeout(
+        function(){
 
-    },2500);
+            status.style.display =
+                "none";
+
+        },
+        2500
+    );
+
 }
 
 
-/* نمایش تاریخ در صفحه */
-document.getElementById(
-    "date"
-).textContent =
-    "📅 " +
-    getPersianDate() +
-    "  |  🕐 " +
-    getPersianTime();
+/* ═══════════════════════════════
+   نمایش تاریخ و ساعت روی صفحه وب
+   ═══════════════════════════════ */
+
+function updatePageDate(){
+
+    document.getElementById(
+        "date"
+    ).textContent =
+        "📅 " +
+        makeRubikaDate() +
+        "  |  " +
+        makeRubikaTime();
+
+}
 
 
-/* اجرای اولیه */
+/* ═══════════════════════════════
+   اجرای اولیه
+   ═══════════════════════════════ */
+
+updatePageDate();
+
 loadNews();
+
+
+/*
+   ساعت صفحه هر دقیقه به‌روز شود.
+*/
+
+setInterval(
+    updatePageDate,
+    60000
+);
 
 </script>
 

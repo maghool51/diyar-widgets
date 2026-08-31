@@ -21,6 +21,11 @@
     const ornB = document.createElement('i'); ornB.className = 'dq-card__orn-b';
     ornament.appendChild(ornA); ornament.appendChild(ornB);
 
+    const fx = document.createElement('div');
+    fx.className = 'dq-card__fx';
+    fx.setAttribute('aria-hidden', 'true');
+
+    const headline = document.createElement('p'); headline.className = 'dq-card__headline';
     const icon = document.createElement('div'); icon.className = 'dq-card__icon'; icon.setAttribute('aria-hidden', 'true');
     const to = document.createElement('p'); to.className = 'dq-card__to';
     const title = document.createElement('p'); title.className = 'dq-card__title';
@@ -29,7 +34,7 @@
     const brand = document.createElement('div'); brand.className = 'dq-card__brand';
     brand.textContent = '🏡 دیار قدمگاه · ✍️ معقول';
 
-    card.append(ornament, icon, to, title, message, from, brand);
+    card.append(ornament, fx, headline, icon, to, title, message, from, brand);
     container.appendChild(card);
     return card;
   }
@@ -39,6 +44,8 @@
     if (!cardEl) return;
     cardEl.setAttribute('data-layout', data.layout || '');
     cardEl.setAttribute('data-palette', data.palette || '');
+    if (data.templateId) cardEl.setAttribute('data-template', data.templateId);
+    U.setText(cardEl.querySelector('.dq-card__headline'), data.headline || '');
     U.setText(cardEl.querySelector('.dq-card__icon'), data.icon || '');
     U.setText(cardEl.querySelector('.dq-card__to'), data.to ? ('برای ' + data.to) : 'برای …');
     U.setText(cardEl.querySelector('.dq-card__title'), data.title || '');

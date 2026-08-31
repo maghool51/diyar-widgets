@@ -341,14 +341,15 @@ animation:none!important
 
 "use strict";
 
+
 /* =====================================================
    SETTINGS
 ===================================================== */
 
-const SUMMARY_URL =
+const SUMMARY_URL=
 "https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news-summary.json";
 
-const RUBIKA_PAGE_URL =
+const RUBIKA_PAGE_URL=
 "https://maghool51.github.io/diyar-widgets/diyar-news/rubika-news.html";
 
 const NEWS_COUNT=10;
@@ -361,7 +362,7 @@ let currentCategory="all";
 
 
 /* =====================================================
-   NORMALIZE
+   TEXT NORMALIZATION
 ===================================================== */
 
 function normalizeText(value){
@@ -370,6 +371,7 @@ return String(value??"")
 .replace(/ي/g,"ی")
 .replace(/ى/g,"ی")
 .replace(/ك/g,"ک")
+.replace(/ۀ/g,"ه")
 .replace(/\u200c/g," ")
 .replace(/\s+/g," ")
 .trim()
@@ -379,7 +381,7 @@ return String(value??"")
 
 
 /* =====================================================
-   ESCAPE
+   HTML ESCAPE
 ===================================================== */
 
 function escapeHTML(value){
@@ -410,20 +412,47 @@ d=>"۰۱۲۳۴۵۶۷۸۹"[d]
 
 
 /* =====================================================
-   SMART CATEGORY
+   KEYWORD SCORE
+===================================================== */
+
+function keywordScore(title,keywords){
+
+let score=0;
+
+keywords.forEach(word=>{
+
+if(title.includes(normalizeText(word)))
+score++;
+
+});
+
+return score;
+
+}
+
+
+/* =====================================================
+   SMART CATEGORY 3.7
 ===================================================== */
 
 function smartCategory(item){
 
-const title=normalizeText(item.title);
+const title=
+normalizeText(item.title);
 
-const original=normalizeText(item.category);
+const summary=
+normalizeText(item.summary);
+
+const text=
+title+" "+summary;
 
 
-/* ---------- ورزش ---------- */
+/* ==========================================
+   1. ورزش
+   فقط وقتی امتیاز ورزشی غالب باشد
+========================================== */
 
-const sportKeywords=[
-
+const sport=[
 "فوتبال",
 "والیبال",
 "بسکتبال",
@@ -431,7 +460,6 @@ const sportKeywords=[
 "تنیس",
 "کشتی",
 "ورزش",
-"ورزشی",
 "لیگ برتر",
 "جام جهانی",
 "جام‌جهانی",
@@ -445,24 +473,22 @@ const sportKeywords=[
 "تراکتور",
 "رئال مادرید",
 "بارسلونا",
-"منچستر",
+"منچستر یونایتد",
 "منچستریونایتد",
-"فوتبال ساحلی"
-
+"فوتبال ساحلی",
+"مسابقه ورزشی",
+"رقابت ورزشی"
 ];
 
-if(
-sportKeywords.some(
-k=>title.includes(normalizeText(k))
-)
-)
-return "ورزشی";
+const sportScore=
+keywordScore(title,sport);
 
 
-/* ---------- اقتصاد ---------- */
+/* ==========================================
+   2. اقتصاد
+========================================== */
 
-const economyKeywords=[
-
+const economy=[
 "اقتصاد",
 "اقتصادی",
 "مشاغل خانگی",
@@ -497,21 +523,17 @@ const economyKeywords=[
 "تولید",
 "اشتغال",
 "کارآفرینی"
-
 ];
 
-if(
-economyKeywords.some(
-k=>title.includes(normalizeText(k))
-)
-)
-return "اقتصادی";
+const economyScore=
+keywordScore(title,economy);
 
 
-/* ---------- فناوری ---------- */
+/* ==========================================
+   3. فناوری
+========================================== */
 
-const technologyKeywords=[
-
+const tech=[
 "هوش مصنوعی",
 "فناوری",
 "تکنولوژی",
@@ -540,23 +562,18 @@ const technologyKeywords=[
 "اپلیکیشن",
 "برنامه نویسی",
 "برنامه‌نویسی",
-"فناور",
-"فناوری"
-
+"فناور"
 ];
 
-if(
-technologyKeywords.some(
-k=>title.includes(normalizeText(k))
-)
-)
-return "علمی و فناوری";
+const techScore=
+keywordScore(title,tech);
 
 
-/* ---------- بین الملل ---------- */
+/* ==========================================
+   4. بین الملل
+========================================== */
 
-const internationalKeywords=[
-
+const international=[
 "آمریکا",
 "آمریکایی",
 "آلمان",
@@ -594,21 +611,17 @@ const internationalKeywords=[
 "بین‌الملل",
 "شانگهای",
 "جنگ علیه ایران"
-
 ];
 
-if(
-internationalKeywords.some(
-k=>title.includes(normalizeText(k))
-)
-)
-return "بین‌الملل";
+const internationalScore=
+keywordScore(title,international);
 
 
-/* ---------- اجتماعی ---------- */
+/* ==========================================
+   5. اجتماعی
+========================================== */
 
-const socialKeywords=[
-
+const social=[
 "تصادف",
 "سانحه",
 "حادثه",
@@ -650,7 +663,8 @@ const socialKeywords=[
 "محیط زیست",
 "تجمعات",
 "بازنشسته",
-"زائران",
+"بازنشستگان",
+"زائر",
 "خانواده زندانیان",
 "زندانیان",
 "خیرین",
@@ -660,23 +674,21 @@ const socialKeywords=[
 "وحدت اسلامی",
 "همبستگی",
 "آرامش اجتماعی",
-"ورودی شهری",
-"ساماندهی ورودی"
-
+"ساماندهی ورودی",
+"ورودی غربی",
+"فضاهای فرهنگی",
+"فضای فرهنگی"
 ];
 
-if(
-socialKeywords.some(
-k=>title.includes(normalizeText(k))
-)
-)
-return "اجتماعی";
+const socialScore=
+keywordScore(title,social);
 
 
-/* ---------- سیاسی ---------- */
+/* ==========================================
+   6. سیاسی
+========================================== */
 
-const politicalKeywords=[
-
+const political=[
 "سیاسی",
 "دولت",
 "مجلس",
@@ -712,18 +724,86 @@ const politicalKeywords=[
 "سپاه",
 "نیروهای مسلح",
 "وزیر نیرو"
-
 ];
 
+const politicalScore=
+keywordScore(title,political);
+
+
+/* ==========================================
+   اولویت‌های موضوعی
+========================================== */
+
+/*
+  بعضی کلمات مثل «ورزشی» ممکن است
+  در خبر اجتماعی دیده شوند.
+
+  بنابراین برای خبرهایی که
+  نشانه اجتماعی قوی دارند،
+  اجتماعی بر ورزش مقدم است.
+*/
+
 if(
-politicalKeywords.some(
-k=>title.includes(normalizeText(k))
+socialScore>=2 &&
+sportScore<=1
 )
+return "اجتماعی";
+
+
+if(
+sportScore>=2 &&
+sportScore>=socialScore
+)
+return "ورزشی";
+
+
+if(
+internationalScore>=1 &&
+(
+title.includes("آمریکا")||
+title.includes("اسرائیل")||
+title.includes("فلسطین")||
+title.includes("لبنان")||
+title.includes("اروپا")||
+title.includes("آلمان")||
+title.includes("چین")||
+title.includes("هند")||
+title.includes("قرقیزستان")
+)
+)
+return "بین‌الملل";
+
+
+if(
+economyScore>=1
+)
+return "اقتصادی";
+
+
+if(
+techScore>=1
+)
+return "علمی و فناوری";
+
+
+if(
+politicalScore>=1
 )
 return "سیاسی";
 
 
-/* ---------- دسته‌بندی اصلی JSON ---------- */
+if(
+socialScore>=1
+)
+return "اجتماعی";
+
+
+/* ==========================================
+   FALLBACK JSON CATEGORY
+========================================== */
+
+const original=
+normalizeText(item.category);
 
 const map={
 
@@ -734,7 +814,9 @@ const map={
 "بین‌الملل":"بین‌الملل",
 "ورزشی":"ورزشی",
 "علم و فناوری":"علمی و فناوری",
-"علمی و فناوری":"علمی و فناوری"
+"علمی و فناوری":"علمی و فناوری",
+"فناوری":"علمی و فناوری",
+"اجتماعی":"اجتماعی"
 
 };
 
@@ -744,51 +826,53 @@ return map[original]||"متفرقه";
 
 
 /* =====================================================
-   CLEAN SUMMARY
+   SUMMARY CLEANER
 ===================================================== */
 
 function cleanSummary(text){
 
-let result=String(text||"")
+let result=
+String(text||"")
 .replace(/\s+/g," ")
-.replace(
-/^(📝|خلاصه:|چکیده:)\s*/i,
-""
-)
 .trim();
 
 
-result=result.replace(
-/^[^،:]{2,20}\s*[-–—]\s*/,
+result=
+result.replace(
+/^(📝|خلاصه:|چکیده:)\s*/i,
 ""
 );
 
 
-result=result.replace(
-/^(گفت|اظهار کرد|اعلام کرد|بیان کرد)\s*[:：]\s*/i,
+/* حذف ابتدای «شهرستان-» */
+
+result=
+result.replace(
+/^[^،:]{2,25}\s*[-–—]\s*/,
 ""
 );
 
 
-if(
-result.length>MAX_SUMMARY_LENGTH
-){
+/* حذف عبارت‌های آغازین تکراری */
 
-result=result.substring(
-0,
-MAX_SUMMARY_LENGTH
+result=
+result.replace(
+/^(گفت|اظهار کرد|اعلام کرد|بیان کرد|تأکید کرد|تاکید کرد)\s*[:：]\s*/i,
+""
 );
 
-const lastSpace=result.lastIndexOf(" ");
 
-if(lastSpace>80){
+if(result.length>150){
 
-result=result.substring(
-0,
-lastSpace
-);
+result=
+result.substring(0,150);
 
-}
+const lastSpace=
+result.lastIndexOf(" ");
+
+if(lastSpace>90)
+result=
+result.substring(0,lastSpace);
 
 result+="…";
 
@@ -834,7 +918,8 @@ function formatDate(value){
 
 if(!value)return "";
 
-const date=new Date(value);
+const date=
+new Date(value);
 
 if(Number.isNaN(date.getTime()))
 return String(value);
@@ -862,7 +947,7 @@ return String(value);
 
 
 /* =====================================================
-   LOAD NEWS
+   LOAD
 ===================================================== */
 
 async function loadNews(){
@@ -1032,14 +1117,20 @@ function getVisibleNews(){
 let filtered;
 
 
-if(currentCategory==="all")
+if(currentCategory==="all"){
+
 filtered=allNews;
 
-else
+}else{
+
 filtered=
 allNews.filter(
-item=>smartCategory(item)===currentCategory
+item=>
+smartCategory(item)===
+currentCategory
 );
+
+}
 
 
 return filtered.slice(
@@ -1058,9 +1149,11 @@ function isNewNews(item){
 
 if(!item)return false;
 
-if(item.isNew===true)return true;
+if(item.isNew===true)
+return true;
 
-if(item.new===true)return true;
+if(item.new===true)
+return true;
 
 if(item.publishedAt){
 
@@ -1203,33 +1296,29 @@ rel="noopener noreferrer">
 
 
 /* =====================================================
-   RUBIKA HEADER
-   نسخه ۳.۵
+   RUBIKA FRAME
+   عرض ثابت ۲۶ کاراکتر
 ===================================================== */
 
 function rubikaHeader(){
 
-return`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                            ┃
-┃    📰 مهم‌ترین اخبار روز    ┃
-┃      ✨ دیار قدمگاه ✨      ┃
-┃                            ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
+return`┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                          ┃
+┃   📰 مهم‌ترین اخبار روز   ┃
+┃     ✨ دیار قدمگاه ✨     ┃
+┃                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
 
 }
 
 
-/* =====================================================
-   RUBIKA FOOTER
-===================================================== */
-
 function rubikaFooter(){
 
-return`┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                            ┃
-┃       📖 متن کامل اخبار      ┃
-┃                            ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+return`┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                          ┃
+┃      📖 متن کامل اخبار    ┃
+┃                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 🔗 ${RUBIKA_PAGE_URL}
 
@@ -1240,14 +1329,17 @@ return`┏━━━━━━━━━━━━━━━━━━━━━━━�
 
 
 /* =====================================================
-   CREATE RUBIKA TEXT
+   RUBIKA SUMMARY
 ===================================================== */
 
 function createRubikaText(){
 
-const news=getVisibleNews();
+const news=
+getVisibleNews();
 
-if(!news.length)return "";
+
+if(!news.length)
+return "";
 
 
 let text=

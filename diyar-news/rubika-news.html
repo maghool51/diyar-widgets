@@ -1,341 +1,594 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <meta name="theme-color" content="#263238">
+
 <title>اخبار دیار قدمگاه</title>
 
 <style>
-*{box-sizing:border-box}
+
+/* =====================================================
+   BASE
+===================================================== */
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    direction:rtl;
+}
 
 body{
-margin:0;
-padding:0;
-background:#f1f4f6;
-color:#263238;
-font-family:Tahoma,Arial,sans-serif;
-line-height:1.8
+    margin:0;
+    padding:0;
+    background:#f1f4f6;
+    color:#263238;
+    font-family:Tahoma,Arial,sans-serif;
+    line-height:1.8;
 }
 
 .container{
-width:100%;
-max-width:780px;
-margin:auto;
-padding:7px
+    width:100%;
+    max-width:780px;
+    margin:auto;
+    padding:7px;
 }
 
-/* ===== HEADER ===== */
+
+/* =====================================================
+   HEADER
+===================================================== */
 
 .header{
-position:relative;
-overflow:hidden;
-text-align:center;
-color:#fff;
-padding:18px 12px;
-border-radius:20px;
-background:linear-gradient(135deg,#263238,#455a64);
-box-shadow:0 5px 18px rgba(0,0,0,.14)
+    position:relative;
+    overflow:hidden;
+
+    text-align:center;
+
+    color:#fff;
+
+    padding:18px 12px;
+
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #263238,
+            #455a64
+        );
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,.14);
 }
 
 .header h1{
-margin:0;
-font-size:21px
+    margin:0;
+
+    font-size:21px;
+
+    font-weight:bold;
 }
 
 .header-subtitle{
-margin-top:3px;
-font-size:12px;
-opacity:.9
+    margin-top:3px;
+
+    font-size:12px;
+
+    opacity:.9;
 }
+
+
+/* =====================================================
+   BLINKING LIGHT
+===================================================== */
 
 .live-light,
 .news-light{
-display:inline-block;
-border-radius:50%;
-background:#ff1744;
-box-shadow:0 0 5px #ff1744,0 0 12px rgba(255,23,68,.8);
-animation:blink 1.2s infinite
+    display:inline-block;
+
+    border-radius:50%;
+
+    background:#ff1744;
+
+    box-shadow:
+        0 0 5px #ff1744,
+        0 0 12px rgba(255,23,68,.8);
+
+    animation:
+        blink 1.2s infinite;
 }
 
 .live-light{
-width:12px;
-height:12px;
-margin-left:5px
+    width:12px;
+    height:12px;
+
+    margin-left:5px;
 }
 
 .news-light{
-width:8px;
-height:8px;
-margin-left:4px
+    width:8px;
+    height:8px;
+
+    margin-left:4px;
 }
 
 @keyframes blink{
-0%,100%{opacity:1;transform:scale(1)}
-50%{opacity:.25;transform:scale(.8)}
+
+    0%,100%{
+        opacity:1;
+        transform:scale(1);
+    }
+
+    50%{
+        opacity:.25;
+        transform:scale(.8);
+    }
+
 }
 
-/* ===== CONTROLS ===== */
+
+/* =====================================================
+   CONTROLS
+===================================================== */
 
 .controls{
-margin-top:8px;
-padding:9px;
-border-radius:16px;
-background:#fff;
-box-shadow:0 3px 12px rgba(0,0,0,.07)
+    margin-top:8px;
+
+    padding:9px;
+
+    border-radius:16px;
+
+    background:#fff;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.07);
 }
 
 .categories{
-display:flex;
-flex-wrap:wrap;
-gap:6px
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:6px;
 }
 
 .category-btn{
-border:1px solid #d7dde0;
-background:#fff;
-color:#455a64;
-padding:5px 10px;
-border-radius:20px;
-font-family:inherit;
-font-size:11px;
-cursor:pointer
+    border:1px solid #d7dde0;
+
+    background:#fff;
+
+    color:#455a64;
+
+    padding:5px 10px;
+
+    border-radius:20px;
+
+    font-family:inherit;
+
+    font-size:11px;
+
+    cursor:pointer;
 }
 
 .category-btn.active{
-color:#fff;
-background:#37474f;
-border-color:#37474f
+    color:#fff;
+
+    background:#37474f;
+
+    border-color:#37474f;
 }
 
 .action-row{
-display:flex;
-gap:7px;
-margin-top:8px
+    display:flex;
+
+    gap:7px;
+
+    margin-top:8px;
 }
 
 .action-btn{
-flex:1;
-border:0;
-border-radius:12px;
-padding:9px;
-font-family:inherit;
-font-size:12px;
-cursor:pointer
+    flex:1;
+
+    border:0;
+
+    border-radius:12px;
+
+    padding:9px;
+
+    font-family:inherit;
+
+    font-size:12px;
+
+    cursor:pointer;
 }
 
 .copy-btn{
-color:#fff;
-background:#1565c0
+    color:#fff;
+
+    background:#1565c0;
 }
 
 .refresh-btn{
-color:#263238;
-background:#eceff1
+    color:#263238;
+
+    background:#eceff1;
 }
 
 .update{
-margin-top:6px;
-color:#78909c;
-text-align:center;
-font-size:10px
+    margin-top:6px;
+
+    color:#78909c;
+
+    text-align:center;
+
+    font-size:10px;
 }
 
-/* ===== NEWS ===== */
+
+/* =====================================================
+   NEWS
+===================================================== */
 
 .news-list{
-margin-top:8px
+    margin-top:8px;
 }
 
 .news-card{
-position:relative;
-overflow:hidden;
-margin-bottom:7px;
-padding:10px 12px;
-border-radius:15px;
-background:#fff;
-box-shadow:0 2px 9px rgba(0,0,0,.06)
+    position:relative;
+
+    overflow:hidden;
+
+    margin-bottom:7px;
+
+    padding:10px 12px;
+
+    border-radius:15px;
+
+    background:#fff;
+
+    box-shadow:
+        0 2px 9px rgba(0,0,0,.06);
 }
 
 .news-card::before{
-content:"";
-position:absolute;
-top:0;
-right:0;
-width:3px;
-height:100%;
-background:#e53935
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    right:0;
+
+    width:3px;
+    height:100%;
+
+    background:#e53935;
 }
 
 .news-title{
-font-size:14px;
-font-weight:bold;
-line-height:1.85
+    font-size:14px;
+
+    font-weight:bold;
+
+    line-height:1.85;
 }
 
 .news-number{
-color:#d32f2f
+    color:#d32f2f;
 }
 
 .meta{
-margin-top:2px;
-color:#607d8b;
-font-size:11px
+    margin-top:2px;
+
+    color:#607d8b;
+
+    font-size:11px;
 }
 
 .summary{
-margin-top:5px;
-padding:5px 8px;
-border-right:3px solid #90a4ae;
-border-radius:6px;
-background:#f7f9fa;
-color:#455a64;
-font-size:11px;
-line-height:1.8
+    margin-top:5px;
+
+    padding:5px 8px;
+
+    border-right:3px solid #90a4ae;
+
+    border-radius:6px;
+
+    background:#f7f9fa;
+
+    color:#455a64;
+
+    font-size:11px;
+
+    line-height:1.8;
 }
 
 .read-link{
-display:block;
-margin-top:5px;
-color:#1565c0;
-font-size:11px;
-text-decoration:none
+    display:block;
+
+    margin-top:5px;
+
+    color:#1565c0;
+
+    font-size:11px;
+
+    text-decoration:none;
 }
 
 .fresh-badge{
-display:inline-block;
-margin-right:5px;
-padding:1px 6px;
-border-radius:9px;
-color:#fff;
-background:#e53935;
-font-size:9px
+    display:inline-block;
+
+    margin-right:5px;
+
+    padding:1px 6px;
+
+    border-radius:9px;
+
+    color:#fff;
+
+    background:#e53935;
+
+    font-size:9px;
 }
 
 .news-card.new-news{
-animation:newGlow 2.2s infinite
+    animation:
+        newGlow 2.2s infinite;
 }
 
 @keyframes newGlow{
-0%,100%{box-shadow:0 2px 9px rgba(0,0,0,.06)}
-50%{box-shadow:0 3px 16px rgba(211,47,47,.18)}
+
+    0%,100%{
+        box-shadow:
+            0 2px 9px rgba(0,0,0,.06);
+    }
+
+    50%{
+        box-shadow:
+            0 3px 16px rgba(211,47,47,.18);
+    }
+
 }
 
 .status{
-padding:25px 10px;
-border-radius:15px;
-background:#fff;
-color:#78909c;
-text-align:center;
-font-size:13px
+    padding:25px 10px;
+
+    border-radius:15px;
+
+    background:#fff;
+
+    color:#78909c;
+
+    text-align:center;
+
+    font-size:13px;
 }
 
-/* ===== FOOTER ===== */
+
+/* =====================================================
+   FOOTER
+===================================================== */
 
 .footer{
-padding:15px 8px;
-color:#607d8b;
-text-align:center;
-font-size:11px
+    padding:15px 8px;
+
+    color:#607d8b;
+
+    text-align:center;
+
+    font-size:11px;
 }
 
-/* ===== TOAST ===== */
+
+/* =====================================================
+   TOAST
+===================================================== */
 
 .toast{
-position:fixed;
-z-index:9999;
-right:50%;
-bottom:18px;
-transform:translateX(50%);
-display:none;
-max-width:90%;
-padding:9px 15px;
-border-radius:11px;
-color:#fff;
-background:#263238;
-box-shadow:0 4px 15px rgba(0,0,0,.25);
-font-size:11px;
-text-align:center
+    position:fixed;
+
+    z-index:9999;
+
+    right:50%;
+
+    bottom:18px;
+
+    transform:
+        translateX(50%);
+
+    display:none;
+
+    max-width:90%;
+
+    padding:9px 15px;
+
+    border-radius:11px;
+
+    color:#fff;
+
+    background:#263238;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,.25);
+
+    font-size:11px;
+
+    text-align:center;
 }
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media(max-width:520px){
 
-.container{padding:6px}
+    .container{
+        padding:6px;
+    }
 
-.header{padding:17px 8px}
+    .header{
+        padding:17px 8px;
+    }
 
-.header h1{font-size:19px}
+    .header h1{
+        font-size:19px;
+    }
 
-.action-row{flex-direction:column}
+    .action-row{
+        flex-direction:column;
+    }
+
 }
+
+
+/* =====================================================
+   REDUCE MOTION
+===================================================== */
 
 @media(prefers-reduced-motion:reduce){
 
-*,
-*::before,
-*::after{
-animation:none!important
+    *,
+    *::before,
+    *::after{
+
+        animation:none!important;
+
+    }
+
 }
-}
+
 </style>
+
 </head>
+
 
 <body>
 
 <div class="container">
 
+
+<!-- ===================================================
+     HEADER
+=================================================== -->
+
 <header class="header">
 
-<h1>
-<span class="live-light"></span>
-📰 مهم‌ترین اخبار روز
-</h1>
+    <h1>
 
-<div id="dateText" class="header-subtitle">
-🏡 دیار قدمگاه
-</div>
+        <span class="live-light"></span>
+
+        📰 مهم‌ترین اخبار روز
+
+    </h1>
+
+    <div
+        id="dateText"
+        class="header-subtitle">
+
+        🏡 دیار قدمگاه
+
+    </div>
 
 </header>
 
+
+<!-- ===================================================
+     CONTROLS
+=================================================== -->
+
 <section class="controls">
 
-<div id="categories" class="categories"></div>
+    <div
+        id="categories"
+        class="categories">
+    </div>
 
-<div class="action-row">
 
-<button id="copyBtn" class="action-btn copy-btn" type="button">
-📋 کپی برای روبیکا
-</button>
+    <div class="action-row">
 
-<button id="refreshBtn" class="action-btn refresh-btn" type="button">
-🔄 بروزرسانی
-</button>
+        <button
+            id="copyBtn"
+            class="action-btn copy-btn"
+            type="button">
 
-</div>
+            📋 کپی برای روبیکا
 
-<div id="updateInfo" class="update">
-در حال دریافت اخبار...
-</div>
+        </button>
+
+
+        <button
+            id="refreshBtn"
+            class="action-btn refresh-btn"
+            type="button">
+
+            🔄 بروزرسانی
+
+        </button>
+
+    </div>
+
+
+    <div
+        id="updateInfo"
+        class="update">
+
+        در حال دریافت اخبار...
+
+    </div>
 
 </section>
 
-<main id="newsList" class="news-list">
 
-<div class="status">
-📰 در حال دریافت مهم‌ترین اخبار...
-</div>
+<!-- ===================================================
+     NEWS LIST
+=================================================== -->
+
+<main
+    id="newsList"
+    class="news-list">
+
+    <div class="status">
+
+        📰 در حال دریافت مهم‌ترین اخبار...
+
+    </div>
 
 </main>
 
+
+<!-- ===================================================
+     FOOTER
+=================================================== -->
+
 <footer class="footer">
-🏡 دیار قدمگاه
-<br>
-✍️ معقول
+
+    🏡 دیار قدمگاه
+
+    <br>
+
+    ✍️ معقول
+
 </footer>
+
 
 </div>
 
-<div id="toast" class="toast"></div>
+
+<!-- ===================================================
+     TOAST
+=================================================== -->
+
+<div
+    id="toast"
+    class="toast">
+</div>
+
 
 <script>
 
@@ -346,52 +599,57 @@ animation:none!important
    SETTINGS
 ===================================================== */
 
-const SUMMARY_URL=
+const SUMMARY_URL =
 "https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news-summary.json";
 
-const RUBIKA_PAGE_URL=
+
+const RUBIKA_PAGE_URL =
 "https://maghool51.github.io/diyar-widgets/diyar-news/rubika-news.html";
 
-const NEWS_COUNT=10;
 
-const MAX_SUMMARY_LENGTH=150;
+const NEWS_COUNT = 10;
 
-let allNews=[];
+const MAX_SUMMARY_LENGTH = 150;
 
-let currentCategory="all";
+
+let allNews = [];
+
+let currentCategory = "all";
 
 
 /* =====================================================
-   TEXT NORMALIZATION
+   NORMALIZE TEXT
 ===================================================== */
 
 function normalizeText(value){
 
-return String(value??"")
-.replace(/ي/g,"ی")
-.replace(/ى/g,"ی")
-.replace(/ك/g,"ک")
-.replace(/ۀ/g,"ه")
-.replace(/\u200c/g," ")
-.replace(/\s+/g," ")
-.trim()
-.toLowerCase();
+    return String(value ?? "")
+
+        .replace(/ي/g,"ی")
+        .replace(/ى/g,"ی")
+        .replace(/ك/g,"ک")
+        .replace(/ۀ/g,"ه")
+        .replace(/\u200c/g," ")
+        .replace(/\s+/g," ")
+        .trim()
+        .toLowerCase();
 
 }
 
 
 /* =====================================================
-   HTML ESCAPE
+   ESCAPE HTML
 ===================================================== */
 
 function escapeHTML(value){
 
-return String(value??"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+    return String(value ?? "")
+
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
@@ -402,11 +660,12 @@ return String(value??"")
 
 function toPersianDigits(value){
 
-return String(value??"")
-.replace(
-/\d/g,
-d=>"۰۱۲۳۴۵۶۷۸۹"[d]
-);
+    return String(value ?? "")
+
+        .replace(
+            /\d/g,
+            d => "۰۱۲۳۴۵۶۷۸۹"[d]
+        );
 
 }
 
@@ -415,497 +674,591 @@ d=>"۰۱۲۳۴۵۶۷۸۹"[d]
    KEYWORD SCORE
 ===================================================== */
 
-function keywordScore(title,keywords){
+function keywordScore(
+    title,
+    keywords
+){
 
-let score=0;
+    let score = 0;
 
-keywords.forEach(word=>{
+    keywords.forEach(word => {
 
-if(title.includes(normalizeText(word)))
-score++;
+        if(
+            title.includes(
+                normalizeText(word)
+            )
+        ){
 
-});
+            score++;
 
-return score;
+        }
+
+    });
+
+    return score;
 
 }
 
 
 /* =====================================================
-   SMART CATEGORY 3.7
+   SMART CATEGORY
 ===================================================== */
 
 function smartCategory(item){
 
-const title=
-normalizeText(item.title);
+    const title =
+        normalizeText(item.title);
 
-const summary=
-normalizeText(item.summary);
+    const summary =
+        normalizeText(item.summary);
 
-const text=
-title+" "+summary;
-
-
-/* ==========================================
-   1. ورزش
-   فقط وقتی امتیاز ورزشی غالب باشد
-========================================== */
-
-const sport=[
-"فوتبال",
-"والیبال",
-"بسکتبال",
-"فوتسال",
-"تنیس",
-"کشتی",
-"ورزش",
-"لیگ برتر",
-"جام جهانی",
-"جام‌جهانی",
-"فینال",
-"بازیکن",
-"مربی",
-"گلزنی",
-"استقلال",
-"پرسپولیس",
-"سپاهان",
-"تراکتور",
-"رئال مادرید",
-"بارسلونا",
-"منچستر یونایتد",
-"منچستریونایتد",
-"فوتبال ساحلی",
-"مسابقه ورزشی",
-"رقابت ورزشی"
-];
-
-const sportScore=
-keywordScore(title,sport);
+    const text =
+        title + " " + summary;
 
 
-/* ==========================================
-   2. اقتصاد
-========================================== */
+    /* -----------------------------------------------
+       SPORT
+    ------------------------------------------------ */
 
-const economy=[
-"اقتصاد",
-"اقتصادی",
-"مشاغل خانگی",
-"اعتبارات",
-"اعتبار",
-"کسب و کار",
-"کسب‌وکار",
-"وام",
-"تسهیلات",
-"بانک",
-"بانکی",
-"دلار",
-"یورو",
-"ارز",
-"طلا",
-"سکه",
-"بورس",
-"تورم",
-"قیمت",
-"گرانی",
-"مالیات",
-"صادرات",
-"واردات",
-"سرمایه گذاری",
-"سرمایه‌گذاری",
-"مسکن",
-"اجاره",
-"خودرو",
-"نفت",
-"گاز",
-"پتروشیمی",
-"تولید",
-"اشتغال",
-"کارآفرینی"
-];
+    const sport = [
 
-const economyScore=
-keywordScore(title,economy);
+        "فوتبال",
+        "والیبال",
+        "بسکتبال",
+        "فوتسال",
+        "تنیس",
+        "کشتی",
+        "ورزش",
+        "لیگ برتر",
+        "جام جهانی",
+        "جام‌جهانی",
+        "فینال",
+        "بازیکن",
+        "مربی",
+        "گلزنی",
+        "استقلال",
+        "پرسپولیس",
+        "سپاهان",
+        "تراکتور",
+        "رئال مادرید",
+        "بارسلونا",
+        "منچستر یونایتد",
+        "منچستریونایتد",
+        "فوتبال ساحلی",
+        "مسابقه ورزشی",
+        "رقابت ورزشی"
+
+    ];
+
+    const sportScore =
+        keywordScore(
+            title,
+            sport
+        );
 
 
-/* ==========================================
-   3. فناوری
-========================================== */
+    /* -----------------------------------------------
+       ECONOMY
+    ------------------------------------------------ */
 
-const tech=[
-"هوش مصنوعی",
-"فناوری",
-"تکنولوژی",
-"اینترنت",
-"موبایل",
-"گوشی هوشمند",
-"کامپیوتر",
-"رایانه",
-"نرم افزار",
-"نرم‌افزار",
-"سخت افزار",
-"سخت‌افزار",
-"ربات",
-"رباتیک",
-"علمی",
-"دانشگاه",
-"دانشجو",
-"پژوهش",
-"تحقیقات",
-"فضا",
-"ماهواره",
-"نجوم",
-"استارتاپ",
-"دیجیتال",
-"سایبری",
-"اپلیکیشن",
-"برنامه نویسی",
-"برنامه‌نویسی",
-"فناور"
-];
+    const economy = [
 
-const techScore=
-keywordScore(title,tech);
+        "اقتصاد",
+        "اقتصادی",
+        "مشاغل خانگی",
+        "اعتبارات",
+        "اعتبار",
+        "کسب و کار",
+        "کسب‌وکار",
+        "وام",
+        "تسهیلات",
+        "بانک",
+        "بانکی",
+        "دلار",
+        "یورو",
+        "ارز",
+        "طلا",
+        "سکه",
+        "بورس",
+        "تورم",
+        "قیمت",
+        "گرانی",
+        "مالیات",
+        "صادرات",
+        "واردات",
+        "سرمایه گذاری",
+        "سرمایه‌گذاری",
+        "مسکن",
+        "اجاره",
+        "خودرو",
+        "نفت",
+        "گاز",
+        "پتروشیمی",
+        "تولید",
+        "اشتغال",
+        "کارآفرینی"
 
+    ];
 
-/* ==========================================
-   4. بین الملل
-========================================== */
-
-const international=[
-"آمریکا",
-"آمریکایی",
-"آلمان",
-"فرانسه",
-"انگلیس",
-"بریتانیا",
-"روسیه",
-"اوکراین",
-"چین",
-"هند",
-"قرقیزستان",
-"اسرائیل",
-"اسرائیلی",
-"فلسطین",
-"فلسطینی",
-"غزه",
-"لبنان",
-"لبنانی",
-"حزب الله",
-"حزب‌الله",
-"سوریه",
-"عراق",
-"افغانستان",
-"پاکستان",
-"ترکیه",
-"اردن",
-"یمن",
-"سازمان ملل",
-"ناتو",
-"کاخ سفید",
-"اتحادیه اروپا",
-"گروه ۷",
-"گروه هفت",
-"بین الملل",
-"بین‌الملل",
-"شانگهای",
-"جنگ علیه ایران"
-];
-
-const internationalScore=
-keywordScore(title,international);
+    const economyScore =
+        keywordScore(
+            title,
+            economy
+        );
 
 
-/* ==========================================
-   5. اجتماعی
-========================================== */
+    /* -----------------------------------------------
+       TECHNOLOGY
+    ------------------------------------------------ */
 
-const social=[
-"تصادف",
-"سانحه",
-"حادثه",
-"کشته",
-"مصدوم",
-"مصدومان",
-"مجروح",
-"مجروحان",
-"آتش سوزی",
-"آتش‌سوزی",
-"حریق",
-"فرونشست",
-"ایمن سازی",
-"ایمن‌سازی",
-"مدرسه",
-"مدارس",
-"دانش آموز",
-"دانش‌آموز",
-"معلم",
-"آموزش و پرورش",
-"بیمارستان",
-"پزشکی",
-"درمان",
-"سلامت",
-"بهداشت",
-"شهرداری",
-"خیابان",
-"روستا",
-"شهرستان",
-"ترافیک",
-"رانندگی",
-"محور",
-"جاده",
-"زلزله",
-"سیل",
-"بارندگی",
-"آبگرفتگی",
-"آلودگی هوا",
-"محیط زیست",
-"تجمعات",
-"بازنشسته",
-"بازنشستگان",
-"زائر",
-"خانواده زندانیان",
-"زندانیان",
-"خیرین",
-"خانواده",
-"سرعت‌کاه",
-"سرعت کاه",
-"وحدت اسلامی",
-"همبستگی",
-"آرامش اجتماعی",
-"ساماندهی ورودی",
-"ورودی غربی",
-"فضاهای فرهنگی",
-"فضای فرهنگی"
-];
+    const tech = [
 
-const socialScore=
-keywordScore(title,social);
+        "هوش مصنوعی",
+        "فناوری",
+        "تکنولوژی",
+        "اینترنت",
+        "موبایل",
+        "گوشی هوشمند",
+        "کامپیوتر",
+        "رایانه",
+        "نرم افزار",
+        "نرم‌افزار",
+        "سخت افزار",
+        "سخت‌افزار",
+        "ربات",
+        "رباتیک",
+        "علمی",
+        "دانشگاه",
+        "دانشجو",
+        "پژوهش",
+        "تحقیقات",
+        "فضا",
+        "ماهواره",
+        "نجوم",
+        "استارتاپ",
+        "دیجیتال",
+        "سایبری",
+        "اپلیکیشن",
+        "برنامه نویسی",
+        "برنامه‌نویسی",
+        "فناور"
+
+    ];
+
+    const techScore =
+        keywordScore(
+            title,
+            tech
+        );
 
 
-/* ==========================================
-   6. سیاسی
-========================================== */
+    /* -----------------------------------------------
+       INTERNATIONAL
+    ------------------------------------------------ */
 
-const political=[
-"سیاسی",
-"دولت",
-"مجلس",
-"نماینده مجلس",
-"وزیر",
-"وزارت",
-"رئیس جمهور",
-"رئیس‌جمهور",
-"رییس جمهور",
-"رییس‌جمهور",
-"انتخابات",
-"انتخاباتی",
-"قانون",
-"مذاکره",
-"دیپلماسی",
-"دیپلمات",
-"استاندار",
-"استانداری",
-"فرماندار",
-"فرمانداری",
-"رئیس مجلس",
-"رییس مجلس",
-"رهبر انقلاب",
-"رهبر",
-"دولت چهاردهم",
-"پزشکیان",
-"دادگاه",
-"دادگستری",
-"قضایی",
-"قضائی",
-"پرونده",
-"سردار",
-"سپاه",
-"نیروهای مسلح",
-"وزیر نیرو"
-];
+    const international = [
 
-const politicalScore=
-keywordScore(title,political);
+        "آمریکا",
+        "آمریکایی",
+        "آلمان",
+        "فرانسه",
+        "انگلیس",
+        "بریتانیا",
+        "روسیه",
+        "اوکراین",
+        "چین",
+        "هند",
+        "قرقیزستان",
+        "اسرائیل",
+        "اسرائیلی",
+        "فلسطین",
+        "فلسطینی",
+        "غزه",
+        "لبنان",
+        "لبنانی",
+        "حزب الله",
+        "حزب‌الله",
+        "سوریه",
+        "عراق",
+        "افغانستان",
+        "پاکستان",
+        "ترکیه",
+        "اردن",
+        "یمن",
+        "سازمان ملل",
+        "ناتو",
+        "کاخ سفید",
+        "اتحادیه اروپا",
+        "گروه ۷",
+        "گروه هفت",
+        "بین الملل",
+        "بین‌الملل",
+        "شانگهای",
+        "جنگ علیه ایران"
 
+    ];
 
-/* ==========================================
-   اولویت‌های موضوعی
-========================================== */
-
-/*
-  بعضی کلمات مثل «ورزشی» ممکن است
-  در خبر اجتماعی دیده شوند.
-
-  بنابراین برای خبرهایی که
-  نشانه اجتماعی قوی دارند،
-  اجتماعی بر ورزش مقدم است.
-*/
-
-if(
-socialScore>=2 &&
-sportScore<=1
-)
-return "اجتماعی";
+    const internationalScore =
+        keywordScore(
+            title,
+            international
+        );
 
 
-if(
-sportScore>=2 &&
-sportScore>=socialScore
-)
-return "ورزشی";
+    /* -----------------------------------------------
+       SOCIAL
+    ------------------------------------------------ */
+
+    const social = [
+
+        "تصادف",
+        "سانحه",
+        "حادثه",
+        "کشته",
+        "مصدوم",
+        "مصدومان",
+        "مجروح",
+        "مجروحان",
+        "آتش سوزی",
+        "آتش‌سوزی",
+        "حریق",
+        "فرونشست",
+        "ایمن سازی",
+        "ایمن‌سازی",
+        "مدرسه",
+        "مدارس",
+        "دانش آموز",
+        "دانش‌آموز",
+        "معلم",
+        "آموزش و پرورش",
+        "بیمارستان",
+        "پزشکی",
+        "درمان",
+        "سلامت",
+        "بهداشت",
+        "شهرداری",
+        "خیابان",
+        "روستا",
+        "شهرستان",
+        "ترافیک",
+        "رانندگی",
+        "محور",
+        "جاده",
+        "زلزله",
+        "سیل",
+        "بارندگی",
+        "آبگرفتگی",
+        "آلودگی هوا",
+        "محیط زیست",
+        "تجمعات",
+        "بازنشسته",
+        "بازنشستگان",
+        "زائر",
+        "خانواده زندانیان",
+        "زندانیان",
+        "خیرین",
+        "خانواده",
+        "سرعت‌کاه",
+        "سرعت کاه",
+        "وحدت اسلامی",
+        "همبستگی",
+        "آرامش اجتماعی",
+        "ساماندهی ورودی",
+        "ورودی غربی",
+        "فضاهای فرهنگی",
+        "فضای فرهنگی"
+
+    ];
+
+    const socialScore =
+        keywordScore(
+            title,
+            social
+        );
 
 
-if(
-internationalScore>=1 &&
-(
-title.includes("آمریکا")||
-title.includes("اسرائیل")||
-title.includes("فلسطین")||
-title.includes("لبنان")||
-title.includes("اروپا")||
-title.includes("آلمان")||
-title.includes("چین")||
-title.includes("هند")||
-title.includes("قرقیزستان")
-)
-)
-return "بین‌الملل";
+    /* -----------------------------------------------
+       POLITICAL
+    ------------------------------------------------ */
+
+    const political = [
+
+        "سیاسی",
+        "دولت",
+        "مجلس",
+        "نماینده مجلس",
+        "وزیر",
+        "وزارت",
+        "رئیس جمهور",
+        "رئیس‌جمهور",
+        "رییس جمهور",
+        "رییس‌جمهور",
+        "انتخابات",
+        "انتخاباتی",
+        "قانون",
+        "مذاکره",
+        "دیپلماسی",
+        "دیپلمات",
+        "استاندار",
+        "استانداری",
+        "فرماندار",
+        "فرمانداری",
+        "رئیس مجلس",
+        "رییس مجلس",
+        "رهبر انقلاب",
+        "رهبر",
+        "دولت چهاردهم",
+        "پزشکیان",
+        "دادگاه",
+        "دادگستری",
+        "قضایی",
+        "قضائی",
+        "پرونده",
+        "سردار",
+        "سپاه",
+        "نیروهای مسلح",
+        "وزیر نیرو"
+
+    ];
+
+    const politicalScore =
+        keywordScore(
+            title,
+            political
+        );
 
 
-if(
-economyScore>=1
-)
-return "اقتصادی";
+    /* -----------------------------------------------
+       PRIORITY RULES
+    ------------------------------------------------ */
+
+    /*
+       خبرهای اجتماعی که فقط به موضوع ورزشی
+       اشاره فرعی دارند، اجتماعی باقی می‌مانند.
+    */
+
+    if(
+        socialScore >= 2 &&
+        sportScore <= 1
+    ){
+
+        return "اجتماعی";
+
+    }
 
 
-if(
-techScore>=1
-)
-return "علمی و فناوری";
+    if(
+        sportScore >= 2 &&
+        sportScore >= socialScore
+    ){
+
+        return "ورزشی";
+
+    }
 
 
-if(
-politicalScore>=1
-)
-return "سیاسی";
+    if(
+        internationalScore >= 1 &&
+        (
+            title.includes("آمریکا") ||
+            title.includes("اسرائیل") ||
+            title.includes("فلسطین") ||
+            title.includes("لبنان") ||
+            title.includes("اروپا") ||
+            title.includes("آلمان") ||
+            title.includes("چین") ||
+            title.includes("هند") ||
+            title.includes("قرقیزستان")
+        )
+    ){
+
+        return "بین‌الملل";
+
+    }
 
 
-if(
-socialScore>=1
-)
-return "اجتماعی";
+    if(
+        economyScore >= 1
+    ){
+
+        return "اقتصادی";
+
+    }
 
 
-/* ==========================================
-   FALLBACK JSON CATEGORY
-========================================== */
+    if(
+        techScore >= 1
+    ){
 
-const original=
-normalizeText(item.category);
+        return "علمی و فناوری";
 
-const map={
+    }
 
-"سیاسی":"سیاسی",
-"اقتصادی":"اقتصادی",
-"اجتماعی":"اجتماعی",
-"بین الملل":"بین‌الملل",
-"بین‌الملل":"بین‌الملل",
-"ورزشی":"ورزشی",
-"علم و فناوری":"علمی و فناوری",
-"علمی و فناوری":"علمی و فناوری",
-"فناوری":"علمی و فناوری",
-"اجتماعی":"اجتماعی"
 
-};
+    if(
+        politicalScore >= 1
+    ){
 
-return map[original]||"متفرقه";
+        return "سیاسی";
+
+    }
+
+
+    if(
+        socialScore >= 1
+    ){
+
+        return "اجتماعی";
+
+    }
+
+
+    /* -----------------------------------------------
+       ORIGINAL CATEGORY
+    ------------------------------------------------ */
+
+    const original =
+        normalizeText(item.category);
+
+
+    const map = {
+
+        "سیاسی":
+            "سیاسی",
+
+        "اقتصادی":
+            "اقتصادی",
+
+        "اجتماعی":
+            "اجتماعی",
+
+        "بین الملل":
+            "بین‌الملل",
+
+        "بین‌الملل":
+            "بین‌الملل",
+
+        "ورزشی":
+            "ورزشی",
+
+        "علم و فناوری":
+            "علمی و فناوری",
+
+        "علمی و فناوری":
+            "علمی و فناوری",
+
+        "فناوری":
+            "علمی و فناوری",
+
+        "متفرقه":
+            "متفرقه"
+
+    };
+
+
+    return (
+        map[original] ||
+        "متفرقه"
+    );
 
 }
 
 
 /* =====================================================
-   SUMMARY CLEANER
+   CLEAN SUMMARY
 ===================================================== */
 
 function cleanSummary(text){
 
-let result=
-String(text||"")
-.replace(/\s+/g," ")
-.trim();
+    let result =
+        String(text || "")
+        .replace(/\s+/g," ")
+        .trim();
 
 
-result=
-result.replace(
-/^(📝|خلاصه:|چکیده:)\s*/i,
-""
-);
+    result =
+        result.replace(
+            /^(📝|خلاصه:|چکیده:)\s*/i,
+            ""
+        );
 
 
-/* حذف ابتدای «شهرستان-» */
-
-result=
-result.replace(
-/^[^،:]{2,25}\s*[-–—]\s*/,
-""
-);
+    result =
+        result.replace(
+            /^[^،:]{2,25}\s*[-–—]\s*/,
+            ""
+        );
 
 
-/* حذف عبارت‌های آغازین تکراری */
-
-result=
-result.replace(
-/^(گفت|اظهار کرد|اعلام کرد|بیان کرد|تأکید کرد|تاکید کرد)\s*[:：]\s*/i,
-""
-);
+    result =
+        result.replace(
+            /^(گفت|اظهار کرد|اعلام کرد|بیان کرد|تأکید کرد|تاکید کرد)\s*[:：]\s*/i,
+            ""
+        );
 
 
-if(result.length>150){
+    if(
+        result.length >
+        MAX_SUMMARY_LENGTH
+    ){
 
-result=
-result.substring(0,150);
+        result =
+            result.substring(
+                0,
+                MAX_SUMMARY_LENGTH
+            );
 
-const lastSpace=
-result.lastIndexOf(" ");
 
-if(lastSpace>90)
-result=
-result.substring(0,lastSpace);
+        const lastSpace =
+            result.lastIndexOf(" ");
 
-result+="…";
 
-}
+        if(lastSpace > 90){
 
-return result;
+            result =
+                result.substring(
+                    0,
+                    lastSpace
+                );
+
+        }
+
+
+        result += "…";
+
+    }
+
+
+    return result;
 
 }
 
 
 /* =====================================================
-   DATE
+   PERSIAN DATE
 ===================================================== */
 
 function getPersianDate(){
 
-try{
+    try{
 
-return new Intl.DateTimeFormat(
-"fa-IR-u-ca-persian",
-{
-weekday:"long",
-year:"numeric",
-month:"long",
-day:"numeric"
-}
-).format(new Date());
+        return new Intl.DateTimeFormat(
+            "fa-IR-u-ca-persian",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        ).format(
+            new Date()
+        );
 
-}catch{
+    }catch{
 
-return "";
+        return "";
 
-}
+    }
 
 }
 
@@ -916,125 +1269,184 @@ return "";
 
 function formatDate(value){
 
-if(!value)return "";
+    if(!value)
+        return "";
 
-const date=
-new Date(value);
 
-if(Number.isNaN(date.getTime()))
-return String(value);
+    const date =
+        new Date(value);
 
-try{
 
-return new Intl.DateTimeFormat(
-"fa-IR",
-{
-year:"numeric",
-month:"2-digit",
-day:"2-digit",
-hour:"2-digit",
-minute:"2-digit"
-}
-).format(date);
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
 
-}catch{
+        return String(value);
 
-return String(value);
+    }
 
-}
+
+    try{
+
+        return new Intl.DateTimeFormat(
+            "fa-IR",
+            {
+                year:"numeric",
+                month:"2-digit",
+                day:"2-digit",
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        ).format(date);
+
+    }catch{
+
+        return String(value);
+
+    }
 
 }
 
 
 /* =====================================================
-   LOAD
+   LOAD NEWS
 ===================================================== */
 
 async function loadNews(){
 
-const newsList=
-document.getElementById("newsList");
-
-const updateInfo=
-document.getElementById("updateInfo");
-
-
-newsList.innerHTML=`
-<div class="status">
-📰 در حال دریافت مهم‌ترین اخبار...
-</div>
-`;
+    const newsList =
+        document.getElementById(
+            "newsList"
+        );
 
 
-try{
-
-const response=
-await fetch(
-SUMMARY_URL+
-"?t="+Date.now(),
-{
-cache:"no-store"
-}
-);
+    const updateInfo =
+        document.getElementById(
+            "updateInfo"
+        );
 
 
-if(!response.ok)
-throw new Error("JSON error");
+    newsList.innerHTML = `
+
+        <div class="status">
+
+            📰 در حال دریافت مهم‌ترین اخبار...
+
+        </div>
+
+    `;
 
 
-const data=
-await response.json();
+    try{
+
+        const response =
+            await fetch(
+                SUMMARY_URL +
+                "?t=" +
+                Date.now(),
+                {
+                    cache:"no-store"
+                }
+            );
 
 
-if(Array.isArray(data))
-allNews=data;
+        if(!response.ok){
 
-else if(Array.isArray(data.news))
-allNews=data.news;
+            throw new Error(
+                "JSON error"
+            );
 
-else if(Array.isArray(data.items))
-allNews=data.items;
-
-else
-allNews=[];
+        }
 
 
-buildCategories();
+        const data =
+            await response.json();
 
-renderNews();
+
+        if(
+            Array.isArray(data)
+        ){
+
+            allNews = data;
+
+        }
+
+        else if(
+            Array.isArray(data.news)
+        ){
+
+            allNews =
+                data.news;
+
+        }
+
+        else if(
+            Array.isArray(data.items)
+        ){
+
+            allNews =
+                data.items;
+
+        }
+
+        else{
+
+            allNews = [];
+
+        }
 
 
-if(data.lastUpdate){
+        buildCategories();
 
-updateInfo.textContent=
-"🕐 آخرین بروزرسانی: "+
-formatDate(data.lastUpdate);
+        renderNews();
 
-}else{
 
-updateInfo.textContent=
-"📰 "+
-toPersianDigits(allNews.length)+
-" خبر دریافت شد";
+        if(data.lastUpdate){
 
-}
+            updateInfo.textContent =
+                "🕐 آخرین بروزرسانی: " +
+                formatDate(
+                    data.lastUpdate
+                );
 
-}catch(error){
+        }else{
 
-console.error(error);
+            updateInfo.textContent =
+                "📰 " +
+                toPersianDigits(
+                    allNews.length
+                ) +
+                " خبر دریافت شد";
 
-newsList.innerHTML=`
-<div class="status">
-❌ دریافت اخبار با مشکل مواجه شد.
-<br><br>
-لطفاً دوباره تلاش کنید.
-</div>
-`;
+        }
 
-updateInfo.textContent=
-"❌ خطا در دریافت اخبار";
 
-}
+    }catch(error){
+
+        console.error(error);
+
+
+        newsList.innerHTML = `
+
+            <div class="status">
+
+                ❌ دریافت اخبار با مشکل مواجه شد.
+
+                <br><br>
+
+                لطفاً دوباره تلاش کنید.
+
+            </div>
+
+        `;
+
+
+        updateInfo.textContent =
+            "❌ خطا در دریافت اخبار";
+
+    }
 
 }
 
@@ -1045,65 +1457,105 @@ updateInfo.textContent=
 
 function buildCategories(){
 
-const container=
-document.getElementById("categories");
-
-container.innerHTML="";
-
-
-const categories=[
-
-["all","📰 همه"],
-["سیاسی","🏛 سیاسی"],
-["اقتصادی","💰 اقتصادی"],
-["اجتماعی","👥 اجتماعی"],
-["بین‌الملل","🌍 بین‌الملل"],
-["ورزشی","⚽ ورزشی"],
-["علمی و فناوری","💻 فناوری"],
-["متفرقه","📌 متفرقه"]
-
-];
+    const container =
+        document.getElementById(
+            "categories"
+        );
 
 
-categories.forEach(category=>{
-
-const button=
-document.createElement("button");
-
-button.type="button";
-
-button.className="category-btn";
-
-button.textContent=category[1];
+    container.innerHTML = "";
 
 
-if(category[0]===currentCategory)
-button.classList.add("active");
+    const categories = [
+
+        ["all","📰 همه"],
+
+        ["سیاسی","🏛 سیاسی"],
+
+        ["اقتصادی","💰 اقتصادی"],
+
+        ["اجتماعی","👥 اجتماعی"],
+
+        ["بین‌الملل","🌍 بین‌الملل"],
+
+        ["ورزشی","⚽ ورزشی"],
+
+        ["علمی و فناوری","💻 فناوری"],
+
+        ["متفرقه","📌 متفرقه"]
+
+    ];
 
 
-button.addEventListener(
-"click",
-()=>{
+    categories.forEach(
+        category => {
 
-currentCategory=category[0];
-
-document
-.querySelectorAll(".category-btn")
-.forEach(btn=>
-btn.classList.remove("active")
-);
-
-button.classList.add("active");
-
-renderNews();
-
-}
-);
+            const button =
+                document.createElement(
+                    "button"
+                );
 
 
-container.appendChild(button);
+            button.type = "button";
 
-});
+
+            button.className =
+                "category-btn";
+
+
+            button.textContent =
+                category[1];
+
+
+            if(
+                category[0] ===
+                currentCategory
+            ){
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    currentCategory =
+                        category[0];
+
+
+                    document
+                        .querySelectorAll(
+                            ".category-btn"
+                        )
+                        .forEach(
+                            btn =>
+                                btn.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    renderNews();
+
+                }
+            );
+
+
+            container.appendChild(
+                button
+            );
+
+        }
+    );
 
 }
 
@@ -1114,29 +1566,33 @@ container.appendChild(button);
 
 function getVisibleNews(){
 
-let filtered;
+    let filtered;
 
 
-if(currentCategory==="all"){
+    if(
+        currentCategory ===
+        "all"
+    ){
 
-filtered=allNews;
+        filtered =
+            allNews;
 
-}else{
+    }else{
 
-filtered=
-allNews.filter(
-item=>
-smartCategory(item)===
-currentCategory
-);
+        filtered =
+            allNews.filter(
+                item =>
+                    smartCategory(item) ===
+                    currentCategory
+            );
 
-}
+    }
 
 
-return filtered.slice(
-0,
-NEWS_COUNT
-);
+    return filtered.slice(
+        0,
+        NEWS_COUNT
+    );
 
 }
 
@@ -1147,335 +1603,653 @@ NEWS_COUNT
 
 function isNewNews(item){
 
-if(!item)return false;
+    if(!item)
+        return false;
 
-if(item.isNew===true)
-return true;
 
-if(item.new===true)
-return true;
+    if(
+        item.isNew === true
+    )
+        return true;
 
-if(item.publishedAt){
 
-const date=
-new Date(item.publishedAt);
+    if(
+        item.new === true
+    )
+        return true;
 
-if(!Number.isNaN(date.getTime())){
 
-const hours=
-(Date.now()-date.getTime())/
-3600000;
+    if(item.publishedAt){
 
-return hours>=0&&hours<=6;
+        const date =
+            new Date(
+                item.publishedAt
+            );
 
-}
 
-}
+        if(
+            !Number.isNaN(
+                date.getTime()
+            )
+        ){
 
-return false;
+            const hours =
+                (
+                    Date.now() -
+                    date.getTime()
+                ) /
+                3600000;
+
+
+            return (
+                hours >= 0 &&
+                hours <= 6
+            );
+
+        }
+
+    }
+
+
+    return false;
 
 }
 
 
 /* =====================================================
-   RENDER
+   RENDER NEWS
 ===================================================== */
 
 function renderNews(){
 
-const container=
-document.getElementById("newsList");
-
-const news=
-getVisibleNews();
-
-
-if(!news.length){
-
-container.innerHTML=`
-<div class="status">
-📭 خبری برای این دسته وجود ندارد.
-</div>
-`;
-
-return;
-
-}
+    const container =
+        document.getElementById(
+            "newsList"
+        );
 
 
-container.innerHTML=
-news.map((item,index)=>{
-
-const title=
-escapeHTML(item.title);
-
-const source=
-escapeHTML(
-item.source||
-"منبع نامشخص"
-);
-
-const category=
-escapeHTML(
-smartCategory(item)
-);
-
-const link=
-escapeHTML(
-item.link||"#"
-);
-
-const summary=
-cleanSummary(item.summary);
-
-const fresh=
-isNewNews(item);
+    const news =
+        getVisibleNews();
 
 
-return`
+    if(!news.length){
 
-<article class="news-card ${fresh?"new-news":""}">
+        container.innerHTML = `
 
-<div class="news-title">
+            <div class="status">
 
-<span class="news-light"></span>
+                📭 خبری برای این دسته وجود ندارد.
 
-<span class="news-number">
-${toPersianDigits(index+1)}.
-</span>
+            </div>
 
-${title}
+        `;
 
-${fresh?
-`<span class="fresh-badge">تازه</span>`:
-""}
+        return;
 
-</div>
+    }
 
-<div class="meta">
 
-📰 ${source}
-&nbsp; • &nbsp;
-🏷 ${category}
+    container.innerHTML =
 
-</div>
+        news.map(
+            (item,index) => {
 
-${
-summary?
-`
-<div class="summary">
-📝 ${escapeHTML(summary)}
-</div>
-`:
-""
-}
+                const title =
+                    escapeHTML(
+                        item.title
+                    );
 
-${
-link!=="#"?
-`
-<a
-class="read-link"
-href="${link}"
-target="_blank"
-rel="noopener noreferrer">
 
-🔗 مطالعه متن کامل خبر
+                const source =
+                    escapeHTML(
+                        item.source ||
+                        "منبع نامشخص"
+                    );
 
-</a>
-`:
-""
-}
 
-</article>
+                const category =
+                    escapeHTML(
+                        smartCategory(item)
+                    );
 
-`;
 
-}).join("");
+                const link =
+                    escapeHTML(
+                        item.link ||
+                        "#"
+                    );
+
+
+                const summary =
+                    cleanSummary(
+                        item.summary
+                    );
+
+
+                const fresh =
+                    isNewNews(item);
+
+
+                return `
+
+                    <article
+                        class="news-card
+                        ${fresh ? "new-news" : ""}"
+                    >
+
+                        <div
+                            class="news-title"
+                        >
+
+                            <span
+                                class="news-light"
+                            ></span>
+
+                            <span
+                                class="news-number"
+                            >
+                                ${toPersianDigits(index+1)}.
+                            </span>
+
+                            ${title}
+
+                            ${
+                                fresh
+                                ?
+                                `<span class="fresh-badge">
+                                    تازه
+                                </span>`
+                                :
+                                ""
+                            }
+
+                        </div>
+
+
+                        <div class="meta">
+
+                            📰 ${source}
+
+                            &nbsp; • &nbsp;
+
+                            🏷 ${category}
+
+                        </div>
+
+
+                        ${
+                            summary
+                            ?
+                            `
+                            <div class="summary">
+
+                                📝
+                                ${escapeHTML(summary)}
+
+                            </div>
+                            `
+                            :
+                            ""
+                        }
+
+
+                        ${
+                            link !== "#"
+                            ?
+                            `
+                            <a
+                                class="read-link"
+                                href="${link}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+
+                                🔗 مطالعه متن کامل خبر
+
+                            </a>
+                            `
+                            :
+                            ""
+                        }
+
+                    </article>
+
+                `;
+
+            }
+        ).join("");
 
 }
 
 
 /* =====================================================
-   RUBIKA FRAME
-   عرض ثابت ۲۶ کاراکتر
+   RUBIKA HEADER
 ===================================================== */
 
 function rubikaHeader(){
 
-return`┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                          ┃
-┃   📰 مهم‌ترین اخبار روز   ┃
-┃     ✨ دیار قدمگاه ✨     ┃
-┃                          ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
+    return [
 
-}
+        "┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓",
 
+        "┃                          ┃",
 
-function rubikaFooter(){
+        "┃   📰 مهم‌ترین اخبار روز   ┃",
 
-return`┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                          ┃
-┃      📖 متن کامل اخبار    ┃
-┃                          ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+        "┃     ✨ دیار قدمگاه ✨     ┃",
 
-🔗 ${RUBIKA_PAGE_URL}
+        "┃                          ┃",
 
-🏡 دیار قدمگاه
-✍️ معقول`;
+        "┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
+
+    ].join("\r\n");
 
 }
 
 
 /* =====================================================
-   RUBIKA SUMMARY
+   RUBIKA FOOTER
+===================================================== */
+
+function rubikaFooter(){
+
+    return [
+
+        "┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓",
+
+        "┃                          ┃",
+
+        "┃      📖 متن کامل اخبار    ┃",
+
+        "┃                          ┃",
+
+        "┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛",
+
+        "",
+
+        "🔗 " + RUBIKA_PAGE_URL,
+
+        "",
+
+        "🏡 دیار قدمگاه",
+
+        "✍️ معقول"
+
+    ].join("\r\n");
+
+}
+
+
+/* =====================================================
+   CREATE RUBIKA TEXT
 ===================================================== */
 
 function createRubikaText(){
 
-const news=
-getVisibleNews();
+    const news =
+        getVisibleNews();
 
 
-if(!news.length)
-return "";
+    if(!news.length)
+        return "";
 
 
-let text=
-rubikaHeader()+
-`
+    /*
+       CRLF برای سازگاری بهتر
+       با روبیکا و Android
+    */
 
-📅 ${getPersianDate()}
-
-`;
-
-
-news.forEach((item,index)=>{
-
-const title=
-String(item.title||"")
-.replace(/\s+/g," ")
-.trim();
+    const NL =
+        "\r\n";
 
 
-const source=
-String(
-item.source||
-"منبع نامشخص"
-)
-.replace(/\s+/g," ")
-.trim();
+    let text =
+
+        rubikaHeader() +
+
+        NL +
+        NL +
+
+        "📅 " +
+        getPersianDate() +
+
+        NL +
+        NL;
 
 
-const category=
-smartCategory(item);
+    news.forEach(
+        (item,index) => {
 
 
-const summary=
-cleanSummary(item.summary);
+            const title =
+
+                String(
+                    item.title || ""
+                )
+                .replace(
+                    /\s+/g,
+                    " "
+                )
+                .trim();
 
 
-text+=
-`🔴 ${toPersianDigits(index+1)}. ${title}
-   📰 ${source}  •  🏷 ${category}`;
+            const source =
+
+                String(
+                    item.source ||
+                    "منبع نامشخص"
+                )
+                .replace(
+                    /\s+/g,
+                    " "
+                )
+                .trim();
 
 
-if(summary){
+            const category =
 
-text+=
-`\n   📝 ${summary}`;
-
-}
+                smartCategory(item);
 
 
-if(index<news.length-1){
+            const summary =
 
-text+=
-`\n────────────────────────────\n\n`;
-
-}else{
-
-text+=`\n`;
-
-}
-
-});
+                cleanSummary(
+                    item.summary
+                );
 
 
-text+=
-`\n${rubikaFooter()}`;
+            /*
+               خبر
+            */
+
+            text +=
+
+                "🔴 " +
+
+                toPersianDigits(
+                    index + 1
+                ) +
+
+                ". " +
+
+                title +
+
+                NL;
 
 
-return text;
+            /*
+               منبع و دسته
+            */
+
+            text +=
+
+                "   📰 " +
+
+                source +
+
+                "  •  🏷 " +
+
+                category;
+
+
+            /*
+               خلاصه
+            */
+
+            if(summary){
+
+                text +=
+
+                    NL +
+
+                    "   📝 " +
+
+                    summary;
+
+            }
+
+
+            /*
+               جداکننده
+            */
+
+            if(
+                index <
+                news.length - 1
+            ){
+
+                text +=
+
+                    NL +
+
+                    "────────────────────────────" +
+
+                    NL +
+                    NL;
+
+            }else{
+
+                text +=
+                    NL;
+
+            }
+
+        }
+    );
+
+
+    /*
+       پایان
+    */
+
+    text +=
+
+        NL +
+
+        rubikaFooter();
+
+
+    return text;
 
 }
 
 
 /* =====================================================
-   COPY
+   COPY RUBIKA
 ===================================================== */
 
 async function copyForRubika(){
 
-const text=
-createRubikaText();
+    const text =
+        createRubikaText();
 
 
-if(!text){
+    if(!text){
 
-showToast(
-"📭 خبری برای کپی وجود ندارد."
-);
+        showToast(
+            "📭 خبری برای کپی وجود ندارد."
+        );
 
-return;
+        return;
 
-}
-
-
-try{
-
-await navigator.clipboard.writeText(text);
-
-showToast(
-"✅ متن آماده روبیکا کپی شد."
-);
-
-}catch(error){
-
-const textarea=
-document.createElement("textarea");
-
-textarea.value=text;
-
-textarea.style.position="fixed";
-textarea.style.left="-9999px";
-
-document.body.appendChild(textarea);
-
-textarea.focus();
-textarea.select();
+    }
 
 
-try{
+    /*
+       روش اصلی:
+       Clipboard API
+       با MIME type صریح text/plain
+    */
 
-document.execCommand("copy");
+    try{
 
-showToast(
-"✅ متن آماده روبیکا کپی شد."
-);
+        if(
+            navigator.clipboard &&
+            window.ClipboardItem
+        ){
 
-}catch{
+            const item =
+                new ClipboardItem({
 
-showToast(
-"❌ کپی خودکار انجام نشد."
-);
+                    "text/plain":
+                        new Blob(
+                            [text],
+                            {
+                                type:
+                                "text/plain"
+                            }
+                        )
 
-}
+                });
 
-textarea.remove();
 
-}
+            await navigator.clipboard.write(
+                [item]
+            );
+
+
+            showToast(
+                "✅ متن آماده روبیکا کپی شد."
+            );
+
+
+            return;
+
+        }
+
+    }catch(error){
+
+        console.log(
+            "ClipboardItem failed:",
+            error
+        );
+
+    }
+
+
+    /*
+       روش دوم
+    */
+
+    try{
+
+        if(
+            navigator.clipboard &&
+            navigator.clipboard.writeText
+        ){
+
+            await navigator.clipboard.writeText(
+                text
+            );
+
+
+            showToast(
+                "✅ متن آماده روبیکا کپی شد."
+            );
+
+
+            return;
+
+        }
+
+    }catch(error){
+
+        console.log(
+            "writeText failed:",
+            error
+        );
+
+    }
+
+
+    /*
+       روش سوم:
+       textarea
+    */
+
+    const textarea =
+        document.createElement(
+            "textarea"
+        );
+
+
+    textarea.value =
+        text;
+
+
+    textarea.setAttribute(
+        "readonly",
+        ""
+    );
+
+
+    textarea.style.position =
+        "fixed";
+
+
+    textarea.style.top =
+        "0";
+
+
+    textarea.style.left =
+        "-9999px";
+
+
+    textarea.style.opacity =
+        "0";
+
+
+    textarea.style.whiteSpace =
+        "pre";
+
+
+    document.body.appendChild(
+        textarea
+    );
+
+
+    textarea.focus();
+
+    textarea.select();
+
+
+    try{
+
+        const success =
+            document.execCommand(
+                "copy"
+            );
+
+
+        if(success){
+
+            showToast(
+                "✅ متن آماده روبیکا کپی شد."
+            );
+
+        }else{
+
+            showToast(
+                "❌ کپی انجام نشد."
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+
+        showToast(
+            "❌ کپی انجام نشد."
+        );
+
+    }
+
+
+    textarea.remove();
 
 }
 
@@ -1486,22 +2260,35 @@ textarea.remove();
 
 function showToast(message){
 
-const toast=
-document.getElementById("toast");
+    const toast =
+        document.getElementById(
+            "toast"
+        );
 
-toast.textContent=message;
 
-toast.style.display="block";
+    toast.textContent =
+        message;
 
-clearTimeout(window.toastTimer);
 
-window.toastTimer=
-setTimeout(
-()=>{
-toast.style.display="none";
-},
-2500
-);
+    toast.style.display =
+        "block";
+
+
+    clearTimeout(
+        window.toastTimer
+    );
+
+
+    window.toastTimer =
+        setTimeout(
+            () => {
+
+                toast.style.display =
+                    "none";
+
+            },
+            2500
+        );
 
 }
 
@@ -1510,24 +2297,34 @@ toast.style.display="none";
    INIT
 ===================================================== */
 
-document.getElementById("dateText")
-.textContent=
-"🏡 دیار قدمگاه | "+
-getPersianDate();
+document
+    .getElementById(
+        "dateText"
+    )
+    .textContent =
+
+        "🏡 دیار قدمگاه | " +
+        getPersianDate();
 
 
-document.getElementById("copyBtn")
-.addEventListener(
-"click",
-copyForRubika
-);
+document
+    .getElementById(
+        "copyBtn"
+    )
+    .addEventListener(
+        "click",
+        copyForRubika
+    );
 
 
-document.getElementById("refreshBtn")
-.addEventListener(
-"click",
-loadNews
-);
+document
+    .getElementById(
+        "refreshBtn"
+    )
+    .addEventListener(
+        "click",
+        loadNews
+    );
 
 
 loadNews();
@@ -1535,4 +2332,5 @@ loadNews();
 </script>
 
 </body>
+
 </html>

@@ -1,6 +1,10 @@
 const fs = require("fs");
 const Parser = require("rss-parser");
 
+// ============================================================
+// RSS Parser
+// ============================================================
+
 const parser = new Parser({
   headers: {
     "User-Agent":
@@ -37,7 +41,7 @@ function safeLink(url) {
 }
 
 // ============================================================
-// استانداردسازی دسته‌بندی اخبار
+// دسته‌بندی استاندارد
 // ============================================================
 
 const categoryEmojis = {
@@ -52,7 +56,6 @@ const categoryEmojis = {
   "متفرقه": "📌"
 };
 
-// ترتیب ثابت نمایش دسته‌ها
 const categoryOrder = [
   "سیاسی",
   "بین‌الملل",
@@ -66,24 +69,92 @@ const categoryOrder = [
 ];
 
 // ============================================================
-// نرمال‌سازی متن فارسی
+// نرمال‌سازی حرفه‌ای متن فارسی
 // ============================================================
 
 function normalizePersianText(text = "") {
   return String(text)
     .toLowerCase()
+
+    // حروف عربی → فارسی
     .replace(/ي/g, "ی")
     .replace(/ى/g, "ی")
+    .replace(/ئ/g, "ی")
     .replace(/ك/g, "ک")
     .replace(/ۀ/g, "ه")
     .replace(/ة/g, "ه")
     .replace(/ؤ/g, "و")
     .replace(/إ/g, "ا")
     .replace(/أ/g, "ا")
+    .replace(/ٱ/g, "ا")
+
+    // نیم‌فاصله و کاراکترهای نامرئی
     .replace(/\u200c/g, " ")
-    .replace(/‌/g, " ")
+    .replace(/\u200b/g, " ")
+    .replace(/\u200d/g, " ")
+    .replace(/\ufeff/g, " ")
+
+    // فاصله‌های مختلف
     .replace(/\s+/g, " ")
+
     .trim();
+}
+
+// ============================================================
+// تشخیص «کلمه کامل»
+// ============================================================
+//
+// نکته بسیار مهم:
+//
+// includes() باعث می‌شد:
+//
+// پزشکیان
+//     ↑
+// پزشکی
+//
+// اشتباه تشخیص داده شود.
+//
+// این تابع فقط زمانی Keyword را قبول می‌کند که ابتدا و انتهای
+// آن مرز واقعی کلمه باشد.
+//
+// مثال:
+//
+// پزشکی       → ✅
+// پزشکی قانونی → ✅
+// پزشک        → ✅
+// پزشکیان     → ❌ برای «پزشکی»
+// پزشک‌یار    → بسته به فاصله/نیم‌فاصله بررسی می‌شود
+//
+// ============================================================
+
+function containsKeyword(text, keyword) {
+  const normalizedText = normalizePersianText(text);
+  const normalizedKeyword = normalizePersianText(keyword);
+
+  if (!normalizedText || !normalizedKeyword) {
+    return false;
+  }
+
+  const escapedKeyword = normalizedKeyword.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
+
+  try {
+    const regex = new RegExp(
+      `(^|[^\\p{L}\\p{N}])${escapedKeyword}(?=$|[^\\p{L}\\p{N}])`,
+      "u"
+    );
+
+    return regex.test(normalizedText);
+  } catch (e) {
+    // پشتیبان برای محیط‌هایی که Unicode Property Escape ندارند
+    const fallbackRegex = new RegExp(
+      `(^|[^آ-یA-Za-z0-9])${escapedKeyword}(?=$|[^آ-یA-Za-z0-9])`
+    );
+
+    return fallbackRegex.test(normalizedText);
+  }
 }
 
 // ============================================================
@@ -91,6 +162,11 @@ function normalizePersianText(text = "") {
 // ============================================================
 
 const categories = {
+
+  // ----------------------------------------------------------
+  // سیاسی
+  // ----------------------------------------------------------
+
   "سیاسی": [
     "رئیس جمهور",
     "رئیس‌جمهور",
@@ -130,6 +206,10 @@ const categories = {
     "دیپلماسی",
     "سیاست داخلی"
   ],
+
+  // ----------------------------------------------------------
+  // بین‌الملل
+  // ----------------------------------------------------------
 
   "بین‌الملل": [
     "بین الملل",
@@ -196,6 +276,10 @@ const categories = {
     "پنتاگون"
   ],
 
+  // ----------------------------------------------------------
+  // اقتصادی
+  // ----------------------------------------------------------
+
   "اقتصادی": [
     "اقتصاد",
     "اقتصادی",
@@ -248,6 +332,10 @@ const categories = {
     "تعاون"
   ],
 
+  // ----------------------------------------------------------
+  // اجتماعی
+  // ----------------------------------------------------------
+
   "اجتماعی": [
     "اجتماعی",
     "جامعه",
@@ -292,6 +380,10 @@ const categories = {
     "مدارس"
   ],
 
+  // ----------------------------------------------------------
+  // ورزشی
+  // ----------------------------------------------------------
+
   "ورزشی": [
     "ورزش",
     "ورزشی",
@@ -327,6 +419,10 @@ const categories = {
     "سرمربی",
     "فدراسیون"
   ],
+
+  // ----------------------------------------------------------
+  // فناوری
+  // ----------------------------------------------------------
 
   "فناوری": [
     "فناوری",
@@ -375,6 +471,10 @@ const categories = {
     "کریپتو"
   ],
 
+  // ----------------------------------------------------------
+  // فرهنگی و هنری
+  // ----------------------------------------------------------
+
   "فرهنگی و هنری": [
     "فرهنگ",
     "فرهنگی",
@@ -399,6 +499,7 @@ const categories = {
     "ادبیات",
     "جشنواره",
     "هنرمند",
+    "جوایز",
     "موزه",
     "نگارخانه",
     "میراث فرهنگی",
@@ -407,6 +508,10 @@ const categories = {
     "صنایع دستی",
     "میراث تاریخی"
   ],
+
+  // ----------------------------------------------------------
+  // علمی و پزشکی
+  // ----------------------------------------------------------
 
   "علمی و پزشکی": [
     "علم",
@@ -422,6 +527,7 @@ const categories = {
     "کشف علمی",
     "اختراع",
     "نوآوری",
+
     "پزشکی",
     "پزشک",
     "بیمار",
@@ -439,6 +545,7 @@ const categories = {
     "مغز",
     "جراحی",
     "پزشکی هسته‌ای",
+
     "زیست فناوری",
     "زیست‌فناوری",
     "نانو",
@@ -453,7 +560,35 @@ const categories = {
 };
 
 // ============================================================
-// تشخیص هوشمند دسته‌بندی
+// امتیاز Keyword
+// ============================================================
+//
+// Keywordهای دقیق‌تر امتیاز بیشتری می‌گیرند.
+// این کار باعث می‌شود:
+//
+// «هوش مصنوعی مولد»
+//
+// از:
+//
+// «هوش»
+//
+// یا Keywordهای عمومی وزن بیشتری داشته باشد.
+//
+// ============================================================
+
+function keywordScore(keyword) {
+  const length = normalizePersianText(keyword).length;
+
+  if (length >= 14) return 5;
+  if (length >= 10) return 4;
+  if (length >= 7) return 3;
+  if (length >= 4) return 2;
+
+  return 1;
+}
+
+// ============================================================
+// تشخیص حرفه‌ای دسته‌بندی
 // ============================================================
 
 function detectCategory(title = "", originalCategory = "") {
@@ -462,31 +597,29 @@ function detectCategory(title = "", originalCategory = "") {
     `${title} ${originalCategory}`
   );
 
+  if (!text) {
+    return "متفرقه";
+  }
+
   const scores = {};
 
   for (const category of categoryOrder) {
     scores[category] = 0;
   }
 
+  // ----------------------------------------------------------
+  // محاسبه امتیاز
+  // ----------------------------------------------------------
+
   for (const [category, keywords] of Object.entries(categories)) {
 
     for (const keyword of keywords) {
 
-      const normalizedKeyword =
-        normalizePersianText(keyword);
-
-      if (!normalizedKeyword) continue;
-
-      if (text.includes(normalizedKeyword)) {
-
-        if (normalizedKeyword.length >= 12) {
-          scores[category] += 3;
-        } else if (normalizedKeyword.length >= 7) {
-          scores[category] += 2;
-        } else {
-          scores[category] += 1;
-        }
+      if (!containsKeyword(text, keyword)) {
+        continue;
       }
+
+      scores[category] += keywordScore(keyword);
     }
   }
 
@@ -494,10 +627,24 @@ function detectCategory(title = "", originalCategory = "") {
   // اولویت ورزشی
   // ----------------------------------------------------------
 
+  const sportPriorityKeywords = [
+    "فوتبال",
+    "استقلال",
+    "پرسپولیس",
+    "سپاهان",
+    "تراکتور",
+    "لیگ برتر",
+    "تیم ملی",
+    "کشتی",
+    "والیبال",
+    "بسکتبال",
+    "المپیک"
+  ];
+
   if (
-    scores["ورزشی"] > 0 &&
-    /فوتبال|استقلال|پرسپولیس|سپاهان|تراکتور|لیگ برتر|تیم ملی|کشتی|والیبال|بسکتبال/
-      .test(text)
+    sportPriorityKeywords.some(k =>
+      containsKeyword(text, k)
+    )
   ) {
     return "ورزشی";
   }
@@ -506,10 +653,28 @@ function detectCategory(title = "", originalCategory = "") {
   // اولویت فناوری
   // ----------------------------------------------------------
 
+  const technologyPriorityKeywords = [
+    "هوش مصنوعی",
+    "هوش مصنوعی مولد",
+    "اینترنت",
+    "موبایل",
+    "گوشی هوشمند",
+    "نرم افزار",
+    "نرم‌افزار",
+    "کامپیوتر",
+    "رایانه",
+    "اپلیکیشن",
+    "امنیت سایبری",
+    "سایبری",
+    "ربات",
+    "تراشه",
+    "پردازنده"
+  ];
+
   if (
-    scores["فناوری"] > 0 &&
-    /هوش مصنوعی|اینترنت|موبایل|گوشی هوشمند|نرم افزار|نرم‌افزار|کامپیوتر|رایانه|اپلیکیشن|سایبری|ربات|تراشه|پردازنده/
-      .test(text)
+    technologyPriorityKeywords.some(k =>
+      containsKeyword(text, k)
+    )
   ) {
     return "فناوری";
   }
@@ -518,10 +683,28 @@ function detectCategory(title = "", originalCategory = "") {
   // اولویت علمی و پزشکی
   // ----------------------------------------------------------
 
+  const sciencePriorityKeywords = [
+    "پزشکی",
+    "پزشک",
+    "بیماری",
+    "درمان",
+    "سلامت",
+    "دارو",
+    "بیمارستان",
+    "واکسن",
+    "پژوهش",
+    "دانشگاه",
+    "دانشمند",
+    "کشف علمی",
+    "اختراع",
+    "ژنتیک",
+    "سلول بنیادی"
+  ];
+
   if (
-    scores["علمی و پزشکی"] > 0 &&
-    /پزشکی|پزشک|بیماری|درمان|سلامت|دارو|بیمارستان|واکسن|پژوهش|دانشگاه|دانشمند|کشف علمی/
-      .test(text)
+    sciencePriorityKeywords.some(k =>
+      containsKeyword(text, k)
+    )
   ) {
     return "علمی و پزشکی";
   }
@@ -530,16 +713,36 @@ function detectCategory(title = "", originalCategory = "") {
   // اولویت بین‌الملل
   // ----------------------------------------------------------
 
+  const internationalPriorityKeywords = [
+    "آمریکا",
+    "ایالات متحده",
+    "اسرائیل",
+    "فلسطین",
+    "غزه",
+    "حماس",
+    "روسیه",
+    "اوکراین",
+    "ترامپ",
+    "پوتین",
+    "چین",
+    "اروپا",
+    "ناتو",
+    "جنگ",
+    "حمله نظامی",
+    "درگیری نظامی",
+    "آتش‌بس"
+  ];
+
   if (
-    scores["بین‌الملل"] > 0 &&
-    /آمریکا|اسرائیل|فلسطین|غزه|حماس|روسیه|اوکراین|ترامپ|پوتین|چین|اروپا|ناتو|جنگ|حمله نظامی|درگیری نظامی/
-      .test(text)
+    internationalPriorityKeywords.some(k =>
+      containsKeyword(text, k)
+    )
   ) {
     return "بین‌الملل";
   }
 
   // ----------------------------------------------------------
-  // انتخاب بر اساس بیشترین امتیاز
+  // انتخاب بیشترین امتیاز
   // ----------------------------------------------------------
 
   let bestCategory = "متفرقه";
@@ -556,6 +759,66 @@ function detectCategory(title = "", originalCategory = "") {
   return maxScore > 0
     ? bestCategory
     : "متفرقه";
+}
+
+// ============================================================
+// تست داخلی دسته‌بندی
+// ============================================================
+//
+// این تست در زمان اجرای اصلی فقط برای کنترل منطقی انجام می‌شود.
+// اگر خطایی باشد در Console مشخص خواهد شد.
+//
+// ============================================================
+
+function runCategorySelfTest() {
+
+  const tests = [
+    {
+      title: "پزشکیان: دولت برای حل مشکلات مردم برنامه دارد",
+      expected: "سیاسی"
+    },
+    {
+      title: "پزشکی قانونی درباره علت مرگ توضیح داد",
+      expected: "علمی و پزشکی"
+    },
+    {
+      title: "یک روش جدید پزشکی برای درمان بیماری معرفی شد",
+      expected: "علمی و پزشکی"
+    },
+    {
+      title: "پژوهشگران موفق به کشف علمی جدید شدند",
+      expected: "علمی و پزشکی"
+    },
+    {
+      title: "استقلال در لیگ برتر به پیروزی رسید",
+      expected: "ورزشی"
+    },
+    {
+      title: "هوش مصنوعی جدید گوگل معرفی شد",
+      expected: "فناوری"
+    }
+  ];
+
+  console.log("\n🧪 تست داخلی دسته‌بندی:");
+
+  for (const test of tests) {
+
+    const result = detectCategory(test.title);
+
+    const ok = result === test.expected;
+
+    console.log(
+      `${ok ? "✅" : "❌"} ${test.title}`
+    );
+
+    console.log(
+      `   نتیجه: ${result} | انتظار: ${test.expected}`
+    );
+  }
+
+  console.log(
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  );
 }
 
 // ============================================================
@@ -670,6 +933,7 @@ async function fetchWithRetry(url, retries = 2) {
   for (let i = 0; i < retries; i++) {
 
     try {
+
       return await parser.parseURL(url);
 
     } catch (e) {
@@ -686,20 +950,62 @@ async function fetchWithRetry(url, retries = 2) {
 }
 
 // ============================================================
+// ساخت یک خبر استاندارد
+// ============================================================
+
+function buildNewsItem(item, source) {
+
+  if (!item.title || !item.link) {
+    return null;
+  }
+
+  const title = String(item.title).trim();
+
+  const originalCategory =
+    item.category ||
+    (
+      Array.isArray(item.categories)
+        ? item.categories[0]
+        : ""
+    ) ||
+    "";
+
+  const category = detectCategory(
+    title,
+    originalCategory
+  );
+
+  return {
+    title: title,
+    link: safeLink(item.link),
+    date: item.pubDate || item.isoDate || "",
+    source: source.name,
+    category: category,
+    flag: source.flag
+  };
+}
+
+// ============================================================
 // دریافت اخبار
 // ============================================================
 
 async function getNews() {
 
-  console.log("📰 در حال دریافت اخبار فوری ایران و جهان...");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log(
+    "📰 در حال دریافت اخبار فوری ایران و جهان..."
+  );
+
+  console.log(
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  );
 
   let allNews = [];
+
   const failedSources = [];
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // منابع اصلی
-  // ==========================================================
+  // ----------------------------------------------------------
 
   for (const source of sources) {
 
@@ -712,48 +1018,35 @@ async function getNews() {
       const feed =
         await fetchWithRetry(source.url);
 
-      if (!feed.items || feed.items.length === 0) {
+      if (
+        !feed.items ||
+        feed.items.length === 0
+      ) {
 
         console.log(
           `⚠️ ${source.name} هیچ خبری نداشت`
         );
 
         failedSources.push(source.name);
+
         continue;
       }
 
       let count = 0;
 
-      feed.items.slice(0, 15).forEach(item => {
+      feed.items
+        .slice(0, 15)
+        .forEach(item => {
 
-        if (!item.title || !item.link) return;
+          const news =
+            buildNewsItem(item, source);
 
-        const title = item.title.trim();
+          if (!news) return;
 
-        const originalCategory =
-          item.category ||
-          (Array.isArray(item.categories)
-            ? item.categories[0]
-            : "") ||
-          "";
+          allNews.push(news);
 
-        const category =
-          detectCategory(
-            title,
-            originalCategory
-          );
-
-        allNews.push({
-          title: title,
-          link: safeLink(item.link),
-          date: item.pubDate || item.isoDate || "",
-          source: source.name,
-          category: category,
-          flag: source.flag
+          count++;
         });
-
-        count++;
-      });
 
       console.log(
         `✅ ${source.flag} ${source.name}: ${count} خبر دریافت شد`
@@ -769,17 +1062,21 @@ async function getNews() {
     }
   }
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // منابع پشتیبان
-  // ==========================================================
+  // ----------------------------------------------------------
 
-  console.log("\n🔄 بررسی منابع پشتیبان...");
+  console.log(
+    "\n🔄 بررسی منابع پشتیبان..."
+  );
 
   for (const backup of backupSources) {
 
     if (
       failedSources.includes(backup.name) ||
-      !sources.find(s => s.name === backup.name)
+      !sources.find(
+        s => s.name === backup.name
+      )
     ) {
 
       try {
@@ -791,7 +1088,10 @@ async function getNews() {
         const feed =
           await fetchWithRetry(backup.url);
 
-        if (!feed.items || feed.items.length === 0) {
+        if (
+          !feed.items ||
+          feed.items.length === 0
+        ) {
 
           console.log(
             `⚠️ ${backup.name} (پشتیبان) هیچ خبری نداشت`
@@ -802,48 +1102,43 @@ async function getNews() {
 
         let count = 0;
 
-        feed.items.slice(0, 15).forEach(item => {
+        const originalSource =
+          sources.find(
+            s => s.name === backup.name
+          );
 
-          if (!item.title || !item.link) return;
+        const backupSource = {
+          name: backup.name,
+          flag:
+            originalSource?.flag ||
+            "🌍"
+        };
 
-          const title = item.title.trim();
+        feed.items
+          .slice(0, 15)
+          .forEach(item => {
 
-          const originalCategory =
-            item.category ||
-            (Array.isArray(item.categories)
-              ? item.categories[0]
-              : "") ||
-            "";
+            const news =
+              buildNewsItem(
+                item,
+                backupSource
+              );
 
-          const category =
-            detectCategory(
-              title,
-              originalCategory
-            );
+            if (!news) return;
 
-          const flag =
-            sources.find(
-              s => s.name === backup.name
-            )?.flag || "🌍";
+            allNews.push(news);
 
-          allNews.push({
-            title: title,
-            link: safeLink(item.link),
-            date: item.pubDate || item.isoDate || "",
-            source: backup.name,
-            category: category,
-            flag: flag
+            count++;
           });
-
-          count++;
-        });
 
         console.log(
           `✅ ${backup.name} (پشتیبان): ${count} خبر دریافت شد`
         );
 
         const index =
-          failedSources.indexOf(backup.name);
+          failedSources.indexOf(
+            backup.name
+          );
 
         if (index > -1) {
           failedSources.splice(index, 1);
@@ -858,23 +1153,27 @@ async function getNews() {
     }
   }
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // بررسی نهایی
-  // ==========================================================
+  // ----------------------------------------------------------
 
   if (allNews.length === 0) {
 
-    console.log("⚠️ هیچ خبری دریافت نشد!");
+    console.log(
+      "⚠️ هیچ خبری دریافت نشد!"
+    );
+
     return;
   }
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // حذف اخبار تکراری
-  // ==========================================================
+  // ----------------------------------------------------------
 
   const seenTitles = new Set();
 
   allNews = allNews
+
     .filter(n =>
       n.title &&
       /[\u0600-\u06FF]/.test(n.title)
@@ -882,26 +1181,46 @@ async function getNews() {
 
     .filter(n => {
 
-      const key = normalizePersianText(n.title)
-        .replace(/[«»،:؛!?؟،.]/g, "")
-        .trim();
+      const key =
+        normalizePersianText(n.title)
+          .replace(
+            /[«»،:؛!?؟،.؛]/g,
+            ""
+          )
+          .trim();
 
       if (seenTitles.has(key)) {
         return false;
       }
 
       seenTitles.add(key);
+
       return true;
     })
 
-    // مرتب‌سازی جدیدترین خبرها
+    // --------------------------------------------------------
+    // مرتب‌سازی جدیدترین اخبار
+    // --------------------------------------------------------
+
     .sort((a, b) => {
 
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
+      const dateA =
+        new Date(a.date);
 
-      if (isNaN(dateA.getTime())) return 1;
-      if (isNaN(dateB.getTime())) return -1;
+      const dateB =
+        new Date(b.date);
+
+      if (
+        isNaN(dateA.getTime())
+      ) {
+        return 1;
+      }
+
+      if (
+        isNaN(dateB.getTime())
+      ) {
+        return -1;
+      }
 
       return dateB - dateA;
     })
@@ -918,27 +1237,44 @@ async function getNews() {
 
   const categorizedNews = {};
 
-  // ابتدا دسته‌ها را طبق ترتیب استاندارد ایجاد می‌کنیم
+  // ابتدا همه دسته‌ها را طبق ترتیب استاندارد می‌سازیم
+
   for (const category of categoryOrder) {
     categorizedNews[category] = [];
   }
 
   for (const news of allNews) {
 
-    if (!categorizedNews[news.category]) {
+    if (
+      !categorizedNews[news.category]
+    ) {
       categorizedNews[news.category] = [];
     }
 
     categorizedNews[news.category].push(news);
   }
 
-  // دسته‌های خالی حذف شوند
-  for (const category of Object.keys(categorizedNews)) {
+  // ----------------------------------------------------------
+  // حذف دسته‌های خالی
+  // ----------------------------------------------------------
 
-    if (categorizedNews[category].length === 0) {
+  for (
+    const category of Object.keys(
+      categorizedNews
+    )
+  ) {
+
+    if (
+      categorizedNews[category].length === 0
+    ) {
+
       delete categorizedNews[category];
     }
   }
+
+  // ----------------------------------------------------------
+  // دسته‌های فعال با ترتیب استاندارد
+  // ----------------------------------------------------------
 
   const activeCategories =
     categoryOrder.filter(
@@ -951,13 +1287,15 @@ async function getNews() {
   // ساخت news.json
   // ==========================================================
 
+  const now = new Date();
+
   const jsonData = {
 
     lastUpdate:
-      new Date().toISOString(),
+      now.toISOString(),
 
     lastUpdatePersian:
-      new Date().toLocaleString(
+      now.toLocaleString(
         "fa-IR",
         {
           timeZone: "Asia/Tehran"
@@ -982,7 +1320,11 @@ async function getNews() {
 
   fs.writeFileSync(
     "news.json",
-    JSON.stringify(jsonData, null, 2),
+    JSON.stringify(
+      jsonData,
+      null,
+      2
+    ),
     "utf8"
   );
 
@@ -995,16 +1337,20 @@ async function getNews() {
   );
 
   // ==========================================================
-  // ساخت index.html
+  // زمان بروزرسانی تهران
   // ==========================================================
 
   const updateTime =
-    new Date().toLocaleString(
+    now.toLocaleString(
       "fa-IR",
       {
         timeZone: "Asia/Tehran"
       }
     );
+
+  // ==========================================================
+  // ساخت index.html
+  // ==========================================================
 
   let html = `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -1252,18 +1598,22 @@ ${categoryEmojis[cat] || "📌"} ${escapeHtml(cat)}
 `;
 
   // ==========================================================
-  // نمایش دسته‌ها با ترتیب استاندارد
+  // نمایش دسته‌ها
   // ==========================================================
 
-  for (const category of activeCategories) {
+  for (
+    const category of activeCategories
+  ) {
 
     const newsList =
       categorizedNews[category];
 
     const emoji =
-      categoryEmojis[category] || "📌";
+      categoryEmojis[category] ||
+      "📌";
 
     html += `
+
 <div
 class="category-section"
 data-category="${escapeHtml(category)}">
@@ -1281,13 +1631,21 @@ padding:0 10px;
 border-radius:12px;
 margin-right:8px;
 ">
+
 ${newsList.length}
+
 </span>
 
 </div>
 `;
 
-    for (const news of newsList) {
+    // --------------------------------------------------------
+    // اخبار
+    // --------------------------------------------------------
+
+    for (
+      const news of newsList
+    ) {
 
       const newsDate =
         news.date
@@ -1296,18 +1654,22 @@ ${newsList.length}
 
       const dateDisplay =
         newsDate &&
-        !isNaN(newsDate.getTime())
+        !isNaN(
+          newsDate.getTime()
+        )
 
           ? newsDate.toLocaleString(
               "fa-IR",
               {
-                timeZone: "Asia/Tehran"
+                timeZone:
+                  "Asia/Tehran"
               }
             )
 
           : "";
 
       html += `
+
 <div class="card">
 
 <div class="title">
@@ -1326,8 +1688,11 @@ ${escapeHtml(news.title)}
 <div class="meta">
 
 <span class="source">
+
 ${news.flag || "📰"}
+
 ${escapeHtml(news.source)}
+
 </span>
 
 ${
@@ -1349,7 +1714,12 @@ ${
 `;
   }
 
+  // ==========================================================
+  // پایان HTML
+  // ==========================================================
+
   html += `
+
 </div>
 
 <div class="footer">
@@ -1408,12 +1778,13 @@ function filterCategory(category){
         section.dataset.category === category
       ){
 
-        section.style.display = "block";
+        section.style.display =
+          "block";
 
       } else {
 
-        section.style.display = "none";
-
+        section.style.display =
+          "none";
       }
 
     });
@@ -1427,6 +1798,10 @@ function filterCategory(category){
 </html>
 `;
 
+  // ==========================================================
+  // ذخیره index.html
+  // ==========================================================
+
   fs.writeFileSync(
     "index.html",
     html,
@@ -1438,7 +1813,7 @@ function filterCategory(category){
   );
 
   // ==========================================================
-  // ساخت news.html
+  // news.html
   // ==========================================================
 
   fs.writeFileSync(
@@ -1452,7 +1827,7 @@ function filterCategory(category){
   );
 
   // ==========================================================
-  // ساخت news-ticker.html
+  // news-ticker.html
   // ==========================================================
 
   const tickerHtml = `<!DOCTYPE html>
@@ -1487,15 +1862,17 @@ content="width=device-width, initial-scale=1.0">
   white-space:nowrap;
 
   position:relative;
-
 }
 
 .news-ticker-content{
 
   display:inline-block;
 
-  animation:tickerScroll 90s linear infinite;
-
+  animation:
+    tickerScroll
+    90s
+    linear
+    infinite;
 }
 
 .news-ticker-content a{
@@ -1507,18 +1884,17 @@ content="width=device-width, initial-scale=1.0">
   margin:0 15px;
 
   font-size:13px;
-
 }
 
 .news-ticker-content a:hover{
 
   text-decoration:underline;
-
 }
 
 .news-ticker .category-badge{
 
-  background:rgba(255,255,255,0.2);
+  background:
+    rgba(255,255,255,0.2);
 
   padding:2px 10px;
 
@@ -1527,7 +1903,6 @@ content="width=device-width, initial-scale=1.0">
   font-size:11px;
 
   margin-left:5px;
-
 }
 
 .news-ticker .separator{
@@ -1535,7 +1910,6 @@ content="width=device-width, initial-scale=1.0">
   color:#ff6b6b;
 
   margin:0 8px;
-
 }
 
 @keyframes tickerScroll{
@@ -1553,8 +1927,8 @@ content="width=device-width, initial-scale=1.0">
 .news-ticker:hover
 .news-ticker-content{
 
-  animation-play-state:paused;
-
+  animation-play-state:
+    paused;
 }
 
 </style>
@@ -1570,13 +1944,18 @@ content="width=device-width, initial-scale=1.0">
 ${allNews.map(n => {
 
   return `
+
 <a
 href="${escapeHtml(n.link)}"
 target="_blank"
 rel="noopener noreferrer">
 
 <span class="category-badge">
-${categoryEmojis[n.category] || n.flag || "📰"}
+
+${categoryEmojis[n.category] ||
+  n.flag ||
+  "📰"}
+
 </span>
 
 ${escapeHtml(n.title)}
@@ -1586,6 +1965,7 @@ ${escapeHtml(n.title)}
 <span class="separator">
 |
 </span>
+
 `;
 
 }).join("")}
@@ -1595,6 +1975,7 @@ ${escapeHtml(n.title)}
 </span>
 
 آخرین بروزرسانی:
+
 ${escapeHtml(updateTime)}
 
 </div>
@@ -1610,7 +1991,11 @@ ${escapeHtml(updateTime)}
   // حفظ news-ticker.html موجود
   // ==========================================================
 
-  if (!fs.existsSync("news-ticker.html")) {
+  if (
+    !fs.existsSync(
+      "news-ticker.html"
+    )
+  ) {
 
     fs.writeFileSync(
       "news-ticker.html",
@@ -1627,14 +2012,15 @@ ${escapeHtml(updateTime)}
     console.log(
       "ℹ️ news-ticker.html موجود است؛ بازنویسی نشد."
     );
-
   }
 
   // ==========================================================
-  // پایان
+  // گزارش نهایی
   // ==========================================================
 
-  console.log("\n🎉 عملیات با موفقیت کامل شد!");
+  console.log(
+    "\n🎉 عملیات با موفقیت کامل شد!"
+  );
 
   console.log(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -1644,20 +2030,28 @@ ${escapeHtml(updateTime)}
     "🗂 دسته‌بندی استاندارد:"
   );
 
-  activeCategories.forEach(category => {
+  activeCategories.forEach(
+    category => {
 
-    console.log(
-      `${categoryEmojis[category] || "📌"} ${category}: ${
-        categorizedNews[category].length
-      } خبر`
-    );
+      console.log(
+        `${categoryEmojis[category] || "📌"} ${category}: ${
+          categorizedNews[category].length
+        } خبر`
+      );
 
-  });
+    }
+  );
 
   console.log(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   );
 }
+
+// ============================================================
+// تست دسته‌بندی قبل از دریافت اخبار
+// ============================================================
+
+runCategorySelfTest();
 
 // ============================================================
 // اجرای برنامه
@@ -1671,5 +2065,4 @@ getNews().catch(err => {
   );
 
   process.exit(1);
-
 });

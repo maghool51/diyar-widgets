@@ -20,10 +20,7 @@ body{
     padding:10px;
     background:#f1f4f6;
     color:#263238;
-    font-family:
-        Tahoma,
-        Arial,
-        sans-serif;
+    font-family:Tahoma,Arial,sans-serif;
     line-height:1.8;
 }
 
@@ -73,12 +70,8 @@ body{
 }
 
 @keyframes blink{
-    0%,100%{
-        opacity:1;
-    }
-    50%{
-        opacity:.25;
-    }
+    0%,100%{opacity:1}
+    50%{opacity:.25}
 }
 
 /* =========================
@@ -315,30 +308,6 @@ body{
 }
 
 /* =========================
-   SUMMARY
-========================= */
-
-.summary-box{
-    margin-top:10px;
-    padding:13px;
-    background:#fff;
-    border-radius:16px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
-}
-
-.summary-title{
-    margin-bottom:5px;
-    color:#37474f;
-    font-weight:800;
-    font-size:14px;
-}
-
-.summary-text{
-    color:#546e7a;
-    font-size:13px;
-}
-
-/* =========================
    FOOTER
 ========================= */
 
@@ -465,9 +434,7 @@ body{
     <div id="categories" class="categories"></div>
 
 
-    <!-- =========================
-         مشخصات منتشرکننده
-    ========================== -->
+    <!-- مشخصات منتشرکننده -->
 
     <div class="admin-settings">
 
@@ -543,13 +510,12 @@ body{
 </section>
 
 
-<main
-    id="newsList"
-    class="news-list"
->
+<main id="newsList" class="news-list">
+
     <div class="empty">
         ⏳ در حال دریافت اخبار...
     </div>
+
 </main>
 
 
@@ -581,11 +547,16 @@ body{
    SETTINGS
 ========================================================= */
 
+/*
+ * نکته مهم:
+ * این لینک عمداً به صفحه ۱۰۰ خبر می‌رود،
+ * نه صفحه rubika-news.html
+ */
 const SUMMARY_URL =
 "https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news-summary.json";
 
 const RUBIKA_PAGE_URL =
-"https://maghool51.github.io/diyar-widgets/diyar-news/rubika-news.html";
+"https://maghool51.github.io/diyar-widgets/diyar-news/news.html";
 
 const NEWS_COUNT = 10;
 
@@ -617,7 +588,7 @@ DEFAULT_ADMIN_RUBIKA;
 
 
 /* =========================================================
-   BASIC HELPERS
+   HELPERS
 ========================================================= */
 
 function normalizeText(value){
@@ -659,11 +630,10 @@ function toPersianDigits(value){
 
 
 /* =========================================================
-   KEYWORD MATCHING
-   جلوگیری از اشتباه‌هایی مثل پزشکی ← پزشکیان
+   WORD BOUNDARY MATCHING
 ========================================================= */
 
-function keywordMatches(text, keyword){
+function keywordMatches(text,keyword){
 
     const source =
         normalizeText(text);
@@ -696,18 +666,13 @@ function keywordMatches(text, keyword){
 }
 
 
-function keywordScore(text, keywords){
+function keywordScore(text,keywords){
 
     let score = 0;
 
     for(const keyword of keywords){
 
         if(keywordMatches(text,keyword)){
-
-            /*
-             * واژه‌های طولانی‌تر ارزش بیشتری دارند.
-             * مثلاً «پزشکیان» از «پزشکی» دقیق‌تر است.
-             */
 
             score += Math.max(
                 1,
@@ -743,10 +708,6 @@ function smartCategory(item){
         `${title} ${summary}`;
 
 
-    /* -----------------------------------------
-       سیاسی
-    ----------------------------------------- */
-
     const politicalKeywords = [
 
         "پزشکیان",
@@ -779,10 +740,6 @@ function smartCategory(item){
     ];
 
 
-    /* -----------------------------------------
-       اجتماعی
-    ----------------------------------------- */
-
     const socialKeywords = [
 
         "اجتماعی",
@@ -794,7 +751,6 @@ function smartCategory(item){
         "دانش‌آموز",
         "دانشجو",
         "معلم",
-        "فرهنگ",
         "بهزیستی",
         "تامین اجتماعی",
         "تأمین اجتماعی",
@@ -807,10 +763,6 @@ function smartCategory(item){
 
     ];
 
-
-    /* -----------------------------------------
-       ورزشی
-    ----------------------------------------- */
 
     const sportKeywords = [
 
@@ -834,10 +786,6 @@ function smartCategory(item){
 
     ];
 
-
-    /* -----------------------------------------
-       اقتصادی
-    ----------------------------------------- */
 
     const economyKeywords = [
 
@@ -867,10 +815,6 @@ function smartCategory(item){
     ];
 
 
-    /* -----------------------------------------
-       فناوری
-    ----------------------------------------- */
-
     const technologyKeywords = [
 
         "فناوری",
@@ -897,10 +841,6 @@ function smartCategory(item){
 
     ];
 
-
-    /* -----------------------------------------
-       بین‌الملل
-    ----------------------------------------- */
 
     const internationalKeywords = [
 
@@ -935,10 +875,6 @@ function smartCategory(item){
 
     ];
 
-
-    /* -----------------------------------------
-       علمی و پزشکی
-    ----------------------------------------- */
 
     const scienceKeywords = [
 
@@ -991,10 +927,7 @@ function smartCategory(item){
 
 
     /*
-     * اولویت ویژه:
-     * پزشکیان باید سیاسی باشد،
-     * حتی اگر در بخشی از عنوان/خلاصه
-     * واژه‌های مشابه پزشکی وجود داشته باشد.
+     * اولویت اسامی سیاسی مشخص
      */
 
     if(
@@ -1076,11 +1009,6 @@ function smartCategory(item){
 
     }
 
-
-    /*
-     * اگر امتیازها پایین بود،
-     * دسته اصلی خبر را نگه می‌داریم.
-     */
 
     const original =
         String(
@@ -1239,7 +1167,7 @@ function formatDate(value){
 
 
 /* =========================================================
-   ADMIN / PUBLISHER SETTINGS
+   ADMIN SETTINGS
 ========================================================= */
 
 function sanitizePublisherName(value){
@@ -1265,12 +1193,10 @@ function normalizeRubikaUrl(value){
         return "";
     }
 
-
     try{
 
         const url =
             new URL(raw);
-
 
         const host =
             url.hostname.toLowerCase();
@@ -1289,7 +1215,7 @@ function normalizeRubikaUrl(value){
         }
 
 
-        let path =
+        const path =
             url.pathname
             .replace(/^\/+/,"")
             .replace(/\/+$/,"");
@@ -1322,18 +1248,15 @@ function updatePublisherUI(){
             "adminPreview"
         );
 
-
     const footer =
         document.getElementById(
             "footerPublisher"
         );
 
-
     const nameInput =
         document.getElementById(
             "adminName"
         );
-
 
     const rubikaInput =
         document.getElementById(
@@ -1362,6 +1285,7 @@ function updatePublisherUI(){
     if(preview){
 
         preview.innerHTML = "";
+
 
         const prefix =
             document.createElement("span");
@@ -1555,7 +1479,6 @@ function savePublisherSettings(){
             rawName
         );
 
-
     publisherRubika =
         normalizedRubika;
 
@@ -1578,18 +1501,11 @@ function savePublisherSettings(){
 
         );
 
-    }catch{
-
-        /*
-         * اگر localStorage در مرورگر
-         * در دسترس نبود، برنامه همچنان
-         * به کار خود ادامه می‌دهد.
-         */
-
-    }
+    }catch{}
 
 
     updatePublisherUI();
+
 
     showToast(
         "✅ مشخصات انتشار ذخیره شد."
@@ -1648,10 +1564,6 @@ async function loadNews(){
         const data =
             await response.json();
 
-
-        /*
-         * پشتیبانی از ساختارهای مختلف
-         */
 
         let items = [];
 
@@ -1737,10 +1649,6 @@ async function loadNews(){
             });
 
 
-        /*
-         * جدیدترین خبرها ابتدا
-         */
-
         allNews.sort(function(a,b){
 
             const da =
@@ -1759,16 +1667,13 @@ async function loadNews(){
 
             }
 
-
             if(Number.isNaN(da)){
                 return 1;
             }
 
-
             if(Number.isNaN(db)){
                 return -1;
             }
-
 
             return db - da;
 
@@ -1788,7 +1693,8 @@ async function loadNews(){
 
         info.textContent =
             lastUpdate
-                ? "🕐 آخرین بروزرسانی: " + lastUpdate
+                ? "🕐 آخرین بروزرسانی: " +
+                  lastUpdate
                 : "🕐 اخبار با موفقیت بروزرسانی شد.";
 
 
@@ -2044,7 +1950,7 @@ function isNewNews(item){
 
 
 /* =========================================================
-   RENDER
+   RENDER NEWS
 ========================================================= */
 
 function renderNews(){
@@ -2150,7 +2056,8 @@ function renderNews(){
             item.category +
             (
                 dateText
-                    ? "  •  🕐 " + dateText
+                    ? "  •  🕐 " +
+                      dateText
                     : ""
             );
 
@@ -2191,16 +2098,7 @@ function renderNews(){
 
             card.addEventListener(
                 "click",
-                function(event){
-
-                    if(
-                        event.target.closest("a")
-                    ){
-
-                        return;
-
-                    }
-
+                function(){
 
                     window.open(
                         item.link,
@@ -2227,7 +2125,8 @@ function renderNews(){
 
 function rubikaHeader(){
 
-    const NL = "\n";
+    const NL =
+        "\n";
 
 
     return [
@@ -2259,7 +2158,8 @@ function rubikaHeader(){
 
 function rubikaFooter(){
 
-    const NL = "\n";
+    const NL =
+        "\n";
 
 
     const lines = [
@@ -2290,8 +2190,8 @@ function rubikaFooter(){
 
 
     /*
-     * در متن ساده، URL جداگانه قرار می‌گیرد
-     * تا روبیکا بتواند آن را به لینک تبدیل کند.
+     * لینک آیدی منتشرکننده
+     * برای متن ساده روبیکا
      */
 
     if(publisherRubika){
@@ -2309,12 +2209,14 @@ function rubikaFooter(){
 
 
 /* =========================================================
-   RUBIKA TEXT
+   CREATE RUBIKA TEXT
 ========================================================= */
 
 function createRubikaText(){
 
-    const NL = "\n";
+    const NL =
+        "\n";
+
 
     const items =
         getVisibleNews();
@@ -2323,10 +2225,15 @@ function createRubikaText(){
     if(!items.length){
 
         return [
+
             rubikaHeader(),
+
             "",
+
             "📭 در حال حاضر خبری برای انتشار وجود ندارد.",
+
             "",
+
             rubikaFooter()
 
         ].join(NL);
@@ -2401,7 +2308,7 @@ function createRubikaText(){
 
 
 /* =========================================================
-   COPY
+   COPY TO RUBIKA
 ========================================================= */
 
 async function copyForRubika(){
@@ -2412,10 +2319,6 @@ async function copyForRubika(){
 
     try{
 
-        /*
-         * روش استاندارد
-         */
-
         if(
             navigator.clipboard &&
             window.ClipboardItem
@@ -2425,8 +2328,7 @@ async function copyForRubika(){
                 new Blob(
                     [text],
                     {
-                        type:
-                            "text/plain"
+                        type:"text/plain"
                     }
                 );
 
@@ -2454,10 +2356,6 @@ async function copyForRubika(){
         }
 
 
-        /*
-         * روش دوم
-         */
-
         if(
             navigator.clipboard &&
             navigator.clipboard.writeText
@@ -2483,10 +2381,6 @@ async function copyForRubika(){
 
 
     }catch(error){
-
-        /*
-         * روش جایگزین برای موبایل
-         */
 
         try{
 
@@ -2545,10 +2439,7 @@ async function copyForRubika(){
 
         }catch(error2){
 
-            console.error(
-                error2
-            );
-
+            console.error(error2);
 
             showToast(
                 "❌ کپی خودکار انجام نشد؛ متن را دستی انتخاب کنید."
@@ -2565,7 +2456,8 @@ async function copyForRubika(){
    TOAST
 ========================================================= */
 
-let toastTimer = null;
+let toastTimer =
+    null;
 
 
 function showToast(message){
@@ -2638,10 +2530,6 @@ document
     );
 
 
-/*
- * با Enter داخل فیلدها هم ذخیره شود.
- */
-
 document
     .getElementById("adminName")
     .addEventListener(
@@ -2689,4 +2577,4 @@ loadNews();
 </script>
 
 </body>
-   </html>
+    </html>

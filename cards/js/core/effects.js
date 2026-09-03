@@ -82,8 +82,55 @@
   }
 
   const EFFECT_BUILDERS = {
-    'birthday-confetti': birthdayConfetti
+    'birthday-confetti': birthdayConfetti,
+    'celebration-stars': celebrationStars,
+    'romantic-soft': romanticSoft,
+    'gentle-glow': gentleGlow,
+    'somber-light': somberLight
   };
+
+  /** جلوه‌ی جشن (بدون بادکنک/قلب) — برای تبریک/موفقیت/خانه‌ی جدید */
+  function celebrationStars(fxLayer) {
+    for (let i = 0; i < 8; i++) {
+      const s = makeEl('dq-fx-star', `top:${rand(6, 42)}%; left:${rand(6, 92)}%; animation-delay:${rand(0, 2.4)}s;`);
+      s.textContent = '✦';
+      fxLayer.appendChild(s);
+    }
+    for (let i = 0; i < 5; i++) {
+      const sp = makeEl('dq-fx-spark', `bottom:${rand(4, 20)}%; left:${rand(8, 88)}%; animation-delay:${rand(0, 3)}s;`);
+      fxLayer.appendChild(sp);
+    }
+    const confettiColors = ['#e0b559', '#ffffff'];
+    for (let i = 0; i < 8; i++) {
+      const c = makeEl('dq-fx-confetti', `left:${rand(4, 94)}%; background:${confettiColors[i % confettiColors.length]}; animation-delay:${rand(0, 0.9)}s; transform: rotate(${rand(0, 360)}deg);`);
+      fxLayer.appendChild(c);
+    }
+  }
+
+  /** جلوه‌ی رمانتیک ملایم (قلب + جرقه، بدون کنفتی/بادکنک) — برای ازدواج/سالگرد */
+  function romanticSoft(fxLayer) {
+    for (let i = 0; i < 5; i++) {
+      const h = makeEl('dq-fx-heart', `left:${rand(15, 85)}%; animation-delay:${rand(0, 4)}s;`);
+      h.textContent = '♥';
+      fxLayer.appendChild(h);
+    }
+    for (let i = 0; i < 4; i++) {
+      const sp = makeEl('dq-fx-spark', `bottom:${rand(4, 24)}%; left:${rand(8, 88)}%; animation-delay:${rand(0, 3)}s;`);
+      fxLayer.appendChild(sp);
+    }
+  }
+
+  /** جلوه‌ی ملایم و باوقار — برای مناسبت‌های مذهبی غیرسوگواری (میلاد/مبعث/اعیاد) */
+  function gentleGlow(fxLayer) {
+    for (let i = 0; i < 5; i++) {
+      const s = makeEl('dq-fx-star', `top:${rand(10, 38)}%; left:${rand(10, 88)}%; animation-delay:${rand(0, 2.6)}s;`);
+      s.textContent = '✦';
+      fxLayer.appendChild(s);
+    }
+  }
+
+  /** جلوه‌ی بسیار کم‌رنگ — فقط درخشش ملایم، بدون کنفتی/بادکنک/قلب/ستاره — برای سوگواری/تسلیت/رحلت/شهادت */
+  function somberLight() { /* عمداً خالی؛ فقط کلاس Glow (در playCardEffects) اعمال می‌شود */ }
 
   /**
    * جلوه‌ها را روی یک کارت اجرا می‌کند. ایمن است که چند بار صدا زده شود

@@ -25,19 +25,37 @@
 (function (global) {
   'use strict';
 
+  function isGeneratedMood(musicKey) { return musicKey === 'generated' || musicKey === 'generated-warm' || musicKey === 'generated-solemn'; }
+
   function isSupported(musicKey) {
     if (!musicKey) return false;
-    if (musicKey === 'generated') return !!(global.AudioContext || global.webkitAudioContext);
+    if (isGeneratedMood(musicKey)) return !!(global.AudioContext || global.webkitAudioContext);
     return true; // مسیر/URL فایل — پشتیبانی واقعی هنگام تلاش برای پخش مشخص می‌شود
   }
 
-  const NOTES = [523.25, 659.25, 783.99, 659.25, 880.00, 783.99, 659.25, 523.25]; // C5 E5 G5 E5 A5 G5 E5 C5
-  const NOTE_DURATION = 0.9;
-  const GAP = 0.15;
+  // سه حال‌وهوای ملودی — هرکدام برای دسته‌ای از مناسبت‌ها مناسب‌ترند.
+  // فرکانس‌ها به هرتز. برای سوگواری/تسلیت عمداً هیچ موسیقی‌ای تعریف
+  // نشده (فیلد "music" آن Templateها اصلاً ست نمی‌شود).
+  const MOODS = {
+    generated: {
+      notes: [523.25, 659.25, 783.99, 659.25, 880.00, 783.99, 659.25, 523.25], // شاد — C5 E5 G5 E5 A5 G5 E5 C5
+      noteDuration: 0.9, gap: 0.15, gain: 0.06
+    },
+    'generated-warm': {
+      notes: [392.00, 523.25, 587.33, 523.25, 659.25, 587.33, 523.25, 392.00], // گرم/رمانتیک — G4 C5 D5 C5 E5 D5 C5 G4
+      noteDuration: 1.15, gap: 0.25, gain: 0.05
+    },
+    'generated-solemn': {
+      notes: [392.00, 466.16, 523.25, 466.16], // باوقار و ساده — G4 A#4 C5 A#4
+      noteDuration: 1.6, gap: 0.5, gain: 0.045
+    }
+  };
+
   const RESUME_TIMEOUT_MS = 900;
   const FADE_IN_MS = 900;
 
-  function createGeneratedPlayer() {
+  function createGeneratedPlayer(musicKey) {
+    const mood = MOODS[musicKey] || MOODS.generated;
     const Ctx = global.AudioContext || global.webkitAudioContext;
     const ctx = new Ctx();
     const masterGain = ctx.createGain();
@@ -54,17 +72,17 @@
       osc.frequency.value = freq;
       noteGain.gain.setValueAtTime(0, startAt);
       noteGain.gain.linearRampToValueAtTime(1, startAt + 0.25);
-      noteGain.gain.linearRampToValueAtTime(0, startAt + NOTE_DURATION);
+      noteGain.gain.linearRampToValueAtTime(0, startAt + mood.noteDuration);
       osc.connect(noteGain).connect(masterGain);
       osc.start(startAt);
-      osc.stop(startAt + NOTE_DURATION + 0.05);
+      osc.stop(startAt + mood.noteDuration + 0.05);
     }
 
     function scheduleLoop() {
       if (stopped) return;
       const now = ctx.currentTime + 0.05;
-      NOTES.forEach((freq, i) => playNote(freq, now + i * (NOTE_DURATION + GAP)));
-      const loopLength = NOTES.length * (NOTE_DURATION + GAP);
+      mood.notes.forEach((freq, i) => playNote(freq, now + i * (mood.noteDuration + mood.gap)));
+      const loopLength = mood.notes.length * (mood.noteDuration + mood.gap);
       timer = setTimeout(scheduleLoop, loopLength * 1000);
     }
 
@@ -78,7 +96,7 @@
         }
         if (ctx.state !== 'running') { stopped = true; return 'blocked'; }
         masterGain.gain.setValueAtTime(0, ctx.currentTime);
-        masterGain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + FADE_IN_MS / 1000);
+        masterGain.gain.linearRampToValueAtTime(mood.gain, ctx.currentTime + FADE_IN_MS / 1000);
         scheduleLoop();
         return 'playing';
       },
@@ -123,7 +141,7 @@
   }
 
   function createPlayer(musicKey) {
-    return musicKey === 'generated' ? createGeneratedPlayer() : createFilePlayer(musicKey);
+    return isGeneratedMood(musicKey) ? createGeneratedPlayer(musicKey) : createFilePlayer(musicKey);
   }
 
   /**

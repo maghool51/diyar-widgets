@@ -1,0 +1,197 @@
+/**
+ * layouts.css — ساختار بصری کارت. هر [data-layout] یک ترکیب‌بندی واقعاً
+ * متفاوت است (نه فقط تغییر رنگ): چیدمان، قاب، پس‌زمینه‌ی تزئینی.
+ * رنگ‌ها همیشه از متغیرهای palettes.css (--c-*) خوانده می‌شوند تا هر
+ * layout با هر palette قابل‌ترکیب باشد.
+ *
+ * توجه معماری: تزئینات به‌جای ::before/::after با دو عنصر واقعی
+ * (.dq-card__orn-a و .dq-card__orn-b) ساخته شده‌اند تا هنگام خروجی
+ * PNG (که DOM را کپی می‌کند، نه Pseudo-elementها را) هم درست دیده شوند.
+ */
+
+.dq-card {
+  --card-w: 340px;
+  position: relative;
+  width: min(100%, var(--card-w));
+  aspect-ratio: 4 / 5;
+  border-radius: var(--dq-radius-l);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 34px 26px;
+  background: linear-gradient(160deg, var(--c-bg1), var(--c-bg2));
+  color: var(--c-text);
+  box-shadow: var(--dq-shadow-lg);
+  font-family: var(--dq-font);
+  isolation: isolate;
+}
+
+.dq-card__ornament { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.dq-card__orn-a, .dq-card__orn-b {
+  position: absolute; display: block;
+  font-size: 0; line-height: 1; color: transparent;
+}
+/* لایه‌ی جلوه‌های بصری اختیاری (کنفتی/بادکنک/ستاره) — فقط توسط
+   js/core/effects.js و فقط برای Templateهایی با فیلد "effects" پر
+   می‌شود؛ برای بقیه‌ی Templateها همیشه خالی و بی‌اثر می‌ماند. */
+.dq-card__fx { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; border-radius: inherit; }
+
+.dq-card__headline {
+  font-size: 1.3rem; font-weight: 800; margin: 0 0 6px;
+  position: relative; z-index: 1; color: var(--c-accent);
+}
+.dq-card__headline:empty { display: none; margin: 0; }
+
+.dq-card__icon { font-size: 2.1rem; margin-bottom: 10px; position: relative; z-index: 1; }
+.dq-card__to { font-size: 1.05rem; font-weight: 700; margin: 0 0 2px; position: relative; z-index: 1; }
+.dq-card__title { font-size: .92rem; color: var(--c-text-soft); margin: 0 0 14px; position: relative; z-index: 1; }
+.dq-card__message {
+  font-size: 1.02rem; line-height: 1.9; margin: 0 0 18px;
+  max-width: 26ch; word-break: break-word; white-space: pre-wrap;
+  position: relative; z-index: 1;
+  /* جلوگیری از سرریز متن‌های طولانی که کارت‌های دیگر (آیکون/نام/امضا)
+     را بیرون از کادر می‌راند یا به‌صورت نامتقارن می‌بُرد — به‌جای آن
+     خودِ متن با «…» به‌شکل کنترل‌شده کوتاه می‌شود. */
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.dq-card__from { font-size: .9rem; font-weight: 700; color: var(--c-accent); margin: 0; position: relative; z-index: 1; }
+.dq-card__brand {
+  position: absolute; bottom: 12px; right: 0; left: 0;
+  font-size: .66rem; color: var(--c-text-soft); opacity: .8;
+  z-index: 1; display: flex; justify-content: center; gap: 4px;
+}
+
+/* Mini thumbnail wrapper for the template gallery */
+.dq-card-mini { border-radius: var(--dq-radius-m); }
+.dq-card-mini .dq-card { --card-w: 100%; padding: 16px 12px; border-radius: var(--dq-radius-m); box-shadow: none; }
+.dq-card-mini .dq-card__icon { font-size: 1.3rem; margin-bottom: 4px; }
+.dq-card-mini .dq-card__to { font-size: .68rem; }
+.dq-card-mini .dq-card__title { font-size: .58rem; margin-bottom: 6px; }
+.dq-card-mini .dq-card__message { font-size: .6rem; line-height: 1.5; }
+.dq-card-mini .dq-card__from { font-size: .56rem; }
+.dq-card-mini .dq-card__brand { display: none; }
+.dq-card-mini .dq-card__headline { display: none; }
+.dq-card-mini .dq-card__fx { display: none; }
+
+/* ============ 1) classic-center: قاب دو-خطی کلاسیک ============ */
+[data-layout='classic-center'] { border: 1px solid var(--c-line); }
+[data-layout='classic-center'] .dq-card__orn-a {
+  inset: 14px; border: 1.5px solid var(--c-accent-soft); border-radius: 12px;
+}
+
+/* ============ 2) banner-top: نوار رنگی موج‌دار بالای کارت ============ */
+[data-layout='banner-top'] { padding-top: 64px; }
+[data-layout='banner-top'] .dq-card__orn-a {
+  top: 0; right: 0; left: 0; height: 46px; background: var(--c-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+}
+
+/* ============ 3) split: نیمه‌ی رنگی مورب ============ */
+[data-layout='split'] .dq-card__orn-a {
+  top: 0; bottom: 0; right: 0; width: 40%; background: var(--c-accent-soft);
+  clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
+}
+[data-layout='split'] .dq-card__orn-b {
+  inset: 0; background: linear-gradient(200deg, transparent 55%, var(--c-bg2) 100%);
+}
+
+/* ============ 4) floral-corners: گل‌آذین در دو گوشه‌ی مخالف ============ */
+[data-layout='floral-corners'] .dq-card__orn-a,
+[data-layout='floral-corners'] .dq-card__orn-b {
+  font-size: 2rem; color: var(--c-accent-soft);
+}
+[data-layout='floral-corners'] .dq-card__orn-a { top: 10px; right: 10px; }
+[data-layout='floral-corners'] .dq-card__orn-b { bottom: 10px; left: 10px; transform: rotate(180deg); }
+
+/* ============ 5) badge-medal: مدال دایره‌ای بالای کارت ============ */
+[data-layout='badge-medal'] { padding-top: 72px; }
+[data-layout='badge-medal'] .dq-card__icon {
+  position: absolute; top: -2px; right: 50%; transform: translateX(50%);
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--c-accent); color: var(--c-bg1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; box-shadow: 0 6px 14px var(--c-accent-soft);
+  margin: 0;
+}
+[data-layout='badge-medal'] .dq-card__orn-a {
+  top: 60px; right: 50%; transform: translateX(50%); width: 2px; height: 14px;
+  background: var(--c-accent-soft);
+}
+
+/* ============ 6) ticket-stub: کارت بلیت‌مانند با خط چین جداکننده ============ */
+[data-layout='ticket-stub'] {
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 0 78%, transparent 9px, var(--c-bg1) 9.5px) top left / 100% 78% no-repeat,
+    linear-gradient(160deg, var(--c-bg1), var(--c-bg2));
+}
+[data-layout='ticket-stub'] .dq-card__orn-a {
+  left: 0; right: 0; top: 78%; border-top: 2px dashed var(--c-accent-soft);
+}
+
+/* ============ 7) mourning-veil: تیره و آرام با دو خط طلایی نازک ============ */
+[data-layout='mourning-veil'] {
+  background: radial-gradient(120% 90% at 50% 0%, var(--c-bg2), var(--c-bg1));
+}
+[data-layout='mourning-veil'] .dq-card__orn-a {
+  top: 22px; right: 22px; left: 22px; height: 1px; background: var(--c-accent-soft);
+}
+[data-layout='mourning-veil'] .dq-card__orn-b {
+  bottom: 22px; right: 22px; left: 22px; height: 1px; background: var(--c-accent-soft);
+}
+
+/* ============ 8) gold-frame: قاب هندسی اسلیمی مذهبی ============ */
+[data-layout='gold-frame'] { border: 3px solid var(--c-accent); padding: 40px 26px; }
+[data-layout='gold-frame'] .dq-card__orn-a {
+  inset: 8px; border: 1px solid var(--c-accent-soft);
+  background-image: repeating-conic-gradient(from 45deg, var(--c-accent-soft) 0 10deg, transparent 10deg 90deg);
+  background-size: 26px 26px; opacity: .55;
+}
+
+/* ============ 9) family-warm: پس‌زمینه‌ی گرم با دایره‌های نرم ============ */
+[data-layout='family-warm'] {
+  background: radial-gradient(circle at 20% 15%, var(--c-bg2) 0%, transparent 40%),
+              radial-gradient(circle at 85% 85%, var(--c-accent-soft) 0%, transparent 45%),
+              linear-gradient(160deg, var(--c-bg1), var(--c-bg2));
+  border-radius: 28px;
+}
+
+/* ============ 10) minimal-line: مینیمال، فقط یک خط جداکننده ============ */
+[data-layout='minimal-line'] { background: var(--c-bg1); box-shadow: var(--dq-shadow); }
+[data-layout='minimal-line'] .dq-card__orn-a {
+  top: 50%; right: 30%; left: 30%; height: 1px; background: var(--c-line);
+  transform: translateY(-46px);
+}
+[data-layout='minimal-line'] .dq-card__icon { font-size: 1.3rem; }
+
+/* ============ 11) wave-bottom: موج تزئینی پایین کارت ============ */
+[data-layout='wave-bottom'] { padding-bottom: 56px; }
+[data-layout='wave-bottom'] .dq-card__orn-a {
+  bottom: 0; right: 0; left: 0; height: 60px; background: var(--c-accent-soft);
+  clip-path: polygon(0 40%, 15% 20%, 30% 40%, 45% 15%, 60% 40%, 75% 15%, 90% 40%, 100% 20%, 100% 100%, 0 100%);
+}
+
+/* ============ 12) emotional-soft: بلاب‌های محو رنگی پشت متن ============ */
+[data-layout='emotional-soft'] .dq-card__orn-a {
+  top: -30px; right: -30px; width: 140px; height: 140px;
+  border-radius: 50%; background: var(--c-accent-soft); filter: blur(6px);
+}
+[data-layout='emotional-soft'] .dq-card__orn-b {
+  bottom: -40px; left: -30px; width: 160px; height: 160px;
+  border-radius: 50%; background: var(--c-bg2); filter: blur(8px);
+}
+[data-layout='emotional-soft'] .dq-card__message { font-size: 1.08rem; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .dq-card { animation: dq-card-in .35s ease both; }
+}
+@keyframes dq-card-in {
+  from { opacity: 0; transform: scale(.97); }
+  to { opacity: 1; transform: scale(1); }
+}

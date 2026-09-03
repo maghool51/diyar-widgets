@@ -49,14 +49,14 @@
 .dq-card__to { font-size: 1.05rem; font-weight: 700; margin: 0 0 2px; position: relative; z-index: 1; }
 .dq-card__title { font-size: .92rem; color: var(--c-text-soft); margin: 0 0 14px; position: relative; z-index: 1; }
 .dq-card__message {
-  font-size: 1.02rem; line-height: 1.9; margin: 0 0 18px;
+  font-size: 1.02rem; line-height: 1.6; margin: 0 0 18px;
   max-width: 26ch; word-break: break-word; white-space: pre-wrap;
   position: relative; z-index: 1;
   /* جلوگیری از سرریز متن‌های طولانی که کارت‌های دیگر (آیکون/نام/امضا)
      را بیرون از کادر می‌راند یا به‌صورت نامتقارن می‌بُرد — به‌جای آن
      خودِ متن با «…» به‌شکل کنترل‌شده کوتاه می‌شود. */
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -110,7 +110,7 @@
 [data-layout='floral-corners'] .dq-card__orn-b { bottom: 10px; left: 10px; transform: rotate(180deg); }
 
 /* ============ 5) badge-medal: مدال دایره‌ای بالای کارت ============ */
-[data-layout='badge-medal'] { padding-top: 72px; }
+[data-layout='badge-medal'] { padding-top: 64px; }
 [data-layout='badge-medal'] .dq-card__icon {
   position: absolute; top: -2px; right: 50%; transform: translateX(50%);
   width: 64px; height: 64px; border-radius: 50%;

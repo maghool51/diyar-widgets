@@ -75,13 +75,8 @@
     viewer.hidden = false;
 
     const tpl = templatesById[state.templateId];
-    const cardEl = R.buildCardSkeleton(U.$('viewerPreview'));
-    R.updateCard(cardEl, {
-      layout: tpl.layout, palette: tpl.palette, icon: tpl.icon, templateId: tpl.id, headline: tpl.headline,
-      to: state.to, title: state.title, message: state.message, from: state.from
-    });
-    if (window.DiyarCardEffects) window.DiyarCardEffects.playCardEffects(cardEl, tpl.effects);
-    if (window.DiyarCardMusic) window.DiyarCardMusic.createMusicToggle(U.$('viewerMusicToggle'), tpl.music);
+    const cardData = { to: state.to, title: state.title, message: state.message, from: state.from };
+    window.DiyarCardExperience.reveal(U.$('viewerPreview'), U.$('viewerMusicToggle'), tpl, cardData);
 
     const shareUrl = location.href;
     U.$('viewerCopyLink').addEventListener('click', async () => {
@@ -92,7 +87,9 @@
       await window.DiyarCardShare.shareUrl(shareUrl, 'کارت‌پستال دیجیتال دیار قدمگاه');
     });
     U.$('viewerSavePng').addEventListener('click', async () => {
-      const res = await window.DiyarCardExport.exportCardAsPng(cardEl, 'diyar-postcard.png');
+      const liveCardEl = U.$('viewerPreview').querySelector('.dq-card');
+      if (!liveCardEl) { toast('اول کارت را باز کنید 💌'); return; }
+      const res = await window.DiyarCardExport.exportCardAsPng(liveCardEl, 'diyar-postcard.png');
       toast(res.ok ? 'کارت ذخیره شد 🖼️' : 'ذخیره کارت ممکن نشد');
     });
   }
@@ -230,18 +227,13 @@
       e.preventDefault();
       syncFieldsToStore(); // Sync فوری (نه نسخه‌ی Debounced) تا آخرین مقدار فیلدها از دست نرود
       const tpl = templatesById[store.get().templateId];
-      const shareCardEl = R.buildCardSkeleton(U.$('sharePreview'));
-      R.updateCard(shareCardEl, Object.assign({}, store.get(), {
-        layout: tpl.layout, palette: tpl.palette, icon: tpl.icon, headline: tpl.headline
-      }));
-      if (window.DiyarCardEffects) window.DiyarCardEffects.playCardEffects(shareCardEl, tpl.effects);
-      if (window.DiyarCardMusic) window.DiyarCardMusic.createMusicToggle(U.$('shareMusicToggle'), tpl.music);
-      wireShareActions(shareCardEl);
+      window.DiyarCardExperience.reveal(U.$('sharePreview'), U.$('shareMusicToggle'), tpl, store.get());
+      wireShareActions();
       showPanel('share');
     });
 
     /* ---------- گام ۴: اشتراک‌گذاری ---------- */
-    function wireShareActions(cardEl) {
+    function wireShareActions() {
       const shareUrl = window.DiyarCardUrl.buildShareUrl(store.get());
 
       U.$('btnCopyLink').onclick = async () => {
@@ -252,7 +244,9 @@
         await window.DiyarCardShare.shareUrl(shareUrl, 'کارت‌پستال دیجیتال دیار قدمگاه');
       };
       U.$('btnSavePng').onclick = async () => {
-        const res = await window.DiyarCardExport.exportCardAsPng(cardEl, 'diyar-postcard.png');
+        const liveCardEl = U.$('sharePreview').querySelector('.dq-card');
+        if (!liveCardEl) { toast('اول کارت را باز کنید 💌'); return; }
+        const res = await window.DiyarCardExport.exportCardAsPng(liveCardEl, 'diyar-postcard.png');
         toast(res.ok ? 'کارت ذخیره شد 🖼️' : 'ذخیره کارت ممکن نشد');
       };
     }

@@ -27,7 +27,7 @@
     return el;
   }
 
-  /** جلوه‌ی مخصوص کارت تولد: بادکنک شناور + ستاره‌ی چشمک‌زن + ذرات نور + کنفتی ورودی + Glow */
+  /** جلوه‌ی مخصوص کارت تولد: بادکنک شناور + ستاره‌ی چشمک‌زن + ذرات نور + قلب‌های ظریف + کنفتی ورودی + Glow */
   function birthdayConfetti(fxLayer) {
     const balloons = ['🎈', '🎈', '🎈'];
     balloons.forEach((emoji, i) => {
@@ -49,6 +49,13 @@
       fxLayer.appendChild(sp);
     }
 
+    // چند ذره‌ی قلبی بسیار ظریف — کم و شیک، نه شلوغ
+    for (let i = 0; i < 3; i++) {
+      const h = makeEl('dq-fx-heart', `left:${rand(20, 80)}%; animation-delay:${rand(0.5, 4)}s;`);
+      h.textContent = '♥';
+      fxLayer.appendChild(h);
+    }
+
     const confettiColors = ['#e0b559', '#d43f5e', '#f3b7c3', '#ffffff'];
     for (let i = 0; i < 14; i++) {
       const c = makeEl(
@@ -57,6 +64,21 @@
       );
       fxLayer.appendChild(c);
     }
+  }
+
+  /** جرقه‌ی کوچک و ظریف برای لحظه‌ی باز شدن پاکت (مستقل از مجموعه‌جلوه‌های کامل) */
+  function sparkleBurst(container, count) {
+    if (!container || prefersReducedMotion()) return;
+    for (let i = 0; i < (count || 8); i++) {
+      const sp = makeEl(
+        'dq-fx-spark dq-fx-spark--burst',
+        `top:${rand(20, 80)}%; left:${rand(10, 90)}%; animation-delay:${rand(0, 0.3)}s;`
+      );
+      container.appendChild(sp);
+    }
+    setTimeout(() => {
+      container.querySelectorAll('.dq-fx-spark--burst').forEach((el) => el.remove());
+    }, 1600);
   }
 
   const EFFECT_BUILDERS = {
@@ -89,5 +111,5 @@
     }
   }
 
-  global.DiyarCardEffects = { playCardEffects };
+  global.DiyarCardEffects = { playCardEffects, sparkleBurst };
 })(typeof window !== 'undefined' ? window : this);

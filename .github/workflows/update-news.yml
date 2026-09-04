@@ -1,115 +1,71 @@
-name: Update News
+name: 📰 به‌روزرسانی اخبار دیار قدمگاه
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: "*/10 * * * *"
   workflow_dispatch:
-
-# جلوگیری از اجرای همزمان چند run
-concurrency:
-  group: update-news
-  cancel-in-progress: false
 
 permissions:
   contents: write
 
-# diyar-news زیرپوشه مخزن اصلی است
-defaults:
-  run:
-    working-directory: diyar-news
-
 jobs:
-
   update-news:
-
     runs-on: ubuntu-latest
 
-    timeout-minutes: 10
-
     steps:
-
-      # ==========================================
-      # دریافت مخزن
-      # ==========================================
-
-      - name: Checkout repository
+      # دریافت کد مخزن
+      - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-
-      # ==========================================
       # نصب Node.js
-      # ==========================================
-
-      - name: Setup Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
-
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: diyar-news/package-lock.json
+          node-version: 20
 
-
-      # ==========================================
-      # نصب وابستگی‌های موجود پروژه
-      # ==========================================
-
-      - name: Install dependencies
+      # نصب وابستگی‌ها
+      - name: 📦 Install dependencies
+        working-directory: diyar-news
         run: npm ci
 
-
-      # ==========================================
       # دریافت و پردازش اخبار
-      # ==========================================
-
-      - name: Run news script
+      - name: 📰 Fetch news
+        working-directory: diyar-news
         run: node fetch-news.js
 
-
-      # ==========================================
-      # تولید چکیده خبرها
-      # ==========================================
-
-      - name: Generate news summaries
+      # ساخت خلاصه اخبار
+      - name: ✨ Generate summaries
+        working-directory: diyar-news
         run: node generate-summaries.js
 
-
-      # ==========================================
-      # ثبت تغییرات در GitHub
-      # ==========================================
-
-      - name: Commit and push changes
+      # بررسی فایل‌های تولیدشده
+      - name: 🔎 Check generated files
+        working-directory: diyar-news
         run: |
+          echo "===== news.json ====="
+          ls -lh news.json
 
-          git config --local user.email "action@github.com"
+          echo "===== news-summary.json ====="
+          ls -lh news-summary.json
 
-          git config --local user.name "GitHub Action"
+          echo "===== index.html ====="
+          ls -lh index.html
 
+      # Commit و Push
+      - name: 💾 Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add \
-            index.html \
-            news.html \
-            news.json \
-            news-ticker.html \
-            news-summary.json
+          git add diyar-news/index.html
+          git add diyar-news/news.json
+          git add diyar-news/news-summary.json
+          git add diyar-news/news-ticker.html
+          git add diyar-news/news.html
 
-
-          if git diff --staged --quiet; then
-
-            echo "No changes to commit."
-
-            exit 0
-
+          if git diff --cached --quiet; then
+            echo "ℹ️ تغییر جدیدی برای Commit وجود ندارد."
+          else
+            git commit -m "📰 به‌روزرسانی خودکار اخبار"
+            git push
           fi
-
-
-          git commit \
-            -m "Auto-update news and summaries: $(date +'%Y-%m-%d %H:%M:%S')"
-
-
-          # دریافت تغییرات احتمالی جدید
-          # قبل از push
-
-          git pull --rebase origin main
-
-
-          git push origin HEAD:main

@@ -32,7 +32,8 @@ body {
 
 button,
 select,
-input {
+input,
+textarea {
     font-family: inherit;
 }
 
@@ -45,9 +46,10 @@ button {
     margin: 0 auto;
 }
 
-/* =========================
+
+/* =========================================================
    Header
-========================= */
+========================================================= */
 
 .header {
     background: linear-gradient(135deg, #263238, #37474f);
@@ -88,9 +90,10 @@ button {
     font-size: 12px;
 }
 
-/* =========================
+
+/* =========================================================
    Status
-========================= */
+========================================================= */
 
 .status-box {
     margin-top: 16px;
@@ -115,9 +118,10 @@ button {
     color: #c62828;
 }
 
-/* =========================
+
+/* =========================================================
    Statistics
-========================= */
+========================================================= */
 
 .stats {
     display: grid;
@@ -149,9 +153,10 @@ button {
     color: #78909c;
 }
 
-/* =========================
+
+/* =========================================================
    Controls
-========================= */
+========================================================= */
 
 .controls {
     margin-top: 16px;
@@ -247,9 +252,10 @@ button {
     color: #37474f;
 }
 
-/* =========================
-   News list
-========================= */
+
+/* =========================================================
+   News
+========================================================= */
 
 .news-section {
     margin-top: 16px;
@@ -347,9 +353,10 @@ button {
     color: #78909c;
 }
 
-/* =========================
+
+/* =========================================================
    Publisher
-========================= */
+========================================================= */
 
 .publisher-box {
     margin-top: 18px;
@@ -390,9 +397,10 @@ button {
     border-color: #78909c;
 }
 
-/* =========================
+
+/* =========================================================
    Preview
-========================= */
+========================================================= */
 
 .preview-box {
     margin-top: 18px;
@@ -412,7 +420,6 @@ button {
     padding: 13px;
     background: #fafafa;
     color: #263238;
-    font-family: Tahoma, Arial, sans-serif;
     font-size: 12px;
     line-height: 1.9;
     direction: rtl;
@@ -442,9 +449,10 @@ button {
     color: #37474f;
 }
 
-/* =========================
+
+/* =========================================================
    Footer
-========================= */
+========================================================= */
 
 .footer {
     text-align: center;
@@ -457,9 +465,10 @@ button {
     color: #455a64;
 }
 
-/* =========================
+
+/* =========================================================
    Toast
-========================= */
+========================================================= */
 
 .toast {
     position: fixed;
@@ -485,9 +494,10 @@ button {
     opacity: 1;
 }
 
-/* =========================
+
+/* =========================================================
    Mobile
-========================= */
+========================================================= */
 
 @media (max-width: 700px) {
 
@@ -564,7 +574,9 @@ button {
 </style>
 </head>
 
+
 <body>
+
 
 <header class="header">
 
@@ -597,52 +609,80 @@ button {
 
 <main class="container">
 
+
     <div id="statusBox"
          class="status-box status-loading">
         ⏳ در حال دریافت آخرین اخبار...
     </div>
 
 
-    <!-- آمار -->
+    <!-- =====================================================
+         Statistics
+    ====================================================== -->
 
     <section class="stats">
 
         <div class="stat">
+
             <span id="totalNewsStat"
-                  class="stat-number">۰</span>
+                  class="stat-number">
+                ۰
+            </span>
+
             <span class="stat-label">
                 کل اخبار
             </span>
+
         </div>
 
+
         <div class="stat">
+
             <span id="selectedStat"
-                  class="stat-number">۰</span>
+                  class="stat-number">
+                ۰
+            </span>
+
             <span class="stat-label">
                 انتخاب‌شده
             </span>
+
         </div>
 
+
         <div class="stat">
+
             <span id="categoryStat"
-                  class="stat-number">۰</span>
+                  class="stat-number">
+                ۰
+            </span>
+
             <span class="stat-label">
                 در این دسته
             </span>
+
         </div>
 
+
         <div class="stat">
+
             <span id="publishStat"
-                  class="stat-number">۰</span>
+                  class="stat-number">
+                ۰
+            </span>
+
             <span class="stat-label">
                 برای انتشار
             </span>
+
         </div>
 
     </section>
 
 
-    <!-- کنترل‌ها -->
+    <!-- =====================================================
+         Controls
+    ====================================================== -->
 
     <section class="controls">
 
@@ -650,12 +690,14 @@ button {
             🗂️ دسته‌بندی اخبار
         </h2>
 
+
         <div id="categories"
              class="categories">
         </div>
 
 
         <div class="control-row">
+
 
             <div class="count-control">
 
@@ -665,11 +707,26 @@ button {
 
                 <select id="newsCount">
 
-                    <option value="5">۵ خبر</option>
-                    <option value="10" selected>۱۰ خبر</option>
-                    <option value="15">۱۵ خبر</option>
-                    <option value="20">۲۰ خبر</option>
-                    <option value="all">همه اخبار</option>
+                    <option value="5">
+                        ۵ خبر
+                    </option>
+
+                    <option value="10"
+                            selected>
+                        ۱۰ خبر
+                    </option>
+
+                    <option value="15">
+                        ۱۵ خبر
+                    </option>
+
+                    <option value="20">
+                        ۲۰ خبر
+                    </option>
+
+                    <option value="all">
+                        همه اخبار
+                    </option>
 
                 </select>
 
@@ -685,12 +742,14 @@ button {
                     ☑️ انتخاب همه
                 </button>
 
+
                 <button
                     type="button"
                     id="clearAllBtn"
                     class="action-btn light">
                     ⬜ لغو انتخاب
                 </button>
+
 
                 <button
                     type="button"
@@ -706,7 +765,9 @@ button {
     </section>
 
 
-    <!-- اخبار -->
+    <!-- =====================================================
+         News
+    ====================================================== -->
 
     <section class="news-section">
 
@@ -722,13 +783,16 @@ button {
     </section>
 
 
-    <!-- تنظیمات منتشرکننده -->
+    <!-- =====================================================
+         Publisher Settings
+    ====================================================== -->
 
     <section class="publisher-box">
 
         <h2 class="section-title">
             ⚙️ تنظیمات منتشرکننده
         </h2>
+
 
         <div class="form-group">
 
@@ -766,13 +830,16 @@ button {
     </section>
 
 
-    <!-- پیش‌نمایش -->
+    <!-- =====================================================
+         Preview
+    ====================================================== -->
 
     <section class="preview-box">
 
         <h2 class="section-title">
             👁️ پیش‌نمایش متن انتشار
         </h2>
+
 
         <textarea
             id="previewText"
@@ -790,6 +857,7 @@ button {
                 📋 کپی متن انتشار
             </button>
 
+
             <button
                 type="button"
                 id="selectPreviewBtn"
@@ -804,13 +872,16 @@ button {
 
     <footer class="footer">
 
-        <strong>🏡 دیار قدمگاه</strong>
+        <strong>
+            🏡 دیار قدمگاه
+        </strong>
 
         <br>
 
         سامانه انتخاب و آماده‌سازی اخبار روز
 
     </footer>
+
 
 </main>
 
@@ -823,7 +894,7 @@ button {
 <script>
 
 /* =========================================================
-   تنظیمات اصلی
+   Configuration
 ========================================================= */
 
 const SUMMARY_URL =
@@ -847,7 +918,7 @@ const DEFAULT_ADMIN_RUBIKA =
 
 
 /* =========================================================
-   دسته‌بندی‌ها
+   Categories
 ========================================================= */
 
 const CATEGORY_LIST = [
@@ -911,16 +982,20 @@ let currentCategory = "all";
 let newsCountSetting =
     DEFAULT_NEWS_COUNT;
 
+
 /*
- * نکته مهم:
+ * مجموعه انتخاب‌ها مستقل از فیلتر و تعداد نمایش است.
  *
- * selectedKeys مستقل از تعداد نمایش است.
+ * مثال:
  *
- * بنابراین اگر کاربر ۱۰ خبر ببیند،
- * انتخاب همه یعنی همه اخبار موجود،
- * نه فقط ۱۰ خبر.
+ * اقتصادی = 10 انتخاب
+ * ورزشی = 8 انتخاب
+ *
+ * وقتی کاربر بین دسته‌ها جابه‌جا شود،
+ * هر دو انتخاب حفظ خواهند شد.
  */
 let selectedKeys = new Set();
+
 
 let publisherName =
     DEFAULT_ADMIN_NAME;
@@ -930,14 +1005,16 @@ let publisherRubika =
 
 
 /* =========================================================
-   Helpers
+   Text helpers
 ========================================================= */
 
 function toPersianDigits(value) {
 
     return String(value ?? "")
         .replace(/\d/g, function(d) {
+
             return "۰۱۲۳۴۵۶۷۸۹"[d];
+
         });
 }
 
@@ -951,7 +1028,8 @@ function decodeHtmlEntities(text) {
     const textarea =
         document.createElement("textarea");
 
-    textarea.innerHTML = String(text);
+    textarea.innerHTML =
+        String(text);
 
     return textarea.value;
 }
@@ -977,10 +1055,17 @@ function cleanSummary(text) {
         return "";
     }
 
-    if (result.length > MAX_SUMMARY_LENGTH) {
+    if (
+        result.length >
+        MAX_SUMMARY_LENGTH
+    ) {
 
         result =
-            result.slice(0, MAX_SUMMARY_LENGTH)
+            result
+                .slice(
+                    0,
+                    MAX_SUMMARY_LENGTH
+                )
                 .trim();
 
         result += "…";
@@ -990,23 +1075,14 @@ function cleanSummary(text) {
 }
 
 
-function escapeHtml(text) {
-
-    return String(text ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
 function isSafeHttpUrl(value) {
 
     try {
 
         const url =
-            new URL(String(value));
+            new URL(
+                String(value)
+            );
 
         return (
             url.protocol === "https:" ||
@@ -1034,10 +1110,6 @@ function getItemKey(item) {
         return "";
     }
 
-    /*
-     * لینک در اولویت است.
-     * اگر لینک نبود، عنوان استفاده می‌شود.
-     */
     const link =
         cleanText(item.link);
 
@@ -1049,7 +1121,7 @@ function getItemKey(item) {
 
 
 /* =========================================================
-   تاریخ
+   Date / Time
 ========================================================= */
 
 function formatPersianDate(value) {
@@ -1061,7 +1133,12 @@ function formatPersianDate(value) {
     const date =
         new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
         return "بدون تاریخ";
     }
 
@@ -1078,7 +1155,9 @@ function formatPersianDate(value) {
 
     } catch {
 
-        return date.toLocaleDateString("fa-IR");
+        return date.toLocaleDateString(
+            "fa-IR"
+        );
     }
 }
 
@@ -1092,7 +1171,12 @@ function formatPersianTime(value) {
     const date =
         new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
         return "--:--";
     }
 
@@ -1120,7 +1204,7 @@ function formatPersianTime(value) {
 
 
 /* =========================================================
-   ناشر
+   Publisher
 ========================================================= */
 
 function sanitizePublisherName(value) {
@@ -1129,23 +1213,32 @@ function sanitizePublisherName(value) {
         cleanText(value);
 
     if (!name) {
-        name = DEFAULT_ADMIN_NAME;
+
+        name =
+            DEFAULT_ADMIN_NAME;
     }
 
-    return name.slice(0, 80);
+    return name.slice(
+        0,
+        80
+    );
 }
 
 
 function normalizeRubikaUrl(value) {
 
     const text =
-        String(value ?? "").trim();
+        String(value ?? "")
+            .trim();
 
     if (!text) {
         return "";
     }
 
-    if (!isSafeHttpUrl(text)) {
+    if (
+        !isSafeHttpUrl(text)
+    ) {
+
         return "";
     }
 
@@ -1158,6 +1251,7 @@ function normalizeRubikaUrl(value) {
             url.protocol !== "https:" &&
             url.protocol !== "http:"
         ) {
+
             return "";
         }
 
@@ -1166,6 +1260,7 @@ function normalizeRubikaUrl(value) {
                 .toLowerCase()
                 .includes("rubika.ir")
         ) {
+
             return "";
         }
 
@@ -1194,7 +1289,10 @@ function loadPublisherSettings() {
         const data =
             JSON.parse(saved);
 
-        if (data && typeof data === "object") {
+        if (
+            data &&
+            typeof data === "object"
+        ) {
 
             publisherName =
                 sanitizePublisherName(
@@ -1247,7 +1345,8 @@ function savePublisherSettings() {
         );
 
     } catch {
-        /* localStorage ممکن است در WebView محدود باشد */
+
+        /* ignore */
     }
 
     updatePreview();
@@ -1255,7 +1354,7 @@ function savePublisherSettings() {
 
 
 /* =========================================================
-   دریافت اخبار
+   Load news
 ========================================================= */
 
 async function loadNews() {
@@ -1270,17 +1369,20 @@ async function loadNews() {
             "newsList"
         );
 
+
     statusBox.className =
         "status-box status-loading";
 
     statusBox.textContent =
         "⏳ در حال دریافت آخرین اخبار...";
 
+
     newsList.innerHTML = `
         <div class="empty-box">
             ⏳ در حال دریافت اخبار...
         </div>
     `;
+
 
     try {
 
@@ -1294,23 +1396,20 @@ async function loadNews() {
                 }
             );
 
+
         if (!response.ok) {
+
             throw new Error(
                 "HTTP " +
                 response.status
             );
         }
 
+
         const data =
             await response.json();
 
-        /*
-         * ساختار اصلی news-summary.json:
-         *
-         * {
-         *   news: [...]
-         * }
-         */
+
         if (
             !data ||
             !Array.isArray(data.news)
@@ -1321,17 +1420,20 @@ async function loadNews() {
             );
         }
 
+
         allNews =
-            data.news
-                .filter(item =>
+            data.news.filter(
+                item =>
                     item &&
-                    cleanText(item.title)
-                );
+                    cleanText(
+                        item.title
+                    )
+            );
+
 
         /*
-         * اگر انتخاب قبلی وجود داشته باشد،
-         * فقط کلیدهایی که هنوز در اخبار موجود هستند
-         * حفظ می‌شوند.
+         * فقط انتخاب‌هایی که هنوز
+         * در فایل اخبار وجود دارند حفظ می‌شوند.
          */
         const availableKeys =
             new Set(
@@ -1340,19 +1442,25 @@ async function loadNews() {
                 )
             );
 
+
         selectedKeys =
             new Set(
                 [...selectedKeys]
-                    .filter(key =>
-                        availableKeys.has(key)
+                    .filter(
+                        key =>
+                            availableKeys.has(
+                                key
+                            )
                     )
             );
+
 
         updateHeader(data);
 
         renderCategories();
 
         renderAll();
+
 
         statusBox.className =
             "status-box status-success";
@@ -1367,11 +1475,14 @@ async function loadNews() {
             error
         );
 
+
         allNews = [];
+
 
         renderCategories();
 
         renderAll();
+
 
         statusBox.className =
             "status-box status-error";
@@ -1398,12 +1509,15 @@ function updateHeader(data) {
             "lastUpdate"
         );
 
+
     const now =
         new Date();
+
 
     currentDate.textContent =
         "📅 " +
         formatPersianDate(now);
+
 
     let updateValue =
         data.lastUpdate ||
@@ -1411,14 +1525,11 @@ function updateHeader(data) {
         data.last_update ||
         "";
 
-    if (!updateValue) {
 
-        /*
-         * اگر summary تاریخ بروزرسانی نداشت،
-         * از زمان فعلی استفاده می‌کنیم.
-         */
+    if (!updateValue) {
         updateValue = now;
     }
+
 
     lastUpdate.textContent =
         "🕐 آخرین بروزرسانی: " +
@@ -1429,25 +1540,30 @@ function updateHeader(data) {
 
 
 /* =========================================================
-   Category counts
+   Category count
 ========================================================= */
 
 function getCategoryCount(category) {
 
-    if (category === "all") {
+    if (
+        category === "all"
+    ) {
+
         return allNews.length;
     }
 
+
     return allNews.filter(
         item =>
-            cleanText(item.category) ===
-            category
+            cleanText(
+                item.category
+            ) === category
     ).length;
 }
 
 
 /* =========================================================
-   ساخت دسته‌ها
+   Render categories
 ========================================================= */
 
 function renderCategories() {
@@ -1457,7 +1573,9 @@ function renderCategories() {
             "categories"
         );
 
+
     container.innerHTML = "";
+
 
     CATEGORY_LIST.forEach(
         category => {
@@ -1467,8 +1585,10 @@ function renderCategories() {
                     "button"
                 );
 
+
             button.type =
                 "button";
+
 
             button.className =
                 "category-btn" +
@@ -1479,16 +1599,21 @@ function renderCategories() {
                         : ""
                 );
 
+
             const count =
                 getCategoryCount(
                     category.id
                 );
 
+
             button.textContent =
                 category.title +
                 " (" +
-                toPersianDigits(count) +
+                toPersianDigits(
+                    count
+                ) +
                 ")";
+
 
             button.addEventListener(
                 "click",
@@ -1497,28 +1622,41 @@ function renderCategories() {
                     currentCategory =
                         category.id;
 
+
                     renderCategories();
 
                     /*
-                     * انتخاب‌ها دست‌نخورده می‌مانند.
+                     * بسیار مهم:
+                     *
+                     * با تغییر دسته،
+                     * selectedKeys تغییر نمی‌کند.
                      */
                     renderAll();
+
                 }
             );
+
 
             container.appendChild(
                 button
             );
+
         }
     );
 }
 
 
 /* =========================================================
-   فیلتر دسته
+   Filtered news
 ========================================================= */
 
 function getFilteredNews() {
+
+    /*
+     * این تابع «تمام اخبار دسته فعلی»
+     * را برمی‌گرداند و به تعداد نمایش
+     * وابسته نیست.
+     */
 
     if (
         currentCategory ===
@@ -1528,22 +1666,32 @@ function getFilteredNews() {
         return allNews.slice();
     }
 
+
     return allNews.filter(
         item =>
-            cleanText(item.category) ===
+            cleanText(
+                item.category
+            ) ===
             currentCategory
     );
 }
 
 
 /* =========================================================
-   اخبار نمایشی
+   Displayed news
 ========================================================= */
 
 function getDisplayedNews() {
 
+    /*
+     * این تابع فقط برای نمایش کارت‌هاست.
+     *
+     * انتخاب همه نباید از این تابع استفاده کند.
+     */
+
     const filtered =
         getFilteredNews();
+
 
     if (
         newsCountSetting ===
@@ -1553,8 +1701,12 @@ function getDisplayedNews() {
         return filtered;
     }
 
+
     const limit =
-        Number(newsCountSetting);
+        Number(
+            newsCountSetting
+        );
+
 
     if (
         !Number.isFinite(limit) ||
@@ -1564,6 +1716,7 @@ function getDisplayedNews() {
         return filtered;
     }
 
+
     return filtered.slice(
         0,
         limit
@@ -1572,7 +1725,7 @@ function getDisplayedNews() {
 
 
 /* =========================================================
-   اخبار انتخاب‌شده
+   Selected news
 ========================================================= */
 
 function getSelectedNews() {
@@ -1587,14 +1740,11 @@ function getSelectedNews() {
 
 
 /* =========================================================
-   اخبار آماده انتشار
+   Publish news
 ========================================================= */
 
 function getPublishNews() {
 
-    /*
-     * ترتیب انتشار دقیقاً مطابق ترتیب allNews است.
-     */
     return allNews.filter(
         item =>
             selectedKeys.has(
@@ -1605,71 +1755,131 @@ function getPublishNews() {
 
 
 /* =========================================================
-   انتخاب همه
+   SELECT ALL CURRENT CATEGORY
 ========================================================= */
 
 /*
  * اصلاح اصلی:
  *
- * قبلاً:
+ * انتخاب همه = تمام اخبار دسته فعلی
  *
- * getDisplayedNews().forEach(...)
+ * نه فقط اخبار نمایشی.
  *
- * استفاده می‌شد و بنابراین فقط ۱۰ خبر
- * یا تعداد نمایش انتخاب می‌شد.
+ * مثال:
  *
- * اکنون:
+ * دسته اقتصادی = ۱۸ خبر
+ * تعداد نمایش = ۱۰
  *
- * allNews.forEach(...)
+ * نتیجه:
+ * هر ۱۸ خبر اقتصادی انتخاب می‌شوند.
  *
- * بنابراین «انتخاب همه» واقعاً
- * تمام اخبار موجود را انتخاب می‌کند.
+ * اگر دسته «همه» باشد:
+ * تمام اخبار موجود انتخاب می‌شوند.
+ *
+ * انتخاب‌های قبلی دسته‌های دیگر
+ * نیز باقی می‌مانند.
  */
 
 function selectAllNews() {
 
-    allNews.forEach(
+    const targetNews =
+        getFilteredNews();
+
+
+    targetNews.forEach(
         item => {
 
             const key =
                 getItemKey(item);
 
+
             if (key) {
-                selectedKeys.add(key);
+
+                selectedKeys.add(
+                    key
+                );
             }
+
         }
     );
 
+
     renderAll();
 
-    showToast(
-        "✅ همه " +
-        toPersianDigits(
-            allNews.length
-        ) +
-        " خبر انتخاب شد."
-    );
+
+    if (targetNews.length) {
+
+        showToast(
+            "✅ " +
+            toPersianDigits(
+                targetNews.length
+            ) +
+            " خبر این دسته انتخاب شد."
+        );
+
+    } else {
+
+        showToast(
+            "ℹ️ در این دسته خبری وجود ندارد."
+        );
+    }
 }
 
 
 /* =========================================================
-   لغو همه انتخاب‌ها
+   CLEAR CURRENT CATEGORY
 ========================================================= */
+
+/*
+ * لغو انتخاب نیز فقط روی دسته فعلی
+ * اعمال می‌شود.
+ *
+ * مثال:
+ *
+ * اقتصادی = انتخاب شده
+ * ورزشی = انتخاب شده
+ *
+ * اگر داخل اقتصادی «لغو انتخاب» بزنیم:
+ *
+ * فقط اقتصادی‌ها لغو می‌شوند.
+ * ورزشی‌ها باقی می‌مانند.
+ */
 
 function clearAllNews() {
 
-    selectedKeys.clear();
+    const targetNews =
+        getFilteredNews();
+
+
+    targetNews.forEach(
+        item => {
+
+            const key =
+                getItemKey(item);
+
+
+            if (key) {
+
+                selectedKeys.delete(
+                    key
+                );
+            }
+
+        }
+    );
+
 
     renderAll();
 
+
     showToast(
-        "⬜ همه انتخاب‌ها لغو شد."
+        "⬜ انتخاب اخبار این دسته لغو شد."
     );
 }
 
 
 /* =========================================================
-   انتخاب / لغو یک خبر
+   Toggle one news
 ========================================================= */
 
 function toggleNewsSelection(
@@ -1680,43 +1890,32 @@ function toggleNewsSelection(
     const key =
         getItemKey(item);
 
+
     if (!key) {
         return;
     }
 
+
     if (checked) {
-        selectedKeys.add(key);
+
+        selectedKeys.add(
+            key
+        );
+
     } else {
-        selectedKeys.delete(key);
+
+        selectedKeys.delete(
+            key
+        );
     }
+
 
     renderAll();
 }
 
 
 /* =========================================================
-   تشخیص خبر جدید
-========================================================= */
-
-function isNewNews(item) {
-
-    /*
-     * این تابع عمداً ساده نگه داشته شده.
-     * در صورت نیاز می‌توان بعداً بر اساس تاریخ
-     * یا status موجود در news-summary.json
-     * آن را توسعه داد.
-     */
-
-    return (
-        String(item.status || "")
-            .toLowerCase()
-            .includes("new")
-    );
-}
-
-
-/* =========================================================
-   نمایش اخبار
+   Render news
 ========================================================= */
 
 function renderNews() {
@@ -1726,8 +1925,10 @@ function renderNews() {
             "newsList"
         );
 
+
     const displayed =
         getDisplayedNews();
+
 
     if (!displayed.length) {
 
@@ -1740,7 +1941,9 @@ function renderNews() {
         return;
     }
 
+
     container.innerHTML = "";
+
 
     displayed.forEach(
         item => {
@@ -1748,13 +1951,18 @@ function renderNews() {
             const key =
                 getItemKey(item);
 
+
             const selected =
-                selectedKeys.has(key);
+                selectedKeys.has(
+                    key
+                );
+
 
             const card =
                 document.createElement(
                     "article"
                 );
+
 
             card.className =
                 "news-card" +
@@ -1764,32 +1972,40 @@ function renderNews() {
                         : ""
                 );
 
+
             const top =
                 document.createElement(
                     "div"
                 );
 
+
             top.className =
                 "news-top";
+
 
             const checkbox =
                 document.createElement(
                     "input"
                 );
 
+
             checkbox.type =
                 "checkbox";
+
 
             checkbox.className =
                 "news-checkbox";
 
+
             checkbox.checked =
                 selected;
+
 
             checkbox.setAttribute(
                 "aria-label",
                 "انتخاب خبر"
             );
+
 
             checkbox.addEventListener(
                 "change",
@@ -1799,6 +2015,7 @@ function renderNews() {
                         item,
                         checkbox.checked
                     );
+
                 }
             );
 
@@ -1807,6 +2024,7 @@ function renderNews() {
                 document.createElement(
                     "div"
                 );
+
 
             main.className =
                 "news-main";
@@ -1817,8 +2035,10 @@ function renderNews() {
                     "h3"
                 );
 
+
             title.className =
                 "news-title";
+
 
             title.textContent =
                 cleanText(
@@ -1831,19 +2051,26 @@ function renderNews() {
                     "div"
                 );
 
+
             meta.className =
                 "news-meta";
 
 
-            if (cleanText(item.source)) {
+            if (
+                cleanText(
+                    item.source
+                )
+            ) {
 
                 const source =
                     document.createElement(
                         "span"
                     );
 
+
                 source.className =
                     "meta-item";
+
 
                 source.textContent =
                     "📰 " +
@@ -1851,27 +2078,35 @@ function renderNews() {
                         item.source
                     );
 
+
                 meta.appendChild(
                     source
                 );
             }
 
 
-            if (cleanText(item.category)) {
+            if (
+                cleanText(
+                    item.category
+                )
+            ) {
 
                 const category =
                     document.createElement(
                         "span"
                     );
 
+
                 category.className =
                     "meta-item";
+
 
                 category.textContent =
                     "📌 " +
                     cleanText(
                         item.category
                     );
+
 
                 meta.appendChild(
                     category
@@ -1886,14 +2121,17 @@ function renderNews() {
                         "span"
                     );
 
+
                 date.className =
                     "meta-item";
+
 
                 date.textContent =
                     "🕐 " +
                     formatPersianDate(
                         item.date
                     );
+
 
                 meta.appendChild(
                     date
@@ -1906,13 +2144,16 @@ function renderNews() {
                     "p"
                 );
 
+
             summary.className =
                 "news-summary";
+
 
             const summaryText =
                 cleanSummary(
                     item.summary
                 );
+
 
             if (summaryText) {
 
@@ -1922,14 +2163,20 @@ function renderNews() {
             }
 
 
-            main.appendChild(title);
+            main.appendChild(
+                title
+            );
+
 
             if (
                 meta.children.length
             ) {
 
-                main.appendChild(meta);
+                main.appendChild(
+                    meta
+                );
             }
+
 
             if (summaryText) {
 
@@ -1940,15 +2187,16 @@ function renderNews() {
 
 
             /*
-             * لینک مستقیم خبر فقط در کارت سایت.
+             * لینک مستقیم فقط در کارت سایت.
              *
-             * این لینک در متن روبیکا قرار نمی‌گیرد.
+             * این لینک وارد متن روبیکا نمی‌شود.
              */
 
             const link =
                 getSafeUrl(
                     item.link
                 );
+
 
             if (
                 link !== "#"
@@ -1959,20 +2207,26 @@ function renderNews() {
                         "a"
                     );
 
+
                 newsLink.className =
                     "news-link";
+
 
                 newsLink.href =
                     link;
 
+
                 newsLink.target =
                     "_blank";
+
 
                 newsLink.rel =
                     "noopener noreferrer";
 
+
                 newsLink.textContent =
                     "🔗 مشاهده خبر";
+
 
                 main.appendChild(
                     newsLink
@@ -1984,24 +2238,28 @@ function renderNews() {
                 checkbox
             );
 
+
             top.appendChild(
                 main
             );
+
 
             card.appendChild(
                 top
             );
 
+
             container.appendChild(
                 card
             );
+
         }
     );
 }
 
 
 /* =========================================================
-   آمار
+   Statistics
 ========================================================= */
 
 function updateStats() {
@@ -2009,11 +2267,14 @@ function updateStats() {
     const total =
         allNews.length;
 
+
     const selected =
         selectedKeys.size;
 
+
     const categoryCount =
         getFilteredNews().length;
+
 
     const publishCount =
         getPublishNews().length;
@@ -2022,13 +2283,17 @@ function updateStats() {
     document.getElementById(
         "totalNewsStat"
     ).textContent =
-        toPersianDigits(total);
+        toPersianDigits(
+            total
+        );
 
 
     document.getElementById(
         "selectedStat"
     ).textContent =
-        toPersianDigits(selected);
+        toPersianDigits(
+            selected
+        );
 
 
     document.getElementById(
@@ -2049,7 +2314,7 @@ function updateStats() {
 
 
 /* =========================================================
-   متن روبیکا
+   Rubika header
 ========================================================= */
 
 function rubikaHeader(
@@ -2059,18 +2324,26 @@ function rubikaHeader(
     const now =
         new Date();
 
+
     let text =
         "📰 اخبار دیار قدمگاه\n\n";
 
+
     text +=
         "📅 " +
-        formatPersianDate(now) +
+        formatPersianDate(
+            now
+        ) +
         "\n";
+
 
     text +=
         "🕐 " +
-        formatPersianTime(now) +
+        formatPersianTime(
+            now
+        ) +
         "\n";
+
 
     text +=
         "📌 " +
@@ -2079,43 +2352,52 @@ function rubikaHeader(
         ) +
         " خبر\n";
 
+
     text +=
         "\n━━━━━━━━━━━━━━\n\n";
+
 
     return text;
 }
 
+
+/* =========================================================
+   Rubika footer
+========================================================= */
 
 function rubikaFooter() {
 
     let text =
         "\n━━━━━━━━━━━━━━\n\n";
 
+
     /*
-     * فقط لینک صفحه کامل اخبار.
+     * فقط یک لینک صفحه کامل اخبار.
      *
-     * لینک تک‌تک اخبار عمداً حذف شده است.
+     * لینک تک‌تک خبرها حذف شده است.
      */
+
     text +=
         "📖 متن کامل و لینک اخبار:\n";
+
 
     text +=
         RUBIKA_PAGE_URL;
 
+
     text +=
         "\n\n";
 
+
     text +=
         "🏡 دیار قدمگاه\n";
+
 
     text +=
         "✍️ " +
         publisherName;
 
-    /*
-     * اگر لینک معتبر روبیکا برای منتشرکننده
-     * ثبت شده باشد، در انتهای امضا قرار می‌گیرد.
-     */
+
     if (publisherRubika) {
 
         text +=
@@ -2123,18 +2405,20 @@ function rubikaFooter() {
             publisherRubika;
     }
 
+
     return text;
 }
 
 
 /* =========================================================
-   ساخت متن نهایی
+   Create Rubika text
 ========================================================= */
 
 function createRubikaText() {
 
     const publishNews =
         getPublishNews();
+
 
     if (!publishNews.length) {
 
@@ -2143,6 +2427,7 @@ function createRubikaText() {
             "هنوز خبری برای انتشار انتخاب نشده است."
         );
     }
+
 
     let text =
         rubikaHeader(
@@ -2158,15 +2443,18 @@ function createRubikaText() {
                     item.title
                 );
 
+
             const source =
                 cleanText(
                     item.source
                 );
 
+
             const category =
                 cleanText(
                     item.category
                 );
+
 
             const summary =
                 cleanSummary(
@@ -2177,6 +2465,7 @@ function createRubikaText() {
             /*
              * بدون شماره‌گذاری
              */
+
             text +=
                 "🔹 " +
                 title +
@@ -2185,6 +2474,7 @@ function createRubikaText() {
 
             let meta = "";
 
+
             if (source) {
 
                 meta +=
@@ -2192,17 +2482,21 @@ function createRubikaText() {
                     source;
             }
 
+
             if (category) {
 
                 if (meta) {
+
                     meta +=
                         " | ";
                 }
+
 
                 meta +=
                     "📌 " +
                     category;
             }
+
 
             if (meta) {
 
@@ -2222,8 +2516,7 @@ function createRubikaText() {
 
 
             /*
-             * عمداً هیچ لینک مستقیمی
-             * اینجا اضافه نمی‌شود.
+             * هیچ لینک مستقیم خبر اینجا نیست.
              */
 
             text +=
@@ -2234,6 +2527,7 @@ function createRubikaText() {
 
     text +=
         rubikaFooter();
+
 
     return text;
 }
@@ -2250,23 +2544,26 @@ function updatePreview() {
             "previewText"
         );
 
+
     /*
-     * Preview و Copy هر دو دقیقاً
-     * از createRubikaText() استفاده می‌کنند.
+     * Preview و Copy دقیقاً از همین
+     * تابع استفاده می‌کنند.
      */
+
     preview.value =
         createRubikaText();
 }
 
 
 /* =========================================================
-   کپی متن
+   Copy
 ========================================================= */
 
 async function copyRubikaText() {
 
     const text =
         createRubikaText();
+
 
     if (!text) {
 
@@ -2289,9 +2586,11 @@ async function copyRubikaText() {
                 text
             );
 
+
             showToast(
                 "✅ متن انتشار با موفقیت کپی شد."
             );
+
 
             return;
         }
@@ -2305,7 +2604,9 @@ async function copyRubikaText() {
     }
 
 
-    fallbackCopy(text);
+    fallbackCopy(
+        text
+    );
 }
 
 
@@ -2320,28 +2621,36 @@ function fallbackCopy(text) {
             "textarea"
         );
 
+
     textarea.value =
         text;
+
 
     textarea.style.position =
         "fixed";
 
+
     textarea.style.opacity =
         "0";
 
+
     textarea.style.pointerEvents =
         "none";
+
 
     document.body.appendChild(
         textarea
     );
 
+
     textarea.focus();
 
     textarea.select();
 
+
     let success =
         false;
+
 
     try {
 
@@ -2351,8 +2660,11 @@ function fallbackCopy(text) {
             );
 
     } catch {
-        success = false;
+
+        success =
+            false;
     }
+
 
     document.body.removeChild(
         textarea
@@ -2375,7 +2687,7 @@ function fallbackCopy(text) {
 
 
 /* =========================================================
-   انتخاب متن Preview
+   Select Preview
 ========================================================= */
 
 function selectPreviewText() {
@@ -2385,9 +2697,11 @@ function selectPreviewText() {
             "previewText"
         );
 
+
     preview.focus();
 
     preview.select();
+
 
     showToast(
         "📝 متن انتخاب شد؛ اکنون می‌توانید آن را کپی کنید."
@@ -2401,6 +2715,7 @@ function selectPreviewText() {
 
 let toastTimer = null;
 
+
 function showToast(message) {
 
     const toast =
@@ -2408,16 +2723,20 @@ function showToast(message) {
             "toast"
         );
 
+
     toast.textContent =
         message;
+
 
     toast.classList.add(
         "show"
     );
 
+
     clearTimeout(
         toastTimer
     );
+
 
     toastTimer =
         setTimeout(
@@ -2434,7 +2753,7 @@ function showToast(message) {
 
 
 /* =========================================================
-   Render All
+   Render all
 ========================================================= */
 
 function renderAll() {
@@ -2448,14 +2767,15 @@ function renderAll() {
 
 
 /* =========================================================
-   Initialization
+   Initialize
 ========================================================= */
 
 function initialize() {
 
     /*
-     * تنظیمات ذخیره‌شده منتشرکننده
+     * Publisher settings
      */
+
     loadPublisherSettings();
 
 
@@ -2472,8 +2792,9 @@ function initialize() {
 
 
     /*
-     * تعداد نمایش
+     * Display count
      */
+
     document.getElementById(
         "newsCount"
     ).value =
@@ -2483,11 +2804,12 @@ function initialize() {
 
 
     /*
-     * تغییر تعداد نمایش
+     * تعداد نمایش فقط روی کارت‌های
+     * قابل مشاهده اثر دارد.
      *
-     * فقط نمایش تغییر می‌کند.
-     * انتخاب‌های قبلی باقی می‌مانند.
+     * انتخاب‌های قبلی حفظ می‌شوند.
      */
+
     document.getElementById(
         "newsCount"
     ).addEventListener(
@@ -2497,17 +2819,16 @@ function initialize() {
             newsCountSetting =
                 event.target.value;
 
+
             renderAll();
         }
     );
 
 
     /*
-     * انتخاب همه
-     *
-     * تمام allNews انتخاب می‌شود،
-     * نه getDisplayedNews().
+     * انتخاب همه دسته فعلی
      */
+
     document.getElementById(
         "selectAllBtn"
     ).addEventListener(
@@ -2517,8 +2838,9 @@ function initialize() {
 
 
     /*
-     * لغو همه
+     * لغو انتخاب دسته فعلی
      */
+
     document.getElementById(
         "clearAllBtn"
     ).addEventListener(
@@ -2528,8 +2850,9 @@ function initialize() {
 
 
     /*
-     * بروزرسانی
+     * Refresh
      */
+
     document.getElementById(
         "refreshBtn"
     ).addEventListener(
@@ -2539,8 +2862,9 @@ function initialize() {
 
 
     /*
-     * تنظیمات منتشرکننده
+     * Publisher
      */
+
     document.getElementById(
         "publisherName"
     ).addEventListener(
@@ -2558,8 +2882,9 @@ function initialize() {
 
 
     /*
-     * کپی
+     * Copy
      */
+
     document.getElementById(
         "copyBtn"
     ).addEventListener(
@@ -2569,8 +2894,9 @@ function initialize() {
 
 
     /*
-     * انتخاب متن
+     * Select preview
      */
+
     document.getElementById(
         "selectPreviewBtn"
     ).addEventListener(
@@ -2580,22 +2906,24 @@ function initialize() {
 
 
     /*
-     * نمایش اولیه دسته‌ها
+     * Initial rendering
      */
+
     renderCategories();
 
     renderAll();
 
 
     /*
-     * دریافت اخبار
+     * Load data
      */
+
     loadNews();
 }
 
 
 /* =========================================================
-   شروع
+   Start
 ========================================================= */
 
 document.addEventListener(
@@ -2606,4 +2934,4 @@ document.addEventListener(
 </script>
 
 </body>
-</html>
+      </html>

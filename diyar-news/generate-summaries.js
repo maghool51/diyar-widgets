@@ -1078,8 +1078,13 @@ async function main() {
 
         return {
 
+          // decodeHtmlEntities به‌عنوان یک لایه‌ی محافظ اضافه شده: اگر
+          // news.json (به هر دلیلی، از جمله نسخه‌های قدیمی‌تر فایل) عنوانی
+          // از قبل HTML-escape شده داشته باشد، این‌جا به متن خام برمی‌گردد
+          // تا news.html/rubika-news.html که خودشان escape می‌کنند، آن را
+          // دوباره escape نکنند (جلوگیری از «&amp;amp;»‌های تودرتو).
           title:
-            item.title || "",
+            decodeHtmlEntities(item.title || ""),
 
           link:
             item.link || "",

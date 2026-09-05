@@ -91,6 +91,32 @@ const sources = [
     url: "https://www.ettelaat.com/rss/tp/62",
     flag: "🇮🇷"
   }
+
+  // ---- ۴ منبع خارجی — طبق درخواست، عمداً غیرفعال/کامنت نگه داشته شده‌اند ----
+  // URLها از نسخه‌ی قبلی پروژه بازگردانده شده‌اند، حدس زده نشده‌اند.
+  // برای فعال‌سازی، کافیست /* و */ اطراف هرکدام را بردارید.
+  /* ,
+  {
+    name: "صدای آمریکا فارسی",
+    url: "https://ir.voanews.com/api/zuiypl-vomx-tpeggtm",
+    flag: "🌍"
+  },
+  {
+    name: "بی‌بی‌سی فارسی",
+    url: "https://feeds.bbci.co.uk/persian/rss.xml",
+    flag: "🌍"
+  },
+  {
+    name: "دویچه‌وله فارسی",
+    url: "https://rss.dw.com/rdf/rss-fa-all",
+    flag: "🌍"
+  },
+  {
+    name: "رادیو فردا",
+    url: "https://www.radiofarda.com/api/zpoqil-vomx-tpe_kip",
+    flag: "🌍"
+  }
+  */
 ];
 
 
@@ -576,7 +602,11 @@ const socialStrong = [
   "ادارات",
   "مراکز درمانی",
   "سلامت روان",
-  "سنجش سلامت"
+  "سنجش سلامت",
+  "فرو رفتن زمین",
+  "نشست زمین",
+  "گودال",
+  "چاله عمیق"
 ];
 
 const socialContext = [
@@ -768,8 +798,46 @@ function normalizeText(text = "") {
 }
 
 
+/*
+  مشکل substring:
+  یک کلیدواژه‌ی کوتاه و تک‌کلمه‌ای (مثل «شنا» یا «هند») با ()String.includes
+  می‌تواند وسط یک کلمه‌ی کاملاً نامرتبط پیدا شود:
+    «ایران‌اینترنشنال» → شامل «شنا» است (…ن‌ش‌نا‌ل…)
+    «تکان‌دهنده»       → شامل «هند» است (…ده‌هند‌ه…)
+  راه‌حل: فقط برای کلیدواژه‌های کوتاه و بدون فاصله (یک کلمه)، الزام می‌کنیم
+  قبل و بعد از آن یک حرف فارسی/عربی نباشد (یعنی شروع/پایان متن یا یک مرز
+  غیرحرفی مثل فاصله، عدد، حرف لاتین یا علامت نگارشی). عبارت‌های چندکلمه‌ای
+  (شامل فاصله) و کلیدواژه‌های بلندتر همچنان با includes ساده بررسی می‌شوند
+  تا صورت‌های صرف‌شده‌ی فارسی (مثل «دانشگاهی»، «بانکداری») از دست نروند.
+*/
+const SHORT_PHRASE_MAX_LENGTH = 4;
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function hasPhrase(text, phrase) {
-  return text.includes(normalizeText(phrase));
+  const normalizedPhrase = normalizeText(phrase);
+
+  if (!normalizedPhrase) {
+    return false;
+  }
+
+  const isShortSingleWord =
+    normalizedPhrase.length <= SHORT_PHRASE_MAX_LENGTH &&
+    !normalizedPhrase.includes(" ");
+
+  if (isShortSingleWord) {
+    const boundaryPattern = new RegExp(
+      "(^|[^\\u0600-\\u06FF0-9a-zA-Z])" +
+        escapeRegExp(normalizedPhrase) +
+        "([^\\u0600-\\u06FF0-9a-zA-Z]|$)"
+    );
+
+    return boundaryPattern.test(text);
+  }
+
+  return text.includes(normalizedPhrase);
 }
 
 
@@ -1522,12 +1590,22 @@ async function fetchAllNews() {
         const category = detectCategory(title);
 
 
+        /*
+          توجه امنیتی: عنوان/منبع این‌جا escapeHtml نمی‌شوند.
+          news.json یک فایل داده است، نه HTML؛ اگر همین‌جا escape شود،
+          هر مصرف‌کننده‌ای که خودش هم (به‌درستی) دوباره escape می‌کند
+          (news.html, rubika-news.html, news-ticker.html) دچار
+          «دو بار escape شدن» می‌شود و مثلاً «&» به‌صورت واقعی
+          «&amp;amp;» روی صفحه نمایش داده می‌شود. امنیت XSS همچنان تضمین
+          است چون تمام صفحات نمایشی خودشان escapeHtml/escapeHTML را روی
+          همین مقدار خام اجرا می‌کنند.
+        */
         allNews.push({
-          title: escapeHtml(title),
+          title,
           link,
           date: validDate.toISOString(),
           datePersian: formatPersianDate(validDate),
-          source: escapeHtml(source.name),
+          source: source.name,
           flag: source.flag,
           category
         });
@@ -1595,12 +1673,13 @@ async function fetchAllNews() {
 
           const category = detectCategory(title);
 
+          // عمداً escapeHtml نمی‌شود؛ توضیح در حلقه‌ی منابع اصلی بالاتر.
           allNews.push({
-            title: escapeHtml(title),
+            title,
             link,
             date: validDate.toISOString(),
             datePersian: formatPersianDate(validDate),
-            source: escapeHtml(source.name),
+            source: source.name,
             flag: source.flag,
             category
           });

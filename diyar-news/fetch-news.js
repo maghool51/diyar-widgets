@@ -309,6 +309,7 @@ const internationalStrong = [
   "مصر",
   "لیبی",
   "سودان",
+  "نپال",
   "لبنان",
   "کرملین",
   "مسکو",
@@ -606,7 +607,15 @@ const socialStrong = [
   "فرو رفتن زمین",
   "نشست زمین",
   "گودال",
-  "چاله عمیق"
+  "چاله عمیق",
+  "سرقت",
+  "سارق",
+  "دزدی",
+  "مقتول",
+  "غرق شد",
+  "غرق‌شدگی",
+  "غرق‌شدن",
+  "نجات غریق"
 ];
 
 const socialContext = [
@@ -1237,7 +1246,9 @@ function detectCategory(title = "") {
       "طوفان",
       "انفجار",
       "حمله",
-      "بمباران"
+      "بمباران",
+      "رانش زمین",
+      "رانش"
     ])
   ) {
     scores["بین‌الملل"] += 14;
@@ -1529,6 +1540,15 @@ function getItemDate(item) {
 async function fetchAllNews() {
   let allNews = [];
   const failedSources = [];
+  /*
+    successfulSources باید «فچ موفق» را نشان دهد، نه «حداقل یک خبر
+    از این منبع به ۱۰۰ خبر نهایی رسید». این دو مفهوم متفاوت‌اند: یک
+    منبع می‌تواند RSS آن کاملاً سالم و قابل‌parse باشد، ولی همه‌ی
+    خبرهایش بعداً در حذف تکراری/فیلتر زبان/برش به ۱۰۰ خبر برتر حذف
+    شوند. قبلاً successfulSources از finalNews ساخته می‌شد که همین
+    باعث می‌شد چنین منبعی نه در successful و نه در failed ثبت شود.
+  */
+  const successfulSources = [];
 
   console.log("");
   console.log("==============================================");
@@ -1552,6 +1572,10 @@ async function fetchAllNews() {
       console.log(
         `✅ ${source.name}: ${items.length} خبر دریافت شد`
       );
+
+      // فچ این منبع موفق بود (feed معتبر و قابل‌parse دریافت شد)،
+      // صرف‌نظر از این‌که بعداً چند خبرش به فهرست نهایی برسد.
+      successfulSources.push(source.name);
 
 
       for (const item of items) {
@@ -1685,6 +1709,15 @@ async function fetchAllNews() {
           });
         }
 
+        // فچ پشتیبان موفق بود؛ اگر این منبع قبلاً در حلقه‌ی اصلی
+        // failed ثبت شده بود، آن ثبت را برمی‌داریم تا در هر دو
+        // آرایه هم‌زمان ظاهر نشود.
+        successfulSources.push(source.name);
+        const failedIndex = failedSources.indexOf(source.name);
+        if (failedIndex !== -1) {
+          failedSources.splice(failedIndex, 1);
+        }
+
       } catch (error) {
         failedSources.push(source.name);
       }
@@ -1811,18 +1844,31 @@ async function fetchAllNews() {
 
 
   /* =======================================================
-     منابع موفق
-     
-     فقط منابعی که واقعاً خبر وارد خروجی کرده‌اند.
+     منابع موفق / ناموفق — نسخه‌ی نهایی و یکتا
+
+     successfulSources همان‌جا در حلقه‌ی fetch ثبت شده (بر اساس
+     موفقیت واقعیِ دریافت/parse فید)، نه بر اساس این‌که چند خبرش به
+     ۱۰۰ خبر نهایی رسیده. اینجا فقط یکتا (dedupe) می‌شود.
   ======================================================= */
 
-  const successfulSources = [
-    ...new Set(
-      finalNews
-        .map(item => item.source)
-        .filter(Boolean)
-    )
-  ];
+  const finalFailedSources = [...new Set(failedSources)];
+  const finalSuccessfulSources = [...new Set(successfulSources)];
+
+  // بررسی سلامت: هر منبع فعال باید دقیقاً در یکی از این دو آرایه باشد.
+  const accountedFor =
+    finalSuccessfulSources.length + finalFailedSources.length;
+
+  if (accountedFor !== sources.length) {
+    console.log(
+      `⚠️ هشدار: ${sources.length} منبع فعال وجود دارد اما ` +
+        `${accountedFor} منبع در successful/failed ثبت شده‌اند. ` +
+        `این‌ها را بررسی کنید.`
+    );
+  } else {
+    console.log(
+      `✅ همه‌ی ${sources.length} منبع فعال در successful یا failed ثبت شدند.`
+    );
+  }
 
 
   /* =======================================================
@@ -1835,10 +1881,8 @@ async function fetchAllNews() {
     lastUpdate: now.toISOString(),
     lastUpdatePersian: formatPersianDate(now),
     totalNews: finalNews.length,
-    failedSources: [
-      ...new Set(failedSources)
-    ],
-    successfulSources,
+    failedSources: finalFailedSources,
+    successfulSources: finalSuccessfulSources,
     categories: CATEGORY_ORDER,
     news: finalNews,
     categorizedNews

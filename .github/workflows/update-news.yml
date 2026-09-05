@@ -8,6 +8,14 @@ on:
 permissions:
   contents: write
 
+# جلوگیری از اجرای هم‌زمان چند Run روی هم (race condition):
+# اگر یک اجرا هنوز در حال کار باشد، اجرای بعدی صف می‌شود، نه هم‌زمان
+# اجرا می‌شود. این از overwrite شدن خروجی یک اجرای جدیدتر توسط
+# اجرای قدیمی‌تر (یا شکست push به‌خاطر تاریخچه‌ی ناسازگار) جلوگیری می‌کند.
+concurrency:
+  group: update-news
+  cancel-in-progress: false
+
 jobs:
   update-news:
     runs-on: ubuntu-latest
@@ -39,6 +47,9 @@ jobs:
         run: node generate-summaries.js
 
       # بررسی فایل‌های تولیدشده
+      # توجه: fetch-news.js دیگر index.html تولید نمی‌کند (طراحی فعلی
+      # عمداً این کار را نمی‌کند)، پس دیگر آن را چک نمی‌کنیم — وگرنه
+      # این مرحله با «فایل پیدا نشد» شکست می‌خورد.
       - name: 🔎 Check generated files
         working-directory: diyar-news
         run: |
@@ -48,16 +59,14 @@ jobs:
           echo "===== news-summary.json ====="
           ls -lh news-summary.json
 
-          echo "===== index.html ====="
-          ls -lh index.html
-
       # Commit و Push
       - name: 💾 Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add diyar-news/index.html
+          # index.html دیگر توسط fetch-news.js بازتولید نمی‌شود، پس دیگر
+          # add نمی‌شود (فایل ثابتی است که تغییری برای commit ندارد).
           git add diyar-news/news.json
           git add diyar-news/news-summary.json
           git add diyar-news/news-ticker.html
@@ -67,5 +76,10 @@ jobs:
             echo "ℹ️ تغییر جدیدی برای Commit وجود ندارد."
           else
             git commit -m "📰 به‌روزرسانی خودکار اخبار"
+
+            # قبل از push، تغییرات احتمالی جدیدتر را rebase می‌کنیم تا
+            # اگر (به‌هر دلیلی) یک commit دیگر بین اجرای اسکریپت و این
+            # لحظه به main اضافه شده باشد، push رد نشود.
+            git pull --rebase origin "${GITHUB_REF_NAME}"
             git push
           fi

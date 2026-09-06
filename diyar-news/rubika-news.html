@@ -70,6 +70,11 @@ button:disabled {
     font-size: 13px;
 }
 
+.header-date {
+    opacity: .8 !important;
+    font-size: 11px !important;
+}
+
 /* =========================================================
    STATS
 ========================================================= */
@@ -451,6 +456,19 @@ button:disabled {
     font-size: 10px;
 }
 
+.news-link {
+    display: inline-block;
+    margin-top: 7px;
+    color: #1565c0;
+    font-size: 11px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.news-link:hover {
+    text-decoration: underline;
+}
+
 .new-badge {
     display: inline-block;
     padding: 1px 6px;
@@ -719,6 +737,11 @@ button:disabled {
         <p>
             انتخاب و آماده‌سازی اخبار برای انتشار در روبیکا
         </p>
+
+        <p
+            id="headerDate"
+            class="header-date"
+        ></p>
 
     </header>
 
@@ -1349,8 +1372,19 @@ function normalizeRubikaUrl(url) {
     let value =
         String(url).trim();
 
+    /*
+       فقط https پذیرفته می‌شود؛
+       اگر کاربر صراحتاً http:// وارد کرده، نامعتبر است.
+    */
+
     if (
-        !/^https?:\/\//i.test(value)
+        /^http:\/\//i.test(value)
+    ) {
+        return "";
+    }
+
+    if (
+        !/^https:\/\//i.test(value)
     ) {
         value =
             "https://" + value;
@@ -1360,6 +1394,12 @@ function normalizeRubikaUrl(url) {
 
         const parsed =
             new URL(value);
+
+        if (
+            parsed.protocol !== "https:"
+        ) {
+            return "";
+        }
 
         const host =
             parsed.hostname
@@ -2238,6 +2278,14 @@ function renderNews() {
                     "📰 " +
                     cleanText(
                         item.source
+                    ) +
+                    (
+                        item.flag
+                            ? " " +
+                              cleanText(
+                                  item.flag
+                              )
+                            : ""
                     );
 
                 meta.appendChild(
@@ -2337,6 +2385,50 @@ function renderNews() {
 
                 content.appendChild(
                     dateElement
+                );
+            }
+
+            if (
+                isSafeHttpUrl(
+                    item.link
+                )
+            ) {
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
+                link.className =
+                    "news-link";
+
+                link.href =
+                    item.link;
+
+                link.target =
+                    "_blank";
+
+                link.rel =
+                    "noopener noreferrer";
+
+                link.textContent =
+                    "مشاهده خبر ↗";
+
+                /*
+                   جلوگیری از انتخاب/لغو ناخواسته خبر
+                   هنگام باز کردن لینک
+                */
+
+                link.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+                    }
+                );
+
+                content.appendChild(
+                    link
                 );
             }
 
@@ -3549,6 +3641,24 @@ function initialize() {
 
     publisherRubikaInput.value =
         publisherRubika;
+
+    /* -----------------------------------------
+       تاریخ و زمان هدر
+    ----------------------------------------- */
+
+    const headerDateElement =
+        document.getElementById(
+            "headerDate"
+        );
+
+    if (headerDateElement) {
+
+        headerDateElement.textContent =
+            "📅 " +
+            formatPersianDate() +
+            "   🕐 " +
+            formatPersianTime();
+    }
 
     /* -----------------------------------------
        تعداد نمایش

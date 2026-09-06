@@ -45,6 +45,7 @@ textarea {
 
 button {
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .container {
@@ -150,6 +151,13 @@ main {
    CATEGORY BUTTONS
 ========================= */
 
+.category-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 3px;
+    -webkit-overflow-scrolling: touch;
+}
+
 .category-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -161,9 +169,11 @@ main {
     background: #fff;
     color: #455a64;
     border-radius: 999px;
-    padding: 7px 12px;
+    padding: 8px 13px;
     font-size: 12px;
     transition: .2s;
+    min-height: 38px;
+    white-space: nowrap;
 }
 
 .category-btn:hover {
@@ -182,6 +192,124 @@ main {
 }
 
 /* =========================
+   SEARCH
+========================= */
+
+.search-box {
+    margin-top: 15px;
+}
+
+.search-label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.search-wrap {
+    position: relative;
+}
+
+#searchInput {
+    width: 100%;
+    border: 1px solid #cfd8dc;
+    border-radius: 11px;
+    padding: 11px 42px 11px 38px;
+    background: #fff;
+    color: #263238;
+    outline: none;
+    font-size: 13px;
+    direction: rtl;
+}
+
+#searchInput:focus {
+    border-color: #607d8b;
+    box-shadow:
+        0 0 0 3px rgba(96,125,139,.10);
+}
+
+.search-icon {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 16px;
+}
+
+.search-clear {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #78909c;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 15px;
+    display: none;
+}
+
+.search-clear.show {
+    display: block;
+}
+
+/* =========================
+   FILTER / SORT ROW
+========================= */
+
+.filter-row {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 13px;
+}
+
+.filter-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.filter-field select {
+    width: 100%;
+    border: 1px solid #cfd8dc;
+    background: #fff;
+    border-radius: 9px;
+    padding: 9px 10px;
+    color: #263238;
+    outline: none;
+    min-height: 42px;
+}
+
+.selected-only-row {
+    margin-top: 10px;
+}
+
+.selected-only-btn {
+    width: 100%;
+    border: 1px solid #cfd8dc;
+    background: #fff;
+    color: #455a64;
+    border-radius: 10px;
+    padding: 10px 12px;
+    min-height: 42px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.selected-only-btn.active {
+    background: #fff8e1;
+    color: #e65100;
+    border-color: #ffcc80;
+}
+
+/* =========================
    COUNT
 ========================= */
 
@@ -190,7 +318,7 @@ main {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    margin-top: 15px;
+    margin-top: 13px;
 }
 
 .count-row label {
@@ -205,6 +333,7 @@ main {
     padding: 8px 12px;
     color: #263238;
     outline: none;
+    min-height: 40px;
 }
 
 /* =========================
@@ -212,8 +341,9 @@ main {
 ========================= */
 
 .action-row {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
     gap: 8px;
     margin-top: 13px;
 }
@@ -221,7 +351,8 @@ main {
 .action-btn {
     border: none;
     border-radius: 10px;
-    padding: 9px 13px;
+    padding: 10px 13px;
+    min-height: 42px;
     font-size: 12px;
     font-weight: bold;
 }
@@ -236,6 +367,11 @@ main {
     color: #c62828;
 }
 
+.btn-clear-all {
+    background: #fce4ec;
+    color: #ad1457;
+}
+
 .btn-refresh {
     background: #eceff1;
     color: #37474f;
@@ -246,7 +382,9 @@ main {
     color: #fff;
 }
 
-.action-btn:active {
+.action-btn:active,
+.selected-only-btn:active,
+.category-btn:active {
     transform: scale(.98);
 }
 
@@ -256,11 +394,35 @@ main {
 
 .selection-info {
     margin-top: 12px;
-    padding: 10px 12px;
+    padding: 11px 12px;
     background: #f5f7f8;
     border-radius: 10px;
     font-size: 12px;
     color: #455a64;
+}
+
+.selection-summary-title {
+    font-weight: bold;
+    color: #263238;
+    margin-bottom: 7px;
+}
+
+.selection-total {
+    margin-bottom: 7px;
+}
+
+.category-selection-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.category-selection-item {
+    background: #fff;
+    border: 1px solid #e0e6e8;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 10px;
 }
 
 /* =========================
@@ -296,10 +458,11 @@ main {
 
 .news-checkbox {
     flex: 0 0 auto;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     margin-top: 3px;
     accent-color: #263238;
+    cursor: pointer;
 }
 
 .news-content {
@@ -384,6 +547,10 @@ main {
     margin-bottom: 12px;
 }
 
+.field:last-child {
+    margin-bottom: 0;
+}
+
 .field label {
     display: block;
     font-size: 12px;
@@ -398,6 +565,7 @@ main {
     padding: 9px 10px;
     outline: none;
     direction: rtl;
+    min-height: 42px;
 }
 
 .field input:focus {
@@ -433,13 +601,6 @@ main {
     font-size: 13px;
     line-height: 1.9;
     outline: none;
-}
-
-.preview-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 9px;
 }
 
 /* =========================
@@ -485,6 +646,8 @@ main {
         transform .25s;
 
     z-index: 9999;
+
+    text-align: center;
 }
 
 .toast.show {
@@ -510,6 +673,11 @@ main {
 
     .news-card {
         padding: 15px;
+    }
+
+    .action-row {
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
     }
 
 }
@@ -543,13 +711,58 @@ main {
         font-size: 9px;
     }
 
+    .category-scroll {
+        margin-left: -4px;
+        margin-right: -4px;
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .category-buttons {
+        flex-wrap: nowrap;
+        width: max-content;
+    }
+
     .category-btn {
-        padding: 6px 9px;
+        padding: 7px 10px;
         font-size: 11px;
     }
 
+    .action-row {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
     .action-btn {
-        flex: 1 1 auto;
+        width: 100%;
+        padding: 10px 8px;
+    }
+
+    .filter-row {
+        grid-template-columns:
+            1fr;
+    }
+
+    .news-title {
+        font-size: 14px;
+    }
+
+}
+
+/* =========================
+   VERY SMALL MOBILE
+========================= */
+
+@media (max-width: 340px) {
+
+    .stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .action-row {
+        grid-template-columns:
+            1fr;
     }
 
 }
@@ -666,45 +879,143 @@ main {
         </div>
 
 
-        <div
-            class="category-buttons"
-            id="categoryButtons"
-        >
+        <div class="category-scroll">
+
+            <div
+                class="category-buttons"
+                id="categoryButtons"
+            >
+            </div>
+
         </div>
 
 
-        <div class="count-row">
+        <!-- =========================
+             SEARCH
+        ========================== -->
 
-            <label for="newsCount">
-                تعداد نمایش:
+        <div class="search-box">
+
+            <label
+                class="search-label"
+                for="searchInput"
+            >
+                🔍 جستجوی خبر
             </label>
 
-            <select id="newsCount">
+            <div class="search-wrap">
 
-                <option value="5">
-                    ۵ خبر
-                </option>
+                <span class="search-icon">
+                    🔍
+                </span>
 
-                <option value="10" selected>
-                    ۱۰ خبر
-                </option>
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="عنوان، منبع یا دسته را جستجو کنید..."
+                    autocomplete="off"
+                >
 
-                <option value="15">
-                    ۱۵ خبر
-                </option>
+                <button
+                    type="button"
+                    class="search-clear"
+                    id="searchClearBtn"
+                    aria-label="پاک کردن جستجو"
+                >
+                    ✕
+                </button>
 
-                <option value="20">
-                    ۲۰ خبر
-                </option>
-
-                <option value="all">
-                    همه
-                </option>
-
-            </select>
+            </div>
 
         </div>
 
+
+        <!-- =========================
+             FILTER / SORT
+        ========================== -->
+
+        <div class="filter-row">
+
+            <div class="filter-field">
+
+                <label for="sortSelect">
+                    📌 مرتب‌سازی
+                </label>
+
+                <select id="sortSelect">
+
+                    <option value="newest">
+                        🕐 جدیدترین‌ها
+                    </option>
+
+                    <option value="oldest">
+                        🕰️ قدیمی‌ترین‌ها
+                    </option>
+
+                    <option value="selected">
+                        ⭐ انتخاب‌شده‌ها در ابتدا
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-field">
+
+                <label for="newsCount">
+                    📋 تعداد نمایش
+                </label>
+
+                <select id="newsCount">
+
+                    <option value="5">
+                        ۵ خبر
+                    </option>
+
+                    <option value="10" selected>
+                        ۱۰ خبر
+                    </option>
+
+                    <option value="15">
+                        ۱۵ خبر
+                    </option>
+
+                    <option value="20">
+                        ۲۰ خبر
+                    </option>
+
+                    <option value="all">
+                        همه
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             SELECTED ONLY
+        ========================== -->
+
+        <div class="selected-only-row">
+
+            <button
+                class="selected-only-btn"
+                id="selectedOnlyBtn"
+                type="button"
+            >
+                ⭐ نمایش فقط انتخاب‌شده‌ها
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             ACTIONS
+        ========================== -->
 
         <div class="action-row">
 
@@ -727,6 +1038,15 @@ main {
 
 
             <button
+                class="action-btn btn-clear-all"
+                id="clearEverythingBtn"
+                type="button"
+            >
+                🧹 لغو انتخاب همه
+            </button>
+
+
+            <button
                 class="action-btn btn-refresh"
                 id="refreshBtn"
                 type="button"
@@ -736,6 +1056,10 @@ main {
 
         </div>
 
+
+        <!-- =========================
+             SELECTION INFO
+        ========================== -->
 
         <div
             class="selection-info"
@@ -877,6 +1201,9 @@ const DEFAULT_NEWS_COUNT = 10;
 const ADMIN_STORAGE_KEY =
     "diyarRubikaPublisherV1";
 
+const SELECTION_STORAGE_KEY =
+    "diyarRubikaSelectedNewsV1";
+
 const DEFAULT_ADMIN_NAME =
     "ادمین";
 
@@ -957,6 +1284,12 @@ let publisherName =
 let publisherRubika =
     DEFAULT_ADMIN_RUBIKA;
 
+let searchQuery = "";
+
+let sortMode = "newest";
+
+let selectedOnly = false;
+
 
 /* =========================================================
    DOM
@@ -977,6 +1310,26 @@ const newsCount =
         "newsCount"
     );
 
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
+
+const searchClearBtn =
+    document.getElementById(
+        "searchClearBtn"
+    );
+
+const sortSelect =
+    document.getElementById(
+        "sortSelect"
+    );
+
+const selectedOnlyBtn =
+    document.getElementById(
+        "selectedOnlyBtn"
+    );
+
 const selectAllBtn =
     document.getElementById(
         "selectAllBtn"
@@ -985,6 +1338,11 @@ const selectAllBtn =
 const clearAllBtn =
     document.getElementById(
         "clearAllBtn"
+    );
+
+const clearEverythingBtn =
+    document.getElementById(
+        "clearEverythingBtn"
     );
 
 const refreshBtn =
@@ -1025,6 +1383,7 @@ function toPersianDigits(value) {
             digit =>
                 "۰۱۲۳۴۵۶۷۸۹"[digit]
         );
+
 }
 
 
@@ -1043,6 +1402,7 @@ function decodeHtmlEntities(text) {
         String(text || "");
 
     return textarea.value;
+
 }
 
 
@@ -1108,6 +1468,7 @@ function cleanSummary(text) {
     }
 
     return result;
+
 }
 
 
@@ -1134,6 +1495,7 @@ function isSafeHttpUrl(url) {
         return false;
 
     }
+
 }
 
 
@@ -1166,6 +1528,7 @@ function normalizeRubikaUrl(url) {
     }
 
     return value;
+
 }
 
 
@@ -1186,6 +1549,7 @@ function sanitizePublisherName(name) {
         0,
         60
     );
+
 }
 
 
@@ -1231,6 +1595,7 @@ function loadPublisherSettings() {
 
     publisherRubikaInput.value =
         publisherRubika;
+
 }
 
 
@@ -1270,6 +1635,92 @@ function savePublisherSettings() {
 
 
     updatePreview();
+
+}
+
+
+/* =========================================================
+   SELECTION STORAGE
+========================================================= */
+
+function loadSelectionSettings() {
+
+    try {
+
+        const raw =
+            localStorage.getItem(
+                SELECTION_STORAGE_KEY
+            );
+
+        if (!raw) {
+            return;
+        }
+
+        const data =
+            JSON.parse(raw);
+
+        if (
+            Array.isArray(data)
+        ) {
+
+            selectedKeys =
+                new Set(
+                    data.filter(
+                        item =>
+                            typeof item ===
+                            "string"
+                    )
+                );
+
+            return;
+
+        }
+
+        if (
+            data &&
+            Array.isArray(
+                data.selectedKeys
+            )
+        ) {
+
+            selectedKeys =
+                new Set(
+                    data.selectedKeys.filter(
+                        item =>
+                            typeof item ===
+                            "string"
+                    )
+                );
+
+        }
+
+    } catch {
+
+        selectedKeys =
+            new Set();
+
+    }
+
+}
+
+
+function saveSelectionSettings() {
+
+    try {
+
+        localStorage.setItem(
+            SELECTION_STORAGE_KEY,
+            JSON.stringify(
+                [...selectedKeys]
+            )
+        );
+
+    } catch {
+
+        /* localStorage unavailable */
+
+    }
+
 }
 
 
@@ -1298,14 +1749,84 @@ function getItemKey(item) {
         "|" +
         date
     );
+
 }
 
 
 /* =========================================================
-   FILTER
+   DATE VALUE
 ========================================================= */
 
-function getFilteredNews() {
+function getNewsTime(item) {
+
+    if (!item || !item.date) {
+        return 0;
+    }
+
+    const time =
+        new Date(
+            item.date
+        ).getTime();
+
+    return Number.isNaN(time)
+        ? 0
+        : time;
+
+}
+
+
+/* =========================================================
+   SEARCH MATCH
+========================================================= */
+
+function matchesSearch(item) {
+
+    const query =
+        cleanText(
+            searchQuery
+        ).toLocaleLowerCase(
+            "fa"
+        );
+
+    if (!query) {
+        return true;
+    }
+
+    const title =
+        cleanText(
+            item.title
+        ).toLocaleLowerCase(
+            "fa"
+        );
+
+    const source =
+        cleanText(
+            item.source
+        ).toLocaleLowerCase(
+            "fa"
+        );
+
+    const category =
+        cleanText(
+            item.category
+        ).toLocaleLowerCase(
+            "fa"
+        );
+
+    return (
+        title.includes(query) ||
+        source.includes(query) ||
+        category.includes(query)
+    );
+
+}
+
+
+/* =========================================================
+   BASE CATEGORY FILTER
+========================================================= */
+
+function getCategoryNews() {
 
     if (
         currentCategory ===
@@ -1325,13 +1846,158 @@ function getFilteredNews() {
             ) ===
             currentCategory
     );
+
 }
 
+
+/* =========================================================
+   SEARCH FILTER
+========================================================= */
+
+function getSearchFilteredNews() {
+
+    return getCategoryNews()
+        .filter(
+            matchesSearch
+        );
+
+}
+
+
+/* =========================================================
+   SORT
+========================================================= */
+
+function sortNews(news) {
+
+    const result =
+        [
+            ...news
+        ];
+
+
+    if (
+        sortMode ===
+        "selected"
+    ) {
+
+        result.sort(
+            (
+                a,
+                b
+            ) => {
+
+                const aSelected =
+                    selectedKeys.has(
+                        getItemKey(a)
+                    );
+
+                const bSelected =
+                    selectedKeys.has(
+                        getItemKey(b)
+                    );
+
+
+                if (
+                    aSelected !==
+                    bSelected
+                ) {
+
+                    return bSelected
+                        ? 1
+                        : -1;
+
+                }
+
+
+                return (
+                    getNewsTime(b) -
+                    getNewsTime(a)
+                );
+
+            }
+        );
+
+
+        return result;
+
+    }
+
+
+    if (
+        sortMode ===
+        "oldest"
+    ) {
+
+        result.sort(
+            (
+                a,
+                b
+            ) =>
+                getNewsTime(a) -
+                getNewsTime(b)
+        );
+
+    } else {
+
+        result.sort(
+            (
+                a,
+                b
+            ) =>
+                getNewsTime(b) -
+                getNewsTime(a)
+        );
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+   DISPLAY FILTER
+========================================================= */
+
+function getDisplaySourceNews() {
+
+    let filtered =
+        getSearchFilteredNews();
+
+
+    if (
+        selectedOnly
+    ) {
+
+        filtered =
+            filtered.filter(
+                item =>
+                    selectedKeys.has(
+                        getItemKey(item)
+                    )
+            );
+
+    }
+
+
+    return sortNews(
+        filtered
+    );
+
+}
+
+
+/* =========================================================
+   DISPLAYED NEWS
+========================================================= */
 
 function getDisplayedNews() {
 
     const filtered =
-        getFilteredNews();
+        getDisplaySourceNews();
+
 
     if (
         newsCountSetting ===
@@ -1342,12 +2008,14 @@ function getDisplayedNews() {
 
     }
 
+
     return filtered.slice(
         0,
         Number(
             newsCountSetting
         )
     );
+
 }
 
 
@@ -1396,6 +2064,73 @@ function getCategoryCount(
                 item.category
             ) === category
     ).length;
+
+}
+
+
+/* =========================================================
+   SELECTED CATEGORY COUNTS
+========================================================= */
+
+function getSelectedCategoryCounts() {
+
+    const counts = {};
+
+
+    CATEGORY_LIST.forEach(
+        category => {
+
+            if (
+                category.id ===
+                "all"
+            ) {
+                return;
+            }
+
+            counts[
+                category.id
+            ] = 0;
+
+        }
+    );
+
+
+    allNews.forEach(
+        item => {
+
+            const key =
+                getItemKey(item);
+
+            if (
+                !key ||
+                !selectedKeys.has(key)
+            ) {
+                return;
+            }
+
+
+            const category =
+                cleanText(
+                    item.category
+                );
+
+
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    counts,
+                    category
+                )
+            ) {
+
+                counts[category]++;
+
+            }
+
+        }
+    );
+
+
+    return counts;
 
 }
 
@@ -1517,6 +2252,7 @@ function isNewNews(item) {
         age <
         6 * 60 * 60 * 1000
     );
+
 }
 
 
@@ -1562,6 +2298,7 @@ function formatNewsDate(
         return "";
 
     }
+
 }
 
 
@@ -1589,6 +2326,7 @@ function formatPersianDate(
         return "";
 
     }
+
 }
 
 
@@ -1611,6 +2349,7 @@ function formatPersianTime(
         return "";
 
     }
+
 }
 
 
@@ -1639,8 +2378,29 @@ function renderNews() {
         empty.className =
             "status-box";
 
-        empty.textContent =
-            "ℹ️ در این دسته خبری وجود ندارد.";
+
+        if (
+            selectedOnly &&
+            !selectedKeys.size
+        ) {
+
+            empty.textContent =
+                "⭐ هنوز خبری انتخاب نشده است.";
+
+        } else if (
+            searchQuery
+        ) {
+
+            empty.textContent =
+                "🔍 خبری مطابق جستجوی شما پیدا نشد.";
+
+        } else {
+
+            empty.textContent =
+                "ℹ️ در این بخش خبری وجود ندارد.";
+
+        }
+
 
         newsContainer.appendChild(
             empty
@@ -1733,6 +2493,8 @@ function renderNews() {
 
                     }
 
+
+                    saveSelectionSettings();
 
                     renderAll();
 
@@ -1980,7 +2742,7 @@ function updateSelectionInfo() {
         selectedKeys.size;
 
     const current =
-        getFilteredNews();
+        getCategoryNews();
 
 
     const selectedCurrent =
@@ -2008,7 +2770,7 @@ function updateSelectionInfo() {
 
     if (!selectedTotal) {
 
-        info.textContent =
+        info.innerHTML =
             "هیچ خبری انتخاب نشده است.";
 
         return;
@@ -2016,16 +2778,87 @@ function updateSelectionInfo() {
     }
 
 
-    info.textContent =
-        "✅ " +
+    const counts =
+        getSelectedCategoryCounts();
+
+
+    const selectedCategoryItems =
+        CATEGORY_LIST.filter(
+            category =>
+                category.id !== "all" &&
+                counts[
+                    category.id
+                ] > 0
+        );
+
+
+    let html =
+        "";
+
+
+    html +=
+        '<div class="selection-summary-title">📊 وضعیت انتخاب‌ها</div>';
+
+
+    html +=
+        '<div class="selection-total">';
+
+
+    html +=
+        "✅ مجموع انتخاب‌شده: " +
+        "<strong>" +
         toPersianDigits(
             selectedTotal
         ) +
-        " خبر در مجموع انتخاب شده است؛ " +
-        toPersianDigits(
-            selectedCurrent
-        ) +
-        " خبر از دسته فعلی.";
+        "</strong> خبر";
+
+
+    if (
+        current.length
+    ) {
+
+        html +=
+            "؛ " +
+            toPersianDigits(
+                selectedCurrent
+            ) +
+            " خبر از دسته فعلی";
+
+    }
+
+
+    html +=
+        "</div>";
+
+
+    html +=
+        '<div class="category-selection-list">';
+
+
+    selectedCategoryItems.forEach(
+        category => {
+
+            html +=
+                '<span class="category-selection-item">' +
+                category.title +
+                ": " +
+                toPersianDigits(
+                    counts[
+                        category.id
+                    ]
+                ) +
+                " خبر</span>";
+
+        }
+    );
+
+
+    html +=
+        "</div>";
+
+
+    info.innerHTML =
+        html;
 
 }
 
@@ -2037,7 +2870,7 @@ function updateSelectionInfo() {
 function updateStats() {
 
     const filtered =
-        getFilteredNews();
+        getSearchFilteredNews();
 
     const displayed =
         getDisplayedNews();
@@ -2055,7 +2888,9 @@ function updateStats() {
         "categoryCount"
     ).textContent =
         toPersianDigits(
-            filtered.length
+            getCategoryCount(
+                currentCategory
+            )
         );
 
 
@@ -2067,7 +2902,35 @@ function updateStats() {
         );
 
 
+    document.getElementById(
+        "selectedCount"
+    ).textContent =
+        toPersianDigits(
+            selectedKeys.size
+        );
+
+
     updateSelectionInfo();
+
+
+    selectedOnlyBtn.classList.toggle(
+        "active",
+        selectedOnly
+    );
+
+
+    selectedOnlyBtn.textContent =
+        selectedOnly
+            ? "⭐ نمایش همه اخبار"
+            : "⭐ نمایش فقط انتخاب‌شده‌ها";
+
+
+    searchClearBtn.classList.toggle(
+        "show",
+        Boolean(
+            searchQuery
+        )
+    );
 
 }
 
@@ -2233,11 +3096,6 @@ function createRubikaText() {
                 );
 
 
-            /*
-             * بدون شماره ردیف
-             * فقط علامت 🔴
-             */
-
             text +=
                 "🔴 " +
                 title +
@@ -2292,10 +3150,6 @@ function createRubikaText() {
             }
 
 
-            /*
-             * جداکننده بین خبرها
-             */
-
             if (
                 index <
                 publishNews.length - 1
@@ -2340,21 +3194,22 @@ function updatePreview() {
 function selectAllNews() {
 
     /*
-     * بسیار مهم:
+     * توجه:
      *
-     * فقط اخبار فیلتر فعلی انتخاب می‌شوند.
+     * این تابع عمداً از getCategoryNews()
+     * استفاده می‌کند.
      *
-     * اگر روی «همه» باشیم:
-     * تمام اخبار انتخاب می‌شوند.
+     * بنابراین:
      *
-     * اگر روی یک دسته باشیم:
-     * فقط همان دسته انتخاب می‌شود.
+     * جستجو هیچ تأثیری ندارد.
+     * تعداد نمایش هیچ تأثیری ندارد.
      *
-     * تعداد نمایش هیچ نقشی ندارد.
+     * «انتخاب همه این دسته»
+     * تمام اخبار دسته فعلی را انتخاب می‌کند.
      */
 
     const targetNews =
-        getFilteredNews();
+        getCategoryNews();
 
 
     targetNews.forEach(
@@ -2374,6 +3229,8 @@ function selectAllNews() {
         }
     );
 
+
+    saveSelectionSettings();
 
     renderAll();
 
@@ -2402,21 +3259,23 @@ function selectAllNews() {
 
 
 /* =========================================================
-   CLEAR ALL CURRENT CATEGORY
+   CLEAR CURRENT CATEGORY
 ========================================================= */
 
 function clearAllNews() {
 
     /*
      * فقط اخبار دسته فعلی
-     * از حالت انتخاب خارج می‌شوند.
+     * لغو انتخاب می‌شوند.
      *
-     * انتخاب‌های دسته‌های دیگر
-     * دست‌نخورده باقی می‌مانند.
+     * دسته‌های دیگر کاملاً حفظ می‌شوند.
      */
 
     const targetNews =
-        getFilteredNews();
+        getCategoryNews();
+
+
+    let removedCount = 0;
 
 
     targetNews.forEach(
@@ -2425,11 +3284,16 @@ function clearAllNews() {
             const key =
                 getItemKey(item);
 
-            if (key) {
+            if (
+                key &&
+                selectedKeys.has(key)
+            ) {
 
                 selectedKeys.delete(
                     key
                 );
+
+                removedCount++;
 
             }
 
@@ -2437,12 +3301,118 @@ function clearAllNews() {
     );
 
 
+    saveSelectionSettings();
+
+    renderAll();
+
+
+    if (
+        removedCount
+    ) {
+
+        showToast(
+            "⬜ انتخاب " +
+            toPersianDigits(
+                removedCount
+            ) +
+            " خبر این دسته لغو شد."
+        );
+
+    } else {
+
+        showToast(
+            "ℹ️ خبری از این دسته انتخاب نشده بود."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CLEAR ALL SELECTIONS
+========================================================= */
+
+function clearEverything() {
+
+    const count =
+        selectedKeys.size;
+
+
+    if (!count) {
+
+        showToast(
+            "ℹ️ هیچ خبری انتخاب نشده است."
+        );
+
+        return;
+
+    }
+
+
+    selectedKeys.clear();
+
+    saveSelectionSettings();
+
     renderAll();
 
 
     showToast(
-        "⬜ انتخاب اخبار این دسته لغو شد."
+        "🧹 انتخاب همه " +
+        toPersianDigits(
+            count
+        ) +
+        " خبر لغو شد."
     );
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function updateSearch() {
+
+    searchQuery =
+        cleanText(
+            searchInput.value
+        );
+
+
+    renderAll();
+
+}
+
+
+/* =========================================================
+   SELECTED ONLY
+========================================================= */
+
+function toggleSelectedOnly() {
+
+    selectedOnly =
+        !selectedOnly;
+
+
+    renderAll();
+
+
+    if (
+        selectedOnly
+    ) {
+
+        showToast(
+            "⭐ فقط خبرهای انتخاب‌شده نمایش داده می‌شوند."
+        );
+
+    } else {
+
+        showToast(
+            "📋 نمایش همه اخبار فعال شد."
+        );
+
+    }
 
 }
 
@@ -2520,13 +3490,16 @@ function fallbackCopy(
 
 async function copyRubikaText() {
 
-    const text =
-        createRubikaText();
+    const publishNews =
+        getPublishNews();
+
+
+    const count =
+        publishNews.length;
 
 
     if (
-        !text ||
-        !getPublishNews().length
+        !count
     ) {
 
         showToast(
@@ -2536,6 +3509,10 @@ async function copyRubikaText() {
         return;
 
     }
+
+
+    const text =
+        createRubikaText();
 
 
     try {
@@ -2549,9 +3526,15 @@ async function copyRubikaText() {
                 text
             );
 
+
             showToast(
-                "✅ متن اخبار با موفقیت کپی شد."
+                "✅ متن " +
+                toPersianDigits(
+                    count
+                ) +
+                " خبر برای انتشار در روبیکا کپی شد."
             );
+
 
             return;
 
@@ -2567,7 +3550,11 @@ async function copyRubikaText() {
     ) {
 
         showToast(
-            "✅ متن اخبار کپی شد."
+            "✅ متن " +
+            toPersianDigits(
+                count
+            ) +
+            " خبر برای انتشار در روبیکا کپی شد."
         );
 
     } else {
@@ -2621,7 +3608,7 @@ function showToast(
                 );
 
             },
-            2800
+            3000
         );
 
 }
@@ -2671,15 +3658,6 @@ async function loadNews() {
             await response.json();
 
 
-        /*
-         * news-summary.json
-         * ساختار اصلی:
-         *
-         * {
-         *   news: [...]
-         * }
-         */
-
         let news =
             Array.isArray(data)
                 ? data
@@ -2703,8 +3681,9 @@ async function loadNews() {
 
 
         /*
-         * پاک‌سازی انتخاب‌های قبلی
-         * فقط برای اخباری که دیگر وجود ندارند.
+         * فقط انتخاب خبرهایی حفظ می‌شود
+         * که هنوز در news-summary.json
+         * وجود دارند.
          */
 
         const validKeys =
@@ -2727,9 +3706,13 @@ async function loadNews() {
             );
 
 
+        saveSelectionSettings();
+
+
         buildCategoryButtons();
 
         renderAll();
+
 
         showToast(
             "✅ اخبار بروزرسانی شد."
@@ -2805,6 +3788,49 @@ newsCount.addEventListener(
 );
 
 
+searchInput.addEventListener(
+    "input",
+    updateSearch
+);
+
+
+searchClearBtn.addEventListener(
+    "click",
+    () => {
+
+        searchInput.value =
+            "";
+
+        searchQuery =
+            "";
+
+        renderAll();
+
+        searchInput.focus();
+
+    }
+);
+
+
+sortSelect.addEventListener(
+    "change",
+    () => {
+
+        sortMode =
+            sortSelect.value;
+
+        renderAll();
+
+    }
+);
+
+
+selectedOnlyBtn.addEventListener(
+    "click",
+    toggleSelectedOnly
+);
+
+
 selectAllBtn.addEventListener(
     "click",
     selectAllNews
@@ -2814,6 +3840,12 @@ selectAllBtn.addEventListener(
 clearAllBtn.addEventListener(
     "click",
     clearAllNews
+);
+
+
+clearEverythingBtn.addEventListener(
+    "click",
+    clearEverything
 );
 
 
@@ -2902,11 +3934,17 @@ function initialize() {
 
     loadPublisherSettings();
 
+    loadSelectionSettings();
+
 
     newsCountSetting =
         Number(
             newsCount.value
         );
+
+
+    sortMode =
+        sortSelect.value;
 
 
     buildCategoryButtons();
@@ -2926,4 +3964,4 @@ initialize();
 
 </body>
 
-      </html>
+    </html>

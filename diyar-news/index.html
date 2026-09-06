@@ -1,28 +1,26 @@
-  try {
+    allNews = Array.isArray(data.news) ? data.news : [];
 
-    const data = await fetchNewsData();
+    updateHeaderAndFooter(data);
     renderNews(data);
 
-  } catch (err) {
+  }catch(error){
+    console.error(error);
 
-    console.error("دریافت اخبار به‌طور کامل با شکست مواجه شد:", err);
-    showErrorState();
+    lastUpdateText.textContent = "آخرین بروزرسانی: نامشخص";
 
-  } finally {
+    newsContainer.innerHTML = `
+<div class="footer" style="margin-top:0;">
+❌ دریافت اخبار با مشکل مواجه شد.
+<br>
+لطفاً چند لحظه بعد دوباره تلاش کنید.
+</div>
+`;
 
-    isLoading = false;
-
+    pageFooter.textContent = "⚠️ در حال حاضر امکان دریافت آخرین اخبار وجود ندارد.";
   }
-
 }
 
-// ==============================
-// اجرای اولیه + بروزرسانی خودکار
-// ==============================
-
 loadNews();
-
-setInterval(loadNews, AUTO_REFRESH_MS);
 
 </script>
 

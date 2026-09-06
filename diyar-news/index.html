@@ -1,3 +1,564 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+🇮🇷 اخبار فوری ایران و جهان - دیار قدمگاه
+</title>
+
+<meta
+  name="description"
+  content="آخرین اخبار فوری ایران و جهان از منابع خبری معتبر، دسته‌بندی شده و به‌صورت خودکار به‌روزرسانی می‌شود."
+>
+
+<meta
+  name="robots"
+  content="index, follow"
+>
+
+<meta
+  property="og:type"
+  content="website"
+>
+
+<meta
+  property="og:title"
+  content="دیار قدمگاه | اخبار فوری ایران"
+>
+
+<meta
+  property="og:description"
+  content="اخبار دسته‌بندی‌شده ایران و جهان از منابع خبری معتبر با بروزرسانی خودکار."
+>
+
+<meta
+  property="og:locale"
+  content="fa_IR"
+>
+
+<style>
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Tahoma, Arial, sans-serif;
+  background: #f0f2f5;
+  padding: 10px;
+}
+
+.box {
+  max-width: 900px;
+  margin: auto;
+}
+
+.header {
+  background: #b30000;
+  color: white;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 15px 0;
+  justify-content: center;
+}
+
+.category-tab {
+  background: #eee;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+  border: none;
+}
+
+.category-tab:hover {
+  background: #ddd;
+}
+
+.category-tab.active {
+  background: #b30000;
+  color: white;
+}
+
+.category-section {
+  margin-top: 15px;
+}
+
+.category-title {
+  background: #b30000;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card {
+  background: white;
+  margin-top: 8px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+.card .title {
+  font-weight: bold;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.card .title a {
+  color: #222;
+  text-decoration: none;
+}
+
+.card .title a:hover {
+  color: #b30000;
+}
+
+.card .meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 12px;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.card .source {
+  color: #b30000;
+}
+
+.card .date {
+  color: #888;
+}
+
+.footer {
+  text-align: center;
+  color: #888;
+  margin: 20px 0;
+  font-size: 13px;
+}
+
+.count-badge {
+  display: inline-block;
+  background: #fff;
+  color: #b30000;
+  padding: 2px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+@media(max-width:600px) {
+
+  .card {
+    padding: 10px;
+  }
+
+  .card .title {
+    font-size: 13px;
+  }
+
+}
+
+</style>
+
+<body>
+
+<div class="box">
+
+<div class="header">
+
+<div style="
+  font-size:24px;
+  font-weight:bold;
+">
+📰 دیار قدمگاه | اخبار فوری ایران
+</div>
+
+<div
+  id="lastUpdateText"
+  style="
+  font-size:13px;
+  margin-top:8px;
+  opacity:.95
+">
+آخرین بروزرسانی:
+در حال دریافت...
+</div>
+
+<div style="
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px
+">
+
+<span class="count-badge" id="badgeNewsCount">
+📰 …
+</span>
+
+<span class="count-badge" id="badgeCategoryCount">
+🗂 …
+</span>
+
+<span class="count-badge" id="badgeSourceCount">
+📡 …
+</span>
+
+</div>
+
+</div>
+
+<div class="category-tabs">
+
+<button
+  class="category-tab active"
+  onclick="filterCategory('all')"
+>
+📋 همه
+</button>
+
+
+<button
+  class="category-tab"
+  onclick="filterCategory('سیاسی')"
+>
+🏛 سیاسی
+</button>
+
+<button
+  class="category-tab"
+  onclick="filterCategory('اقتصادی')"
+>
+💰 اقتصادی
+</button>
+
+<button
+  class="category-tab"
+  onclick="filterCategory('ورزشی')"
+>
+⚽ ورزشی
+</button>
+
+<button
+  class="category-tab"
+  onclick="filterCategory('فرهنگی و هنری')"
+>
+🎭 فرهنگی و هنری
+</button>
+
+<button
+  class="category-tab"
+  onclick="filterCategory('اجتماعی')"
+>
+👥 اجتماعی
+</button>
+
+<button
+  class="category-tab"
+  onclick="filterCategory('علمی و فناوری')"
+>
+🔬 علمی و فناوری
+</button>
+
+<button
+  class="category-tab"
+  onclick="filterCategory('بین‌الملل')"
+>
+🌍 بین‌الملل
+</button>
+
+<button
+  class="category-tab"
+  onclick="filterCategory('متفرقه')"
+>
+📌 متفرقه
+</button>
+
+
+</div>
+
+<div id="news-container">
+
+<div class="footer" style="margin-top:0;">
+⏳ در حال دریافت آخرین اخبار...
+</div>
+
+</div>
+
+<div class="footer" id="pageFooter">
+🔄 آخرین بروزرسانی: در حال دریافت...
+</div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   تنظیمات
+   news.json کنار همین فایل (index.html) روی GitHub Pages
+   قرار دارد؛ به همین دلیل با مسیر نسبی خوانده می‌شود، نه از
+   raw.githubusercontent.com (که فقط برای مصرف از دامنه‌های
+   دیگر لازم است).
+========================================================= */
+
+const NEWS_URL = "./news.json";
+
+const CATEGORY_META = {
+  "سیاسی": "🏛",
+  "اقتصادی": "💰",
+  "ورزشی": "⚽",
+  "فرهنگی و هنری": "🎭",
+  "اجتماعی": "👥",
+  "علمی و فناوری": "🔬",
+  "بین‌الملل": "🌍",
+  "متفرقه": "📌"
+};
+
+const CATEGORY_ORDER_FALLBACK = Object.keys(CATEGORY_META);
+
+let allNews = [];
+let currentCategory = "all";
+
+const newsContainer = document.getElementById("news-container");
+const lastUpdateText = document.getElementById("lastUpdateText");
+const pageFooter = document.getElementById("pageFooter");
+const badgeNewsCount = document.getElementById("badgeNewsCount");
+const badgeCategoryCount = document.getElementById("badgeCategoryCount");
+const badgeSourceCount = document.getElementById("badgeSourceCount");
+
+/* جلوگیری از XSS: عنوان/منبع/دسته از RSS خام می‌آیند و باید
+   پیش از درج در HTML escape شوند. */
+function escapeHtml(str){
+  if(str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/* اعتبارسنجی لینک: فقط http/https پذیرفته می‌شود */
+function safeLink(url){
+  try{
+    const u = new URL(url, window.location.href);
+    if(u.protocol === "http:" || u.protocol === "https:") return u.href;
+  }catch(e){}
+  return "#";
+}
+
+function renderCard(item){
+  const title = escapeHtml(item.title || "بدون عنوان");
+  const link = safeLink(item.link || "");
+  const source = escapeHtml(item.source || "منبع خبری");
+  const flag = escapeHtml(item.flag || "🇮🇷");
+  const dateText = escapeHtml(item.datePersian || "");
+
+  return `
+<div class="card">
+
+<div class="title">
+
+<a
+  href="${link}"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+
+${title}
+
+</a>
+
+</div>
+
+<div class="meta">
+
+<span class="source">
+
+${flag}
+${source}
+
+</span>
+
+
+<span class="date">
+🕐 ${dateText}
+</span>
+
+
+</div>
+
+</div>
+`;
+}
+
+function renderCategorySection(category, items){
+  if(!items.length) return "";
+
+  const emoji = CATEGORY_META[category] || "📌";
+
+  return `
+<div
+  class="category-section"
+  data-category="${escapeHtml(category)}"
+>
+
+<div class="category-title">
+
+${emoji}
+${escapeHtml(category)}
+
+<span style="
+  font-size:13px;
+  background:#fff;
+  color:#b30000;
+  padding:0 10px;
+  border-radius:12px;
+  margin-right:8px;
+">
+${items.length}
+</span>
+
+</div>
+
+${items.map(renderCard).join("")}
+
+</div>
+`;
+}
+
+function renderNews(data){
+  const categorizedNews = data.categorizedNews || {};
+  const categoryOrder = Array.isArray(data.categories) && data.categories.length
+    ? data.categories
+    : CATEGORY_ORDER_FALLBACK;
+
+  const sections = categoryOrder
+    .map(category => renderCategorySection(category, categorizedNews[category] || []))
+    .join("");
+
+  newsContainer.innerHTML = sections || `
+<div class="footer" style="margin-top:0;">
+📭 خبری برای نمایش وجود ندارد.
+</div>
+`;
+
+  applyCategoryFilter();
+}
+
+function applyCategoryFilter(){
+  document
+    .querySelectorAll(".category-tab")
+    .forEach(tab => tab.classList.remove("active"));
+
+  document
+    .querySelectorAll(".category-tab")
+    .forEach(tab => {
+      if(
+        tab.textContent.includes(
+          currentCategory === "all" ? "همه" : currentCategory
+        )
+      ){
+        tab.classList.add("active");
+      }
+    });
+
+  document
+    .querySelectorAll(".category-section")
+    .forEach(section => {
+      if(
+        currentCategory === "all" ||
+        section.dataset.category === currentCategory
+      ){
+        section.style.display = "block";
+      }else{
+        section.style.display = "none";
+      }
+    });
+}
+
+function filterCategory(category){
+  currentCategory = category;
+  applyCategoryFilter();
+}
+
+function updateHeaderAndFooter(data){
+  const lastUpdatePersian = data.lastUpdatePersian || "نامشخص";
+  const totalNews = typeof data.totalNews === "number"
+    ? data.totalNews
+    : (Array.isArray(data.news) ? data.news.length : 0);
+
+  const categoryCount = Array.isArray(data.categories)
+    ? data.categories.length
+    : CATEGORY_ORDER_FALLBACK.length;
+
+  const sourceCount = Array.isArray(data.successfulSources)
+    ? data.successfulSources.length
+    : 0;
+
+  const failedSources = Array.isArray(data.failedSources)
+    ? data.failedSources
+    : [];
+
+  lastUpdateText.textContent = "آخرین بروزرسانی: " + lastUpdatePersian;
+
+  badgeNewsCount.textContent = "📰 " + totalNews + " خبر";
+  badgeCategoryCount.textContent = "🗂 " + categoryCount + " دسته";
+  badgeSourceCount.textContent = "📡 " + sourceCount + " خبرگزاری";
+
+  pageFooter.innerHTML =
+    "🔄 آخرین بروزرسانی: " + escapeHtml(lastUpdatePersian) +
+    (
+      failedSources.length
+        ? "<br>⚠️ منابع ناموفق: " + escapeHtml(failedSources.join("، "))
+        : ""
+    );
+}
+
+async function loadNews(){
+  try{
+    const response = await fetch(
+      NEWS_URL + "?t=" + Date.now(),
+      { cache: "no-store" }
+    );
+
+    if(!response.ok){
+      throw new Error("news request failed: " + response.status);
+    }
+
+    const data = await response.json();
+
     allNews = Array.isArray(data.news) ? data.news : [];
 
     updateHeaderAndFooter(data);
@@ -13,6 +574,10 @@
 ❌ دریافت اخبار با مشکل مواجه شد.
 <br>
 لطفاً چند لحظه بعد دوباره تلاش کنید.
+<br>
+<span style="font-size:11px;color:#b30000;direction:ltr;display:inline-block;margin-top:6px;">
+${escapeHtml(String((error && error.message) || error || "نامشخص"))}
+</span>
 </div>
 `;
 

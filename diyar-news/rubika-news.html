@@ -199,6 +199,44 @@ button:disabled {
     color: #fff;
 }
 
+.category-selected-count {
+    display: inline-block;
+    margin-right: 3px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.category-btn.active .category-selected-count {
+    background: rgba(255,255,255,.18);
+    color: #fff;
+}
+
+.publisher-details {
+    border: 1px solid #e5e9eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.publisher-summary {
+    cursor: pointer;
+    padding: 11px 13px;
+    font-size: 14px;
+    font-weight: 800;
+    user-select: none;
+}
+
+.publisher-details[open] .publisher-summary {
+    border-bottom: 1px solid #e5e9eb;
+}
+
+.publisher-details .publisher-grid {
+    padding: 12px;
+}
+
 /* =========================================================
    SEARCH
 ========================================================= */
@@ -1013,11 +1051,13 @@ button:disabled {
 
     <section class="panel">
 
-        <h2 class="panel-title">
-            👤 مشخصات منتشرکننده
-        </h2>
+        <details class="publisher-details">
 
-        <div class="publisher-grid">
+            <summary class="publisher-summary">
+                👤 مشخصات منتشرکننده
+            </summary>
+
+            <div class="publisher-grid">
 
             <div>
 
@@ -1056,7 +1096,9 @@ button:disabled {
 
             </div>
 
-        </div>
+            </div>
+
+        </details>
 
     </section>
 
@@ -1217,6 +1259,8 @@ let sortMode =
     "newest";
 
 let onlySelected =
+    false;
+let isLoadingNews =
     false;
 
 /* =========================================================
@@ -1703,7 +1747,9 @@ function matchesSearch(item) {
     const searchableText = [
         item.title,
         item.source,
-        item.category
+        item.category,
+        item.summary,
+        item.description
     ]
         .map(
             value =>
@@ -2011,6 +2057,23 @@ function getCategoryCount(
     ).length;
 }
 
+function getSelectedCategoryCount(
+    categoryId
+) {
+
+    if (categoryId === "all") {
+        return allNews.filter(
+            item => selectedKeys.has(getItemKey(item))
+        ).length;
+    }
+
+    return allNews.filter(
+        item =>
+            cleanText(item.category) === categoryId &&
+            selectedKeys.has(getItemKey(item))
+    ).length;
+}
+
 /* =========================================================
    دکمه‌های دسته
 ========================================================= */
@@ -2071,12 +2134,35 @@ function buildCategoryButtons() {
                     )
                 );
 
+            const selectedCount =
+                document.createElement(
+                    "span"
+                );
+
+            selectedCount.className =
+                "category-selected-count";
+
+            const selectedNumber =
+                getSelectedCategoryCount(
+                    category.id
+                );
+
+            selectedCount.textContent =
+                "✓ " +
+                toPersianDigits(
+                    selectedNumber
+                );
+
             button.appendChild(
                 title
             );
 
             button.appendChild(
                 count
+            );
+
+            button.appendChild(
+                selectedCount
             );
 
             button.addEventListener(
@@ -2659,20 +2745,15 @@ function rubikaHeader() {
     const now =
         new Date();
 
+    const FRAME_WIDTH = 20;
+    const frame = "╔" + "═".repeat(FRAME_WIDTH) + "╗";
+    const bottom = "╚" + "═".repeat(FRAME_WIDTH) + "╝";
+
     return [
-        "╔══════════════════════════╗",
-        "     🌸🕌💫 اخبار دیار قدمگاه 💫🕌🌸",
-        "",
-        "        📅 " +
-            formatPersianDate(
-                now
-            ),
-        "             🕐 " +
-            formatPersianTime(
-                now
-            ),
-        "",
-        "╚══════════════════════════╝",
+        frame,
+        "🌸🕌💫 اخبار دیار قدمگاه",
+        "📅 " + formatPersianDate(now) + "  🕐 " + formatPersianTime(now),
+        bottom,
         ""
     ].join("\n");
 }
@@ -2683,33 +2764,29 @@ function rubikaHeader() {
 
 function rubikaFooter() {
 
-    const lines = [
+    const FRAME_WIDTH = 20;
+    const frame = "╔" + "═".repeat(FRAME_WIDTH) + "╗";
+    const bottom = "╚" + "═".repeat(FRAME_WIDTH) + "╝";
 
+    const lines = [
         "",
-        "╔══════════════════════════╗",
-        "          📖 متن کامل اخبار",
-        "",
-        "       🔗 مشاهده و مطالعه خبرها:",
+        frame,
+        "📖 متن کامل خبر",
+        "🔗 مشاهده و مطالعه خبر:",
         RUBIKA_PAGE_URL,
-        "",
-        "╚══════════════════════════╝",
+        bottom,
         "",
         "🏡 دیار قدمگاه",
-        "✍️ " +
-            publisherName
+        "✍️ " + publisherName
     ];
 
     if (publisherRubika) {
-
         lines.push(
-            "🔗 روبیکا: " +
-            publisherRubika
+            "🔗 روبیکا: " + publisherRubika
         );
     }
 
-    return lines.join(
-        "\n"
-    );
+    return lines.join("\n");
 }
 
 /* =========================================================
@@ -2733,19 +2810,13 @@ function createRubikaText() {
         (item, index) => {
 
             const title =
-                cleanText(
-                    item.title
-                );
+                cleanText(item.title);
 
             const source =
-                cleanText(
-                    item.source
-                );
+                cleanText(item.source);
 
             const category =
-                cleanText(
-                    item.category
-                );
+                cleanText(item.category);
 
             const summary =
                 cleanSummary(
@@ -2755,59 +2826,34 @@ function createRubikaText() {
                 );
 
             parts.push(
-                "🔴 " +
-                title
+                "🔴 " + title
             );
 
-            if (
-                source ||
-                category
-            ) {
-
-                let meta =
-                    "   ";
+            if (source || category) {
+                let meta = "";
 
                 if (source) {
-
-                    meta +=
-                        "📰 " +
-                        source;
+                    meta += "📰 " + source;
                 }
 
                 if (category) {
-
-                    if (source) {
-
-                        meta +=
-                            "  •  ";
+                    if (meta) {
+                        meta += " | ";
                     }
-
-                    meta +=
-                        "🏷 " +
-                        category;
+                    meta += "🏷 " + category;
                 }
 
-                parts.push(
-                    meta
-                );
+                parts.push(meta);
             }
 
             if (summary) {
-
-                parts.push(
-                    "   📝 " +
-                    summary
-                );
+                parts.push("📝 " + summary);
             }
 
-            if (
-                index <
-                news.length - 1
-            ) {
-
+            if (index < news.length - 1) {
                 parts.push(
                     "",
-                    "──────────────────────────",
+                    "────────────────────",
                     ""
                 );
             }
@@ -2818,9 +2864,7 @@ function createRubikaText() {
         rubikaFooter()
     );
 
-    return parts.join(
-        "\n"
-    );
+    return parts.join("\n");
 }
 
 /* =========================================================
@@ -3346,6 +3390,12 @@ async function loadNews(
     showMessage = true
 ) {
 
+    if (isLoadingNews) {
+        return;
+    }
+
+    isLoadingNews = true;
+
     const refreshButton =
         document.getElementById(
             "refreshBtn"
@@ -3370,6 +3420,9 @@ async function loadNews(
 
     let usedUrl =
         "";
+
+    let usedFallback =
+        false;
 
     let firstError =
         null;
@@ -3416,6 +3469,9 @@ async function loadNews(
 
             usedUrl =
                 SUMMARY_FALLBACK_URL;
+
+            usedFallback =
+                true;
 
         } catch (error) {
 
@@ -3559,7 +3615,8 @@ async function loadNews(
                 allNews.length
             ) +
             " خبر با موفقیت دریافت شد." +
-            updateText
+            updateText +
+            (usedFallback ? " | مسیر پشتیبان" : "")
         );
 
         if (showMessage) {
@@ -3587,6 +3644,8 @@ async function loadNews(
         );
 
     } finally {
+
+        isLoadingNews = false;
 
         if (refreshButton) {
 
@@ -3919,6 +3978,16 @@ function initialize() {
     */
 
     loadNews(false);
+
+    /*
+       بروزرسانی خودکار هر ۱۰ دقیقه
+       از اجرای هم‌زمان با Fetch قبلی جلوگیری می‌شود.
+    */
+
+    setInterval(
+        () => loadNews(false),
+        10 * 60 * 1000
+    );
 }
 
 /* =========================================================

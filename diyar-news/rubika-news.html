@@ -2745,14 +2745,25 @@ function rubikaHeader() {
     const now =
         new Date();
 
-    const FRAME_WIDTH = 20;
-    const frame = "╔" + "═".repeat(FRAME_WIDTH) + "╗";
-    const bottom = "╚" + "═".repeat(FRAME_WIDTH) + "╝";
+    /*
+       قاب عمداً ثابت و مستقل از متن است.
+       برای جلوگیری از به‌هم‌ریختگی در فونت‌ها و عرض‌های مختلف،
+       متن داخل قاب با فاصله‌گذاری برای وسط‌چین شدن تراز نمی‌شود.
+    */
+
+    const frame =
+        "╔══════════════════════════╗";
+
+    const bottom =
+        "╚══════════════════════════╝";
 
     return [
         frame,
-        "🌸🕌💫 اخبار دیار قدمگاه",
-        "📅 " + formatPersianDate(now) + "  🕐 " + formatPersianTime(now),
+        "🌸🕌💫 اخبار دیار قدمگاه 💫🕌🌸",
+        "📅 " +
+            formatPersianDate(now) +
+            "  🕐 " +
+            formatPersianTime(now),
         bottom,
         ""
     ].join("\n");
@@ -2764,15 +2775,17 @@ function rubikaHeader() {
 
 function rubikaFooter() {
 
-    const FRAME_WIDTH = 20;
-    const frame = "╔" + "═".repeat(FRAME_WIDTH) + "╗";
-    const bottom = "╚" + "═".repeat(FRAME_WIDTH) + "╝";
+    const frame =
+        "╔══════════════════════════╗";
+
+    const bottom =
+        "╚══════════════════════════╝";
 
     const lines = [
         "",
         frame,
-        "📖 متن کامل خبر",
-        "🔗 مشاهده و مطالعه خبر:",
+        "📖 متن کامل اخبار",
+        "🔗 مشاهده و مطالعه خبرها:",
         RUBIKA_PAGE_URL,
         bottom,
         "",
@@ -2782,7 +2795,8 @@ function rubikaFooter() {
 
     if (publisherRubika) {
         lines.push(
-            "🔗 روبیکا: " + publisherRubika
+            "🔗 روبیکا: " +
+            publisherRubika
         );
     }
 
@@ -2830,30 +2844,36 @@ function createRubikaText() {
             );
 
             if (source || category) {
+
                 let meta = "";
 
                 if (source) {
-                    meta += "📰 " + source;
+                    meta +=
+                        "📰 " + source;
                 }
 
                 if (category) {
                     if (meta) {
-                        meta += " | ";
+                        meta += "  •  ";
                     }
-                    meta += "🏷 " + category;
+
+                    meta +=
+                        "🏷 " + category;
                 }
 
                 parts.push(meta);
             }
 
             if (summary) {
-                parts.push("📝 " + summary);
+                parts.push(
+                    "📝 " + summary
+                );
             }
 
             if (index < news.length - 1) {
                 parts.push(
                     "",
-                    "────────────────────",
+                    "──────────────────────────",
                     ""
                 );
             }
@@ -2866,6 +2886,10 @@ function createRubikaText() {
 
     return parts.join("\n");
 }
+
+/* =========================================================
+   پیش‌نمایش
+========================================================= */
 
 /* =========================================================
    پیش‌نمایش

@@ -4,7 +4,7 @@ const https = require("https");
 
 /*
  * ============================================================
- * دیار قدمگاه | تولید چکیده خبرها
+ * دیار قدمگاه | تولید چکیده خبرها - نسخه 3
  * ============================================================
  *
  * ورودی:
@@ -13,23 +13,26 @@ const https = require("https");
  * خروجی:
  *   news-summary.json
  *
- * قابلیت‌ها:
+ * ویژگی‌ها:
  *
- * 1) حفظ خلاصه‌های معتبر قبلی
- * 2) پردازش فقط خبرهای جدید یا فاقد خلاصه
- * 3) دنبال‌کردن Redirect
- * 4) استخراج چکیده با اولویت:
+ * 1) حفظ چکیده‌های معتبر قبلی
+ * 2) پردازش فقط خبرهای فاقد چکیده
+ * 3) دنبال کردن Redirect
+ * 4) استخراج از:
+ *      - og:description
+ *      - description
+ *      - twitter:description
+ *      - JSON-LD
+ *      - metaهای اختصاصی
+ *      - متن واقعی مقاله
+ *      - پاراگراف‌های مقاله
  *
- *    1. og:description
- *    2. description
- *    3. twitter:description
- *    4. JSON-LD description
- *    5. اولین پاراگراف مناسب
- *
- * 5) حذف متن‌های عمومی و تبلیغاتی
- * 6) کوتاه‌سازی مناسب متن فارسی
- * 7) کنترل هم‌زمانی درخواست‌ها
- * 8) ثبت وضعیت هر خبر
+ * 5) تشخیص اختصاصی سایت‌های خبری
+ * 6) حذف متن‌های تبلیغاتی و عمومی
+ * 7) کوتاه‌سازی طبیعی فارسی
+ * 8) جلوگیری از خلاصه‌های ناقص
+ * 9) کنترل هم‌زمانی درخواست‌ها
+ * 10) عدم تولید خلاصه حدسی
  *
  * این فایل مستقل است و به fetch-news.js دست نمی‌زند.
  * ============================================================
@@ -45,11 +48,13 @@ const OUTPUT_FILE = "news-summary.json";
 
 const MAX_SUMMARY_LENGTH = 220;
 
-const REQUEST_TIMEOUT = 12000;
+const MIN_SUMMARY_LENGTH = 50;
 
-const CONCURRENCY = 5;
+const REQUEST_TIMEOUT = 15000;
 
-const MAX_RESPONSE_SIZE = 1000000;
+const CONCURRENCY = 4;
+
+const MAX_RESPONSE_SIZE = 1500000;
 
 const MAX_REDIRECTS = 5;
 
@@ -62,7 +67,7 @@ const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
   "AppleWebKit/537.36 (KHTML, like Gecko) " +
   "Chrome/120.0.0.0 Safari/537.36 " +
-  "Diyar-Ghadamgah-NewsBot/2.0";
+  "Diyar-Ghadamgah-NewsBot/3.0";
 
 
 /* ============================================================
@@ -72,10 +77,7 @@ const USER_AGENT =
 function readJsonFile(file) {
 
   if (!fs.existsSync(file)) {
-
-    throw new Error(
-      `فایل ${file} پیدا نشد.`
-    );
+    throw new Error(`فایل ${file} پیدا نشد.`);
   }
 
   const raw =
@@ -91,74 +93,14 @@ function readJsonFile(file) {
   } catch (error) {
 
     throw new Error(
-      `ساختار JSON فایل ${file} صحیح نیست: ${error.message}`
+      `JSON فایل ${file} معتبر نیست: ${error.message}`
     );
   }
 }
 
 
 /* ============================================================
-   خواندن news.json
-   ============================================================ */
-
-function readNews() {
-
-  const data =
-    readJsonFile(
-      INPUT_FILE
-    );
-
-  return data;
-}
-
-
-/* ============================================================
-   خواندن خلاصه‌های قبلی
-   ============================================================ */
-
-function readPreviousSummaries() {
-
-  if (
-    !fs.existsSync(
-      OUTPUT_FILE
-    )
-  ) {
-
-    return null;
-  }
-
-  try {
-
-    const data =
-      readJsonFile(
-        OUTPUT_FILE
-      );
-
-    if (
-      !data ||
-      !Array.isArray(
-        data.news
-      )
-    ) {
-
-      return null;
-    }
-
-    return data;
-
-  } catch (error) {
-
-    console.log(
-      `⚠️ خواندن ${OUTPUT_FILE} ممکن نبود؛ از صفر پردازش می‌شود.`
-    );
-
-    return null;
-  }
-}
-
-
-/* ============================================================
-   تبدیل HTML Entityها
+   HTML Entity
    ============================================================ */
 
 function decodeHtmlEntities(text) {
@@ -169,63 +111,25 @@ function decodeHtmlEntities(text) {
 
   return String(text)
 
-    .replace(
-      /&nbsp;/gi,
-      " "
-    )
-
-    .replace(
-      /&amp;/gi,
-      "&"
-    )
-
-    .replace(
-      /&quot;/gi,
-      '"'
-    )
-
-    .replace(
-      /&#39;/gi,
-      "'"
-    )
-
-    .replace(
-      /&#039;/gi,
-      "'"
-    )
-
-    .replace(
-      /&lt;/gi,
-      "<"
-    )
-
-    .replace(
-      /&gt;/gi,
-      ">"
-    )
-
-    .replace(
-      /&#x27;/gi,
-      "'"
-    )
-
-    .replace(
-      /&#x2F;/gi,
-      "/"
-    )
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&#039;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&#x27;/gi, "'")
+    .replace(/&#x2F;/gi, "/")
 
     .replace(
       /&#(\d+);/g,
-      function(_, code) {
+      function (_, code) {
 
         try {
-
           return String.fromCodePoint(
             Number(code)
           );
-
         } catch {
-
           return _;
         }
       }
@@ -233,19 +137,13 @@ function decodeHtmlEntities(text) {
 
     .replace(
       /&#x([0-9a-f]+);/gi,
-      function(_, code) {
+      function (_, code) {
 
         try {
-
           return String.fromCodePoint(
-            parseInt(
-              code,
-              16
-            )
+            parseInt(code, 16)
           );
-
         } catch {
-
           return _;
         }
       }
@@ -288,6 +186,11 @@ function stripHtml(text) {
       )
 
       .replace(
+        /<template[\s\S]*?<\/template>/gi,
+        " "
+      )
+
+      .replace(
         /<[^>]+>/g,
         " "
       )
@@ -306,12 +209,11 @@ function cleanText(text) {
   }
 
   let value =
-    stripHtml(
-      text
-    );
+    stripHtml(text);
 
   value =
     value
+
       .replace(
         /\r?\n|\r/g,
         " "
@@ -323,13 +225,13 @@ function cleanText(text) {
       )
 
       .replace(
-        /\u200c{2,}/g,
-        "\u200c"
+        /\s+/g,
+        " "
       )
 
       .replace(
-        /\s+/g,
-        " "
+        /\u200c{2,}/g,
+        "\u200c"
       )
 
       .replace(
@@ -344,7 +246,7 @@ function cleanText(text) {
 
 
 /* ============================================================
-   نرمال‌سازی URL
+   URL
    ============================================================ */
 
 function normalizeUrl(url) {
@@ -367,141 +269,226 @@ function normalizeUrl(url) {
 
 
 /* ============================================================
-   کلید یکتای خبر
+   تشخیص دامنه
    ============================================================ */
 
-function getNewsKey(news) {
+function getHostname(url) {
 
-  const link =
-    normalizeUrl(
-      news.link
-    );
+  try {
 
-  if (link) {
-    return `link:${link}`;
+    return new URL(
+      url
+    ).hostname
+      .toLowerCase()
+      .replace(
+        /^www\./,
+        ""
+      );
+
+  } catch {
+
+    return "";
   }
-
-  const title =
-    cleanText(
-      news.title || ""
-    );
-
-  if (title) {
-    return `title:${title}`;
-  }
-
-  return "";
 }
 
 
 /* ============================================================
-   بررسی مفید بودن چکیده
+   تشخیص سایت خبری
+   ============================================================ */
+
+function detectSite(url) {
+
+  const host =
+    getHostname(url);
+
+  if (!host) {
+    return "unknown";
+  }
+
+  if (
+    host.includes("irna.ir")
+  ) {
+    return "irna";
+  }
+
+  if (
+    host.includes("isna.ir")
+  ) {
+    return "isna";
+  }
+
+  if (
+    host.includes("mehrnews.com")
+  ) {
+    return "mehr";
+  }
+
+  if (
+    host.includes("imna.ir")
+  ) {
+    return "imna";
+  }
+
+  if (
+    host.includes("ilna.ir")
+  ) {
+    return "ilna";
+  }
+
+  if (
+    host.includes("asriran.com")
+  ) {
+    return "asriran";
+  }
+
+  if (
+    host.includes("tasnimnews.com")
+  ) {
+    return "tasnim";
+  }
+
+  if (
+    host.includes("farsnews.ir")
+  ) {
+    return "fars";
+  }
+
+  if (
+    host.includes("yjc.ir")
+  ) {
+    return "yjc";
+  }
+
+  return "generic";
+}
+
+
+/* ============================================================
+   عبارات نامعتبر
+   ============================================================ */
+
+const BAD_PHRASES = [
+
+  "عضویت در خبرنامه",
+  "عضویت در کانال",
+  "عضو کانال",
+  "دنبال کنید",
+  "ما را دنبال کنید",
+  "تمام حقوق محفوظ است",
+  "حقوق مادی و معنوی",
+  "کپی برداری",
+  "کپی‌برداری",
+  "اخبار بیشتر",
+  "ادامه مطلب",
+  "ادامه‌ی مطلب",
+  "آخرین اخبار",
+  "صفحه اصلی",
+  "جستجو در سایت",
+  "ثبت نام",
+  "ثبت‌نام",
+  "ورود به حساب",
+  "ورود به سایت",
+  "اشتراک گذاری",
+  "اشتراک‌گذاری",
+  "ارسال نظر",
+  "نظرات",
+  "تبلیغات",
+  "پیشنهاد سردبیر",
+  "مطالب مرتبط",
+  "اخبار مرتبط",
+  "منوی سایت",
+  "کلیک کنید",
+  "اینجا کلیک کنید",
+  "دانلود کنید",
+  "خبرنامه ایمیلی",
+  "کانال رسمی",
+  "صفحه رسمی",
+  "اینستاگرام",
+  "تلگرام",
+  "واتساپ",
+  "اپلیکیشن",
+  "اپلیکیشن خبر",
+  "همراه ما باشید"
+
+];
+
+
+/* ============================================================
+   بررسی متن مفید
    ============================================================ */
 
 function isUsefulSummary(text) {
 
-  if (!text) {
-    return false;
-  }
-
   const value =
-    cleanText(
-      text
-    );
+    cleanText(text);
 
   if (
-    value.length < 50
+    value.length <
+    MIN_SUMMARY_LENGTH
   ) {
     return false;
   }
-
-
-  /*
-   * متن‌های عمومی، تبلیغاتی و غیرخبری
-   */
-
-  const badPhrases = [
-
-    "عضویت در خبرنامه",
-    "عضویت در کانال",
-    "عضو کانال",
-    "دنبال کنید",
-    "ما را دنبال کنید",
-    "تمام حقوق محفوظ است",
-    "حقوق مادی و معنوی",
-    "کپی برداری",
-    "کپی‌برداری",
-    "اخبار بیشتر",
-    "ادامه مطلب",
-    "ادامه‌ی مطلب",
-    "آخرین اخبار",
-    "صفحه اصلی",
-    "جستجو در سایت",
-    "ثبت نام",
-    "ثبت‌نام",
-    "ورود به حساب",
-    "ورود به سایت",
-    "اشتراک گذاری",
-    "اشتراک‌گذاری",
-    "ارسال نظر",
-    "نظرات",
-    "تبلیغات",
-    "پیشنهاد سردبیر",
-    "مطالب مرتبط",
-    "اخبار مرتبط",
-    "منوی سایت",
-    "منو",
-    "کلیک کنید",
-    "اینجا کلیک کنید",
-    "دانلود کنید",
-    "اپلیکیشن",
-    "خبرنامه ایمیلی"
-
-  ];
-
 
   const lower =
     value.toLowerCase();
 
-
-  if (
-    badPhrases.some(
-      phrase =>
-        lower.includes(
-          phrase.toLowerCase()
-        )
-    )
+  for (
+    const phrase of
+    BAD_PHRASES
   ) {
 
+    if (
+      lower.includes(
+        phrase.toLowerCase()
+      )
+    ) {
+
+      return false;
+    }
+  }
+
+
+  /*
+   * متن‌هایی که عمدتاً URL هستند
+   */
+
+  const withoutUrls =
+    value
+
+      .replace(
+        /https?:\/\/\S+/gi,
+        ""
+      )
+
+      .replace(
+        /www\.\S+/gi,
+        ""
+      )
+
+      .replace(
+        /\S+@\S+\.\S+/gi,
+        ""
+      )
+
+      .trim();
+
+
+  if (
+    withoutUrls.length <
+    40
+  ) {
     return false;
   }
 
 
   /*
-   * متن‌هایی که تقریباً فقط لینک یا ایمیل هستند
+   * متن خیلی شبیه عنوان کوتاه نباشد
    */
 
-  const withoutUrls =
-    value
-      .replace(
-        /https?:\/\/\S+/gi,
-        ""
-      )
-      .replace(
-        /www\.\S+/gi,
-        ""
-      )
-      .replace(
-        /\S+@\S+\.\S+/gi,
-        ""
-      )
-      .trim();
-
-
   if (
-    withoutUrls.length < 40
+    value.split(/\s+/).length <
+    8
   ) {
-
     return false;
   }
 
@@ -511,50 +498,109 @@ function isUsefulSummary(text) {
 
 
 /* ============================================================
-   کوتاه‌کردن چکیده
+   تشخیص پاراگراف خبری
+   ============================================================ */
+
+function isLikelyNewsParagraph(text) {
+
+  const value =
+    cleanText(text);
+
+  if (
+    !isUsefulSummary(value)
+  ) {
+    return false;
+  }
+
+
+  /*
+   * پاراگراف‌هایی که فقط یک جمله خیلی کوتاه هستند
+   */
+
+  const words =
+    value.split(
+      /\s+/
+    );
+
+
+  if (
+    words.length <
+    10
+  ) {
+    return false;
+  }
+
+
+  /*
+   * متن‌هایی که احتمالاً نویگیشن هستند
+   */
+
+  const navigationPatterns = [
+
+    /^خانه\b/i,
+    /^خبر\b$/i,
+    /^اخبار\b$/i,
+    /^سرویس\b/i,
+    /^صفحه\b/i,
+    /^منو\b/i,
+    /^جستجو\b/i
+
+  ];
+
+
+  if (
+    navigationPatterns.some(
+      pattern =>
+        pattern.test(value)
+    )
+  ) {
+    return false;
+  }
+
+
+  return true;
+}
+
+
+/* ============================================================
+   کوتاه‌سازی طبیعی
    ============================================================ */
 
 function shorten(text) {
 
-  text =
-    cleanText(
-      text
-    );
+  const value =
+    cleanText(text);
 
-  if (!text) {
+  if (!value) {
     return "";
   }
 
-
   if (
-    text.length <=
+    value.length <=
     MAX_SUMMARY_LENGTH
   ) {
-
-    return text;
+    return value;
   }
 
 
   const candidate =
-    text.slice(
+    value.slice(
       0,
       MAX_SUMMARY_LENGTH
     );
 
 
   /*
-   * پایان جمله فارسی و انگلیسی
+   * اولویت با پایان جمله
    */
 
-  const sentenceEnds = [
-
+  const sentenceMarks = [
     "؟",
     "!",
     "؛",
     ".",
-    "؟",
+    "۔",
     "！"
-
   ];
 
 
@@ -562,7 +608,8 @@ function shorten(text) {
 
 
   for (
-    const mark of sentenceEnds
+    const mark of
+    sentenceMarks
   ) {
 
     const position =
@@ -582,8 +629,7 @@ function shorten(text) {
 
 
   /*
-   * اگر جمله تقریباً کامل بود،
-   * همان را نگه می‌داریم.
+   * اگر پایان جمله در محدوده مناسب باشد
    */
 
   if (
@@ -600,7 +646,7 @@ function shorten(text) {
 
 
   /*
-   * در غیر این صورت تا آخرین فاصله
+   * کوتاه‌سازی در آخرین فاصله
    */
 
   let result =
@@ -633,7 +679,7 @@ function shorten(text) {
 
 
 /* ============================================================
-   استخراج Meta Description
+   استخراج Meta
    ============================================================ */
 
 function extractMetaDescription(
@@ -642,27 +688,13 @@ function extractMetaDescription(
 
   const patterns = [
 
-    /*
-     * og:description
-     */
-
     /<meta\b[^>]*property=["']og:description["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i,
 
     /<meta\b[^>]*content=["']([\s\S]*?)["'][^>]*property=["']og:description["'][^>]*>/i,
 
-
-    /*
-     * description
-     */
-
     /<meta\b[^>]*name=["']description["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i,
 
     /<meta\b[^>]*content=["']([\s\S]*?)["'][^>]*name=["']description["'][^>]*>/i,
-
-
-    /*
-     * twitter description
-     */
 
     /<meta\b[^>]*name=["']twitter:description["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i,
 
@@ -672,7 +704,8 @@ function extractMetaDescription(
 
 
   for (
-    const pattern of patterns
+    const pattern of
+    patterns
   ) {
 
     const match =
@@ -727,8 +760,266 @@ function extractJsonLdDescription(
   }
 
 
+  const candidates = [];
+
+
+  function collect(value) {
+
+    if (!value) {
+      return;
+    }
+
+
+    if (
+      typeof value ===
+      "string"
+    ) {
+
+      candidates.push(
+        value
+      );
+
+      return;
+    }
+
+
+    if (
+      Array.isArray(
+        value
+      )
+    ) {
+
+      for (
+        const item of
+        value
+      ) {
+
+        collect(
+          item
+        );
+      }
+
+      return;
+    }
+
+
+    if (
+      typeof value ===
+      "object"
+    ) {
+
+      if (
+        value.description
+      ) {
+
+        candidates.push(
+          value.description
+        );
+      }
+
+
+      if (
+        value.articleBody
+      ) {
+
+        candidates.push(
+          value.articleBody
+        );
+      }
+
+
+      if (
+        value["@graph"]
+      ) {
+
+        collect(
+          value["@graph"]
+        );
+      }
+    }
+  }
+
+
   for (
-    const script of scripts
+    const script of
+    scripts
+  ) {
+
+    const jsonText =
+      script
+
+        .replace(
+          /<script\b[^>]*>/i,
+          ""
+        )
+
+        .replace(
+          /<\/script>\s*$/i,
+          ""
+        )
+
+        .trim();
+
+
+    try {
+
+      const data =
+        JSON.parse(
+          jsonText
+        );
+
+      collect(
+        data
+      );
+
+    } catch {
+
+      /*
+       * JSON-LD نامعتبر
+       */
+    }
+  }
+
+
+  for (
+    const candidate of
+    candidates
+  ) {
+
+    const text =
+      cleanText(
+        candidate
+      );
+
+
+    if (
+      isUsefulSummary(
+        text
+      )
+    ) {
+
+      return text;
+    }
+  }
+
+
+  return "";
+}
+
+
+/* ============================================================
+   استخراج عنوان HTML
+   ============================================================ */
+
+function extractHtmlTitle(
+  html
+) {
+
+  const match =
+    html.match(
+      /<title\b[^>]*>([\s\S]*?)<\/title>/i
+    );
+
+
+  if (!match) {
+    return "";
+  }
+
+
+  return cleanText(
+    match[1]
+  );
+}
+
+
+/* ============================================================
+   استخراج Article Body از JSON-LD
+   ============================================================ */
+
+function extractJsonLdArticleBody(
+  html
+) {
+
+  const scripts =
+    html.match(
+      /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi
+    );
+
+
+  if (!scripts) {
+    return "";
+  }
+
+
+  function findBody(
+    value
+  ) {
+
+    if (!value) {
+      return "";
+    }
+
+
+    if (
+      Array.isArray(
+        value
+      )
+    ) {
+
+      for (
+        const item of
+        value
+      ) {
+
+        const result =
+          findBody(
+            item
+          );
+
+        if (result) {
+          return result;
+        }
+      }
+
+      return "";
+    }
+
+
+    if (
+      typeof value !==
+      "object"
+    ) {
+
+      return "";
+    }
+
+
+    if (
+      typeof value.articleBody ===
+      "string"
+    ) {
+
+      return value.articleBody;
+    }
+
+
+    if (
+      value["@graph"]
+    ) {
+
+      return findBody(
+        value["@graph"]
+      );
+    }
+
+
+    return "";
+  }
+
+
+  for (
+    const script of
+    scripts
   ) {
 
     const jsonText =
@@ -755,109 +1046,23 @@ function extractJsonLdDescription(
         );
 
 
-      const candidates = [];
+      const body =
+        findBody(
+          data
+        );
 
 
-      function collect(
-        value
+      if (
+        isLikelyNewsParagraph(
+          body
+        )
       ) {
 
-        if (!value) {
-          return;
-        }
-
-
-        if (
-          typeof value ===
-          "string"
-        ) {
-
-          candidates.push(
-            value
-          );
-
-          return;
-        }
-
-
-        if (
-          Array.isArray(
-            value
-          )
-        ) {
-
-          for (
-            const item of value
-          ) {
-
-            collect(
-              item
-            );
-          }
-
-          return;
-        }
-
-
-        if (
-          typeof value ===
-          "object"
-        ) {
-
-          if (
-            value.description
-          ) {
-
-            candidates.push(
-              value.description
-            );
-          }
-
-
-          if (
-            value["@graph"]
-          ) {
-
-            collect(
-              value["@graph"]
-            );
-          }
-        }
-      }
-
-
-      collect(
-        data
-      );
-
-
-      for (
-        const candidate of
-        candidates
-      ) {
-
-        const text =
-          cleanText(
-            candidate
-          );
-
-
-        if (
-          isUsefulSummary(
-            text
-          )
-        ) {
-
-          return text;
-        }
+        return body;
       }
 
     } catch {
-
-      /*
-       * JSON-LD ناقص یا نامعتبر است.
-       * ادامه می‌دهیم.
-       */
+      continue;
     }
   }
 
@@ -867,62 +1072,381 @@ function extractJsonLdDescription(
 
 
 /* ============================================================
-   استخراج اولین پاراگراف مناسب
+   استخراج پاراگراف‌ها
    ============================================================ */
 
-function extractFirstParagraph(
+function extractParagraphs(
   html
 ) {
 
-  const articleMatch =
-    html.match(
-      /<article\b[^>]*>[\s\S]*?<\/article>/i
-    );
-
-
-  const mainMatch =
-    html.match(
-      /<main\b[^>]*>[\s\S]*?<\/main>/i
-    );
-
-
-  const area =
-    articleMatch
-      ? articleMatch[0]
-      : mainMatch
-        ? mainMatch[0]
-        : html;
-
-
   const paragraphs =
-    area.match(
+    html.match(
       /<p\b[^>]*>[\s\S]*?<\/p>/gi
     );
 
 
   if (!paragraphs) {
-    return "";
+    return [];
   }
 
 
+  return paragraphs
+
+    .map(
+      paragraph =>
+        cleanText(
+          paragraph
+        )
+    )
+
+    .filter(
+      paragraph =>
+        isLikelyNewsParagraph(
+          paragraph
+        )
+    );
+}
+
+
+/* ============================================================
+   استخراج Article
+   ============================================================ */
+
+function extractArticleAreas(
+  html
+) {
+
+  const areas = [];
+
+
+  const patterns = [
+
+    /<article\b[^>]*>[\s\S]*?<\/article>/gi,
+
+    /<main\b[^>]*>[\s\S]*?<\/main>/gi,
+
+    /<div\b[^>]*(?:class|id)=["'][^"']*(?:article|story|news-content|news-body|article-body|post-content|entry-content)[^"']*["'][^>]*>[\s\S]*?<\/div>/gi
+
+  ];
+
+
   for (
-    const paragraph of
-    paragraphs
+    const pattern of
+    patterns
   ) {
 
-    const text =
-      cleanText(
-        paragraph
+    const matches =
+      html.match(
+        pattern
       );
 
 
     if (
-      isUsefulSummary(
-        text
-      )
+      matches
     ) {
 
-      return text;
+      areas.push(
+        ...matches
+      );
+    }
+  }
+
+
+  return areas;
+}
+
+
+/* ============================================================
+   استخراج متن مقاله
+   ============================================================ */
+
+function extractArticleText(
+  html,
+  site
+) {
+
+  /*
+   * ابتدا JSON-LD articleBody
+   */
+
+  const jsonBody =
+    extractJsonLdArticleBody(
+      html
+    );
+
+
+  if (
+    isLikelyNewsParagraph(
+      jsonBody
+    )
+  ) {
+
+    return jsonBody;
+  }
+
+
+  /*
+   * نواحی مقاله
+   */
+
+  const areas =
+    extractArticleAreas(
+      html
+    );
+
+
+  /*
+   * اگر ناحیه مقاله داریم،
+   * پاراگراف‌های آن را بررسی می‌کنیم.
+   */
+
+  for (
+    const area of
+    areas
+  ) {
+
+    const paragraphs =
+      extractParagraphs(
+        area
+      );
+
+
+    if (
+      paragraphs.length
+    ) {
+
+      /*
+       * برای اکثر سایت‌ها
+       * پاراگراف اول بهترین خلاصه است.
+       */
+
+      for (
+        const paragraph of
+        paragraphs
+      ) {
+
+        if (
+          paragraph.length >= 70
+        ) {
+
+          return paragraph;
+        }
+      }
+    }
+  }
+
+
+  /*
+   * حالت عمومی
+   */
+
+  const paragraphs =
+    extractParagraphs(
+      html
+    );
+
+
+  /*
+   * پاراگراف‌های بسیار کوتاه را حذف می‌کنیم.
+   */
+
+  const strongCandidates =
+    paragraphs.filter(
+      paragraph =>
+        paragraph.length >= 70
+    );
+
+
+  /*
+   * سایت‌های خاص
+   *
+   * فعلاً از همان متن واقعی صفحه استفاده می‌کنیم؛
+   * اما ترتیب انتخاب برای سایت‌ها متفاوت است.
+   */
+
+  if (
+    site === "irna" ||
+    site === "isna" ||
+    site === "mehr" ||
+    site === "imna" ||
+    site === "ilna"
+  ) {
+
+    if (
+      strongCandidates.length
+    ) {
+
+      return strongCandidates[0];
+    }
+  }
+
+
+  if (
+    strongCandidates.length
+  ) {
+
+    return strongCandidates[0];
+  }
+
+
+  return "";
+}
+
+
+/* ============================================================
+   استخراج چکیده اختصاصی
+   ============================================================ */
+
+function extractSiteSpecificSummary(
+  html,
+  site
+) {
+
+  /*
+   * کلاس‌ها و ساختارهای رایج سایت‌های خبری
+   */
+
+  const selectors = {
+
+    irna: [
+      "article",
+      ".item-text",
+      ".news-body",
+      ".article-body",
+      ".body-news",
+      ".news-text",
+      ".article-content"
+    ],
+
+    isna: [
+      "article",
+      ".item-text",
+      ".news-body",
+      ".article-body",
+      ".news-content",
+      ".article-content",
+      ".single-content"
+    ],
+
+    mehr: [
+      "article",
+      ".item-text",
+      ".news-body",
+      ".article-body",
+      ".news-content",
+      ".article-content"
+    ],
+
+    imna: [
+      "article",
+      ".item-text",
+      ".news-body",
+      ".article-body",
+      ".news-content",
+      ".article-content"
+    ],
+
+    ilna: [
+      "article",
+      ".item-text",
+      ".news-body",
+      ".article-body",
+      ".news-content",
+      ".article-content"
+    ]
+
+  };
+
+
+  const siteSelectors =
+    selectors[site];
+
+
+  if (!siteSelectors) {
+    return "";
+  }
+
+
+  /*
+   * تبدیل selectorهای ساده به regex
+   */
+
+  for (
+    const selector of
+    siteSelectors
+  ) {
+
+    if (
+      selector ===
+      "article"
+    ) {
+
+      const articleMatch =
+        html.match(
+          /<article\b[^>]*>[\s\S]*?<\/article>/i
+        );
+
+
+      if (
+        articleMatch
+      ) {
+
+        const paragraphs =
+          extractParagraphs(
+            articleMatch[0]
+          );
+
+
+        if (
+          paragraphs.length
+        ) {
+
+          return paragraphs[0];
+        }
+      }
+
+
+      continue;
+    }
+
+
+    const className =
+      selector
+        .replace(
+          /^\./,
+          ""
+        );
+
+
+    const regex =
+      new RegExp(
+        `<[^>]+(?:class|id)=["'][^"']*${className}[^"']*["'][^>]*>[\\\\s\\\\S]*?<\\\\/[^>]+>`,
+        "i"
+      );
+
+
+    const match =
+      html.match(
+        regex
+      );
+
+
+    if (
+      match
+    ) {
+
+      const paragraphs =
+        extractParagraphs(
+          match[0]
+        );
+
+
+      if (
+        paragraphs.length
+      ) {
+
+        return paragraphs[0];
+      }
     }
   }
 
@@ -932,7 +1456,7 @@ function extractFirstParagraph(
 
 
 /* ============================================================
-   دریافت صفحه با Redirect
+   دریافت صفحه
    ============================================================ */
 
 function fetchPage(
@@ -962,56 +1486,65 @@ function fetchPage(
       }
 
 
-      const normalizedUrl =
+      const normalized =
         normalizeUrl(
           url
         );
 
 
-      if (!normalizedUrl) {
+      if (!normalized) {
 
         finish({
+
           ok: false,
+
           error:
             "لینک نامعتبر"
+
         });
 
         return;
       }
 
 
-      let parsedUrl;
+      let parsed;
 
       try {
 
-        parsedUrl =
+        parsed =
           new URL(
-            normalizedUrl
+            normalized
           );
 
       } catch {
 
         finish({
+
           ok: false,
+
           error:
             "لینک نامعتبر"
+
         });
 
         return;
       }
 
 
-      const protocol =
-        parsedUrl.protocol ===
+      const client =
+        parsed.protocol ===
         "https:"
           ? https
           : http;
 
 
       const request =
-        protocol.get(
-          parsedUrl,
+        client.get(
+
+          parsed,
+
           {
+
             headers: {
 
               "User-Agent":
@@ -1028,10 +1561,12 @@ function fetchPage(
 
               "Connection":
                 "close"
+
             },
 
             timeout:
               REQUEST_TIMEOUT
+
           },
 
           function(response) {
@@ -1059,9 +1594,12 @@ function fetchPage(
               ) {
 
                 finish({
+
                   ok: false,
+
                   error:
-                    "تعداد Redirect بیش از حد"
+                    "Redirect بیش از حد"
+
                 });
 
                 return;
@@ -1075,15 +1613,18 @@ function fetchPage(
                 nextUrl =
                   new URL(
                     location,
-                    normalizedUrl
+                    normalized
                   ).toString();
 
               } catch {
 
                 finish({
+
                   ok: false,
+
                   error:
                     "Redirect نامعتبر"
+
                 });
 
                 return;
@@ -1101,9 +1642,12 @@ function fetchPage(
                   function(error) {
 
                     finish({
+
                       ok: false,
+
                       error:
                         error.message
+
                     });
 
                   }
@@ -1123,9 +1667,12 @@ function fetchPage(
 
 
               finish({
+
                 ok: false,
+
                 error:
                   `HTTP ${response.statusCode}`
+
               });
 
               return;
@@ -1146,11 +1693,15 @@ function fetchPage(
               "data",
               function(chunk) {
 
-                received +=
+                const size =
                   Buffer.byteLength(
                     chunk,
                     "utf8"
                   );
+
+
+                received +=
+                  size;
 
 
                 if (
@@ -1173,9 +1724,12 @@ function fetchPage(
                 if (!body) {
 
                   finish({
+
                     ok: false,
+
                     error:
                       "صفحه خالی است"
+
                   });
 
                   return;
@@ -1190,7 +1744,7 @@ function fetchPage(
                     body,
 
                   finalUrl:
-                    normalizedUrl
+                    normalized
 
                 });
 
@@ -1203,9 +1757,12 @@ function fetchPage(
               function(error) {
 
                 finish({
+
                   ok: false,
+
                   error:
                     error.message
+
                 });
 
               }
@@ -1223,9 +1780,12 @@ function fetchPage(
 
 
           finish({
+
             ok: false,
+
             error:
               "Timeout"
+
           });
 
         }
@@ -1237,9 +1797,12 @@ function fetchPage(
         function(error) {
 
           finish({
+
             ok: false,
+
             error:
               error.message
+
           });
 
         }
@@ -1251,7 +1814,7 @@ function fetchPage(
 
 
 /* ============================================================
-   تولید چکیده یک خبر
+   تولید خلاصه
    ============================================================ */
 
 async function generateSummary(
@@ -1277,20 +1840,26 @@ async function generateSummary(
   }
 
 
-  const result =
+  const site =
+    detectSite(
+      url
+    );
+
+
+  const page =
     await fetchPage(
       url
     );
 
 
-  if (!result.ok) {
+  if (!page.ok) {
 
     return {
 
       summary: "",
 
       status:
-        result.error ||
+        page.error ||
         "fetch-failed"
 
     };
@@ -1298,11 +1867,14 @@ async function generateSummary(
 
 
   const html =
-    result.html;
+    page.html;
 
 
   /*
-   * 1. Meta
+   * ----------------------------------------------------------
+   * مرحله 1
+   * Meta
+   * ----------------------------------------------------------
    */
 
   let summary =
@@ -1332,7 +1904,10 @@ async function generateSummary(
 
 
   /*
-   * 2. JSON-LD
+   * ----------------------------------------------------------
+   * مرحله 2
+   * JSON-LD description
+   * ----------------------------------------------------------
    */
 
   summary =
@@ -1362,17 +1937,21 @@ async function generateSummary(
 
 
   /*
-   * 3. اولین پاراگراف
+   * ----------------------------------------------------------
+   * مرحله 3
+   * استخراج اختصاصی سایت
+   * ----------------------------------------------------------
    */
 
   summary =
-    extractFirstParagraph(
-      html
+    extractSiteSpecificSummary(
+      html,
+      site
     );
 
 
   if (
-    isUsefulSummary(
+    isLikelyNewsParagraph(
       summary
     )
   ) {
@@ -1385,11 +1964,88 @@ async function generateSummary(
         ),
 
       status:
-        "paragraph"
+        `site-${site}`
 
     };
   }
 
+
+  /*
+   * ----------------------------------------------------------
+   * مرحله 4
+   * متن مقاله
+   * ----------------------------------------------------------
+   */
+
+  summary =
+    extractArticleText(
+      html,
+      site
+    );
+
+
+  if (
+    isLikelyNewsParagraph(
+      summary
+    )
+  ) {
+
+    return {
+
+      summary:
+        shorten(
+          summary
+        ),
+
+      status:
+        `article-${site}`
+
+    };
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * مرحله 5
+   * اولین پاراگراف مناسب
+   * ----------------------------------------------------------
+   */
+
+  const paragraphs =
+    extractParagraphs(
+      html
+    );
+
+
+  for (
+    const paragraph of
+    paragraphs
+  ) {
+
+    if (
+      paragraph.length >= 70
+    ) {
+
+      return {
+
+        summary:
+          shorten(
+            paragraph
+          ),
+
+        status:
+          "paragraph"
+
+      };
+    }
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * هیچ متن معتبر پیدا نشد
+   * ----------------------------------------------------------
+   */
 
   return {
 
@@ -1403,7 +2059,43 @@ async function generateSummary(
 
 
 /* ============================================================
-   بررسی اعتبار خلاصه قبلی
+   کلید خبر
+   ============================================================ */
+
+function getNewsKey(
+  item
+) {
+
+  const link =
+    normalizeUrl(
+      item.link
+    );
+
+
+  if (link) {
+
+    return `link:${link}`;
+  }
+
+
+  const title =
+    cleanText(
+      item.title || ""
+    );
+
+
+  if (title) {
+
+    return `title:${title}`;
+  }
+
+
+  return "";
+}
+
+
+/* ============================================================
+   اعتبار خلاصه قبلی
    ============================================================ */
 
 function isValidPreviousSummary(
@@ -1415,13 +2107,6 @@ function isValidPreviousSummary(
   }
 
 
-  if (
-    !item.summary
-  ) {
-    return false;
-  }
-
-
   return isUsefulSummary(
     item.summary
   );
@@ -1429,7 +2114,7 @@ function isValidPreviousSummary(
 
 
 /* ============================================================
-   ساخت Map از خلاصه‌های قبلی
+   ساخت Map خلاصه‌های قبلی
    ============================================================ */
 
 function buildPreviousMap(
@@ -1479,7 +2164,7 @@ function buildPreviousMap(
 
 
 /* ============================================================
-   اجرای موازی کنترل‌شده
+   پردازش هم‌زمان
    ============================================================ */
 
 async function processWithConcurrency(
@@ -1533,24 +2218,21 @@ async function processWithConcurrency(
 
           error:
             error.message
+
         };
       }
     }
   }
 
 
-  const count =
-    Math.min(
-      concurrency,
-      items.length
-    );
-
-
   const runners =
     Array.from(
       {
         length:
-          count
+          Math.min(
+            concurrency,
+            items.length
+          )
       },
       runner
     );
@@ -1566,7 +2248,7 @@ async function processWithConcurrency(
 
 
 /* ============================================================
-   ساخت رکورد نهایی خبر
+   ساخت رکورد خبر
    ============================================================ */
 
 function buildNewsRecord(
@@ -1575,11 +2257,6 @@ function buildNewsRecord(
 ) {
 
   return {
-
-    /*
-     * decodeHtmlEntities به‌عنوان یک لایه محافظ:
-     * جلوگیری از &amp;amp; و موارد مشابه
-     */
 
     title:
       decodeHtmlEntities(
@@ -1621,24 +2298,30 @@ function buildNewsRecord(
 async function main() {
 
   console.log("");
+
   console.log(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   );
+
   console.log(
-    "📝 تولید چکیده خبرهای دیار قدمگاه"
+    "📝 دیار قدمگاه | تولید چکیده نسخه 3"
   );
+
   console.log(
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   );
+
   console.log("");
 
 
   /*
-   * خواندن news.json
+   * news.json
    */
 
   const data =
-    readNews();
+    readJsonFile(
+      INPUT_FILE
+    );
 
 
   const news =
@@ -1665,11 +2348,17 @@ async function main() {
 
 
   /*
-   * خواندن خروجی قبلی
+   * خلاصه قبلی
    */
 
   const previousData =
-    readPreviousSummaries();
+    fs.existsSync(
+      OUTPUT_FILE
+    )
+      ? readJsonFile(
+          OUTPUT_FILE
+        )
+      : null;
 
 
   const previousMap =
@@ -1678,29 +2367,31 @@ async function main() {
     );
 
 
-  /*
-   * تشخیص خبرهای نیازمند پردازش
-   */
-
-  const itemsToProcess = [];
-
-  const preservedResults =
+  const finalResults =
     new Array(
       news.length
     );
 
 
-  let preservedCount = 0;
+  const tasks = [];
 
+
+  let preserved =
+    0;
+
+
+  /*
+   * تشخیص cache
+   */
 
   for (
-    let index = 0;
-    index < news.length;
-    index++
+    let i = 0;
+    i < news.length;
+    i++
   ) {
 
     const item =
-      news[index];
+      news[i];
 
 
     const key =
@@ -1717,18 +2408,13 @@ async function main() {
         : null;
 
 
-    /*
-     * اگر خلاصه قبلی معتبر باشد،
-     * همان را حفظ می‌کنیم.
-     */
-
     if (
       isValidPreviousSummary(
         previous
       )
     ) {
 
-      preservedResults[index] = {
+      finalResults[i] = {
 
         summary:
           cleanText(
@@ -1742,46 +2428,43 @@ async function main() {
       };
 
 
-      preservedCount++;
+      preserved++;
 
-      continue;
+    } else {
+
+      tasks.push({
+
+        item,
+
+        index:
+          i
+
+      });
     }
-
-
-    itemsToProcess.push({
-
-      item,
-
-      index
-
-    });
   }
 
 
   console.log(
-    `♻️ خلاصه‌های قبلی معتبر: ${preservedCount}`
+    `♻️ خلاصه‌های معتبر حفظ‌شده: ${preserved}`
   );
-
 
   console.log(
-    `🔎 نیازمند بررسی جدید: ${itemsToProcess.length}`
+    `🔎 خبرهای نیازمند پردازش: ${tasks.length}`
   );
-
 
   console.log("");
 
 
   /*
-   * پردازش خبرهای جدید
+   * پردازش
    */
 
   const processed =
     await processWithConcurrency(
-      itemsToProcess,
 
-      async function(
-        task
-      ) {
+      tasks,
+
+      async function(task) {
 
         const item =
           task.item;
@@ -1791,8 +2474,14 @@ async function main() {
           task.index;
 
 
+        const site =
+          detectSite(
+            item.link
+          );
+
+
         console.log(
-          `⏳ [${index + 1}/${news.length}] ${
+          `⏳ [${index + 1}/${news.length}] [${site}] ${
             item.source || ""
           } - ${
             item.title || ""
@@ -1811,15 +2500,13 @@ async function main() {
         ) {
 
           console.log(
-            `   ✅ چکیده پیدا شد (${result.status})`
+            `   ✅ ${result.status} | ${result.summary}`
           );
 
         } else {
 
           console.log(
-            `   ⚠️ چکیده پیدا نشد: ${
-              result.status
-            }`
+            `   ⚠️ ${result.status}`
           );
         }
 
@@ -1834,11 +2521,12 @@ async function main() {
       },
 
       CONCURRENCY
+
     );
 
 
   /*
-   * قرار دادن نتایج پردازش‌شده
+   * انتقال نتایج
    */
 
   for (
@@ -1851,7 +2539,7 @@ async function main() {
     }
 
 
-    preservedResults[
+    finalResults[
       entry.index
     ] =
       entry.result;
@@ -1859,24 +2547,26 @@ async function main() {
 
 
   /*
-   * ساخت خروجی نهایی
+   * ساخت خروجی
    */
 
   const summaries =
     news.map(
-      function(
-        item,
-        index
-      ) {
+      function(item, index) {
 
         return buildNewsRecord(
+
           item,
-          preservedResults[index] ||
-          {
+
+          finalResults[index] || {
+
             summary: "",
+
             status:
               "unknown"
+
           }
+
         );
       }
     );
@@ -1888,12 +2578,10 @@ async function main() {
 
   const successful =
     summaries.filter(
-      function(item) {
-
-        return Boolean(
+      item =>
+        Boolean(
           item.summary
-        );
-      }
+        )
     ).length;
 
 
@@ -1902,50 +2590,8 @@ async function main() {
     successful;
 
 
-  const output = {
-
-    lastUpdate:
-      new Date().toISOString(),
-
-    sourceLastUpdate:
-      data.lastUpdate || "",
-
-    totalNews:
-      summaries.length,
-
-    summariesFound:
-      successful,
-
-    summariesMissing:
-      missing,
-
-    news:
-      summaries
-
-  };
-
-
   /*
-   * ذخیره
-   */
-
-  fs.writeFileSync(
-
-    OUTPUT_FILE,
-
-    JSON.stringify(
-      output,
-      null,
-      2
-    ),
-
-    "utf8"
-
-  );
-
-
-  /*
-   * آمار وضعیت‌ها
+   * وضعیت‌ها
    */
 
   const statusCounts =
@@ -1971,7 +2617,49 @@ async function main() {
 
 
   /*
-   * نتیجه نهایی
+   * خروجی نهایی
+   */
+
+  const output = {
+
+    lastUpdate:
+      new Date().toISOString(),
+
+    sourceLastUpdate:
+      data.lastUpdate || "",
+
+    totalNews:
+      summaries.length,
+
+    summariesFound:
+      successful,
+
+    summariesMissing:
+      missing,
+
+    news:
+      summaries
+
+  };
+
+
+  fs.writeFileSync(
+
+    OUTPUT_FILE,
+
+    JSON.stringify(
+      output,
+      null,
+      2
+    ),
+
+    "utf8"
+
+  );
+
+
+  /*
+   * گزارش
    */
 
   console.log("");
@@ -1989,7 +2677,7 @@ async function main() {
   );
 
   console.log(
-    `♻️ خلاصه‌های حفظ‌شده: ${preservedCount}`
+    `♻️ حفظ‌شده: ${preserved}`
   );
 
   console.log(
@@ -2003,7 +2691,7 @@ async function main() {
   console.log("");
 
   console.log(
-    "📊 وضعیت پردازش:"
+    "📊 وضعیت استخراج:"
   );
 
 

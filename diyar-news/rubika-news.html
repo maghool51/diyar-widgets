@@ -199,61 +199,42 @@ button:disabled {
     color: #fff;
 }
 
-.category-selected {
+.category-selected-count {
     display: inline-block;
-    margin-right: 4px;
+    margin-right: 3px;
     padding: 1px 6px;
     border-radius: 20px;
-    background: #eceff1;
-    color: #90a4ae;
-    font-size: 10px;
-}
-
-.category-selected.has-selected {
     background: #e8f5e9;
-    color: #1b5e20;
+    color: #2e7d32;
+    font-size: 10px;
+    font-weight: 800;
 }
 
-.category-btn.active .category-selected {
+.category-btn.active .category-selected-count {
     background: rgba(255,255,255,.18);
-    color: rgba(255,255,255,.75);
-}
-
-.category-btn.active .category-selected.has-selected {
-    background: rgba(255,255,255,.28);
     color: #fff;
 }
 
-/* =========================================================
-   COLLAPSIBLE PANEL (details/summary)
-========================================================= */
-
-details.panel {
-    padding: 0;
+.publisher-details {
+    border: 1px solid #e5e9eb;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
-details.panel > summary.panel-title {
-    margin: 0;
-    padding: 14px;
+.publisher-summary {
     cursor: pointer;
-    list-style: none;
+    padding: 11px 13px;
+    font-size: 14px;
+    font-weight: 800;
+    user-select: none;
 }
 
-details.panel > summary.panel-title::-webkit-details-marker {
-    display: none;
+.publisher-details[open] .publisher-summary {
+    border-bottom: 1px solid #e5e9eb;
 }
 
-details.panel > summary.panel-title::before {
-    content: "▾ ";
-    display: inline-block;
-}
-
-details.panel:not([open]) > summary.panel-title::before {
-    content: "▸ ";
-}
-
-details.panel > .publisher-grid {
-    padding: 0 14px 14px;
+.publisher-details .publisher-grid {
+    padding: 12px;
 }
 
 /* =========================================================
@@ -1068,13 +1049,15 @@ details.panel > .publisher-grid {
          PUBLISHER
     ====================================================== -->
 
-    <details class="panel" open>
+    <section class="panel">
 
-        <summary class="panel-title">
-            👤 مشخصات منتشرکننده
-        </summary>
+        <details class="publisher-details">
 
-        <div class="publisher-grid">
+            <summary class="publisher-summary">
+                👤 مشخصات منتشرکننده
+            </summary>
+
+            <div class="publisher-grid">
 
             <div>
 
@@ -1113,9 +1096,11 @@ details.panel > .publisher-grid {
 
             </div>
 
-        </div>
+            </div>
 
-    </details>
+        </details>
+
+    </section>
 
     <!-- =====================================================
          PREVIEW
@@ -1190,33 +1175,6 @@ const RUBIKA_PAGE_URL =
 const MAX_SUMMARY_LENGTH = 150;
 
 const DEFAULT_NEWS_COUNT = 10;
-
-/*
-   قالب متنی روبیکا:
-
-   نکته‌ی کلیدی: کاراکترهای قاب (╔ ═ ╗) در اکثر فونت‌ها
-   و در خود روبیکا بسیار باریک‌تر از حروف فارسی و Emoji
-   رندر می‌شوند. یعنی حتی اگر تعداد کاراکتر «قاب» با
-   تعداد کاراکتر متن یکی باشد، عرض واقعی روی صفحه هرگز
-   برابر نمی‌شود و قاب همیشه کوتاه‌تر از متن به نظر می‌رسد.
-
-   به همین دلیل از این پس اصلاً از قاب (گوشه‌دار، بالا+پایین)
-   استفاده نمی‌کنیم؛ فقط یک خط جداکننده‌ی ساده (بدون گوشه و
-   بدون ادعای هم‌عرض‌بودن با متن) بین بخش‌ها قرار می‌گیرد.
-   جداکننده‌ی ساده برخلاف قاب، نیازی به تطبیق عرض ندارد.
-*/
-
-const DIVIDER_WIDTH = 18;
-
-const SECTION_DIVIDER =
-    "▬".repeat(
-        DIVIDER_WIDTH
-    );
-
-const ITEM_DIVIDER =
-    "┈".repeat(
-        DIVIDER_WIDTH
-    );
 
 const ADMIN_STORAGE_KEY =
     "diyarRubikaPublisherV1";
@@ -1301,6 +1259,8 @@ let sortMode =
     "newest";
 
 let onlySelected =
+    false;
+let isLoadingNews =
     false;
 
 /* =========================================================
@@ -1787,7 +1747,9 @@ function matchesSearch(item) {
     const searchableText = [
         item.title,
         item.source,
-        item.category
+        item.category,
+        item.summary,
+        item.description
     ]
         .map(
             value =>
@@ -2095,31 +2057,20 @@ function getCategoryCount(
     ).length;
 }
 
-/* =========================================================
-   تعداد انتخاب‌شده‌های یک دسته
-========================================================= */
-
 function getSelectedCategoryCount(
     categoryId
 ) {
 
-    if (
-        categoryId ===
-        "all"
-    ) {
-
-        return selectedKeys.size;
+    if (categoryId === "all") {
+        return allNews.filter(
+            item => selectedKeys.has(getItemKey(item))
+        ).length;
     }
 
     return allNews.filter(
         item =>
-            cleanText(
-                item.category
-            ) ===
-                categoryId &&
-            selectedKeys.has(
-                getItemKey(item)
-            )
+            cleanText(item.category) === categoryId &&
+            selectedKeys.has(getItemKey(item))
     ).length;
 }
 
@@ -2183,28 +2134,23 @@ function buildCategoryButtons() {
                     )
                 );
 
-            const selectedBadge =
+            const selectedCount =
                 document.createElement(
                     "span"
                 );
 
-            const selectedForCategory =
+            selectedCount.className =
+                "category-selected-count";
+
+            const selectedNumber =
                 getSelectedCategoryCount(
                     category.id
                 );
 
-            selectedBadge.className =
-                "category-selected" +
-                (
-                    selectedForCategory > 0
-                        ? " has-selected"
-                        : ""
-                );
-
-            selectedBadge.textContent =
-                "✓" +
+            selectedCount.textContent =
+                "✓ " +
                 toPersianDigits(
-                    selectedForCategory
+                    selectedNumber
                 );
 
             button.appendChild(
@@ -2216,7 +2162,7 @@ function buildCategoryButtons() {
             );
 
             button.appendChild(
-                selectedBadge
+                selectedCount
             );
 
             button.addEventListener(
@@ -2799,24 +2745,15 @@ function rubikaHeader() {
     const now =
         new Date();
 
-    /*
-       بدون فاصله‌ی وسط‌چین‌کننده و بدون قاب؛
-       فقط یک جداکننده‌ی ساده که ادعای هم‌عرض‌بودن
-       با متن را ندارد، پس هیچ‌گاه «کوتاه‌تر از متن»
-       به نظر نمی‌رسد.
-    */
+    const FRAME_WIDTH = 20;
+    const frame = "╔" + "═".repeat(FRAME_WIDTH) + "╗";
+    const bottom = "╚" + "═".repeat(FRAME_WIDTH) + "╝";
 
     return [
-        "🌸🕌💫 اخبار دیار قدمگاه 💫🕌🌸",
-        "📅 " +
-            formatPersianDate(
-                now
-            ) +
-            "  🕐 " +
-            formatPersianTime(
-                now
-            ),
-        SECTION_DIVIDER,
+        frame,
+        "🌸🕌💫 اخبار دیار قدمگاه",
+        "📅 " + formatPersianDate(now) + "  🕐 " + formatPersianTime(now),
+        bottom,
         ""
     ].join("\n");
 }
@@ -2827,35 +2764,29 @@ function rubikaHeader() {
 
 function rubikaFooter() {
 
-    /*
-       عنوان لینک و خود URL هرکدام در یک خط
-       مستقل قرار دارند تا Wrap شدن URL چیز دیگری
-       را به‌هم نریزد. دیگر از قاب استفاده نمی‌شود.
-    */
+    const FRAME_WIDTH = 20;
+    const frame = "╔" + "═".repeat(FRAME_WIDTH) + "╗";
+    const bottom = "╚" + "═".repeat(FRAME_WIDTH) + "╝";
 
     const lines = [
-
         "",
-        SECTION_DIVIDER,
-        "🔗 مشاهده و مطالعه اخبار:",
+        frame,
+        "📖 متن کامل خبر",
+        "🔗 مشاهده و مطالعه خبر:",
         RUBIKA_PAGE_URL,
+        bottom,
         "",
         "🏡 دیار قدمگاه",
-        "✍️ " +
-            publisherName
+        "✍️ " + publisherName
     ];
 
     if (publisherRubika) {
-
         lines.push(
-            "🔗 روبیکا: " +
-            publisherRubika
+            "🔗 روبیکا: " + publisherRubika
         );
     }
 
-    return lines.join(
-        "\n"
-    );
+    return lines.join("\n");
 }
 
 /* =========================================================
@@ -2879,19 +2810,13 @@ function createRubikaText() {
         (item, index) => {
 
             const title =
-                cleanText(
-                    item.title
-                );
+                cleanText(item.title);
 
             const source =
-                cleanText(
-                    item.source
-                );
+                cleanText(item.source);
 
             const category =
-                cleanText(
-                    item.category
-                );
+                cleanText(item.category);
 
             const summary =
                 cleanSummary(
@@ -2901,65 +2826,34 @@ function createRubikaText() {
                 );
 
             parts.push(
-                "🔴 " +
-                title
+                "🔴 " + title
             );
 
-            if (
-                source ||
-                category
-            ) {
-
-                /*
-                   بدون فاصله‌ی تزئینی؛ فقط یک
-                   جداکننده‌ی کوتاه " | " بین دو
-                   مقدار، مستقل از عرض صفحه.
-                */
-
-                let meta =
-                    "";
+            if (source || category) {
+                let meta = "";
 
                 if (source) {
-
-                    meta +=
-                        "📰 " +
-                        source;
+                    meta += "📰 " + source;
                 }
 
                 if (category) {
-
-                    if (source) {
-
-                        meta +=
-                            " | ";
+                    if (meta) {
+                        meta += " | ";
                     }
-
-                    meta +=
-                        "🏷 " +
-                        category;
+                    meta += "🏷 " + category;
                 }
 
-                parts.push(
-                    meta
-                );
+                parts.push(meta);
             }
 
             if (summary) {
-
-                parts.push(
-                    "📝 " +
-                    summary
-                );
+                parts.push("📝 " + summary);
             }
 
-            if (
-                index <
-                news.length - 1
-            ) {
-
+            if (index < news.length - 1) {
                 parts.push(
                     "",
-                    ITEM_DIVIDER,
+                    "────────────────────",
                     ""
                 );
             }
@@ -2970,9 +2864,7 @@ function createRubikaText() {
         rubikaFooter()
     );
 
-    return parts.join(
-        "\n"
-    );
+    return parts.join("\n");
 }
 
 /* =========================================================
@@ -3239,14 +3131,6 @@ async function copyRubikaText() {
 let toastTimer =
     null;
 
-/*
-   جلوگیری از اجرای همزمان چند Fetch
-   (مثلاً کلیک دستی هم‌زمان با Auto Refresh)
-*/
-
-let isLoadingNews =
-    false;
-
 function showToast(message) {
 
     const toast =
@@ -3510,8 +3394,7 @@ async function loadNews(
         return;
     }
 
-    isLoadingNews =
-        true;
+    isLoadingNews = true;
 
     const refreshButton =
         document.getElementById(
@@ -3537,6 +3420,9 @@ async function loadNews(
 
     let usedUrl =
         "";
+
+    let usedFallback =
+        false;
 
     let firstError =
         null;
@@ -3584,6 +3470,9 @@ async function loadNews(
             usedUrl =
                 SUMMARY_FALLBACK_URL;
 
+            usedFallback =
+                true;
+
         } catch (error) {
 
             console.error(
@@ -3604,9 +3493,6 @@ async function loadNews(
                 refreshButton.textContent =
                     "🔄 بروزرسانی";
             }
-
-            isLoadingNews =
-                false;
 
             return;
         }
@@ -3723,21 +3609,14 @@ async function loadNews(
             } catch {}
         }
 
-        const fallbackLabel =
-            usedUrl ===
-            SUMMARY_FALLBACK_URL
-                ? " (از مسیر پشتیبان)"
-                : "";
-
         showStatus(
             "✅ " +
             toPersianDigits(
                 allNews.length
             ) +
-            " خبر با موفقیت دریافت شد" +
-            fallbackLabel +
-            "." +
-            updateText
+            " خبر با موفقیت دریافت شد." +
+            updateText +
+            (usedFallback ? " | مسیر پشتیبان" : "")
         );
 
         if (showMessage) {
@@ -3766,6 +3645,8 @@ async function loadNews(
 
     } finally {
 
+        isLoadingNews = false;
+
         if (refreshButton) {
 
             refreshButton.disabled =
@@ -3774,9 +3655,6 @@ async function loadNews(
             refreshButton.textContent =
                 "🔄 بروزرسانی";
         }
-
-        isLoadingNews =
-            false;
     }
 }
 
@@ -4102,16 +3980,12 @@ function initialize() {
     loadNews(false);
 
     /*
-       بروزرسانی خودکار هر ۱۰ دقیقه.
-       loadNews خودش از اجرای همزمان
-       چند Fetch جلوگیری می‌کند.
+       بروزرسانی خودکار هر ۱۰ دقیقه
+       از اجرای هم‌زمان با Fetch قبلی جلوگیری می‌شود.
     */
 
     setInterval(
-        () => {
-
-            loadNews(false);
-        },
+        () => loadNews(false),
         10 * 60 * 1000
     );
 }

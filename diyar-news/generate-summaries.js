@@ -269,6 +269,75 @@ function detectSite(url) {
 
 
 /* ========================================================
+   🔎 DIAGNOSTIC LOGGING (TEMPORARY — برای عیب‌یابی مشکل ایسنا)
+   این بخش هیچ رفتاری را تغییر نمی‌دهد؛ فقط لاگ چاپ می‌کند.
+   بعد از رفع مشکل، این تابع و فراخوانی آن باید حذف شوند.
+======================================================== */
+
+function isDiagnosticTarget(url) {
+
+    try {
+        return new URL(url).hostname.toLowerCase().includes("isna.ir");
+    } catch {
+        return false;
+    }
+}
+
+
+function logIsnaDiagnostics(url, status, headers, buffer, html) {
+
+    try {
+
+        const collapsedHtml =
+            html.replace(/\s+/g, " ").trim();
+
+        const markers = [
+            "challenge",
+            "captcha",
+            "cloudflare",
+            "arvan",
+            "access denied",
+            "verify",
+            "isna",
+            "<title",
+            "description",
+            "application/ld+json"
+        ];
+
+        const lowerHtml = html.toLowerCase();
+
+        const markerReport = markers
+            .map(m => m + "=" + lowerHtml.includes(m))
+            .join(", ");
+
+        console.log("");
+        console.log("🔎🔎🔎 ISNA DIAGNOSTIC START 🔎🔎🔎");
+        console.log("URL:", url);
+        console.log("HTTP status:", status);
+        console.log("content-type:", headers["content-type"] || "(none)");
+        console.log("content-encoding:", headers["content-encoding"] || "(none)");
+        console.log("content-length (header):", headers["content-length"] || "(none)");
+        console.log("transfer-encoding:", headers["transfer-encoding"] || "(none)");
+        console.log("User-Agent used:", USER_AGENT);
+        console.log("Actual buffer length (bytes):", buffer.length);
+        console.log("HTML length after toString('utf8'):", html.length);
+        console.log("Markers found:", markerReport);
+        console.log("--- first 500 chars (raw decoded) ---");
+        console.log(html.slice(0, 500));
+        console.log("--- first 500 chars (collapsed whitespace) ---");
+        console.log(collapsedHtml.slice(0, 500));
+        console.log("🔎🔎🔎 ISNA DIAGNOSTIC END 🔎🔎🔎");
+        console.log("");
+
+    } catch (diagError) {
+
+        console.log("⚠️ خطا در چاپ لاگ تشخیصی ایسنا:", diagError.message);
+    }
+
+}
+
+
+/* ========================================================
    REQUEST
 ======================================================== */
 
@@ -423,12 +492,27 @@ function requestPage(url, redirectCount = 0) {
                                     ] || ""
                                 );
 
+                            const html =
+                                buffer.toString("utf8");
+
+                            /* 🔎 TEMPORARY DIAGNOSTIC — فقط برای isna.ir */
+                            if (isDiagnosticTarget(url)) {
+
+                                logIsnaDiagnostics(
+                                    url,
+                                    status,
+                                    response.headers,
+                                    buffer,
+                                    html
+                                );
+
+                            }
+
                             resolve({
                                 url,
                                 status,
                                 contentType,
-                                html:
-                                    buffer.toString("utf8")
+                                html
                             });
 
                         }

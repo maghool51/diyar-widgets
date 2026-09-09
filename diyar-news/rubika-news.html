@@ -3,40 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#6750A4">
 
-<title>ساخت پیام روبیکا | دیار قدمگاه</title>
+<title>سازنده اخبار روبیکا | دیار قدمگاه</title>
+
+<meta name="theme-color" content="#6750a4">
 
 <style>
-:root{
-    --bg:#f7f7fb;
-    --surface:#ffffff;
-    --surface-2:#f1eff7;
-    --surface-3:#e9e6f1;
-    --text:#242229;
-    --muted:#706d78;
-    --border:#e5e1eb;
 
+:root{
     --primary:#6750a4;
     --primary-dark:#4f378b;
-    --primary-soft:#eee7ff;
+    --primary-light:#eaddff;
 
-    --success:#137333;
-    --success-soft:#e5f6e9;
+    --background:#f8f7fb;
+    --surface:#ffffff;
+    --surface-2:#f2f0f7;
 
-    --warning:#a15c00;
-    --warning-soft:#fff1d6;
+    --text:#242329;
+    --text-secondary:#6d6975;
 
-    --danger:#ba1a1a;
-    --danger-soft:#ffdad6;
+    --border:#e4e0ea;
 
-    --shadow:0 5px 22px rgba(30,25,50,.07);
-    --shadow-hover:0 9px 30px rgba(30,25,50,.12);
+    --success:#2e7d32;
+    --danger:#c62828;
+    --warning:#ef6c00;
 
-    --radius:20px;
-    --radius-small:14px;
+    --shadow:
+        0 4px 18px rgba(0,0,0,.07);
 
-    --bottom-space:110px;
+    --radius:18px;
 }
 
 *{
@@ -49,1801 +44,1442 @@ html{
 
 body{
     margin:0;
-    background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(103,80,164,.10),
-            transparent 32%
-        ),
-        var(--bg);
-
-    color:var(--text);
-
     font-family:
         Tahoma,
-        Arial,
         "Segoe UI",
+        Arial,
         sans-serif;
 
-    line-height:1.8;
+    background:var(--background);
+    color:var(--text);
 
-    padding-bottom:var(--bottom-space);
+    transition:
+        background .25s,
+        color .25s;
 }
 
 button,
 input,
-select,
-textarea{
+select{
     font-family:inherit;
 }
 
 button{
-    -webkit-tap-highlight-color:transparent;
+    cursor:pointer;
 }
 
-.container{
-    width:min(1100px, calc(100% - 24px));
-    margin:0 auto;
+a{
+    color:inherit;
 }
 
+/* ============================================================
+   DARK MODE
+   ============================================================ */
 
-/* =========================================================
-   TOP HEADER
-========================================================= */
+body.dark{
 
-.hero{
-    margin:14px 0;
-    padding:25px 20px 22px;
+    --background:#121116;
+    --surface:#1d1b20;
+    --surface-2:#27242b;
 
-    color:#fff;
+    --text:#f4eff7;
+    --text-secondary:#bdb8c4;
 
-    border-radius:26px;
+    --border:#39353e;
+
+    --primary-light:#3d3450;
+
+    --shadow:
+        0 4px 18px rgba(0,0,0,.30);
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.top-header{
 
     background:
         linear-gradient(
             135deg,
-            #6750a4 0%,
-            #7d5fc1 50%,
-            #50378d 100%
+            #6750a4,
+            #7e57c2,
+            #9c6ade
         );
 
+    color:#fff;
+
+    padding:
+        22px
+        16px
+        28px;
+
     box-shadow:
-        0 10px 35px rgba(103,80,164,.25);
-
-    position:relative;
-    overflow:hidden;
+        0 4px 18px rgba(0,0,0,.15);
 }
 
-.hero::before{
-    content:"";
-    position:absolute;
+.header-inner{
 
-    width:180px;
-    height:180px;
-
-    border-radius:50%;
-
-    background:rgba(255,255,255,.08);
-
-    top:-70px;
-    left:-40px;
-}
-
-.hero::after{
-    content:"";
-    position:absolute;
-
-    width:130px;
-    height:130px;
-
-    border-radius:50%;
-
-    background:rgba(255,255,255,.06);
-
-    bottom:-70px;
-    right:-30px;
-}
-
-.hero-content{
-    position:relative;
-    z-index:1;
-}
-
-.hero-brand{
-    display:flex;
-    align-items:center;
-    gap:13px;
-}
-
-.hero-icon{
-    width:52px;
-    height:52px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:17px;
-
-    background:rgba(255,255,255,.16);
-
-    font-size:27px;
-}
-
-.hero h1{
-    margin:0;
-    font-size:23px;
-    line-height:1.5;
-}
-
-.hero-subtitle{
-    margin:5px 0 0;
-    opacity:.9;
-    font-size:13px;
-}
-
-.hero-date{
-    margin-top:17px;
-
-    padding:9px 13px;
-
-    border-radius:13px;
-
-    background:rgba(255,255,255,.13);
-
-    font-size:13px;
-}
-
-
-/* =========================================================
-   SECTION
-========================================================= */
-
-.section{
-    margin:13px 0;
-
-    background:var(--surface);
-
-    border:1px solid var(--border);
-
-    border-radius:var(--radius);
-
-    box-shadow:var(--shadow);
-
-    overflow:hidden;
-}
-
-.section-header{
-    padding:16px 17px 10px;
+    max-width:1100px;
+    margin:auto;
 
     display:flex;
     align-items:center;
     justify-content:space-between;
 
-    gap:10px;
+    gap:15px;
 }
 
-.section-title{
+.brand{
+
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+}
+
+.brand-icon{
+
+    width:54px;
+    height:54px;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,.18);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+}
+
+.brand-text h1{
+
     margin:0;
 
-    font-size:16px;
+    font-size:22px;
     font-weight:800;
 }
 
-.section-subtitle{
-    margin:3px 0 0;
+.brand-text p{
 
-    color:var(--muted);
+    margin:5px 0 0;
 
-    font-size:12px;
+    font-size:13px;
+
+    opacity:.9;
 }
 
+.theme-btn{
 
-/* =========================================================
-   STATS
-========================================================= */
+    border:none;
 
-.stats{
-    display:grid;
+    background:rgba(255,255,255,.16);
 
-    grid-template-columns:
-        repeat(4, 1fr);
+    color:#fff;
 
-    gap:10px;
-
-    margin:13px 0;
-}
-
-.stat{
-    padding:14px 8px;
-
-    text-align:center;
-
-    background:var(--surface);
-
-    border:1px solid var(--border);
-
-    border-radius:17px;
-
-    box-shadow:var(--shadow);
-}
-
-.stat-icon{
-    font-size:20px;
-}
-
-.stat-value{
-    display:block;
-
-    margin-top:2px;
-
-    font-size:22px;
-    font-weight:900;
-}
-
-.stat-label{
-    display:block;
-
-    color:var(--muted);
-
-    font-size:11px;
-}
-
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-.status{
-    display:flex;
-    align-items:center;
-
-    gap:8px;
-
-    padding:11px 14px;
-
-    margin:13px 0;
+    padding:
+        10px
+        14px;
 
     border-radius:14px;
 
-    font-size:13px;
-
-    border:1px solid var(--border);
-
-    background:var(--surface);
-}
-
-.status.loading{
-    color:var(--primary);
-    background:var(--primary-soft);
-}
-
-.status.success{
-    color:var(--success);
-    background:var(--success-soft);
-}
-
-.status.error{
-    color:var(--danger);
-    background:var(--danger-soft);
-}
-
-
-/* =========================================================
-   CATEGORIES
-========================================================= */
-
-.category-area{
-    padding:0 16px 16px;
-}
-
-.category-buttons{
-    display:flex;
-
-    gap:7px;
-
-    overflow-x:auto;
-
-    padding:3px 1px 7px;
-
-    scrollbar-width:none;
-}
-
-.category-buttons::-webkit-scrollbar{
-    display:none;
-}
-
-.category-btn{
-    flex:none;
-
-    border:1px solid var(--border);
-
-    background:var(--surface);
-
-    color:var(--text);
-
-    border-radius:999px;
-
-    padding:8px 13px;
-
-    cursor:pointer;
-
-    font-size:12px;
-
-    transition:.2s;
-
-    white-space:nowrap;
-}
-
-.category-btn:active{
-    transform:scale(.97);
-}
-
-.category-btn.active{
-    color:#fff;
-
-    background:var(--primary);
-
-    border-color:var(--primary);
-
-    box-shadow:
-        0 3px 10px rgba(103,80,164,.25);
-}
-
-
-/* =========================================================
-   FILTERS
-========================================================= */
-
-.filter-body{
-    padding:0 16px 16px;
-}
-
-.search-box{
-    position:relative;
-}
-
-.search-input{
-    width:100%;
-
-    min-height:49px;
-
-    padding:
-        8px 45px 8px 42px;
-
-    border-radius:15px;
-
-    border:1px solid var(--border);
-
-    background:var(--surface);
-
-    color:var(--text);
-
     font-size:14px;
 
-    outline:none;
+    backdrop-filter:blur(8px);
 }
 
-.search-input:focus{
-    border-color:var(--primary);
+.theme-btn:hover{
 
-    box-shadow:
-        0 0 0 3px rgba(103,80,164,.10);
+    background:rgba(255,255,255,.25);
 }
 
-.search-icon{
-    position:absolute;
+/* ============================================================
+   MAIN
+   ============================================================ */
 
-    right:14px;
-    top:50%;
+.container{
 
-    transform:translateY(-50%);
+    max-width:1100px;
 
-    color:var(--muted);
+    margin:
+        20px auto
+        110px;
 
-    pointer-events:none;
+    padding:
+        0 14px;
 }
 
-.clear-search{
-    position:absolute;
+/* ============================================================
+   STATS
+   ============================================================ */
 
-    left:8px;
-    top:50%;
+.stats{
 
-    transform:translateY(-50%);
-
-    width:30px;
-    height:30px;
-
-    border:0;
-
-    border-radius:50%;
-
-    background:var(--surface-2);
-
-    color:var(--muted);
-
-    cursor:pointer;
-
-    display:none;
-}
-
-.filter-row{
     display:grid;
 
     grid-template-columns:
-        1fr 1fr 1fr;
+        repeat(4,1fr);
 
-    gap:8px;
+    gap:12px;
 
-    margin-top:9px;
+    margin-bottom:18px;
 }
 
-.select{
-    width:100%;
-
-    min-height:43px;
-
-    padding:7px 10px;
-
-    border:1px solid var(--border);
-
-    border-radius:12px;
+.stat-card{
 
     background:var(--surface);
 
-    color:var(--text);
+    border:
+        1px solid var(--border);
 
-    outline:none;
+    border-radius:var(--radius);
 
-    font-size:12px;
+    padding:16px;
+
+    box-shadow:var(--shadow);
+
+    text-align:center;
 }
 
-.only-selected{
-    margin-top:9px;
+.stat-number{
 
-    display:flex;
-    align-items:center;
+    display:block;
 
-    gap:9px;
+    font-size:24px;
 
-    padding:10px 12px;
+    font-weight:800;
 
-    border-radius:13px;
+    color:var(--primary);
+}
+
+.stat-label{
+
+    display:block;
+
+    margin-top:4px;
+
+    font-size:12px;
+
+    color:var(--text-secondary);
+}
+
+/* ============================================================
+   SETTINGS CARD
+   ============================================================ */
+
+.card{
+
+    background:var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:18px;
+
+    overflow:hidden;
+}
+
+.card-header{
+
+    padding:
+        16px 18px;
 
     background:var(--surface-2);
 
-    cursor:pointer;
+    border-bottom:
+        1px solid var(--border);
 
-    font-size:13px;
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
 }
 
-.only-selected input{
-    width:18px;
-    height:18px;
+.card-title{
+
+    margin:0;
+
+    font-size:16px;
+
+    font-weight:800;
 }
 
+.card-body{
 
-/* =========================================================
-   ACTION BAR
-========================================================= */
+    padding:18px;
+}
 
-.action-grid{
+/* ============================================================
+   FORM
+   ============================================================ */
+
+.form-grid{
+
     display:grid;
 
     grid-template-columns:
-        repeat(2, 1fr);
+        repeat(2,1fr);
 
-    gap:8px;
-
-    padding:0 16px 16px;
+    gap:14px;
 }
 
-.btn{
-    min-height:43px;
-
-    padding:8px 12px;
-
-    border:0;
-
-    border-radius:13px;
-
-    cursor:pointer;
-
-    font-size:12px;
-
-    font-weight:700;
-
-    transition:.18s;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:6px;
-}
-
-.btn:active{
-    transform:scale(.97);
-}
-
-.btn-primary{
-    color:#fff;
-    background:var(--primary);
-}
-
-.btn-secondary{
-    color:var(--text);
-    background:var(--surface-2);
-}
-
-.btn-danger{
-    color:var(--danger);
-    background:var(--danger-soft);
-}
-
-.btn-success{
-    color:var(--success);
-    background:var(--success-soft);
-}
-
-.selection-info{
-    padding:0 16px 15px;
-
-    color:var(--muted);
-
-    font-size:12px;
-}
-
-
-/* =========================================================
-   NEWS LIST
-========================================================= */
-
-.news-list{
-    padding:0 12px 14px;
+.form-group{
 
     display:flex;
 
     flex-direction:column;
 
-    gap:9px;
+    gap:7px;
 }
 
-.news-card{
-    position:relative;
+.form-group.full{
 
-    padding:14px 14px 13px;
+    grid-column:
+        1 / -1;
+}
 
-    border:1px solid var(--border);
+.form-label{
 
-    border-radius:17px;
+    font-size:13px;
+
+    font-weight:700;
+}
+
+.form-input{
+
+    width:100%;
+
+    border:
+        1px solid var(--border);
 
     background:var(--surface);
 
-    cursor:pointer;
+    color:var(--text);
 
-    transition:
-        border-color .2s,
-        box-shadow .2s,
-        transform .15s;
+    border-radius:13px;
+
+    padding:
+        12px 13px;
+
+    outline:none;
+
+    transition:.2s;
 }
 
-.news-card:active{
-    transform:scale(.99);
-}
+.form-input:focus{
 
-.news-card.selected{
     border-color:var(--primary);
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--primary-soft),
-            var(--surface)
-        );
-
     box-shadow:
-        0 4px 15px rgba(103,80,164,.12);
+        0 0 0 3px
+        rgba(103,80,164,.12);
 }
 
-.news-card-top{
-    display:flex;
+.hint{
 
-    gap:10px;
+    font-size:11px;
 
-    align-items:flex-start;
+    color:var(--text-secondary);
+
+    line-height:1.7;
 }
 
-.news-checkbox{
-    flex:none;
+/* ============================================================
+   FILTER BAR
+   ============================================================ */
 
-    width:21px;
-    height:21px;
+.filter-bar{
 
-    margin-top:3px;
-
-    accent-color:var(--primary);
-
-    cursor:pointer;
-}
-
-.news-main{
-    min-width:0;
-    flex:1;
-}
-
-.news-title{
-    margin:0;
-
-    font-size:14px;
-
-    line-height:1.85;
-
-    font-weight:800;
-}
-
-.news-title::first-letter{
-    color:var(--danger);
-}
-
-.news-meta{
     display:flex;
 
     flex-wrap:wrap;
 
-    gap:6px;
+    gap:10px;
 
-    margin-top:8px;
+    margin-bottom:15px;
 }
 
-.badge{
-    padding:3px 8px;
+.search-box{
 
-    border-radius:8px;
+    position:relative;
 
-    background:var(--surface-2);
-
-    color:var(--muted);
-
-    font-size:10px;
+    flex:
+        1 1 280px;
 }
 
-.news-summary{
-    margin-top:10px;
+.search-box input{
 
-    padding-top:9px;
+    padding-right:42px;
+}
 
-    border-top:1px dashed var(--border);
+.search-icon{
 
-    color:#4f4b56;
+    position:absolute;
+
+    right:14px;
+
+    top:50%;
+
+    transform:
+        translateY(-50%);
+
+    color:var(--text-secondary);
+
+    pointer-events:none;
+}
+
+.category-list{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:8px;
+}
+
+.category-btn{
+
+    border:
+        1px solid var(--border);
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border-radius:50px;
+
+    padding:
+        9px 14px;
 
     font-size:12px;
 
-    line-height:1.9;
+    transition:.2s;
 }
 
-.news-link{
+.category-btn:hover{
+
+    border-color:var(--primary);
+}
+
+.category-btn.active{
+
+    background:var(--primary);
+
+    color:#fff;
+
+    border-color:var(--primary);
+}
+
+/* ============================================================
+   SORT / ACTION
+   ============================================================ */
+
+.toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-bottom:15px;
+}
+
+.toolbar-left,
+.toolbar-right{
+
     display:flex;
 
     align-items:center;
 
-    gap:5px;
+    gap:8px;
 
-    width:max-content;
+    flex-wrap:wrap;
+}
 
-    max-width:100%;
+.small-btn{
 
-    margin-top:9px;
+    border:
+        1px solid var(--border);
 
-    padding:5px 9px;
+    background:var(--surface);
 
-    border-radius:9px;
+    color:var(--text);
+
+    padding:
+        9px 12px;
+
+    border-radius:11px;
+
+    font-size:12px;
+}
+
+.small-btn:hover{
+
+    border-color:var(--primary);
+}
+
+.small-btn.primary{
+
+    background:var(--primary);
+
+    border-color:var(--primary);
+
+    color:#fff;
+}
+
+/* ============================================================
+   NEWS LIST
+   ============================================================ */
+
+.news-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+}
+
+.news-card{
+
+    position:relative;
+
+    background:var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:
+        15px 48px 15px 15px;
+
+    cursor:pointer;
+
+    transition:
+        transform .18s,
+        border-color .18s,
+        box-shadow .18s;
+
+    user-select:none;
+}
+
+.news-card:hover{
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:var(--shadow);
+
+    border-color:
+        rgba(103,80,164,.45);
+}
+
+.news-card.selected{
+
+    border:
+        2px solid var(--primary);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(103,80,164,.07),
+            var(--surface)
+        );
+}
+
+.check-box{
+
+    position:absolute;
+
+    right:14px;
+
+    top:17px;
+
+    width:25px;
+    height:25px;
+
+    border-radius:8px;
+
+    border:
+        2px solid #bbb5c4;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    color:transparent;
+
+    transition:.2s;
+}
+
+.news-card.selected .check-box{
+
+    background:var(--primary);
+
+    border-color:var(--primary);
+
+    color:#fff;
+}
+
+.news-title{
+
+    font-size:14px;
+
+    font-weight:800;
+
+    line-height:1.8;
+
+    margin-bottom:7px;
+}
+
+.news-meta{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:7px;
+
+    align-items:center;
+
+    margin-bottom:8px;
+}
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    border-radius:50px;
+
+    padding:
+        4px 9px;
+
+    font-size:10px;
+
+    background:var(--surface-2);
+
+    color:var(--text-secondary);
+}
+
+.badge.source{
 
     color:var(--primary);
 
-    background:var(--primary-soft);
+    background:
+        rgba(103,80,164,.10);
+}
 
-    text-decoration:none;
+.news-summary{
+
+    font-size:12px;
+
+    line-height:1.9;
+
+    color:var(--text-secondary);
+}
+
+.news-url{
+
+    margin-top:7px;
 
     font-size:10px;
+
+    color:var(--primary);
+
+    direction:ltr;
+
+    text-align:left;
+
+    white-space:nowrap;
 
     overflow:hidden;
 
     text-overflow:ellipsis;
 
-    white-space:nowrap;
+    opacity:.8;
 }
 
-.selected-mark{
-    position:absolute;
+/* ============================================================
+   EMPTY / LOADING
+   ============================================================ */
 
-    top:9px;
-    left:9px;
+.state-box{
 
-    width:25px;
-    height:25px;
+    text-align:center;
 
-    display:none;
+    padding:
+        45px 20px;
 
-    align-items:center;
-    justify-content:center;
-
-    border-radius:50%;
-
-    color:#fff;
-
-    background:var(--primary);
-
-    font-size:14px;
-
-    box-shadow:0 3px 8px rgba(103,80,164,.25);
+    color:var(--text-secondary);
 }
 
-.news-card.selected .selected-mark{
-    display:flex;
+.state-icon{
+
+    font-size:42px;
+
+    margin-bottom:10px;
 }
 
+.state-title{
 
-/* =========================================================
-   PUBLISHER
-========================================================= */
-
-.publisher-body{
-    padding:0 16px 16px;
-}
-
-.publisher-grid{
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:9px;
-}
-
-.input{
-    width:100%;
-
-    min-height:44px;
-
-    padding:8px 11px;
-
-    border:1px solid var(--border);
-
-    border-radius:12px;
-
-    background:var(--surface);
+    font-weight:800;
 
     color:var(--text);
 
-    outline:none;
+    margin-bottom:6px;
+}
+
+.state-text{
 
     font-size:12px;
+
+    line-height:1.8;
 }
 
-.input:focus{
-    border-color:var(--primary);
-
-    box-shadow:
-        0 0 0 3px rgba(103,80,164,.10);
-}
-
-
-/* =========================================================
+/* ============================================================
    PREVIEW
-========================================================= */
+   ============================================================ */
 
-.preview-section{
-    margin-bottom:20px;
-}
-
-.preview-body{
-    padding:0 14px 16px;
-}
-
-.preview-shell{
-    position:relative;
-
-    overflow:hidden;
-
-    border-radius:17px;
-
-    border:1px solid var(--border);
+.preview-box{
 
     background:
-        linear-gradient(
-            180deg,
-            #f3f1f7,
-            #fafafa
-        );
-}
+        #f0f0f0;
 
-.preview-label{
-    display:flex;
-
-    align-items:center;
-
-    gap:7px;
-
-    padding:9px 12px;
-
-    color:var(--muted);
-
-    font-size:11px;
-
-    border-bottom:1px solid var(--border);
-}
-
-.preview{
-    width:100%;
-
-    min-height:330px;
-
-    resize:vertical;
-
-    border:0;
-
-    outline:0;
+    border-radius:16px;
 
     padding:14px;
 
-    background:transparent;
+    max-height:650px;
 
-    color:var(--text);
+    overflow:auto;
+}
+
+body.dark .preview-box{
+
+    background:#111;
+}
+
+.preview-message{
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
 
     font-family:
         Tahoma,
         Arial,
         sans-serif;
 
-    font-size:12px;
+    font-size:13px;
 
     line-height:2;
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border-radius:14px;
+
+    padding:17px;
 
     direction:rtl;
 
     text-align:right;
 }
 
+/* ============================================================
+   LENGTH
+   ============================================================ */
 
-/* =========================================================
-   MESSAGE LENGTH
-========================================================= */
+.length-wrapper{
 
-.length-box{
-    margin-top:10px;
-
-    padding:12px;
-
-    border-radius:14px;
-
-    background:var(--surface-2);
-
-    border:1px solid var(--border);
+    margin-top:14px;
 }
 
 .length-top{
+
     display:flex;
 
     justify-content:space-between;
 
-    gap:10px;
+    align-items:center;
 
-    font-size:11px;
+    font-size:12px;
+
+    margin-bottom:6px;
 }
 
 .length-number{
-    font-weight:900;
+
+    font-weight:800;
+
+    color:var(--primary);
 }
 
 .progress{
+
     height:8px;
 
-    margin-top:8px;
+    background:var(--surface-2);
+
+    border-radius:20px;
 
     overflow:hidden;
-
-    border-radius:99px;
-
-    background:#dedbe5;
 }
 
 .progress-bar{
-    width:0;
+
     height:100%;
 
-    border-radius:99px;
+    width:0%;
 
-    background:var(--success);
+    background:var(--primary);
 
-    transition:.25s;
+    transition:.2s;
 }
 
-.length-box.warning .progress-bar{
+.progress-bar.warning{
+
     background:var(--warning);
 }
 
-.length-box.danger .progress-bar{
+.progress-bar.danger{
+
     background:var(--danger);
 }
 
-.length-message{
-    margin-top:6px;
-
-    color:var(--muted);
-
-    font-size:10px;
-}
-
-.length-box.danger .length-message{
-    color:var(--danger);
-
-    font-weight:800;
-}
-
-
-/* =========================================================
-   PREVIEW BUTTONS
-========================================================= */
-
-.preview-actions{
-    display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:8px;
-
-    margin-top:10px;
-}
-
-.copy-main{
-    min-height:51px;
-
-    font-size:13px;
-
-    color:#fff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #6750a4,
-            #4f378b
-        );
-
-    box-shadow:
-        0 5px 15px rgba(103,80,164,.22);
-}
-
-
-/* =========================================================
-   EMPTY
-========================================================= */
-
-.empty{
-    padding:35px 15px;
-
-    text-align:center;
-
-    color:var(--muted);
-
-    font-size:13px;
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer{
-    margin:14px 0;
-
-    padding:17px;
-
-    text-align:center;
-
-    border-radius:18px;
-
-    background:var(--surface);
-
-    border:1px solid var(--border);
-
-    color:var(--muted);
-
-    font-size:11px;
-}
-
-
-/* =========================================================
+/* ============================================================
    FLOATING COPY BAR
-========================================================= */
+   ============================================================ */
 
-.floating-copy{
+.copy-bar{
+
     position:fixed;
 
-    right:0;
     left:0;
+    right:0;
     bottom:0;
 
-    z-index:1000;
+    z-index:100;
 
     padding:
-        9px
-        max(10px, env(safe-area-inset-right))
-        calc(9px + env(safe-area-inset-bottom))
-        max(10px, env(safe-area-inset-left));
+        10px 14px;
 
     background:
-        rgba(247,247,251,.90);
+        rgba(255,255,255,.90);
+
+    border-top:
+        1px solid var(--border);
 
     backdrop-filter:
-        blur(16px);
-
-    -webkit-backdrop-filter:
-        blur(16px);
-
-    border-top:1px solid var(--border);
+        blur(14px);
 }
 
-.floating-inner{
-    width:min(1100px,100%);
+body.dark .copy-bar{
+
+    background:
+        rgba(29,27,32,.92);
+}
+
+.copy-inner{
+
+    max-width:1100px;
 
     margin:auto;
 
-    display:grid;
-
-    grid-template-columns:
-        1fr auto;
-
-    gap:8px;
-}
-
-.floating-count{
     display:flex;
 
     align-items:center;
 
-    justify-content:center;
+    justify-content:space-between;
 
-    padding:0 12px;
-
-    border-radius:13px;
-
-    background:var(--surface);
-
-    border:1px solid var(--border);
-
-    color:var(--muted);
-
-    font-size:11px;
+    gap:10px;
 }
 
-.floating-copy-btn{
-    min-height:48px;
+.copy-info{
 
-    padding:8px 18px;
+    font-size:12px;
 
-    border:0;
+    color:var(--text-secondary);
+}
 
-    border-radius:14px;
+.copy-btn{
+
+    border:none;
+
+    background:var(--primary);
 
     color:#fff;
 
-    background:
-        linear-gradient(
-            135deg,
-            #6750a4,
-            #4f378b
-        );
+    border-radius:15px;
 
-    font-family:inherit;
+    padding:
+        13px 20px;
 
-    font-size:13px;
+    font-size:14px;
 
     font-weight:800;
 
-    cursor:pointer;
-
     box-shadow:
-        0 5px 17px rgba(103,80,164,.25);
+        0 5px 15px
+        rgba(103,80,164,.28);
+
+    min-width:145px;
 }
 
+.copy-btn:hover{
 
-/* =========================================================
+    background:var(--primary-dark);
+}
+
+.copy-btn:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+}
+
+/* ============================================================
    TOAST
-========================================================= */
+   ============================================================ */
 
 .toast{
+
     position:fixed;
 
     left:50%;
-    bottom:80px;
 
-    z-index:2000;
+    bottom:82px;
 
     transform:
-        translate(-50%, 20px);
+        translate(-50%,20px);
 
     opacity:0;
 
     pointer-events:none;
 
-    padding:10px 16px;
-
-    max-width:
-        calc(100% - 30px);
-
-    border-radius:999px;
+    background:#29262d;
 
     color:#fff;
 
-    background:#252329;
+    padding:
+        11px 17px;
 
-    box-shadow:
-        0 6px 25px rgba(0,0,0,.18);
+    border-radius:12px;
 
-    font-size:11px;
+    font-size:12px;
+
+    z-index:200;
 
     transition:.25s;
 
-    text-align:center;
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.22);
 }
 
 .toast.show{
+
     opacity:1;
 
     transform:
-        translate(-50%, 0);
+        translate(-50%,0);
 }
 
-
-/* =========================================================
-   DARK MODE
-========================================================= */
-
-body.dark{
-    --bg:#121014;
-    --surface:#1d1a20;
-    --surface-2:#28242c;
-    --surface-3:#322d36;
-    --text:#eeeaf1;
-    --muted:#aaa4af;
-    --border:#39343d;
-
-    --primary:#d0bcff;
-    --primary-dark:#b69cff;
-    --primary-soft:#342b46;
-
-    --success:#9bd5a8;
-    --success-soft:#1d3323;
-
-    --warning:#f5c46d;
-    --warning-soft:#3b2d18;
-
-    --danger:#ffb4ab;
-    --danger-soft:#4a2421;
-}
-
-body.dark .hero{
-    background:
-        linear-gradient(
-            135deg,
-            #39275c,
-            #281d3e
-        );
-}
-
-body.dark .news-summary{
-    color:#c8c3cc;
-}
-
-body.dark .preview-shell{
-    background:
-        linear-gradient(
-            180deg,
-            #242027,
-            #1d1a20
-        );
-}
-
-body.dark .floating-copy{
-    background:
-        rgba(18,16,20,.90);
-}
-
-body.dark .progress{
-    background:#403b44;
-}
-
-
-/* =========================================================
+/* ============================================================
    RESPONSIVE
-========================================================= */
+   ============================================================ */
 
-@media(max-width:700px){
-
-    .container{
-        width:
-            calc(100% - 12px);
-    }
+@media(max-width:760px){
 
     .stats{
-        grid-template-columns:
-            repeat(4,1fr);
 
-        gap:6px;
-    }
-
-    .stat{
-        padding:10px 3px;
-    }
-
-    .stat-value{
-        font-size:18px;
-    }
-
-    .stat-label{
-        font-size:9px;
-    }
-
-    .hero{
-        padding:20px 15px;
-        border-radius:21px;
-    }
-
-    .hero h1{
-        font-size:19px;
-    }
-
-    .filter-row{
-        grid-template-columns:
-            1fr 1fr;
-    }
-
-    .publisher-grid{
-        grid-template-columns:1fr;
-    }
-
-    .preview-actions{
-        grid-template-columns:1fr;
-    }
-
-}
-
-@media(max-width:430px){
-
-    .stats{
         grid-template-columns:
             repeat(2,1fr);
     }
 
-    .stat{
-        padding:9px;
-    }
+    .form-grid{
 
-    .stat-value{
-        font-size:19px;
-    }
-
-    .filter-row{
-        grid-template-columns:1fr;
-    }
-
-    .action-grid{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .news-title{
-        font-size:13px;
-    }
-
-    .floating-inner{
         grid-template-columns:
             1fr;
     }
 
-    .floating-count{
-        min-height:30px;
+    .form-group.full{
+
+        grid-column:auto;
     }
 
-}
+    .header-inner{
 
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media(prefers-reduced-motion:reduce){
-
-    *,
-    *::before,
-    *::after{
-        scroll-behavior:auto !important;
-        transition:none !important;
+        align-items:flex-start;
     }
 
+    .brand-text h1{
+
+        font-size:18px;
+    }
+
+    .brand-text p{
+
+        font-size:11px;
+    }
+
+    .theme-btn{
+
+        padding:
+            9px 11px;
+
+        font-size:11px;
+    }
+
+    .card-header{
+
+        padding:
+            14px;
+    }
+
+    .card-body{
+
+        padding:
+            14px;
+    }
+
+    .news-title{
+
+        font-size:13px;
+    }
+
+    .copy-info{
+
+        display:none;
+    }
+
+    .copy-inner{
+
+        justify-content:center;
+    }
+
+    .copy-btn{
+
+        width:100%;
+
+        max-width:500px;
+    }
 }
+
+@media(max-width:420px){
+
+    .stats{
+
+        gap:8px;
+    }
+
+    .stat-card{
+
+        padding:12px 8px;
+    }
+
+    .stat-number{
+
+        font-size:20px;
+    }
+
+    .container{
+
+        padding:
+            0 10px;
+    }
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
 
-    <!-- =====================================================
-         HERO
-    ====================================================== -->
+<header class="top-header">
 
-    <header class="hero">
+    <div class="header-inner">
 
-        <div class="hero-content">
+        <div class="brand">
 
-            <div class="hero-brand">
+            <div class="brand-icon">
+                🕌
+            </div>
 
-                <div class="hero-icon">
-                    📰
+            <div class="brand-text">
+
+                <h1>
+                    اخبار دیار قدمگاه
+                </h1>
+
+                <p>
+                    سازنده پیام اخبار برای روبیکا
+                </p>
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="theme-btn"
+            id="themeBtn"
+        >
+            🌙 حالت شب
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================================
+     MAIN
+     ============================================================ -->
+
+<main class="container">
+
+
+    <!-- ========================================================
+         STATS
+         ======================================================== -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+
+            <span
+                class="stat-number"
+                id="totalCount"
+            >
+                ۰
+            </span>
+
+            <span class="stat-label">
+                کل اخبار
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span
+                class="stat-number"
+                id="selectedCount"
+            >
+                ۰
+            </span>
+
+            <span class="stat-label">
+                انتخاب‌شده
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span
+                class="stat-number"
+                id="visibleCount"
+            >
+                ۰
+            </span>
+
+            <span class="stat-label">
+                نمایش داده‌شده
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span
+                class="stat-number"
+                id="messageLength"
+            >
+                ۰
+            </span>
+
+            <span class="stat-label">
+                کاراکتر پیام
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         PUBLISHER
+         ======================================================== -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <h2 class="card-title">
+                ⚙️ مشخصات پیام
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="publisherName"
+                    >
+                        ✍️ نام منتشرکننده
+                    </label>
+
+                    <input
+                        id="publisherName"
+                        class="form-input"
+                        type="text"
+                        placeholder="مثلاً معقول"
+                        autocomplete="off"
+                    >
+
                 </div>
 
-                <div>
 
-                    <h1>
-                        ساخت پیام اخبار روبیکا
-                    </h1>
+                <div class="form-group">
 
-                    <div class="hero-subtitle">
-                        دیار قدمگاه
+                    <label
+                        class="form-label"
+                        for="publisherRubika"
+                    >
+                        🔗 لینک روبیکا
+                    </label>
+
+                    <input
+                        id="publisherRubika"
+                        class="form-input"
+                        type="text"
+                        dir="ltr"
+                        placeholder="https://rubika.ir/..."
+                        autocomplete="off"
+                    >
+
+                    <div class="hint">
+
+                        اگر خالی باشد، لینک اصلی گروه
+                        «دیار قدمگاه» استفاده می‌شود.
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         FILTER
+         ======================================================== -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <h2 class="card-title">
+                📰 انتخاب اخبار
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+
+            <div class="filter-bar">
+
+
+                <div class="search-box">
+
+                    <span class="search-icon">
+                        🔎
+                    </span>
+
+                    <input
+                        id="searchInput"
+                        class="form-input"
+                        type="search"
+                        placeholder="جستجو در عنوان، خلاصه یا منبع..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="small-btn"
+                    id="selectVisibleBtn"
+                >
+                    ☑️ انتخاب نمایش‌داده‌شده‌ها
+                </button>
+
+
+                <button
+                    type="button"
+                    class="small-btn"
+                    id="clearSelectionBtn"
+                >
+                    🗑️ پاک کردن انتخاب‌ها
+                </button>
+
+            </div>
+
+
+            <div
+                class="category-list"
+                id="categoryList"
+            ></div>
+
+
+            <div
+                class="toolbar"
+                style="margin-top:15px;"
+            >
+
+                <div class="toolbar-left">
+
+                    <span
+                        class="hint"
+                        id="filterInfo"
+                    >
+                        در حال بارگذاری...
+                    </span>
+
+                </div>
+
+
+                <div class="toolbar-right">
+
+                    <button
+                        type="button"
+                        class="small-btn"
+                        id="sortNewestBtn"
+                    >
+                        🕒 جدیدترین
+                    </button>
+
+                    <button
+                        type="button"
+                        class="small-btn"
+                        id="sortOldestBtn"
+                    >
+                        🕰️ قدیمی‌ترین
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="news-list"
+                id="newsList"
+            >
+
+                <div class="state-box">
+
+                    <div class="state-icon">
+                        ⏳
+                    </div>
+
+                    <div class="state-title">
+                        در حال دریافت اخبار...
+                    </div>
+
+                    <div class="state-text">
+                        لطفاً چند لحظه صبر کنید.
                     </div>
 
                 </div>
 
             </div>
 
-            <div
-                id="headerDate"
-                class="hero-date"
-            >
-                📅 در حال دریافت تاریخ...
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <!-- =====================================================
-         STATUS
-    ====================================================== -->
-
-    <div
-        id="statusBox"
-        class="status loading"
-    >
-        ⏳ در حال دریافت اخبار...
-    </div>
-
-
-    <!-- =====================================================
-         STATS
-    ====================================================== -->
-
-    <section class="stats">
-
-        <div class="stat">
-            <span class="stat-icon">📰</span>
-            <span
-                id="totalCount"
-                class="stat-value"
-            >۰</span>
-            <span class="stat-label">
-                کل اخبار
-            </span>
-        </div>
-
-        <div class="stat">
-            <span class="stat-icon">📂</span>
-            <span
-                id="categoryCount"
-                class="stat-value"
-            >۰</span>
-            <span class="stat-label">
-                این دسته
-            </span>
-        </div>
-
-        <div class="stat">
-            <span class="stat-icon">☑️</span>
-            <span
-                id="selectedCount"
-                class="stat-value"
-            >۰</span>
-            <span class="stat-label">
-                انتخاب‌شده
-            </span>
-        </div>
-
-        <div class="stat">
-            <span class="stat-icon">👁️</span>
-            <span
-                id="displayCount"
-                class="stat-value"
-            >۰</span>
-            <span class="stat-label">
-                نمایش
-            </span>
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         CATEGORY
-    ====================================================== -->
-
-    <section class="section">
-
-        <div class="section-header">
-
-            <div>
-
-                <h2 class="section-title">
-                    📂 دسته‌بندی اخبار
-                </h2>
-
-                <p class="section-subtitle">
-                    دسته موردنظر را انتخاب کنید
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="category-area">
-
-            <div
-                id="categoryButtons"
-                class="category-buttons"
-            ></div>
 
         </div>
 
     </section>
 
 
-    <!-- =====================================================
-         FILTER
-    ====================================================== -->
-
-    <section class="section">
-
-        <div class="section-header">
-
-            <div>
-
-                <h2 class="section-title">
-                    🔎 جستجو و فیلتر
-                </h2>
-
-                <p class="section-subtitle">
-                    خبر موردنظر خود را سریع پیدا کنید
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="filter-body">
-
-            <div class="search-box">
-
-                <span class="search-icon">
-                    🔎
-                </span>
-
-                <input
-                    id="searchInput"
-                    class="search-input"
-                    type="text"
-                    placeholder="عنوان، خلاصه یا منبع..."
-                    autocomplete="off"
-                >
-
-                <button
-                    id="clearSearchBtn"
-                    class="clear-search"
-                    type="button"
-                >
-                    ×
-                </button>
-
-            </div>
-
-            <div class="filter-row">
-
-                <select
-                    id="sortSelect"
-                    class="select"
-                >
-                    <option value="newest">
-                        جدیدترین
-                    </option>
-
-                    <option value="oldest">
-                        قدیمی‌ترین
-                    </option>
-
-                    <option value="selected">
-                        انتخاب‌شده‌ها اول
-                    </option>
-                </select>
-
-                <select
-                    id="newsCount"
-                    class="select"
-                >
-                    <option value="5">
-                        ۵ خبر
-                    </option>
-
-                    <option
-                        value="10"
-                        selected
-                    >
-                        ۱۰ خبر
-                    </option>
-
-                    <option value="15">
-                        ۱۵ خبر
-                    </option>
-
-                    <option value="20">
-                        ۲۰ خبر
-                    </option>
-
-                    <option value="all">
-                        همه اخبار
-                    </option>
-                </select>
-
-                <button
-                    id="themeBtn"
-                    class="btn btn-secondary"
-                    type="button"
-                >
-                    🌙 حالت شب
-                </button>
-
-            </div>
-
-            <label class="only-selected">
-
-                <input
-                    id="onlySelected"
-                    type="checkbox"
-                >
-
-                <span>
-                    فقط خبرهای انتخاب‌شده نمایش داده شود
-                </span>
-
-            </label>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         ACTIONS
-    ====================================================== -->
-
-    <section class="section">
-
-        <div class="section-header">
-
-            <div>
-
-                <h2 class="section-title">
-                    ⚙️ مدیریت انتخاب‌ها
-                </h2>
-
-                <p class="section-subtitle">
-                    خبرها را برای پیام روبیکا انتخاب کنید
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="action-grid">
-
-            <button
-                id="selectAllBtn"
-                class="btn btn-primary"
-                type="button"
-            >
-                ☑️ انتخاب همه
-            </button>
-
-            <button
-                id="clearAllBtn"
-                class="btn btn-secondary"
-                type="button"
-            >
-                ⬜ لغو انتخاب‌ها
-            </button>
-
-            <button
-                id="clearEverythingBtn"
-                class="btn btn-danger"
-                type="button"
-            >
-                🗑️ پاک‌کردن همه
-            </button>
-
-            <button
-                id="refreshBtn"
-                class="btn btn-secondary"
-                type="button"
-            >
-                🔄 بروزرسانی
-            </button>
-
-        </div>
-
-        <div
-            id="selectionInfo"
-            class="selection-info"
-        >
-            هنوز خبری انتخاب نشده است.
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         NEWS
-    ====================================================== -->
-
-    <section class="section">
-
-        <div class="section-header">
-
-            <div>
-
-                <h2 class="section-title">
-                    📰 فهرست اخبار
-                </h2>
-
-                <p class="section-subtitle">
-                    برای انتخاب، روی کارت خبر ضربه بزنید
-                </p>
-
-            </div>
-
-        </div>
-
-        <div
-            id="newsContainer"
-            class="news-list"
-        ></div>
-
-    </section>
-
-
-    <!-- =====================================================
-         PUBLISHER
-    ====================================================== -->
-
-    <section class="section">
-
-        <div class="section-header">
-
-            <div>
-
-                <h2 class="section-title">
-                    ✍️ مشخصات منتشرکننده
-                </h2>
-
-                <p class="section-subtitle">
-                    این اطلاعات در انتهای پیام قرار می‌گیرد
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="publisher-body">
-
-            <div class="publisher-grid">
-
-                <input
-                    id="publisherName"
-                    class="input"
-                    type="text"
-                    placeholder="نام منتشرکننده"
-                >
-
-                <input
-                    id="publisherRubika"
-                    class="input"
-                    type="text"
-                    placeholder="لینک روبیکا"
-                >
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
+    <!-- ========================================================
          PREVIEW
-    ====================================================== -->
+         ======================================================== -->
 
-    <section class="section preview-section">
+    <section class="card">
 
-        <div class="section-header">
+        <div class="card-header">
 
-            <div>
-
-                <h2 class="section-title">
-                    👁️ پیش‌نمایش پیام روبیکا
-                </h2>
-
-                <p class="section-subtitle">
-                    متن زیر دقیقاً برای کپی در روبیکا آماده می‌شود
-                </p>
-
-            </div>
+            <h2 class="card-title">
+                👁️ پیش‌نمایش پیام روبیکا
+            </h2>
 
         </div>
 
-        <div class="preview-body">
+        <div class="card-body">
 
-            <div class="preview-shell">
+            <div class="preview-box">
 
-                <div class="preview-label">
-                    💬 متن آماده انتشار
+                <div
+                    class="preview-message"
+                    id="previewMessage"
+                >
+                    هنوز خبری انتخاب نشده است.
                 </div>
 
-                <textarea
-                    id="preview"
-                    class="preview"
-                    readonly
-                    spellcheck="false"
-                ></textarea>
-
             </div>
 
 
-            <!-- MESSAGE LENGTH -->
-
-            <div
-                id="messageLengthBox"
-                class="length-box"
-            >
+            <div class="length-wrapper">
 
                 <div class="length-top">
 
                     <span>
-                        📏 طول پیام
+                        طول پیام
                     </span>
 
-                    <span class="length-number">
-
-                        <span
-                            id="messageLength"
-                        >۰</span>
-
-                        از
-
-                        <span
-                            id="messageMaxLength"
-                        >۴۰۰۰</span>
-
+                    <span
+                        class="length-number"
+                        id="lengthText"
+                    >
+                        ۰ / ۴۰۰۰
                     </span>
 
                 </div>
@@ -1851,83 +1487,45 @@ body.dark .progress{
                 <div class="progress">
 
                     <div
-                        id="progressBar"
                         class="progress-bar"
+                        id="lengthBar"
                     ></div>
 
                 </div>
 
-                <div
-                    id="lengthMessage"
-                    class="length-message"
-                >
-                    طول پیام مناسب است.
-                </div>
-
             </div>
 
-
-            <div class="preview-actions">
-
-                <button
-                    id="copyBtn"
-                    class="btn copy-main"
-                    type="button"
-                >
-                    📋 کپی پیام روبیکا
-                </button>
-
-                <button
-                    id="copyBtnPreview"
-                    class="btn btn-secondary"
-                    type="button"
-                >
-                    📋 کپی پیش‌نمایش
-                </button>
-
-            </div>
 
         </div>
 
     </section>
 
 
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
-
-    <footer class="footer">
-
-        🏡 دیار قدمگاه
-        <br>
-        ✍️ معقول
-
-    </footer>
-
-</div>
+</main>
 
 
-<!-- =========================================================
-     FLOATING COPY
-========================================================= -->
+<!-- ============================================================
+     FLOATING COPY BAR
+     ============================================================ -->
 
-<div class="floating-copy">
+<div class="copy-bar">
 
-    <div class="floating-inner">
+    <div class="copy-inner">
 
         <div
-            id="floatingCount"
-            class="floating-count"
+            class="copy-info"
+            id="copyInfo"
         >
-            ۰ خبر انتخاب شده
+            برای ساخت پیام، خبرها را انتخاب کنید.
         </div>
 
         <button
-            id="floatingCopyBtn"
-            class="floating-copy-btn"
             type="button"
+            class="copy-btn"
+            id="copyBtn"
+            disabled
         >
-            📋 کپی پیام برای روبیکا
+            📋 کپی پیام روبیکا
         </button>
 
     </div>
@@ -1935,28 +1533,26 @@ body.dark .progress{
 </div>
 
 
-<!-- =========================================================
+<!-- ============================================================
      TOAST
-========================================================= -->
+     ============================================================ -->
 
 <div
-    id="toast"
     class="toast"
+    id="toast"
 ></div>
 
 
 <script>
-"use strict";
 
-
-/* =========================================================
-   CONFIG
-========================================================= */
+/* ============================================================
+   تنظیمات اصلی
+   ============================================================ */
 
 const SUMMARY_URL =
     "./news-summary.json";
 
-const FALLBACK_URL =
+const SUMMARY_FALLBACK_URL =
     "https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news-summary.json";
 
 const RUBIKA_PAGE_URL =
@@ -1968,71 +1564,52 @@ const BLOG_URL =
 const DEFAULT_RUBIKA_URL =
     "https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE";
 
+const INSTAGRAM_USERNAME =
+    "@diyareghadamgah";
+
 const RUBIKA_MAX_LENGTH =
     4000;
 
-const DEFAULT_NEWS_COUNT =
-    "10";
 
-const PUBLISHER_STORAGE_KEY =
-    "diyarRubikaPublisherV1";
+/* ============================================================
+   Local Storage
+   ============================================================ */
 
-const SELECTED_STORAGE_KEY =
-    "diyarRubikaSelectedNewsV1";
+const STORAGE_SELECTED =
+    "diyar_rubika_selected_v3";
 
-const THEME_STORAGE_KEY =
-    "diyarRubikaThemeV1";
+const STORAGE_PUBLISHER =
+    "diyar_rubika_publisher_v3";
+
+const STORAGE_THEME =
+    "diyar_rubika_theme_v3";
 
 
-/* =========================================================
-   STATE
-========================================================= */
+/* ============================================================
+   وضعیت برنامه
+   ============================================================ */
 
 let allNews = [];
 
-let currentCategory = "همه";
+let filteredNews = [];
 
-let selectedKeys =
-    new Set();
+let selectedIds = new Set();
 
-let publisherName =
-    "معقول";
+let activeCategory = "همه";
+
+let searchTerm = "";
+
+let sortMode = "newest";
+
+let publisherName = "معقول";
 
 let publisherRubika =
     DEFAULT_RUBIKA_URL;
 
-let searchQuery = "";
 
-let sortMode =
-    "newest";
-
-let newsCountSetting =
-    DEFAULT_NEWS_COUNT;
-
-let onlySelected =
-    false;
-
-let isLoadingNews =
-    false;
-
-let toastTimer =
-    null;
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function toPersianDigits(value){
-
-    return String(value)
-        .replace(
-            /\d/g,
-            d => "۰۱۲۳۴۵۶۷۸۹"[d]
-        );
-
-}
-
+/* ============================================================
+   ابزارهای عمومی
+   ============================================================ */
 
 function cleanText(value){
 
@@ -2044,117 +1621,347 @@ function cleanText(value){
     }
 
     return String(value)
-        .replace(/\r/g, "")
-        .replace(/[ \t]+/g, " ")
-        .replace(/\n{3,}/g, "\n\n")
+
+        .replace(
+            /<script[\s\S]*?<\/script>/gi,
+            " "
+        )
+
+        .replace(
+            /<style[\s\S]*?<\/style>/gi,
+            " "
+        )
+
+        .replace(
+            /<[^>]+>/g,
+            " "
+        )
+
+        .replace(
+            /&nbsp;/gi,
+            " "
+        )
+
+        .replace(
+            /&amp;/gi,
+            "&"
+        )
+
+        .replace(
+            /&quot;/gi,
+            '"'
+        )
+
+        .replace(
+            /&#39;/gi,
+            "'"
+        )
+
+        .replace(
+            /&#039;/gi,
+            "'"
+        )
+
+        .replace(
+            /&lt;/gi,
+            "<"
+        )
+
+        .replace(
+            /&gt;/gi,
+            ">"
+        )
+
+        .replace(
+            /[\u0000-\u001F\u007F]/g,
+            " "
+        )
+
+        .replace(
+            /\u200f|\u200e/g,
+            ""
+        )
+
+        .replace(
+            /\s+/g,
+            " "
+        )
+
         .trim();
 
 }
 
 
+/* ============================================================
+   URL
+   ============================================================ */
+
 function normalizeUrl(value){
 
-    const text =
-        cleanText(value);
-
-    if(!text){
+    if(!value){
         return "";
     }
 
+    let url =
+        String(value).trim();
+
     if(
-        text.startsWith("https://") ||
-        text.startsWith("http://")
+        !/^https?:\/\//i.test(url)
     ){
-        return text;
+
+        if(
+            /^www\./i.test(url)
+        ){
+
+            url =
+                "https://" + url;
+
+        }
+
     }
 
-    return "";
+    return url;
+
 }
 
 
-function normalizeRubikaUrl(value){
+/* ============================================================
+   ID خبر
+   ============================================================ */
 
-    let text =
-        cleanText(value);
+function getNewsId(item,index){
 
-    if(!text){
+    const candidates = [
+
+        item.id,
+        item.guid,
+        item.link,
+        item.url,
+        item.title
+
+    ];
+
+    for(
+        const value of candidates
+    ){
+
+        if(value){
+
+            return String(value);
+
+        }
+
+    }
+
+    return "news-" + index;
+
+}
+
+
+/* ============================================================
+   استخراج آرایه اخبار
+   ============================================================ */
+
+function extractNewsArray(data){
+
+    if(
+        Array.isArray(data)
+    ){
+
+        return data;
+
+    }
+
+    if(
+        data &&
+        Array.isArray(data.news)
+    ){
+
+        return data.news;
+
+    }
+
+    if(
+        data &&
+        Array.isArray(data.items)
+    ){
+
+        return data.items;
+
+    }
+
+    if(
+        data &&
+        Array.isArray(data.data)
+    ){
+
+        return data.data;
+
+    }
+
+    return [];
+
+}
+
+
+/* ============================================================
+   تاریخ
+   ============================================================ */
+
+function parseDate(value){
+
+    if(!value){
+        return 0;
+    }
+
+    const time =
+        new Date(value).getTime();
+
+    return Number.isNaN(time)
+        ? 0
+        : time;
+
+}
+
+
+function formatPersianDate(value){
+
+    if(!value){
         return "";
     }
 
+    const date =
+        new Date(value);
+
     if(
-        !text.startsWith("http://") &&
-        !text.startsWith("https://")
+        Number.isNaN(date.getTime())
     ){
 
-        text =
-            "https://" +
-            text;
+        return "";
 
     }
 
-    return normalizeUrl(text);
+    try{
+
+        return new Intl.DateTimeFormat(
+            "fa-IR-u-ca-persian",
+            {
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        ).format(date);
+
+    }catch{
+
+        return "";
+
+    }
 
 }
 
 
-function escapeHtml(value){
+/* ============================================================
+   ساعت و تاریخ سربرگ
+   ============================================================ */
 
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+function formatPersianHeaderDate(){
 
-}
+    const now =
+        new Date();
 
+    const weekdays = [
 
-function getItemKey(item){
+        "یکشنبه",
+        "دوشنبه",
+        "سه‌شنبه",
+        "چهارشنبه",
+        "پنجشنبه",
+        "جمعه",
+        "شنبه"
 
-    if(item._key){
-        return item._key;
+    ];
+
+    const weekday =
+        weekdays[now.getDay()];
+
+    let dateText = "";
+
+    try{
+
+        dateText =
+            new Intl.DateTimeFormat(
+                "fa-IR-u-ca-persian",
+                {
+                    year:"numeric",
+                    month:"long",
+                    day:"numeric"
+                }
+            ).format(now);
+
+    }catch{
+
+        dateText = "";
+
     }
 
-    return String(
-        item.id ||
-        item.guid ||
-        item.url ||
-        item.title ||
-        Math.random()
+    const time =
+        now.toLocaleTimeString(
+            "fa-IR",
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
+
+    return (
+        weekday +
+        "، " +
+        dateText +
+        " - ساعت " +
+        time
     );
 
 }
 
 
-/* =========================================================
-   PUBLISHER
-========================================================= */
+/* ============================================================
+   عدد فارسی
+   ============================================================ */
 
-function loadPublisherSettings(){
+function faNumber(value){
+
+    return String(value)
+        .replace(
+            /\d/g,
+            d =>
+                "۰۱۲۳۴۵۶۷۸۹"[d]
+        );
+
+}
+
+
+/* ============================================================
+   ذخیره منتشرکننده
+   ============================================================ */
+
+function loadPublisher(){
 
     try{
 
         const raw =
             localStorage.getItem(
-                PUBLISHER_STORAGE_KEY
+                STORAGE_PUBLISHER
             );
 
-        if(!raw){
-            return;
-        }
+        if(raw){
 
-        const data =
-            JSON.parse(raw);
-
-        if(
-            data &&
-            typeof data === "object"
-        ){
+            const data =
+                JSON.parse(raw);
 
             publisherName =
-                cleanText(
-                    data.name
-                ) || "معقول";
+                data.name ||
+                "معقول";
 
             publisherRubika =
                 normalizeRubikaUrl(
@@ -2164,36 +1971,52 @@ function loadPublisherSettings(){
 
         }
 
-    }catch(error){
+    }catch{
 
-        console.warn(
-            "Publisher storage error:",
-            error
-        );
+        publisherName =
+            "معقول";
+
+        publisherRubika =
+            DEFAULT_RUBIKA_URL;
 
     }
+
+
+    document.getElementById(
+        "publisherName"
+    ).value =
+        publisherName;
+
+    document.getElementById(
+        "publisherRubika"
+    ).value =
+        publisherRubika;
 
 }
 
 
-function savePublisherSettings(){
+function savePublisher(){
 
     publisherName =
         cleanText(
             document.getElementById(
                 "publisherName"
             ).value
-        ) || "معقول";
+        ) ||
+        "معقول";
+
 
     publisherRubika =
         normalizeRubikaUrl(
             document.getElementById(
                 "publisherRubika"
             ).value
-        );
+        ) ||
+        DEFAULT_RUBIKA_URL;
+
 
     localStorage.setItem(
-        PUBLISHER_STORAGE_KEY,
+        STORAGE_PUBLISHER,
         JSON.stringify({
             name:publisherName,
             rubika:publisherRubika
@@ -2203,108 +2026,110 @@ function savePublisherSettings(){
 }
 
 
-/* =========================================================
-   SELECTED STORAGE
-========================================================= */
+/* ============================================================
+   لینک روبیکا
+   ============================================================ */
 
-function loadSelectedSettings(){
+function normalizeRubikaUrl(value){
+
+    if(!value){
+        return "";
+    }
+
+    let url =
+        String(value).trim();
+
+    if(
+        !/^https?:\/\//i.test(url)
+    ){
+
+        if(
+            /^rubika\.ir\//i.test(url)
+        ){
+
+            url =
+                "https://" + url;
+
+        }
+
+    }
+
+    return url;
+
+}
+
+
+/* ============================================================
+   انتخاب‌ها
+   ============================================================ */
+
+function loadSelected(){
 
     try{
 
         const raw =
             localStorage.getItem(
-                SELECTED_STORAGE_KEY
+                STORAGE_SELECTED
             );
 
-        if(!raw){
-            return;
+        if(raw){
+
+            const array =
+                JSON.parse(raw);
+
+            if(
+                Array.isArray(array)
+            ){
+
+                selectedIds =
+                    new Set(
+                        array.map(String)
+                    );
+
+            }
+
         }
 
-        const data =
-            JSON.parse(raw);
+    }catch{
 
-        if(Array.isArray(data)){
-
-            selectedKeys =
-                new Set(
-                    data.map(String)
-                );
-
-        }
-
-    }catch(error){
-
-        console.warn(
-            "Selected storage error:",
-            error
-        );
+        selectedIds =
+            new Set();
 
     }
 
 }
 
 
-function saveSelectedSettings(){
+function saveSelected(){
 
     localStorage.setItem(
-        SELECTED_STORAGE_KEY,
+        STORAGE_SELECTED,
         JSON.stringify(
-            [...selectedKeys]
+            Array.from(selectedIds)
         )
     );
 
 }
 
 
-/* =========================================================
-   THEME
-========================================================= */
+/* ============================================================
+   حالت شب
+   ============================================================ */
 
 function loadTheme(){
 
-    try{
+    const theme =
+        localStorage.getItem(
+            STORAGE_THEME
+        );
 
-        const theme =
-            localStorage.getItem(
-                THEME_STORAGE_KEY
-            );
+    if(theme === "dark"){
 
-        if(theme === "dark"){
-
-            document.body.classList.add(
-                "dark"
-            );
-
-        }
-
-    }catch(error){
-
-        console.warn(error);
-
-    }
-
-    updateThemeButton();
-
-}
-
-
-function toggleTheme(){
-
-    document.body.classList.toggle(
-        "dark"
-    );
-
-    const dark =
-        document.body.classList.contains(
+        document.body.classList.add(
             "dark"
         );
 
-    localStorage.setItem(
-        THEME_STORAGE_KEY,
-        dark
-            ? "dark"
-            : "light"
-    );
+    }
 
     updateThemeButton();
 
@@ -2318,660 +2143,358 @@ function updateThemeButton(){
             "themeBtn"
         );
 
-    if(!button){
-        return;
-    }
-
-    const dark =
+    if(
         document.body.classList.contains(
             "dark"
-        );
-
-    button.textContent =
-        dark
-            ? "☀️ حالت روز"
-            : "🌙 حالت شب";
-
-}
-
-
-/* =========================================================
-   DATE
-========================================================= */
-
-function formatPersianDate(now){
-
-    const formatter =
-        new Intl.DateTimeFormat(
-            "fa-IR-u-ca-persian",
-            {
-                year:"numeric",
-                month:"long",
-                day:"numeric",
-                weekday:"long",
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        );
-
-    const parts =
-        formatter.formatToParts(now);
-
-    const get =
-        type => {
-
-            const part =
-                parts.find(
-                    p => p.type === type
-                );
-
-            return part
-                ? part.value
-                : "";
-
-        };
-
-    return (
-        get("weekday") +
-        "، " +
-        get("day") +
-        " " +
-        get("month") +
-        " " +
-        get("year") +
-        " - ساعت " +
-        get("hour") +
-        ":" +
-        get("minute")
-    );
-
-}
-
-
-function updateHeaderDate(){
-
-    document.getElementById(
-        "headerDate"
-    ).textContent =
-        "📅 " +
-        formatPersianDate(
-            new Date()
-        );
-
-}
-
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-function setStatus(
-    message,
-    type
-){
-
-    const box =
-        document.getElementById(
-            "statusBox"
-        );
-
-    box.textContent =
-        message;
-
-    box.className =
-        "status " +
-        (type || "");
-
-}
-
-
-/* =========================================================
-   NORMALIZE NEWS
-========================================================= */
-
-function normalizeNews(
-    raw,
-    index
-){
-
-    const item =
-        raw &&
-        typeof raw === "object"
-            ? raw
-            : {};
-
-    const normalized = {
-
-        ...item,
-
-        title:
-            cleanText(
-                item.title ||
-                item.name ||
-                item.headline ||
-                ""
-            ),
-
-        source:
-            cleanText(
-                item.source ||
-                item.publisher ||
-                item.origin ||
-                item.site ||
-                ""
-            ),
-
-        category:
-            cleanText(
-                item.category ||
-                item.cat ||
-                item.group ||
-                "متفرقه"
-            ),
-
-        summary:
-            cleanText(
-                item.summary ||
-                item.description ||
-                item.excerpt ||
-                item.shortDescription ||
-                item.short_description ||
-                ""
-            ),
-
-        url:
-            normalizeUrl(
-                item.url ||
-                item.link ||
-                item.href ||
-                ""
-            ),
-
-        date:
-            item.date ||
-            item.pubDate ||
-            item.publishedAt ||
-            item.published_at ||
-            item.createdAt ||
-            item.created_at ||
-            "",
-
-        id:
-            item.id ||
-            item.guid ||
-            item.key ||
-            "",
-
-        _index:index
-
-    };
-
-    normalized._key =
-        getItemKey(
-            normalized
-        );
-
-    return normalized;
-
-}
-
-
-/* =========================================================
-   EXTRACT NEWS
-========================================================= */
-
-function extractNewsArray(data){
-
-    if(Array.isArray(data)){
-        return data;
-    }
-
-    if(
-        !data ||
-        typeof data !== "object"
-    ){
-        return [];
-    }
-
-    if(Array.isArray(data.news)){
-        return data.news;
-    }
-
-    if(Array.isArray(data.items)){
-        return data.items;
-    }
-
-    if(Array.isArray(data.data)){
-        return data.data;
-    }
-
-    if(Array.isArray(data.categorizedNews)){
-        return data.categorizedNews;
-    }
-
-    if(
-        data.categorizedNews &&
-        typeof data.categorizedNews === "object"
+        )
     ){
 
-        const result = [];
-
-        Object.entries(
-            data.categorizedNews
-        ).forEach(
-            ([category,items]) => {
-
-                if(!Array.isArray(items)){
-                    return;
-                }
-
-                items.forEach(
-                    item => {
-
-                        result.push({
-                            ...item,
-
-                            category:
-                                item.category ||
-                                category
-
-                        });
-
-                    }
-                );
-
-            }
-        );
-
-        return result;
-
-    }
-
-    const categories = [
-        "سیاسی",
-        "بین‌الملل",
-        "اقتصادی",
-        "اجتماعی",
-        "ورزشی",
-        "علمی و فناوری",
-        "فرهنگی و هنری",
-        "متفرقه"
-    ];
-
-    const result = [];
-
-    categories.forEach(
-        category => {
-
-            if(Array.isArray(data[category])){
-
-                data[category].forEach(
-                    item => {
-
-                        result.push({
-                            ...item,
-
-                            category:
-                                item.category ||
-                                category
-
-                        });
-
-                    }
-                );
-
-            }
-
-        }
-    );
-
-    return result;
-
-}
-
-
-/* =========================================================
-   FETCH
-========================================================= */
-
-async function fetchJson(url){
-
-    const response =
-        await fetch(
-            url,
-            {
-                cache:"no-store"
-            }
-        );
-
-    if(!response.ok){
-
-        throw new Error(
-            "HTTP " +
-            response.status
-        );
-
-    }
-
-    return await response.json();
-
-}
-
-
-/* =========================================================
-   LOAD NEWS
-========================================================= */
-
-async function loadNews(){
-
-    if(isLoadingNews){
-        return;
-    }
-
-    isLoadingNews = true;
-
-    setStatus(
-        "⏳ در حال دریافت جدیدترین اخبار...",
-        "loading"
-    );
-
-    try{
-
-        let data;
-
-        try{
-
-            data =
-                await fetchJson(
-                    SUMMARY_URL +
-                    "?t=" +
-                    Date.now()
-                );
-
-        }catch(localError){
-
-            data =
-                await fetchJson(
-                    FALLBACK_URL +
-                    "?t=" +
-                    Date.now()
-                );
-
-        }
-
-        const raw =
-            extractNewsArray(data);
-
-        allNews =
-            raw
-                .map(normalizeNews)
-                .filter(
-                    item => item.title
-                );
-
-        const validKeys =
-            new Set(
-                allNews.map(
-                    item => item._key
-                )
-            );
-
-        selectedKeys =
-            new Set(
-                [...selectedKeys]
-                    .filter(
-                        key =>
-                            validKeys.has(key)
-                    )
-            );
-
-        saveSelectedSettings();
-
-        setStatus(
-            "✅ " +
-            toPersianDigits(
-                allNews.length
-            ) +
-            " خبر با موفقیت دریافت شد.",
-            "success"
-        );
-
-        renderAll();
-
-    }catch(error){
-
-        console.error(error);
-
-        allNews = [];
-
-        setStatus(
-            "❌ دریافت اخبار ناموفق بود. اتصال اینترنت یا فایل news-summary.json را بررسی کنید.",
-            "error"
-        );
-
-        renderAll();
-
-    }finally{
-
-        isLoadingNews = false;
-
-    }
-
-}
-
-
-/* =========================================================
-   FILTER
-========================================================= */
-
-function getFilteredNews(){
-
-    let result =
-        [...allNews];
-
-    if(currentCategory !== "همه"){
-
-        result =
-            result.filter(
-                item =>
-                    item.category ===
-                    currentCategory
-            );
-
-    }
-
-    if(searchQuery){
-
-        const q =
-            searchQuery.toLowerCase();
-
-        result =
-            result.filter(
-                item => {
-
-                    const text = [
-
-                        item.title,
-                        item.summary,
-                        item.source,
-                        item.category
-
-                    ]
-                        .join(" ")
-                        .toLowerCase();
-
-                    return text.includes(q);
-
-                }
-            );
-
-    }
-
-    if(onlySelected){
-
-        result =
-            result.filter(
-                item =>
-                    selectedKeys.has(
-                        item._key
-                    )
-            );
-
-    }
-
-    if(sortMode === "selected"){
-
-        result.sort(
-            (a,b) => {
-
-                const sa =
-                    selectedKeys.has(
-                        a._key
-                    )
-                        ? 1
-                        : 0;
-
-                const sb =
-                    selectedKeys.has(
-                        b._key
-                    )
-                        ? 1
-                        : 0;
-
-                return sb - sa;
-
-            }
-        );
+        button.textContent =
+            "☀️ حالت روز";
 
     }else{
 
-        result.sort(
-            (a,b) => {
-
-                const da =
-                    new Date(
-                        a.date || 0
-                    ).getTime();
-
-                const db =
-                    new Date(
-                        b.date || 0
-                    ).getTime();
-
-                return sortMode === "oldest"
-                    ? da - db
-                    : db - da;
-
-            }
-        );
+        button.textContent =
+            "🌙 حالت شب";
 
     }
-
-    return result;
 
 }
 
 
-function getDisplayedNews(){
+function toggleTheme(){
 
-    const filtered =
-        getFilteredNews();
+    document.body.classList.toggle(
+        "dark"
+    );
 
-    if(
-        newsCountSetting ===
-        "all"
+    localStorage.setItem(
+        STORAGE_THEME,
+
+        document.body.classList.contains(
+            "dark"
+        )
+        ? "dark"
+        : "light"
+    );
+
+    updateThemeButton();
+
+}
+
+
+/* ============================================================
+   دریافت اخبار
+   ============================================================ */
+
+async function fetchNews(){
+
+    const urls = [
+
+        SUMMARY_URL,
+
+        SUMMARY_FALLBACK_URL
+
+    ];
+
+    let lastError =
+        null;
+
+    for(
+        const url of urls
     ){
-        return filtered;
+
+        try{
+
+            const response =
+                await fetch(
+                    url +
+                    (
+                        url.includes("?")
+                        ? "&"
+                        : "?"
+                    ) +
+                    "_=" +
+                    Date.now(),
+                    {
+                        cache:"no-store"
+                    }
+                );
+
+            if(
+                !response.ok
+            ){
+
+                throw new Error(
+                    "HTTP " +
+                    response.status
+                );
+
+            }
+
+            const data =
+                await response.json();
+
+            const items =
+                extractNewsArray(data);
+
+            if(
+                !items.length
+            ){
+
+                throw new Error(
+                    "فهرست اخبار خالی است."
+                );
+
+            }
+
+            allNews =
+                items.map(
+                    (item,index) => {
+
+                        const normalized =
+                            {
+
+                                ...item,
+
+                                _id:
+                                    getNewsId(
+                                        item,
+                                        index
+                                    ),
+
+                                _title:
+                                    cleanText(
+                                        item.title ||
+                                        item.name ||
+                                        ""
+                                    ),
+
+                                _summary:
+                                    cleanText(
+                                        item.summary ||
+                                        item.description ||
+                                        item.excerpt ||
+                                        ""
+                                    ),
+
+                                _source:
+                                    cleanText(
+                                        item.source ||
+                                        item.publisher ||
+                                        "خبرگزاری"
+                                    ),
+
+                                _category:
+                                    cleanText(
+                                        item.category ||
+                                        "متفرقه"
+                                    ),
+
+                                _url:
+                                    normalizeUrl(
+                                        item.url ||
+                                        item.link ||
+                                        item.guid ||
+                                        ""
+                                    ),
+
+                                _date:
+                                    item.date ||
+                                    item.pubDate ||
+                                    item.published ||
+                                    item.created_at ||
+                                    ""
+
+                            };
+
+                        return normalized;
+
+                    }
+                );
+
+            allNews =
+                allNews.filter(
+                    item =>
+                        item._title
+                );
+
+            renderCategories();
+
+            applyFilters();
+
+            return;
+
+        }catch(error){
+
+            lastError =
+                error;
+
+        }
+
     }
 
-    return filtered.slice(
-        0,
-        parseInt(
-            newsCountSetting,
-            10
-        )
+    showError(
+        lastError
     );
 
 }
 
 
-/* =========================================================
-   CATEGORIES
-========================================================= */
+/* ============================================================
+   نمایش خطا
+   ============================================================ */
 
-function getCategoryCount(
-    category
-){
+function showError(error){
 
-    if(category === "همه"){
-        return allNews.length;
-    }
+    console.error(error);
 
-    return allNews.filter(
-        item =>
-            item.category === category
-    ).length;
+    document.getElementById(
+        "newsList"
+    ).innerHTML = `
+
+        <div class="state-box">
+
+            <div class="state-icon">
+                ⚠️
+            </div>
+
+            <div class="state-title">
+                دریافت اخبار ناموفق بود
+            </div>
+
+            <div class="state-text">
+                فایل news-summary.json در دسترس نیست.
+                <br>
+                لطفاً اتصال اینترنت یا فایل JSON را بررسی کنید.
+            </div>
+
+        </div>
+
+    `;
 
 }
 
+
+/* ============================================================
+   دسته‌بندی‌ها
+   ============================================================ */
 
 function renderCategories(){
 
     const container =
         document.getElementById(
-            "categoryButtons"
+            "categoryList"
         );
 
-    const categories = [
-        "همه",
-        "سیاسی",
-        "بین‌الملل",
-        "اقتصادی",
-        "اجتماعی",
-        "ورزشی",
-        "علمی و فناوری",
-        "فرهنگی و هنری",
-        "متفرقه"
-    ];
+    const categories =
+        new Set();
+
+    allNews.forEach(
+        item => {
+
+            categories.add(
+                item._category ||
+                "متفرقه"
+            );
+
+        }
+    );
+
+    const list =
+        Array.from(categories)
+            .sort(
+                (a,b) =>
+                    a.localeCompare(
+                        b,
+                        "fa"
+                    )
+            );
 
     container.innerHTML = "";
 
-    categories.forEach(
+    const allButton =
+        document.createElement(
+            "button"
+        );
+
+    allButton.type =
+        "button";
+
+    allButton.className =
+        "category-btn " +
+        (
+            activeCategory === "همه"
+            ? "active"
+            : ""
+        );
+
+    allButton.textContent =
+        "همه (" +
+        faNumber(allNews.length) +
+        ")";
+
+    allButton.addEventListener(
+        "click",
+        () => {
+
+            activeCategory =
+                "همه";
+
+            renderCategories();
+
+            applyFilters();
+
+        }
+    );
+
+    container.appendChild(
+        allButton
+    );
+
+
+    list.forEach(
         category => {
+
+            const count =
+                allNews.filter(
+                    item =>
+                        item._category ===
+                        category
+                ).length;
 
             const button =
                 document.createElement(
                     "button"
                 );
 
-            button.type = "button";
+            button.type =
+                "button";
 
             button.className =
-                "category-btn" +
+                "category-btn " +
                 (
-                    currentCategory === category
-                        ? " active"
-                        : ""
+                    activeCategory === category
+                    ? "active"
+                    : ""
                 );
 
             button.textContent =
                 category +
                 " (" +
-                toPersianDigits(
-                    getCategoryCount(
-                        category
-                    )
-                ) +
+                faNumber(count) +
                 ")";
 
             button.addEventListener(
                 "click",
                 () => {
 
-                    currentCategory =
+                    activeCategory =
                         category;
 
-                    renderAll();
+                    renderCategories();
+
+                    applyFilters();
 
                 }
             );
@@ -2986,314 +2509,442 @@ function renderCategories(){
 }
 
 
-/* =========================================================
-   NEWS CARD
-========================================================= */
+/* ============================================================
+   فیلتر و مرتب‌سازی
+   ============================================================ */
+
+function applyFilters(){
+
+    const query =
+        searchTerm
+            .trim()
+            .toLowerCase();
+
+    filteredNews =
+        allNews.filter(
+            item => {
+
+                const categoryOK =
+                    activeCategory ===
+                    "همه" ||
+                    item._category ===
+                    activeCategory;
+
+                if(!categoryOK){
+
+                    return false;
+
+                }
+
+                if(!query){
+
+                    return true;
+
+                }
+
+                const haystack =
+                    [
+
+                        item._title,
+                        item._summary,
+                        item._source,
+                        item._category
+
+                    ]
+                    .join(" ")
+                    .toLowerCase();
+
+                return haystack.includes(
+                    query
+                );
+
+            }
+        );
+
+
+    filteredNews.sort(
+        (a,b) => {
+
+            const da =
+                parseDate(
+                    a._date
+                );
+
+            const db =
+                parseDate(
+                    b._date
+                );
+
+            return sortMode ===
+                "newest"
+                ? db - da
+                : da - db;
+
+        }
+    );
+
+
+    renderNews();
+
+    updateStats();
+
+}
+
+
+/* ============================================================
+   نمایش اخبار
+   ============================================================ */
 
 function renderNews(){
 
     const container =
         document.getElementById(
-            "newsContainer"
+            "newsList"
         );
 
-    const items =
-        getDisplayedNews();
-
-    container.innerHTML = "";
-
-    if(!items.length){
+    if(
+        !filteredNews.length
+    ){
 
         container.innerHTML = `
-            <div class="empty">
-                🔍
-                <br>
-                خبری مطابق فیلترهای انتخاب‌شده پیدا نشد.
+
+            <div class="state-box">
+
+                <div class="state-icon">
+                    🔎
+                </div>
+
+                <div class="state-title">
+                    خبری پیدا نشد
+                </div>
+
+                <div class="state-text">
+                    عبارت جستجو یا دسته‌بندی را تغییر دهید.
+                </div>
+
             </div>
+
         `;
+
+        updateFilterInfo();
 
         return;
 
     }
 
-    items.forEach(
+
+    container.innerHTML = "";
+
+
+    filteredNews.forEach(
         item => {
 
-            const selected =
-                selectedKeys.has(
-                    item._key
-                );
-
-            const article =
+            const card =
                 document.createElement(
                     "article"
                 );
 
-            article.className =
-                "news-card" +
-                (
-                    selected
-                        ? " selected"
-                        : ""
+            card.className =
+                "news-card";
+
+            if(
+                selectedIds.has(
+                    String(item._id)
+                )
+            ){
+
+                card.classList.add(
+                    "selected"
                 );
 
-            article.innerHTML = `
+            }
 
-                <div class="selected-mark">
-                    ✓
-                </div>
 
-                <div class="news-card-top">
-
-                    <input
-                        class="news-checkbox"
-                        type="checkbox"
-                        ${selected ? "checked" : ""}
-                        aria-label="انتخاب خبر"
-                    >
-
-                    <div class="news-main">
-
-                        <h3 class="news-title">
-                            🔴 ${escapeHtml(item.title)}
-                        </h3>
-
-                        <div class="news-meta">
-
-                            ${
-                                item.source
-                                    ? `
-                                    <span class="badge">
-                                        📰 ${escapeHtml(item.source)}
-                                    </span>
-                                    `
-                                    : ""
-                            }
-
-                            ${
-                                item.category
-                                    ? `
-                                    <span class="badge">
-                                        📂 ${escapeHtml(item.category)}
-                                    </span>
-                                    `
-                                    : ""
-                            }
-
-                        </div>
-
-                        ${
-                            item.summary
-                                ? `
-                                <div class="news-summary">
-                                    📝 ${escapeHtml(item.summary)}
-                                </div>
-                                `
-                                : `
-                                <div
-                                    class="news-summary"
-                                    style="color:var(--muted);"
-                                >
-                                    ℹ️ خلاصه‌ای برای این خبر ثبت نشده است.
-                                </div>
-                                `
-                        }
-
-                        ${
-                            item.url
-                                ? `
-                                <a
-                                    class="news-link"
-                                    href="${escapeHtml(item.url)}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    🔗 مشاهده خبر اصلی
-                                </a>
-                                `
-                                : ""
-                        }
-
-                    </div>
-
-                </div>
-            `;
-
-            const checkbox =
-                article.querySelector(
-                    ".news-checkbox"
+            const check =
+                document.createElement(
+                    "div"
                 );
 
-            checkbox.addEventListener(
-                "click",
-                event => {
+            check.className =
+                "check-box";
 
-                    event.stopPropagation();
+            check.textContent =
+                "✓";
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+            title.className =
+                "news-title";
+
+            title.textContent =
+                "🔴 " +
+                item._title;
+
+
+            const meta =
+                document.createElement(
+                    "div"
+                );
+
+            meta.className =
+                "news-meta";
+
+
+            if(
+                item._category
+            ){
+
+                const category =
+                    document.createElement(
+                        "span"
+                    );
+
+                category.className =
+                    "badge";
+
+                category.textContent =
+                    "📂 " +
+                    item._category;
+
+                meta.appendChild(
+                    category
+                );
+
+            }
+
+
+            if(
+                item._source
+            ){
+
+                const source =
+                    document.createElement(
+                        "span"
+                    );
+
+                source.className =
+                    "badge source";
+
+                source.textContent =
+                    "📰 " +
+                    item._source;
+
+                meta.appendChild(
+                    source
+                );
+
+            }
+
+
+            if(
+                item._date
+            ){
+
+                const dateText =
+                    formatPersianDate(
+                        item._date
+                    );
+
+                if(dateText){
+
+                    const date =
+                        document.createElement(
+                            "span"
+                        );
+
+                    date.className =
+                        "badge";
+
+                    date.textContent =
+                        "📅 " +
+                        dateText;
+
+                    meta.appendChild(
+                        date
+                    );
 
                 }
+
+            }
+
+
+            const summary =
+                document.createElement(
+                    "div"
+                );
+
+            summary.className =
+                "news-summary";
+
+            summary.textContent =
+                item._summary ||
+                "بدون خلاصه";
+
+
+            const url =
+                document.createElement(
+                    "div"
+                );
+
+            url.className =
+                "news-url";
+
+            url.textContent =
+                item._url ||
+                "بدون لینک";
+
+
+            card.appendChild(
+                check
             );
 
-            checkbox.addEventListener(
-                "change",
+            card.appendChild(
+                title
+            );
+
+            card.appendChild(
+                meta
+            );
+
+            card.appendChild(
+                summary
+            );
+
+            card.appendChild(
+                url
+            );
+
+
+            card.addEventListener(
+                "click",
                 () => {
 
                     toggleSelection(
-                        item._key,
-                        checkbox.checked
+                        item._id
                     );
 
                 }
             );
 
-            article.addEventListener(
-                "click",
-                event => {
-
-                    if(
-                        event.target.closest(
-                            "a"
-                        )
-                    ){
-                        return;
-                    }
-
-                    if(
-                        event.target ===
-                        checkbox
-                    ){
-                        return;
-                    }
-
-                    toggleSelection(
-                        item._key,
-                        !selectedKeys.has(
-                            item._key
-                        )
-                    );
-
-                }
-            );
 
             container.appendChild(
-                article
+                card
             );
 
         }
     );
 
+
+    updateFilterInfo();
+
 }
 
 
-/* =========================================================
-   SELECTION
-========================================================= */
+/* ============================================================
+   اطلاعات فیلتر
+   ============================================================ */
 
-function toggleSelection(
-    key,
-    checked
-){
+function updateFilterInfo(){
 
-    if(checked){
+    const element =
+        document.getElementById(
+            "filterInfo"
+        );
 
-        selectedKeys.add(key);
+    element.textContent =
+        faNumber(
+            filteredNews.length
+        ) +
+        " خبر نمایش داده می‌شود";
+
+}
+
+
+/* ============================================================
+   انتخاب / لغو انتخاب
+   ============================================================ */
+
+function toggleSelection(id){
+
+    id =
+        String(id);
+
+    if(
+        selectedIds.has(id)
+    ){
+
+        selectedIds.delete(id);
 
     }else{
 
-        selectedKeys.delete(key);
+        selectedIds.add(id);
 
     }
 
-    saveSelectedSettings();
+    saveSelected();
 
-    renderAll();
+    renderNews();
 
-    showToast(
-        checked
-            ? "✅ خبر به پیام اضافه شد."
-            : "⬜ خبر از پیام حذف شد."
-    );
+    updateStats();
+
+    updatePreview();
 
 }
 
 
-function selectAllVisible(){
+/* ============================================================
+   انتخاب همه اخبار قابل نمایش
+   ============================================================ */
 
-    getFilteredNews()
-        .forEach(
-            item =>
-                selectedKeys.add(
-                    item._key
-                )
-        );
+function selectVisible(){
 
-    saveSelectedSettings();
+    filteredNews.forEach(
+        item => {
 
-    renderAll();
+            selectedIds.add(
+                String(item._id)
+            );
 
-    showToast(
-        "☑️ همه خبرهای فیلترشده انتخاب شدند."
+        }
     );
+
+    saveSelected();
+
+    renderNews();
+
+    updateStats();
+
+    updatePreview();
 
 }
 
 
-function clearAllVisible(){
+/* ============================================================
+   پاک کردن انتخاب‌ها
+   ============================================================ */
 
-    getFilteredNews()
-        .forEach(
-            item =>
-                selectedKeys.delete(
-                    item._key
-                )
-        );
+function clearSelection(){
 
-    saveSelectedSettings();
+    selectedIds.clear();
 
-    renderAll();
+    saveSelected();
 
-    showToast(
-        "⬜ انتخاب خبرها لغو شد."
-    );
+    renderNews();
+
+    updateStats();
+
+    updatePreview();
 
 }
 
 
-function clearEverything(){
-
-    if(!selectedKeys.size){
-
-        showToast(
-            "ℹ️ خبری انتخاب نشده است."
-        );
-
-        return;
-
-    }
-
-    if(
-        !confirm(
-            "همه انتخاب‌های ذخیره‌شده پاک شوند؟"
-        )
-    ){
-        return;
-    }
-
-    selectedKeys.clear();
-
-    saveSelectedSettings();
-
-    renderAll();
-
-    showToast(
-        "🗑️ همه انتخاب‌ها پاک شدند."
-    );
-
-}
-
-
-/* =========================================================
-   RUBIKA HEADER
-========================================================= */
+/* ============================================================
+   ساخت سربرگ
+   ============================================================ */
 
 function rubikaHeader(){
 
@@ -3304,9 +2955,7 @@ function rubikaHeader(){
         "🌸🕌💫 اخبار دیار قدمگاه 💫🕌🌸",
 
         "📅 " +
-        formatPersianDate(
-            new Date()
-        ),
+        formatPersianHeaderDate(),
 
         "━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -3315,9 +2964,9 @@ function rubikaHeader(){
 }
 
 
-/* =========================================================
-   RUBIKA FOOTER
-========================================================= */
+/* ============================================================
+   ساخت فوتر
+   ============================================================ */
 
 function rubikaFooter(){
 
@@ -3333,113 +2982,145 @@ function rubikaFooter(){
 
         "━━━━━━━━━━━━━━━━━━━━━━━━━━",
 
+        "",
+
         "🏡 دیار قدمگاه",
 
         "✍️ " +
         (
             publisherName ||
             "معقول"
-        )
+        ),
+
+        "",
+
+        "",
+
+        "📞 ارتباط با ما:",
+
+        "",
+
+        "🔗 روبیکا:",
+
+        publisherRubika ||
+        DEFAULT_RUBIKA_URL,
+
+        "",
+
+        "🔗 وبلاگ:",
+
+        BLOG_URL,
+
+        "",
+
+        "📸 اینستاگرام:",
+
+        INSTAGRAM_USERNAME
 
     ];
-
-    if(publisherRubika){
-
-        lines.push(
-            "🔗 روبیکا:",
-            publisherRubika
-        );
-
-    }
-
-    lines.push(
-        "",
-        "🔗 وبلاگ:",
-        BLOG_URL
-    );
 
     return lines.join("\n");
 
 }
 
 
-/* =========================================================
-   BUILD NEWS LINE
-========================================================= */
+/* ============================================================
+   ساخت خط خبر
+   ============================================================ */
 
 function buildNewsLine(item){
 
     let line =
         "🔴 " +
         cleanText(
-            item.title
+            item._title
         );
 
-    const url =
-        normalizeUrl(
-            item.url
-        );
 
     /*
        بسیار مهم:
-       URL به‌صورت خام وارد متن می‌شود.
-       هیچ Markdown یا HTML تولید نمی‌شود.
+       لینک به‌صورت URL خام اضافه می‌شود.
+       هیچ Markdown یا HTML استفاده نمی‌شود.
     */
 
-    if(url){
+    if(
+        item._url
+    ){
 
         line +=
             " (" +
-            url +
+            item._url +
             ")";
 
     }
 
-    if(item.source){
+
+    if(
+        item._source
+    ){
 
         line +=
             " 📰 " +
             cleanText(
-                item.source
+                item._source
             );
 
     }
 
-    if(item.summary){
+
+    if(
+        item._summary
+    ){
 
         line +=
             " 📝 " +
             cleanText(
-                item.summary
+                item._summary
             );
 
     }
+
 
     return line;
 
 }
 
 
-/* =========================================================
-   CREATE RUBIKA TEXT
-========================================================= */
+/* ============================================================
+   ساخت پیام
+   ============================================================ */
 
 function createRubikaText(){
 
-    const selectedNews =
+    const selected =
         allNews.filter(
             item =>
-                selectedKeys.has(
-                    item._key
+                selectedIds.has(
+                    String(item._id)
                 )
         );
 
+
+    if(
+        !selected.length
+    ){
+
+        return "";
+
+    }
+
+
     const parts = [
-        rubikaHeader()
+
+        rubikaHeader(),
+
+        ""
+
     ];
 
-    selectedNews.forEach(
-        item => {
+
+    selected.forEach(
+        (item,index) => {
 
             parts.push(
                 buildNewsLine(
@@ -3447,555 +3128,236 @@ function createRubikaText(){
                 )
             );
 
-        }
-    );
+            if(
+                index <
+                selected.length - 1
+            ){
 
-    parts.push(
-        rubikaFooter()
-    );
+                parts.push(
+                    "",
+                    "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+                    ""
+                );
 
-    return parts.join(
-        "\n\n"
-    );
-
-}
-
-
-/* =========================================================
-   CALCULATE MESSAGE LENGTH
-========================================================= */
-
-function buildMessageFromNews(
-    news
-){
-
-    const parts = [
-        rubikaHeader()
-    ];
-
-    news.forEach(
-        item => {
-
-            parts.push(
-                buildNewsLine(
-                    item
-                )
-            );
+            }
 
         }
     );
 
+
     parts.push(
+        "",
         rubikaFooter()
     );
 
-    return parts.join(
-        "\n\n"
-    );
+
+    return parts.join("\n");
 
 }
 
 
-/* =========================================================
-   MINIMUM REMOVALS
-========================================================= */
-
-function calculateMinimumNewsToRemove(){
-
-    const selectedNews =
-        allNews.filter(
-            item =>
-                selectedKeys.has(
-                    item._key
-                )
-        );
-
-    let test =
-        [...selectedNews];
-
-    let count = 0;
-
-    while(
-        test.length &&
-        buildMessageFromNews(test).length >
-        RUBIKA_MAX_LENGTH
-    ){
-
-        test.pop();
-
-        count++;
-
-    }
-
-    return count;
-
-}
-
-
-/* =========================================================
-   MESSAGE LENGTH
-========================================================= */
-
-function updateMessageLength(){
-
-    const text =
-        document.getElementById(
-            "preview"
-        ).value || "";
-
-    const length =
-        text.length;
-
-    const box =
-        document.getElementById(
-            "messageLengthBox"
-        );
-
-    const number =
-        document.getElementById(
-            "messageLength"
-        );
-
-    const bar =
-        document.getElementById(
-            "progressBar"
-        );
-
-    const message =
-        document.getElementById(
-            "lengthMessage"
-        );
-
-    number.textContent =
-        toPersianDigits(
-            length
-        );
-
-    const percent =
-        (
-            length /
-            RUBIKA_MAX_LENGTH
-        ) * 100;
-
-    bar.style.width =
-        Math.min(
-            percent,
-            100
-        ) +
-        "%";
-
-    box.classList.remove(
-        "warning",
-        "danger"
-    );
-
-    if(
-        length >
-        RUBIKA_MAX_LENGTH
-    ){
-
-        box.classList.add(
-            "danger"
-        );
-
-        const excess =
-            length -
-            RUBIKA_MAX_LENGTH;
-
-        message.textContent =
-            "❌ پیام " +
-            toPersianDigits(
-                excess
-            ) +
-            " کاراکتر بیشتر از سقف ۴۰۰۰ کاراکتر است.";
-
-        return;
-
-    }
-
-    if(
-        length >=
-        RUBIKA_MAX_LENGTH * .9
-    ){
-
-        box.classList.add(
-            "warning"
-        );
-
-        const remaining =
-            RUBIKA_MAX_LENGTH -
-            length;
-
-        message.textContent =
-            "⚠️ فقط " +
-            toPersianDigits(
-                remaining
-            ) +
-            " کاراکتر ظرفیت باقی مانده است.";
-
-        return;
-
-    }
-
-    const remaining =
-        RUBIKA_MAX_LENGTH -
-        length;
-
-    message.textContent =
-        "✅ پیام مناسب است؛ " +
-        toPersianDigits(
-            remaining
-        ) +
-        " کاراکتر ظرفیت باقی مانده.";
-
-}
-
-
-/* =========================================================
-   UPDATE PREVIEW
-========================================================= */
+/* ============================================================
+   پیش‌نمایش
+   ============================================================ */
 
 function updatePreview(){
+
+    savePublisher();
 
     const text =
         createRubikaText();
 
-    document.getElementById(
-        "preview"
-    ).value =
-        text;
-
-    updateMessageLength();
-
-    const selectedCount =
-        selectedKeys.size;
-
-    const info =
+    const preview =
         document.getElementById(
-            "selectionInfo"
+            "previewMessage"
         );
 
-    const floating =
+    const copyBtn =
         document.getElementById(
-            "floatingCount"
+            "copyBtn"
         );
 
-    if(floating){
+    const copyInfo =
+        document.getElementById(
+            "copyInfo"
+        );
 
-        floating.textContent =
-            toPersianDigits(
-                selectedCount
-            ) +
-            " خبر انتخاب شده";
 
-    }
+    if(!text){
 
-    if(!selectedCount){
-
-        info.textContent =
+        preview.textContent =
             "هنوز خبری انتخاب نشده است.";
+
+        copyBtn.disabled =
+            true;
+
+        copyInfo.textContent =
+            "برای ساخت پیام، خبرها را انتخاب کنید.";
+
+        updateLength(0);
 
         return;
 
     }
+
+
+    preview.textContent =
+        text;
+
+
+    copyBtn.disabled =
+        text.length >
+        RUBIKA_MAX_LENGTH;
+
 
     if(
         text.length >
         RUBIKA_MAX_LENGTH
     ){
 
-        const remove =
-            calculateMinimumNewsToRemove();
+        copyInfo.textContent =
+            "⚠️ پیام بیش از حد مجاز است؛ تعدادی خبر را حذف کنید.";
 
-        info.textContent =
-            "⚠️ " +
-            toPersianDigits(
-                selectedCount
-            ) +
-            " خبر انتخاب شده؛ حداقل " +
-            toPersianDigits(
-                remove
-            ) +
-            " خبر باید حذف شود.";
+    }else{
 
-        return;
+        copyInfo.textContent =
+            faNumber(
+                selectedIds.size
+            ) +
+            " خبر آماده کپی است.";
 
     }
 
-    info.textContent =
-        "✅ " +
-        toPersianDigits(
-            selectedCount
-        ) +
-        " خبر برای انتشار آماده است.";
+
+    updateLength(
+        text.length
+    );
 
 }
 
 
-/* =========================================================
-   STATS
-========================================================= */
+/* ============================================================
+   طول پیام
+   ============================================================ */
+
+function updateLength(length){
+
+    const text =
+        document.getElementById(
+            "lengthText"
+        );
+
+    const bar =
+        document.getElementById(
+            "lengthBar"
+        );
+
+
+    text.textContent =
+        faNumber(length) +
+        " / " +
+        faNumber(RUBIKA_MAX_LENGTH);
+
+
+    const percentage =
+        Math.min(
+            100,
+            (
+                length /
+                RUBIKA_MAX_LENGTH
+            ) *
+            100
+        );
+
+
+    bar.style.width =
+        percentage +
+        "%";
+
+
+    bar.classList.remove(
+        "warning",
+        "danger"
+    );
+
+
+    if(
+        percentage >= 90 &&
+        percentage < 100
+    ){
+
+        bar.classList.add(
+            "warning"
+        );
+
+    }
+
+
+    if(
+        percentage >= 100
+    ){
+
+        bar.classList.add(
+            "danger"
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   آمار
+   ============================================================ */
 
 function updateStats(){
-
-    const filtered =
-        getFilteredNews();
-
-    const displayed =
-        getDisplayedNews();
 
     document.getElementById(
         "totalCount"
     ).textContent =
-        toPersianDigits(
+        faNumber(
             allNews.length
         );
 
-    document.getElementById(
-        "categoryCount"
-    ).textContent =
-        toPersianDigits(
-            filtered.length
-        );
 
     document.getElementById(
         "selectedCount"
     ).textContent =
-        toPersianDigits(
-            selectedKeys.size
+        faNumber(
+            selectedIds.size
         );
+
 
     document.getElementById(
-        "displayCount"
+        "visibleCount"
     ).textContent =
-        toPersianDigits(
-            displayed.length
+        faNumber(
+            filteredNews.length
         );
 
-}
-
-
-/* =========================================================
-   RENDER ALL
-========================================================= */
-
-function renderAll(){
-
-    renderCategories();
-
-    renderNews();
-
-    updateStats();
-
-    updatePreview();
-
-}
-
-
-/* =========================================================
-   COPY — IMPORTANT
-========================================================= */
-
-/*
-   اینجا عمداً فقط text/plain استفاده می‌شود.
-
-   قبلاً text/html + ClipboardItem باعث می‌شد بعضی نسخه‌های
-   Rubika/Android متن لینک را به شکل Markdown زیر نشان دهند:
-
-   [https://example.com](https://example.com)
-
-   این نسخه هیچ HTML یا Markdown وارد Clipboard نمی‌کند.
-
-   متن دقیقاً به شکل زیر کپی می‌شود:
-
-   https://example.com
-
-   بنابراین Rubika می‌تواند URL خام را خودش تشخیص دهد.
-*/
-
-async function copyText(){
 
     const text =
-        document.getElementById(
-            "preview"
-        ).value || "";
+        createRubikaText();
 
-    if(!text.trim()){
 
-        showToast(
-            "⚠️ ابتدا حداقل یک خبر انتخاب کنید."
+    document.getElementById(
+        "messageLength"
+    ).textContent =
+        faNumber(
+            text.length
         );
-
-        return;
-
-    }
-
-    if(
-        text.length >
-        RUBIKA_MAX_LENGTH
-    ){
-
-        const remove =
-            calculateMinimumNewsToRemove();
-
-        const confirmed =
-            confirm(
-                "⚠️ پیام از سقف ۴۰۰۰ کاراکتر بیشتر است.\n\n" +
-                "طول پیام: " +
-                toPersianDigits(
-                    text.length
-                ) +
-                "\n" +
-                "حداقل خبر قابل حذف: " +
-                toPersianDigits(
-                    remove
-                ) +
-                "\n\n" +
-                "آیا با این حال کپی شود؟"
-            );
-
-        if(!confirmed){
-            return;
-        }
-
-    }
-
-    try{
-
-        if(
-            navigator.clipboard &&
-            window.isSecureContext
-        ){
-
-            await navigator.clipboard.writeText(
-                text
-            );
-
-        }else{
-
-            fallbackPlainTextCopy(
-                text
-            );
-
-        }
-
-        showToast(
-            "✅ پیام کپی شد؛ لینک‌ها به‌صورت URL واقعی داخل متن قرار گرفتند."
-        );
-
-    }catch(error){
-
-        console.error(
-            "Clipboard error:",
-            error
-        );
-
-        try{
-
-            fallbackPlainTextCopy(
-                text
-            );
-
-            showToast(
-                "✅ پیام کپی شد."
-            );
-
-        }catch(finalError){
-
-            console.error(
-                finalError
-            );
-
-            showToast(
-                "❌ کپی پیام انجام نشد."
-            );
-
-        }
-
-    }
 
 }
 
 
-/* =========================================================
-   PLAIN TEXT FALLBACK
-========================================================= */
+/* ============================================================
+   Toast
+   ============================================================ */
 
-function fallbackPlainTextCopy(
-    text
-){
-
-    const textarea =
-        document.createElement(
-            "textarea"
-        );
-
-    textarea.value =
-        text;
-
-    textarea.setAttribute(
-        "readonly",
-        ""
-    );
-
-    textarea.style.position =
-        "fixed";
-
-    textarea.style.top =
-        "0";
-
-    textarea.style.left =
-        "-99999px";
-
-    textarea.style.width =
-        "1px";
-
-    textarea.style.height =
-        "1px";
-
-    textarea.style.opacity =
-        "0";
-
-    document.body.appendChild(
-        textarea
-    );
-
-    textarea.focus();
-
-    textarea.select();
-
-    textarea.setSelectionRange(
-        0,
-        textarea.value.length
-    );
-
-    const success =
-        document.execCommand(
-            "copy"
-        );
-
-    document.body.removeChild(
-        textarea
-    );
-
-    if(!success){
-
-        throw new Error(
-            "Plain text copy failed"
-        );
-
-    }
-
-}
+let toastTimer = null;
 
 
-/* =========================================================
-   TOAST
-========================================================= */
-
-function showToast(
-    message
-){
+function showToast(message){
 
     const toast =
         document.getElementById(
@@ -4009,9 +3371,11 @@ function showToast(
         "show"
     );
 
+
     clearTimeout(
         toastTimer
     );
+
 
     toastTimer =
         setTimeout(
@@ -4022,296 +3386,414 @@ function showToast(
                 );
 
             },
-            3000
+            2500
         );
 
 }
 
 
-/* =========================================================
-   EVENTS
-========================================================= */
+/* ============================================================
+   کپی امن و بدون Markdown
+   ============================================================ */
 
-document
-    .getElementById(
-        "searchInput"
-    )
-    .addEventListener(
-        "input",
-        event => {
+async function copyText(text){
 
-            searchQuery =
-                cleanText(
-                    event.target.value
-                ).toLowerCase();
+    if(!text){
 
-            document.getElementById(
-                "clearSearchBtn"
-            ).style.display =
-                searchQuery
-                    ? "block"
-                    : "none";
+        return false;
 
-            renderAll();
-
-        }
-    );
+    }
 
 
-document
-    .getElementById(
-        "clearSearchBtn"
-    )
-    .addEventListener(
-        "click",
-        () => {
+    /*
+       کنترل نهایی:
+       پیام باید فقط متن ساده باشد.
+       Clipboard API با MIME text/plain استفاده می‌شود.
+    */
 
-            document.getElementById(
-                "searchInput"
-            ).value = "";
+    try{
 
-            searchQuery = "";
+        if(
+            navigator.clipboard &&
+            window.isSecureContext
+        ){
 
-            document.getElementById(
-                "clearSearchBtn"
-            ).style.display =
-                "none";
+            await navigator.clipboard.writeText(
+                text
+            );
 
-            renderAll();
+            return true;
 
         }
-    );
+
+    }catch(error){
+
+        console.warn(
+            "Clipboard API failed:",
+            error
+        );
+
+    }
 
 
-document
-    .getElementById(
-        "sortSelect"
-    )
-    .addEventListener(
-        "change",
-        event => {
+    /*
+       روش جایگزین برای مرورگرهای قدیمی
+    */
 
-            sortMode =
-                event.target.value;
+    try{
 
-            renderAll();
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
 
-        }
-    );
+        textarea.value =
+            text;
 
+        textarea.setAttribute(
+            "readonly",
+            ""
+        );
 
-document
-    .getElementById(
-        "newsCount"
-    )
-    .addEventListener(
-        "change",
-        event => {
+        textarea.style.position =
+            "fixed";
 
-            newsCountSetting =
-                event.target.value;
+        textarea.style.left =
+            "-9999px";
 
-            renderAll();
+        textarea.style.top =
+            "0";
 
-        }
-    );
+        textarea.style.opacity =
+            "0";
 
+        document.body.appendChild(
+            textarea
+        );
 
-document
-    .getElementById(
-        "onlySelected"
-    )
-    .addEventListener(
-        "change",
-        event => {
+        textarea.focus();
 
-            onlySelected =
-                event.target.checked;
+        textarea.select();
 
-            renderAll();
-
-        }
-    );
+        textarea.setSelectionRange(
+            0,
+            textarea.value.length
+        );
 
 
-document
-    .getElementById(
-        "selectAllBtn"
-    )
-    .addEventListener(
-        "click",
-        selectAllVisible
-    );
+        const success =
+            document.execCommand(
+                "copy"
+            );
 
 
-document
-    .getElementById(
-        "clearAllBtn"
-    )
-    .addEventListener(
-        "click",
-        clearAllVisible
-    );
+        textarea.remove();
 
+        return success;
 
-document
-    .getElementById(
-        "clearEverythingBtn"
-    )
-    .addEventListener(
-        "click",
-        clearEverything
-    );
+    }catch(error){
 
+        console.error(
+            error
+        );
 
-document
-    .getElementById(
-        "refreshBtn"
-    )
-    .addEventListener(
-        "click",
-        loadNews
-    );
+        return false;
 
-
-document
-    .getElementById(
-        "themeBtn"
-    )
-    .addEventListener(
-        "click",
-        toggleTheme
-    );
-
-
-document
-    .getElementById(
-        "copyBtn"
-    )
-    .addEventListener(
-        "click",
-        copyText
-    );
-
-
-document
-    .getElementById(
-        "copyBtnPreview"
-    )
-    .addEventListener(
-        "click",
-        copyText
-    );
-
-
-document
-    .getElementById(
-        "floatingCopyBtn"
-    )
-    .addEventListener(
-        "click",
-        copyText
-    );
-
-
-document
-    .getElementById(
-        "publisherName"
-    )
-    .addEventListener(
-        "input",
-        () => {
-
-            savePublisherSettings();
-
-            updatePreview();
-
-        }
-    );
-
-
-document
-    .getElementById(
-        "publisherRubika"
-    )
-    .addEventListener(
-        "input",
-        () => {
-
-            savePublisherSettings();
-
-            updatePreview();
-
-        }
-    );
-
-
-/* =========================================================
-   INIT
-========================================================= */
-
-function init(){
-
-    loadPublisherSettings();
-
-    loadSelectedSettings();
-
-    loadTheme();
-
-    document.getElementById(
-        "publisherName"
-    ).value =
-        publisherName;
-
-    document.getElementById(
-        "publisherRubika"
-    ).value =
-        publisherRubika;
-
-    document.getElementById(
-        "newsCount"
-    ).value =
-        newsCountSetting;
-
-    document.getElementById(
-        "sortSelect"
-    ).value =
-        sortMode;
-
-    updateHeaderDate();
-
-    loadNews();
+    }
 
 }
 
 
-/* =========================================================
-   START
-========================================================= */
+/* ============================================================
+   کپی پیام روبیکا
+   ============================================================ */
 
-init();
+async function copyRubikaMessage(){
+
+    savePublisher();
+
+    const text =
+        createRubikaText();
 
 
-/* =========================================================
-   AUTO REFRESH
-========================================================= */
+    if(!text){
+
+        showToast(
+            "⚠️ ابتدا حداقل یک خبر را انتخاب کنید."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        text.length >
+        RUBIKA_MAX_LENGTH
+    ){
+
+        showToast(
+            "⚠️ طول پیام بیشتر از ۴۰۰۰ کاراکتر است."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       اینجا عمداً هیچ HTML،
+       Markdown یا rich text تولید نمی‌شود.
+    */
+
+    const success =
+        await copyText(
+            text
+        );
+
+
+    if(success){
+
+        showToast(
+            "✅ پیام به‌صورت متن ساده کپی شد."
+        );
+
+    }else{
+
+        showToast(
+            "❌ کپی خودکار انجام نشد؛ متن را از پیش‌نمایش انتخاب کنید."
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   حذف خبر برای قرار گرفتن در محدوده ۴۰۰۰
+   ============================================================ */
+
+function calculateMinimumNewsToRemove(){
+
+    let text =
+        createRubikaText();
+
+    if(
+        text.length <=
+        RUBIKA_MAX_LENGTH
+    ){
+
+        return 0;
+
+    }
+
+
+    const selected =
+        allNews.filter(
+            item =>
+                selectedIds.has(
+                    String(item._id)
+                )
+        );
+
+
+    let count =
+        selected.length;
+
+
+    /*
+       از انتهای انتخاب‌ها حذف می‌کنیم
+       تا پیام به محدوده مجاز برسد.
+    */
+
+    while(
+        text.length >
+            RUBIKA_MAX_LENGTH &&
+        count > 0
+    ){
+
+        const last =
+            selected[count - 1];
+
+        selectedIds.delete(
+            String(
+                last._id
+            )
+        );
+
+        count--;
+
+        text =
+            createRubikaText();
+
+    }
+
+
+    return selected.length -
+        count;
+
+}
+
+
+/* ============================================================
+   رویدادها
+   ============================================================ */
+
+document.getElementById(
+    "themeBtn"
+).addEventListener(
+    "click",
+    toggleTheme
+);
+
+
+document.getElementById(
+    "publisherName"
+).addEventListener(
+    "input",
+    () => {
+
+        savePublisher();
+
+        updatePreview();
+
+        updateStats();
+
+    }
+);
+
+
+document.getElementById(
+    "publisherRubika"
+).addEventListener(
+    "input",
+    () => {
+
+        savePublisher();
+
+        updatePreview();
+
+        updateStats();
+
+    }
+);
+
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    event => {
+
+        searchTerm =
+            event.target.value;
+
+        applyFilters();
+
+    }
+);
+
+
+document.getElementById(
+    "selectVisibleBtn"
+).addEventListener(
+    "click",
+    selectVisible
+);
+
+
+document.getElementById(
+    "clearSelectionBtn"
+).addEventListener(
+    "click",
+    clearSelection
+);
+
+
+document.getElementById(
+    "sortNewestBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        sortMode =
+            "newest";
+
+        applyFilters();
+
+    }
+);
+
+
+document.getElementById(
+    "sortOldestBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        sortMode =
+            "oldest";
+
+        applyFilters();
+
+    }
+);
+
+
+document.getElementById(
+    "copyBtn"
+).addEventListener(
+    "click",
+    copyRubikaMessage
+);
+
+
+/* ============================================================
+   راه‌اندازی
+   ============================================================ */
+
+async function init(){
+
+    loadTheme();
+
+    loadPublisher();
+
+    loadSelected();
+
+    await fetchNews();
+
+    updatePreview();
+
+    updateStats();
+
+}
+
+
+/* ============================================================
+   بروزرسانی خودکار اخبار
+   ============================================================ */
 
 setInterval(
-    loadNews,
+    async () => {
+
+        await fetchNews();
+
+        updatePreview();
+
+        updateStats();
+
+    },
     10 * 60 * 1000
 );
 
 
-/* =========================================================
-   CLOCK
-========================================================= */
+/* ============================================================
+   شروع
+   ============================================================ */
 
-setInterval(
-    updateHeaderDate,
-    60 * 1000
-);
+init();
 
 </script>
 
 </body>
-    </html>
+</html>

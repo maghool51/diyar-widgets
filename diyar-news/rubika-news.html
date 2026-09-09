@@ -72,6 +72,7 @@ a{
     color:inherit;
 }
 
+
 /* ============================================================
    DARK MODE
    ============================================================ */
@@ -92,6 +93,7 @@ body.dark{
     --shadow:
         0 4px 18px rgba(0,0,0,.30);
 }
+
 
 /* ============================================================
    HEADER
@@ -195,6 +197,7 @@ body.dark{
     background:rgba(255,255,255,.25);
 }
 
+
 /* ============================================================
    MAIN
    ============================================================ */
@@ -210,6 +213,7 @@ body.dark{
     padding:
         0 14px;
 }
+
 
 /* ============================================================
    STATS
@@ -265,8 +269,9 @@ body.dark{
     color:var(--text-secondary);
 }
 
+
 /* ============================================================
-   SETTINGS CARD
+   CARD
    ============================================================ */
 
 .card{
@@ -317,6 +322,7 @@ body.dark{
 
     padding:18px;
 }
+
 
 /* ============================================================
    FORM
@@ -392,6 +398,7 @@ body.dark{
 
     line-height:1.7;
 }
+
 
 /* ============================================================
    FILTER BAR
@@ -479,6 +486,7 @@ body.dark{
     border-color:var(--primary);
 }
 
+
 /* ============================================================
    SORT / ACTION
    ============================================================ */
@@ -540,6 +548,7 @@ body.dark{
 
     color:#fff;
 }
+
 
 /* ============================================================
    NEWS LIST
@@ -696,26 +705,12 @@ body.dark{
     color:var(--text-secondary);
 }
 
-.news-url{
 
-    margin-top:7px;
+/*
+   لینک خبرها عمداً در کارت نمایش داده نمی‌شود.
+   لینک فقط برای شناسایی خبر داخل JSON استفاده می‌شود.
+*/
 
-    font-size:10px;
-
-    color:var(--primary);
-
-    direction:ltr;
-
-    text-align:left;
-
-    white-space:nowrap;
-
-    overflow:hidden;
-
-    text-overflow:ellipsis;
-
-    opacity:.8;
-}
 
 /* ============================================================
    EMPTY / LOADING
@@ -753,6 +748,7 @@ body.dark{
 
     line-height:1.8;
 }
+
 
 /* ============================================================
    PREVIEW
@@ -804,6 +800,7 @@ body.dark .preview-box{
 
     text-align:right;
 }
+
 
 /* ============================================================
    LENGTH
@@ -865,6 +862,132 @@ body.dark .preview-box{
 
     background:var(--danger);
 }
+
+
+/* ============================================================
+   CONTACT / SOCIAL LINKS
+   ============================================================ */
+
+.contact-links{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:12px;
+
+    margin-top:4px;
+}
+
+.contact-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:11px;
+
+    text-decoration:none;
+
+    background:var(--surface-2);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:12px;
+
+    transition:
+        transform .18s,
+        border-color .18s,
+        box-shadow .18s;
+}
+
+.contact-link:hover{
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(103,80,164,.45);
+
+    box-shadow:var(--shadow);
+}
+
+.contact-logo{
+
+    width:43px;
+    height:43px;
+
+    flex:
+        0 0 43px;
+
+    border-radius:13px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#fff;
+
+    border:
+        1px solid rgba(0,0,0,.06);
+
+    box-shadow:
+        0 2px 7px rgba(0,0,0,.08);
+
+    overflow:hidden;
+}
+
+.contact-logo svg{
+
+    width:28px;
+    height:28px;
+
+    display:block;
+}
+
+.contact-info{
+
+    min-width:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+}
+
+.contact-name{
+
+    font-size:12px;
+
+    font-weight:800;
+
+    color:var(--text);
+}
+
+.contact-url{
+
+    direction:ltr;
+
+    text-align:right;
+
+    font-size:9px;
+
+    color:var(--text-secondary);
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
 
 /* ============================================================
    FLOATING COPY BAR
@@ -957,6 +1080,7 @@ body.dark .copy-bar{
     cursor:not-allowed;
 }
 
+
 /* ============================================================
    TOAST
    ============================================================ */
@@ -1002,6 +1126,7 @@ body.dark .copy-bar{
     transform:
         translate(-50%,0);
 }
+
 
 /* ============================================================
    RESPONSIVE
@@ -1082,6 +1207,13 @@ body.dark .copy-bar{
 
         max-width:500px;
     }
+
+    .contact-links{
+
+        grid-template-columns:
+            1fr;
+    }
+
 }
 
 @media(max-width:420px){
@@ -1106,12 +1238,42 @@ body.dark .copy-bar{
         padding:
             0 10px;
     }
+
+}
+
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+
+@media print{
+
+    .top-header,
+    .copy-bar,
+    .theme-btn,
+    .filter-bar,
+    .toolbar{
+
+        display:none !important;
+    }
+
+    .container{
+
+        margin:0;
+    }
+
+    .card{
+
+        box-shadow:none;
+    }
+
 }
 
 </style>
 </head>
 
 <body>
+
 
 <!-- ============================================================
      HEADER
@@ -1501,6 +1663,304 @@ body.dark .copy-bar{
     </section>
 
 
+    <!-- ========================================================
+         CONTACT LINKS
+         ======================================================== -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <h2 class="card-title">
+                📞 ارتباط با ما
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="contact-links">
+
+
+                <!-- RUBIKA -->
+
+                <a
+                    class="contact-link"
+                    href="https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+
+                    <div class="contact-logo">
+
+                        <!-- Rubika style logo -->
+
+                        <svg
+                            viewBox="0 0 48 48"
+                            aria-hidden="true"
+                        >
+
+                            <rect
+                                x="3"
+                                y="3"
+                                width="42"
+                                height="42"
+                                rx="12"
+                                fill="#ffffff"
+                            />
+
+                            <path
+                                d="M14 15
+                                   C14 12.8 15.8 11 18 11
+                                   H30
+                                   C32.2 11 34 12.8 34 15
+                                   V28
+                                   C34 30.2 32.2 32 30 32
+                                   H24
+                                   L19 37
+                                   V32
+                                   H18
+                                   C15.8 32 14 30.2 14 28
+                                   Z"
+                                fill="#7B1FA2"
+                            />
+
+                            <circle
+                                cx="21"
+                                cy="21"
+                                r="2"
+                                fill="#ffffff"
+                            />
+
+                            <circle
+                                cx="27"
+                                cy="21"
+                                r="2"
+                                fill="#ffffff"
+                            />
+
+                            <path
+                                d="M19 26
+                                   C21 28
+                                   27 28
+                                   29 26"
+                                fill="none"
+                                stroke="#ffffff"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                            />
+
+                        </svg>
+
+                    </div>
+
+                    <div class="contact-info">
+
+                        <span class="contact-name">
+                            روبیکا
+                        </span>
+
+                        <span class="contact-url">
+                            rubika.ir/joing/...
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+                <!-- BLOGFA -->
+
+                <a
+                    class="contact-link"
+                    href="https://diyareghadamgah.blogfa.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+
+                    <div class="contact-logo">
+
+                        <!-- Blogfa style logo -->
+
+                        <svg
+                            viewBox="0 0 48 48"
+                            aria-hidden="true"
+                        >
+
+                            <rect
+                                x="4"
+                                y="4"
+                                width="40"
+                                height="40"
+                                rx="10"
+                                fill="#ffffff"
+                            />
+
+                            <path
+                                d="M13 15
+                                   H35
+                                   C36.7 15 38 16.3 38 18
+                                   V29
+                                   C38 30.7 36.7 32 35 32
+                                   H24
+                                   L18 36
+                                   V32
+                                   H13
+                                   C11.3 32 10 30.7 10 29
+                                   V18
+                                   C10 16.3 11.3 15 13 15Z"
+                                fill="#1976D2"
+                            />
+
+                            <path
+                                d="M16 21
+                                   H32"
+                                stroke="#ffffff"
+                                stroke-width="2.4"
+                                stroke-linecap="round"
+                            />
+
+                            <path
+                                d="M16 26
+                                   H28"
+                                stroke="#ffffff"
+                                stroke-width="2.4"
+                                stroke-linecap="round"
+                            />
+
+                        </svg>
+
+                    </div>
+
+                    <div class="contact-info">
+
+                        <span class="contact-name">
+                            وبلاگ دیار قدمگاه
+                        </span>
+
+                        <span class="contact-url">
+                            diyareghadamgah.blogfa.com
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+                <!-- INSTAGRAM -->
+
+                <a
+                    class="contact-link"
+                    href="https://www.instagram.com/diyareghadamgah"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+
+                    <div class="contact-logo">
+
+                        <!-- Instagram logo -->
+
+                        <svg
+                            viewBox="0 0 48 48"
+                            aria-hidden="true"
+                        >
+
+                            <defs>
+
+                                <linearGradient
+                                    id="instagramGradient"
+                                    x1="0%"
+                                    y1="100%"
+                                    x2="100%"
+                                    y2="0%"
+                                >
+
+                                    <stop
+                                        offset="0%"
+                                        stop-color="#F58529"
+                                    />
+
+                                    <stop
+                                        offset="45%"
+                                        stop-color="#DD2A7B"
+                                    />
+
+                                    <stop
+                                        offset="75%"
+                                        stop-color="#8134AF"
+                                    />
+
+                                    <stop
+                                        offset="100%"
+                                        stop-color="#515BD4"
+                                    />
+
+                                </linearGradient>
+
+                            </defs>
+
+                            <rect
+                                x="5"
+                                y="5"
+                                width="38"
+                                height="38"
+                                rx="11"
+                                fill="url(#instagramGradient)"
+                            />
+
+                            <rect
+                                x="13"
+                                y="13"
+                                width="22"
+                                height="22"
+                                rx="7"
+                                fill="none"
+                                stroke="#ffffff"
+                                stroke-width="3"
+                            />
+
+                            <circle
+                                cx="24"
+                                cy="24"
+                                r="5"
+                                fill="none"
+                                stroke="#ffffff"
+                                stroke-width="3"
+                            />
+
+                            <circle
+                                cx="32"
+                                cy="16"
+                                r="2"
+                                fill="#ffffff"
+                            />
+
+                        </svg>
+
+                    </div>
+
+                    <div class="contact-info">
+
+                        <span class="contact-name">
+                            اینستاگرام
+                        </span>
+
+                        <span class="contact-url">
+                            instagram.com/diyareghadamgah
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
 </main>
 
 
@@ -1545,6 +2005,7 @@ body.dark .copy-bar{
 
 <script>
 
+
 /* ============================================================
    تنظیمات اصلی
    ============================================================ */
@@ -1564,8 +2025,8 @@ const BLOG_URL =
 const DEFAULT_RUBIKA_URL =
     "https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE";
 
-const INSTAGRAM_USERNAME =
-    "@diyareghadamgah";
+const INSTAGRAM_URL =
+    "https://www.instagram.com/diyareghadamgah";
 
 const RUBIKA_MAX_LENGTH =
     4000;
@@ -1617,7 +2078,9 @@ function cleanText(value){
         value === null ||
         value === undefined
     ){
+
         return "";
+
     }
 
     return String(value)
@@ -1699,7 +2162,9 @@ function cleanText(value){
 function normalizeUrl(value){
 
     if(!value){
+
         return "";
+
     }
 
     let url =
@@ -1811,7 +2276,9 @@ function extractNewsArray(data){
 function parseDate(value){
 
     if(!value){
+
         return 0;
+
     }
 
     const time =
@@ -1827,14 +2294,18 @@ function parseDate(value){
 function formatPersianDate(value){
 
     if(!value){
+
         return "";
+
     }
 
     const date =
         new Date(value);
 
     if(
-        Number.isNaN(date.getTime())
+        Number.isNaN(
+            date.getTime()
+        )
     ){
 
         return "";
@@ -2033,7 +2504,9 @@ function savePublisher(){
 function normalizeRubikaUrl(value){
 
     if(!value){
+
         return "";
+
     }
 
     let url =
@@ -2123,7 +2596,9 @@ function loadTheme(){
             STORAGE_THEME
         );
 
-    if(theme === "dark"){
+    if(
+        theme === "dark"
+    ){
 
         document.body.classList.add(
             "dark"
@@ -2785,17 +3260,11 @@ function renderNews(){
                 "بدون خلاصه";
 
 
-            const url =
-                document.createElement(
-                    "div"
-                );
-
-            url.className =
-                "news-url";
-
-            url.textContent =
-                item._url ||
-                "بدون لینک";
+            /*
+               لینک خبر عمداً از کارت حذف شده است.
+               item._url همچنان در داده نگهداری می‌شود
+               تا شناسه خبر و پردازش JSON دچار مشکل نشود.
+            */
 
 
             card.appendChild(
@@ -2812,10 +3281,6 @@ function renderNews(){
 
             card.appendChild(
                 summary
-            );
-
-            card.appendChild(
-                url
             );
 
 
@@ -3015,7 +3480,7 @@ function rubikaFooter(){
 
         "📸 اینستاگرام:",
 
-        INSTAGRAM_USERNAME
+        INSTAGRAM_URL
 
     ];
 
@@ -3030,29 +3495,17 @@ function rubikaFooter(){
 
 function buildNewsLine(item){
 
+    /*
+       مهم:
+       لینک تک‌تک خبرها عمداً حذف شده است.
+       هیچ URL، Markdown یا HTML برای خبر وارد پیام نمی‌شود.
+    */
+
     let line =
         "🔴 " +
         cleanText(
             item._title
         );
-
-
-    /*
-       بسیار مهم:
-       لینک به‌صورت URL خام اضافه می‌شود.
-       هیچ Markdown یا HTML استفاده نمی‌شود.
-    */
-
-    if(
-        item._url
-    ){
-
-        line +=
-            " (" +
-            item._url +
-            ")";
-
-    }
 
 
     if(
@@ -3405,12 +3858,6 @@ async function copyText(text){
     }
 
 
-    /*
-       کنترل نهایی:
-       پیام باید فقط متن ساده باشد.
-       Clipboard API با MIME text/plain استفاده می‌شود.
-    */
-
     try{
 
         if(
@@ -3435,10 +3882,6 @@ async function copyText(text){
 
     }
 
-
-    /*
-       روش جایگزین برای مرورگرهای قدیمی
-    */
 
     try{
 
@@ -3542,8 +3985,8 @@ async function copyRubikaMessage(){
 
 
     /*
-       اینجا عمداً هیچ HTML،
-       Markdown یا rich text تولید نمی‌شود.
+       فقط متن ساده کپی می‌شود.
+       هیچ HTML یا Markdown تولید نمی‌شود.
     */
 
     const success =
@@ -3601,11 +4044,6 @@ function calculateMinimumNewsToRemove(){
         selected.length;
 
 
-    /*
-       از انتهای انتخاب‌ها حذف می‌کنیم
-       تا پیام به محدوده مجاز برسد.
-    */
-
     while(
         text.length >
             RUBIKA_MAX_LENGTH &&
@@ -3627,6 +4065,15 @@ function calculateMinimumNewsToRemove(){
             createRubikaText();
 
     }
+
+
+    saveSelected();
+
+    renderNews();
+
+    updatePreview();
+
+    updateStats();
 
 
     return selected.length -
@@ -3796,4 +4243,4 @@ init();
 </script>
 
 </body>
-</html>
+    </html>

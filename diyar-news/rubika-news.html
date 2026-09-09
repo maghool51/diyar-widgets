@@ -803,12 +803,6 @@ const FALLBACK_URL =
 const RUBIKA_PAGE_URL =
     "https://maghool51.github.io/diyar-widgets/diyar-news/news.html";
 
-/*
-   لینک وبلاگ: بخش پایانی پیام روبیکا («🏡 دیار قدمگاه / ✍️ .../
-   🔗 روبیکا: .../ 🔗 وبلاگ: ...») باید ثابت و مستقل از اخبار
-   انتخاب‌شده باشد، پس این آدرس به‌عنوان یک ثابت (نه یک تنظیم
-   قابل‌تغییر) در نظر گرفته شده است.
-*/
 const BLOG_URL =
     "https://diyareghadamgah.blogfa.com/";
 
@@ -1064,14 +1058,6 @@ function saveSelectedSettings(){
    DATE
 ========================================================= */
 
-/*
-   ترتیب طبیعی فارسی برای نمایش تاریخ/ساعت: نام روز هفته،
-   سپس روز-ماه-سال، سپس ساعت. formatter.format() پیش‌فرض ICU
-   ترتیب غربی (سال-ماه-روز) می‌دهد، پس اجزا را جدا گرفته و
-   خودمان به ترتیب فارسی می‌چینیم. این تابع مشترک هم در
-   هدر صفحه و هم در متن پیام روبیکا استفاده می‌شود.
-*/
-
 function formatPersianHeaderDate(now){
 
     const formatter =
@@ -1193,12 +1179,6 @@ function normalizeNews(raw, index){
             "متفرقه"
         );
 
-    /*
-       نکته مهم:
-       summary فقط از فیلدهای واقعی داده گرفته می‌شود.
-       هیچ خلاصه ساختگی تولید نمی‌کنیم.
-    */
-
     const summary =
         cleanText(
             item.summary ||
@@ -1208,6 +1188,11 @@ function normalizeNews(raw, index){
             item.short_description ||
             ""
         );
+
+    /*
+       URL واقعی خبر:
+       فقط http / https پذیرفته می‌شود.
+    */
 
     const url =
         normalizeUrl(
@@ -1282,21 +1267,8 @@ function extractNewsArray(data){
     }
 
     if(Array.isArray(data.categorizedNews)){
-
         return data.categorizedNews;
-
     }
-
-    /*
-       پشتیبانی از ساختار:
-
-       {
-          categorizedNews:{
-             سیاسی:[...],
-             اقتصادی:[...]
-          }
-       }
-    */
 
     if(
         data.categorizedNews &&
@@ -1332,15 +1304,6 @@ function extractNewsArray(data){
 
         return result;
     }
-
-    /*
-       پشتیبانی از ساختار:
-
-       {
-          سیاسی:[...],
-          اقتصادی:[...]
-       }
-    */
 
     const possibleCategories = [
         "سیاسی",
@@ -1462,10 +1425,6 @@ async function loadNews(){
                     item => item.title
                 );
 
-        /*
-           فقط انتخاب‌هایی که هنوز وجود دارند حفظ شوند.
-        */
-
         const validKeys =
             new Set(
                 allNews.map(
@@ -1524,10 +1483,6 @@ function getFilteredNews(){
     let result =
         [...allNews];
 
-    /*
-       category
-    */
-
     if(currentCategory !== "همه"){
 
         result =
@@ -1538,10 +1493,6 @@ function getFilteredNews(){
             );
 
     }
-
-    /*
-       search
-    */
 
     if(searchQuery){
 
@@ -1568,10 +1519,6 @@ function getFilteredNews(){
 
     }
 
-    /*
-       only selected
-    */
-
     if(onlySelected){
 
         result =
@@ -1583,10 +1530,6 @@ function getFilteredNews(){
             );
 
     }
-
-    /*
-       sort
-    */
 
     if(sortMode === "selected"){
 
@@ -2087,10 +2030,6 @@ function rubikaFooter(){
 
     }
 
-    /*
-       لینک وبلاگ دقیقاً بعد از لینک روبیکا، همیشه ثابت و
-       مستقل از اخبار انتخاب‌شده.
-    */
     lines.push(
         "",
         "🔗 وبلاگ:",
@@ -2102,45 +2041,67 @@ function rubikaFooter(){
 
 
 /* =========================================================
-   BUILD RUBIKA TEXT FROM NEWS LIST
+   CREATE NEWS LINE
+   عنوان + URL + منبع + خلاصه
 ========================================================= */
 
-function buildRubikaTextFromNews(newsList){
+function createRubikaNewsLine(item){
 
-    const parts = [
-        rubikaHeader()
-    ];
+    let line =
+        "🔴 " +
+        cleanText(item.title);
 
-    newsList.forEach(item => {
 
-        let line = "🔴 " + (item.title || "");
+    /*
+       URL واقعی خبر باید در همان خط عنوان باشد.
+       اگر URL معتبر نباشد، اصلاً اضافه نمی‌شود.
+    */
 
-        if (item.url && normalizeUrl(item.url)) {
-            line += " (" + item.url + ")";
-        }
+    const url =
+        normalizeUrl(item.url);
 
-        if (item.source) {
-            line += " 📰 " + item.source;
-        }
+    if(url){
 
-        if (item.summary) {
-            line += " 📝 " + item.summary;
-        }
+        line +=
+            " (" +
+            url +
+            ")";
 
-        parts.push(line);
+    }
 
-    });
 
-    parts.push(
-        rubikaFooter()
-    );
+    /*
+       منبع
+    */
 
-    return parts.join("\n\n");
+    if(item.source){
+
+        line +=
+            " 📰 " +
+            cleanText(item.source);
+
+    }
+
+
+    /*
+       خلاصه
+    */
+
+    if(item.summary){
+
+        line +=
+            " 📝 " +
+            cleanText(item.summary);
+
+    }
+
+
+    return line;
 }
 
 
 /* =========================================================
-   CREATE RUBIKA TEXT (selected only)
+   CREATE RUBIKA TEXT
 ========================================================= */
 
 function createRubikaText(){
@@ -2153,7 +2114,25 @@ function createRubikaText(){
                 )
         );
 
-    return buildRubikaTextFromNews(selectedNews);
+    const parts = [
+        rubikaHeader()
+    ];
+
+    selectedNews.forEach(item => {
+
+        parts.push(
+            createRubikaNewsLine(item)
+        );
+
+    });
+
+    parts.push(
+        rubikaFooter()
+    );
+
+    return parts.join(
+        "\n\n"
+    );
 }
 
 
@@ -2272,7 +2251,7 @@ function updateMessageLength(){
 
 
 /* =========================================================
-   CALCULATE REMOVALS
+   CALCULATE MINIMUM NEWS TO REMOVE
 ========================================================= */
 
 function calculateMinimumNewsToRemove(){
@@ -2289,8 +2268,13 @@ function calculateMinimumNewsToRemove(){
         return 0;
     }
 
+    let testNews =
+        [...selectedNews];
+
     let text =
-        createRubikaText();
+        buildRubikaTextFromNews(
+            testNews
+        );
 
     if(
         text.length <=
@@ -2302,9 +2286,6 @@ function calculateMinimumNewsToRemove(){
     }
 
     let count = 0;
-
-    const testNews =
-        [...selectedNews];
 
     while(
         testNews.length &&
@@ -2324,6 +2305,35 @@ function calculateMinimumNewsToRemove(){
     }
 
     return count;
+}
+
+
+/* =========================================================
+   BUILD RUBIKA TEXT FROM SPECIFIC NEWS ARRAY
+   برای محاسبه طول نیز دقیقاً از همین منطق استفاده می‌شود.
+========================================================= */
+
+function buildRubikaTextFromNews(newsList){
+
+    const parts = [
+        rubikaHeader()
+    ];
+
+    newsList.forEach(item => {
+
+        parts.push(
+            createRubikaNewsLine(item)
+        );
+
+    });
+
+    parts.push(
+        rubikaFooter()
+    );
+
+    return parts.join(
+        "\n\n"
+    );
 }
 
 
@@ -2448,7 +2458,290 @@ function renderAll(){
 
 
 /* =========================================================
-   COPY (اصلاح شده با پشتیبانی از text/html)
+   CLIPBOARD HTML
+========================================================= */
+
+/*
+   متن خام دست‌نخورده می‌ماند.
+   نسخه HTML جداگانه ساخته می‌شود تا Rubika بتواند
+   لینک‌ها را به‌صورت قابل کلیک دریافت کند.
+
+   نکته مهم:
+   ابتدا کل خط را لینک‌دار نمی‌کنیم و سپس دوباره Regex
+   روی HTML اجرا نمی‌کنیم؛ بنابراین لینک تو‌در‌تو ایجاد نمی‌شود.
+*/
+
+function createClipboardHtml(text){
+
+    if(!text){
+        return "";
+    }
+
+    const lines =
+        String(text).split("\n");
+
+    return lines.map(line => {
+
+        const source =
+            String(line);
+
+        const urlRegex =
+            /https?:\/\/[^\s<>()]+/g;
+
+        let result = "";
+
+        let lastIndex = 0;
+
+        let match;
+
+        while(
+            (match =
+                urlRegex.exec(source)) !== null
+        ){
+
+            const url =
+                match[0];
+
+            const start =
+                match.index;
+
+            /*
+               متن قبل از URL
+            */
+
+            result +=
+                escapeHtml(
+                    source.slice(
+                        lastIndex,
+                        start
+                    )
+                );
+
+            /*
+               خود URL به لینک تبدیل می‌شود.
+            */
+
+            result +=
+                '<a href="' +
+                escapeHtml(url) +
+                '" target="_blank" rel="noopener noreferrer">' +
+                escapeHtml(url) +
+                "</a>";
+
+            lastIndex =
+                start +
+                url.length;
+
+        }
+
+        /*
+           ادامه متن بعد از آخرین URL
+        */
+
+        result +=
+            escapeHtml(
+                source.slice(
+                    lastIndex
+                )
+            );
+
+        return result;
+
+    }).join("<br>");
+}
+
+
+/* =========================================================
+   FALLBACK COPY
+========================================================= */
+
+function fallbackCopy(
+    text,
+    html
+){
+
+    /*
+       یک عنصر contenteditable موقت می‌سازیم.
+       این روش به document.execCommand اجازه می‌دهد
+       محتوای HTML را وارد Clipboard کند.
+    */
+
+    const container =
+        document.createElement(
+            "div"
+        );
+
+    container.contentEditable =
+        "true";
+
+    container.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    container.style.position =
+        "fixed";
+
+    container.style.left =
+        "-99999px";
+
+    container.style.top =
+        "0";
+
+    container.style.width =
+        "1px";
+
+    container.style.height =
+        "1px";
+
+    container.style.opacity =
+        "0";
+
+    container.style.pointerEvents =
+        "none";
+
+    container.innerHTML =
+        html;
+
+    document.body.appendChild(
+        container
+    );
+
+    const range =
+        document.createRange();
+
+    range.selectNodeContents(
+        container
+    );
+
+    const selection =
+        window.getSelection();
+
+    selection.removeAllRanges();
+
+    selection.addRange(
+        range
+    );
+
+    let success = false;
+
+    /*
+       در مرورگرهای قدیمی، قبل از execCommand
+       می‌توانیم ClipboardData را هم تنظیم کنیم.
+    */
+
+    const beforeCopyHandler =
+        event => {
+
+            if(
+                event.clipboardData
+            ){
+
+                event.clipboardData.setData(
+                    "text/plain",
+                    text
+                );
+
+                event.clipboardData.setData(
+                    "text/html",
+                    html
+                );
+
+                event.preventDefault();
+
+            }
+
+        };
+
+    document.addEventListener(
+        "copy",
+        beforeCopyHandler
+    );
+
+    try{
+
+        success =
+            document.execCommand(
+                "copy"
+            );
+
+    }finally{
+
+        document.removeEventListener(
+            "copy",
+            beforeCopyHandler
+        );
+
+        selection.removeAllRanges();
+
+        document.body.removeChild(
+            container
+        );
+
+    }
+
+    if(!success){
+
+        /*
+           آخرین fallback:
+           فقط متن ساده
+        */
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+        textarea.value =
+            text;
+
+        textarea.style.position =
+            "fixed";
+
+        textarea.style.left =
+            "-99999px";
+
+        textarea.style.top =
+            "0";
+
+        textarea.style.opacity =
+            "0";
+
+        document.body.appendChild(
+            textarea
+        );
+
+        textarea.focus();
+
+        textarea.select();
+
+        textarea.setSelectionRange(
+            0,
+            textarea.value.length
+        );
+
+        success =
+            document.execCommand(
+                "copy"
+            );
+
+        document.body.removeChild(
+            textarea
+        );
+    }
+
+    if(!success){
+
+        throw new Error(
+            "Clipboard copy failed"
+        );
+
+    }
+}
+
+
+/* =========================================================
+   MAIN COPY
 ========================================================= */
 
 async function copyText(){
@@ -2465,7 +2758,6 @@ async function copyText(){
         );
 
         return;
-
     }
 
     if(
@@ -2477,7 +2769,9 @@ async function copyText(){
             confirm(
                 "⚠️ پیام از سقف ۴۰۰۰ کاراکتر بیشتر است.\n\n" +
                 "طول فعلی: " +
-                toPersianDigits(text.length) +
+                toPersianDigits(
+                    text.length
+                ) +
                 "\n\n" +
                 "آیا با این حال کپی شود؟"
             );
@@ -2488,125 +2782,113 @@ async function copyText(){
 
     }
 
+    /*
+       نسخه HTML
+    */
+
+    const html =
+        createClipboardHtml(
+            text
+        );
+
     try{
 
-        // تولید نسخه HTML با لینک‌های واقعی
-        const htmlContent = text
-            .replace(
-                /\((https?:\/\/[^\s)]+)\)/g,
-                (match, url) => `<a href="${url}">${url}</a>`
-            )
-            .replace(
-                /(https?:\/\/[^\s]+)/g,
-                (match) => `<a href="${match}">${match}</a>`
-            )
-            .replace(/\n/g, '<br>');
+        /*
+           روش اصلی:
+           Clipboard API با text/plain و text/html
+        */
 
-        const blobPlain = new Blob(
-            [text],
-            { type: "text/plain" }
-        );
-
-        const blobHtml = new Blob(
-            [`<meta charset="UTF-8">${htmlContent}`],
-            { type: "text/html" }
-        );
-
-        if (
+        if(
             navigator.clipboard &&
             window.isSecureContext &&
-            typeof ClipboardItem === "function"
-        ) {
+            typeof ClipboardItem !== "undefined"
+        ){
 
-            const clipboardItem = new ClipboardItem({
-                "text/plain": blobPlain,
-                "text/html": blobHtml
-            });
+            const plainBlob =
+                new Blob(
+                    [
+                        text
+                    ],
+                    {
+                        type:
+                            "text/plain;charset=utf-8"
+                    }
+                );
+
+            const htmlBlob =
+                new Blob(
+                    [
+                        '<meta charset="UTF-8">' +
+                        html
+                    ],
+                    {
+                        type:
+                            "text/html;charset=utf-8"
+                    }
+                );
+
+            const clipboardItem =
+                new ClipboardItem({
+
+                    "text/plain":
+                        plainBlob,
+
+                    "text/html":
+                        htmlBlob
+
+                });
 
             await navigator.clipboard.write([
                 clipboardItem
             ]);
 
-        } else {
+        }else{
 
-            // fallback برای مرورگرهای قدیمی
-            fallbackCopy(text);
+            /*
+               fallback
+            */
+
+            fallbackCopy(
+                text,
+                html
+            );
 
         }
 
         showToast(
-            "✅ متن پیام با موفقیت کپی شد."
+            "✅ پیام با لینک‌های قابل کلیک کپی شد."
         );
 
-    } catch(error){
+    }catch(error){
 
-        console.error(error);
+        console.error(
+            "Clipboard error:",
+            error
+        );
 
         try{
 
-            fallbackCopy(text);
-
-            showToast(
-                "✅ متن پیام کپی شد."
+            fallbackCopy(
+                text,
+                html
             );
 
-        } catch(e){
+            showToast(
+                "✅ پیام کپی شد."
+            );
+
+        }catch(fallbackError){
+
+            console.error(
+                "Fallback clipboard error:",
+                fallbackError
+            );
 
             showToast(
-                "❌ کپی متن انجام نشد."
+                "❌ کپی پیام انجام نشد."
             );
 
         }
-
-    }
-}
-
-
-function fallbackCopy(text){
-
-    const textarea =
-        document.createElement(
-            "textarea"
-        );
-
-    textarea.value = text;
-
-    textarea.style.position =
-        "fixed";
-
-    textarea.style.opacity =
-        "0";
-
-    textarea.style.pointerEvents =
-        "none";
-
-    document.body.appendChild(
-        textarea
-    );
-
-    textarea.focus();
-
-    textarea.select();
-
-    textarea.setSelectionRange(
-        0,
-        textarea.value.length
-    );
-
-    const success =
-        document.execCommand(
-            "copy"
-        );
-
-    document.body.removeChild(
-        textarea
-    );
-
-    if(!success){
-
-        throw new Error(
-            "Copy failed"
-        );
 
     }
 }
@@ -2895,4 +3177,4 @@ setInterval(
 </script>
 
 </body>
-    </html>
+                                                             </html>

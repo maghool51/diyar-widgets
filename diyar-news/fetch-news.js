@@ -1561,77 +1561,7 @@ async function fetchAllNews() {
      منابع اصلی
   ------------------------------------------------------- */
 
-/* ========================================================
-   🔎 DIAGNOSTIC LOGGING (TEMPORARY — بررسی contentSnippet ایسنا)
-   این تابع فقط لاگ چاپ می‌کند، هیچ داده‌ای را تغییر یا ذخیره نمی‌کند.
-   بعد از رفع/تأیید موضوع، این تابع و فراخوانی آن باید حذف شوند.
-======================================================== */
-
-function logIsnaRssDiagnostics(items) {
-
-  let withSnippet = 0;
-  let withSnippetMin45 = 0;
-  let withContent = 0;
-  let withNeither = 0;
-
-  console.log("");
-  console.log("🔎🔎🔎 ISNA RSS DIAGNOSTIC START 🔎🔎🔎");
-
-  for (const item of items) {
-
-    const title = String(item.title || "").trim();
-
-    const snippet = item.contentSnippet;
-    const content = item.content;
-
-    const snippetExists = typeof snippet === "string" && snippet.length > 0;
-    const contentExists = typeof content === "string" && content.length > 0;
-
-    const snippetLength = snippetExists ? snippet.length : 0;
-    const contentLength = contentExists ? content.length : 0;
-
-    if (snippetExists) {
-      withSnippet++;
-      if (snippetLength >= 45) {
-        withSnippetMin45++;
-      }
-    }
-
-    if (contentExists) {
-      withContent++;
-    }
-
-    if (!snippetExists && !contentExists) {
-      withNeither++;
-    }
-
-    console.log("🔎 ISNA RSS DIAGNOSTIC");
-    console.log("title:", title);
-    console.log("contentSnippet exists:", snippetExists);
-    console.log("contentSnippet length:", snippetLength);
-    console.log("content exists:", contentExists);
-    console.log("content length:", contentLength);
-
-    if (!snippetExists && contentExists) {
-      console.log("note: content exists but contentSnippet does not");
-    }
-
-    console.log("");
-  }
-
-  console.log("ISNA RSS SUMMARY");
-  console.log("total items:", items.length);
-  console.log("items with contentSnippet:", withSnippet);
-  console.log("items with contentSnippet >= 45 chars:", withSnippetMin45);
-  console.log("items with content:", withContent);
-  console.log("items with neither:", withNeither);
-  console.log("🔎🔎🔎 ISNA RSS DIAGNOSTIC END 🔎🔎🔎");
-  console.log("");
-
-}
-
-
-for (const source of sources) {
+  for (const source of sources) {
     try {
       const feed = await fetchWithRetry(source.url, 2);
 
@@ -1646,11 +1576,6 @@ for (const source of sources) {
       // فچ این منبع موفق بود (feed معتبر و قابل‌parse دریافت شد)،
       // صرف‌نظر از این‌که بعداً چند خبرش به فهرست نهایی برسد.
       successfulSources.push(source.name);
-
-      /* 🔎 TEMPORARY DIAGNOSTIC — فقط برای منبع ایسنا */
-      if (source.name === "ایسنا") {
-        logIsnaRssDiagnostics(items);
-      }
 
 
       for (const item of items) {
@@ -1690,6 +1615,29 @@ for (const source of sources) {
 
 
         /*
+          rssDescription: توضیح/خلاصه‌ای که خودِ فید RSS برای این خبر
+          می‌فرستد (contentSnippet یا content در rss-parser). این فقط
+          یک «کاندید خام» است برای زمانی که generate-summaries.js نتواند
+          از خودِ صفحه‌ی خبر خلاصه استخراج کند (مثلاً به‌خاطر صفحه‌ی
+          محافظتی/Cloudflare). پاک‌سازی و اعتبارسنجی نهایی (طول، جمله‌ی
+          کامل و ...) در generate-summaries.js انجام می‌شود؛ این‌جا فقط
+          یک فیلتر سبک برای رد کردن مقدارهای خالی/بی‌فایده اعمال می‌شود
+          تا رکورد سایر منابع بی‌دلیل تغییر نکند.
+        */
+
+        const rawRssDescription = String(
+          item.contentSnippet ||
+          item.content ||
+          ""
+        )
+          .replace(/\s+/g, " ")
+          .trim();
+
+        const hasValidRssDescription =
+          rawRssDescription.length >= 20;
+
+
+        /*
           توجه امنیتی: عنوان/منبع این‌جا escapeHtml نمی‌شوند.
           news.json یک فایل داده است، نه HTML؛ اگر همین‌جا escape شود،
           هر مصرف‌کننده‌ای که خودش هم (به‌درستی) دوباره escape می‌کند
@@ -1697,7 +1645,8 @@ for (const source of sources) {
           «دو بار escape شدن» می‌شود و مثلاً «&» به‌صورت واقعی
           «&amp;amp;» روی صفحه نمایش داده می‌شود. امنیت XSS همچنان تضمین
           است چون تمام صفحات نمایشی خودشان escapeHtml/escapeHTML را روی
-          همین مقدار خام اجرا می‌کنند.
+          همین مقدار خام اجرا می‌کنند. همین منطق برای rssDescription هم
+          صادق است.
         */
         allNews.push({
           title,
@@ -1706,7 +1655,10 @@ for (const source of sources) {
           datePersian: formatPersianDate(validDate),
           source: source.name,
           flag: source.flag,
-          category
+          category,
+          ...(hasValidRssDescription
+            ? { rssDescription: rawRssDescription }
+            : {})
         });
       }
 

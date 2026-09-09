@@ -5,16 +5,23 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <meta name="theme-color"
-          content="#0b3d2e">
+    <meta
+        name="theme-color"
+        content="#0b3d2e"
+    >
 
-    <meta name="description"
-          content="راه‌های ارتباطی با دیار قدمگاه">
+    <meta
+        name="description"
+        content="راه‌های ارتباطی با دیار قدمگاه و مدیران"
+    >
 
     <title>ارتباط با ما | دیار قدمگاه</title>
+
 
     <style>
 
@@ -92,7 +99,7 @@
 
         /* =========================
            HEADER
-        ========================= */
+        ========================== */
 
         .header {
 
@@ -143,7 +150,7 @@
 
         /* =========================
            INTRO
-        ========================= */
+        ========================== */
 
         .intro {
 
@@ -189,8 +196,48 @@
 
 
         /* =========================
+           SECTION TITLE
+        ========================== */
+
+        .section-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin:
+                22px 4px 10px;
+
+            color: var(--green);
+
+            font-size: 17px;
+
+            font-weight: 800;
+        }
+
+
+        .section-title::after {
+
+            content: "";
+
+            flex: 1;
+
+            height: 1px;
+
+            background:
+                linear-gradient(
+                    to left,
+                    transparent,
+                    var(--gold-dark)
+                );
+        }
+
+
+        /* =========================
            CONTACTS
-        ========================= */
+        ========================== */
 
         .contacts {
 
@@ -259,18 +306,20 @@
 
         /* =========================
            ICON
-        ========================= */
+        ========================== */
 
         .contact-icon {
 
             width: 54px;
             height: 54px;
 
-            flex: 0 0 54px;
+            flex:
+                0 0 54px;
 
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             border-radius: 15px;
@@ -308,7 +357,7 @@
 
         /* =========================
            CONTENT
-        ========================= */
+        ========================== */
 
         .contact-content {
 
@@ -355,7 +404,8 @@
 
             font-size: 22px;
 
-            flex: 0 0 auto;
+            flex:
+                0 0 auto;
 
             line-height: 1;
         }
@@ -363,7 +413,7 @@
 
         /* =========================
            RUBIKA SPECIAL
-        ========================= */
+        ========================== */
 
         .rubika-card {
 
@@ -403,12 +453,66 @@
 
 
         /* =========================
+           MANAGERS
+        ========================== */
+
+        .manager-card {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #f7faf8
+                );
+        }
+
+
+        .manager-card .contact-icon {
+
+            background:
+                #edf5f1;
+
+            border-color:
+                #d8e7df;
+        }
+
+
+        .manager-card .contact-icon img {
+
+            width: 37px;
+            height: 37px;
+        }
+
+
+        .manager-name {
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            color: var(--green);
+        }
+
+
+        .manager-username {
+
+            direction: ltr;
+
+            text-align: right;
+
+            font-size: 11px;
+
+            color: var(--muted);
+        }
+
+
+        /* =========================
            SHARE
-        ========================= */
+        ========================== */
 
         .share-box {
 
-            margin-top: 16px;
+            margin-top: 18px;
         }
 
 
@@ -464,7 +568,7 @@
 
         /* =========================
            FOOTER
-        ========================= */
+        ========================== */
 
         .footer {
 
@@ -506,7 +610,7 @@
 
         /* =========================
            TOAST
-        ========================= */
+        ========================== */
 
         .toast {
 
@@ -562,7 +666,7 @@
 
         /* =========================
            MOBILE
-        ========================= */
+        ========================== */
 
         @media (max-width: 480px) {
 
@@ -623,6 +727,14 @@
                 height: 35px;
             }
 
+
+            .section-title {
+
+                font-size: 16px;
+
+                margin-top: 20px;
+            }
+
         }
 
     </style>
@@ -642,29 +754,19 @@
 
     <header class="header">
 
-
-        <!--
-            لوگوی اصلی دیار قدمگاه
-            مسیر:
-            contact/assets/logos/diyareghadamgah.png
-        -->
-
         <img
             class="logo"
             src="assets/logos/diyareghadamgah.png"
             alt="لوگوی دیار قدمگاه"
         >
 
-
         <h1 class="title">
             📞 ارتباط با ما
         </h1>
 
-
         <p class="subtitle">
             راه‌های ارتباطی رسمی دیار قدمگاه
         </p>
-
 
     </header>
 
@@ -675,34 +777,27 @@
 
     <section class="intro">
 
-
         <div class="intro-title">
             🌿 همراه «دیار قدمگاه» باشید
         </div>
 
-
         <p class="intro-text">
-
             برای دنبال کردن اخبار، مطالب فرهنگی،
             تاریخی، طبیعت و گردشگری منطقه
             و ارتباط با ما، گزینه موردنظر خود را انتخاب کنید.
-
         </p>
-
 
     </section>
 
 
     <!-- =========================
-         CONTACTS
+         OFFICIAL CONTACTS
     ========================== -->
 
     <main class="contacts">
 
 
-        <!-- =====================
-             NEWS
-        ====================== -->
+        <!-- NEWS -->
 
         <a
             class="contact-card"
@@ -713,7 +808,10 @@
 
             <span class="contact-icon">
 
-                <span class="instagram-icon">
+                <span
+                    class="instagram-icon"
+                    aria-hidden="true"
+                >
                     📰
                 </span>
 
@@ -740,9 +838,7 @@
         </a>
 
 
-        <!-- =====================
-             RUBIKA
-        ====================== -->
+        <!-- RUBIKA GROUP -->
 
         <a
             class="contact-card rubika-card"
@@ -750,7 +846,6 @@
             target="_blank"
             rel="noopener noreferrer"
         >
-
 
             <span class="rubika-badge">
                 ارتباط مستقیم
@@ -770,7 +865,7 @@
             <span class="contact-content">
 
                 <span class="contact-title">
-                    روبیکا
+                    گروه روبیکای دیار قدمگاه
                 </span>
 
                 <span class="contact-description">
@@ -784,13 +879,10 @@
                 ‹
             </span>
 
-
         </a>
 
 
-        <!-- =====================
-             BLOGFA
-        ====================== -->
+        <!-- BLOGFA -->
 
         <a
             class="contact-card"
@@ -798,7 +890,6 @@
             target="_blank"
             rel="noopener noreferrer"
         >
-
 
             <span class="contact-icon">
 
@@ -827,13 +918,10 @@
                 ‹
             </span>
 
-
         </a>
 
 
-        <!-- =====================
-             INSTAGRAM
-        ====================== -->
+        <!-- INSTAGRAM -->
 
         <a
             class="contact-card"
@@ -841,7 +929,6 @@
             target="_blank"
             rel="noopener noreferrer"
         >
-
 
             <span class="contact-icon">
 
@@ -872,19 +959,15 @@
                 ‹
             </span>
 
-
         </a>
 
 
-        <!-- =====================
-             GMAIL
-        ====================== -->
+        <!-- GMAIL -->
 
         <a
             class="contact-card"
             href="mailto:diyareghadamgah@gmail.com"
         >
-
 
             <span class="contact-icon">
 
@@ -913,7 +996,6 @@
                 ‹
             </span>
 
-
         </a>
 
 
@@ -921,11 +1003,436 @@
 
 
     <!-- =========================
+         MANAGERS TITLE
+    ========================== -->
+
+    <div class="section-title">
+        👥 ارتباط با مدیران دیار قدمگاه
+    </div>
+
+
+    <!-- =========================
+         MANAGERS
+    ========================== -->
+
+    <section class="contacts">
+
+
+        <!-- 1 - قوامی -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/Fxzxnxxs"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    آقای قوامی
+                </span>
+
+                <span class="contact-description manager-username">
+                    @Fxzxnxxs
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 2 - عباسی -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/hamid_reza_1353"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    آقای عباسی
+                </span>
+
+                <span class="contact-description manager-username">
+                    @hamid_reza_1353
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 3 - بیرونی -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/Ebrahimn34"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    آقای بیرونی
+                </span>
+
+                <span class="contact-description manager-username">
+                    @Ebrahimn34
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 4 - میرزا -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/Mohamad_mirza50"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    آقای میرزا
+                </span>
+
+                <span class="contact-description manager-username">
+                    @Mohamad_mirza50
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 5 - رجبی -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/Ab7389292"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    آقای رجبی
+                </span>
+
+                <span class="contact-description manager-username">
+                    @Ab7389292
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 6 - عبدیان -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/abdiyar"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    آقای عبدیان
+                </span>
+
+                <span class="contact-description manager-username">
+                    @abdiyar
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 7 - معقول -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/maghoool"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    آقای معقول
+                </span>
+
+                <span class="contact-description manager-username">
+                    @maghoool
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 8 - عبدی -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/abdifatemeh1355"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    خانم عبدی
+                </span>
+
+                <span class="contact-description manager-username">
+                    @abdifatemeh1355
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 9 - رویانفر -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/Zohrehr79"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    خانم رویانفر
+                </span>
+
+                <span class="contact-description manager-username">
+                    @Zohrehr79
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 10 - بصیری -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/Hediebas"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    خانم بصیری
+                </span>
+
+                <span class="contact-description manager-username">
+                    @Hediebas
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- 11 - حسینی -->
+
+        <a
+            class="contact-card manager-card"
+            href="https://rubika.ir/ZA72718"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="assets/logos/rubika.png"
+                    alt="روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title manager-name">
+                    خانم حسینی
+                </span>
+
+                <span class="contact-description manager-username">
+                    @ZA72718
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+    </section>
+
+
+    <!-- =========================
          SHARE
     ========================== -->
 
     <div class="share-box">
-
 
         <button
             class="share-button"
@@ -942,7 +1449,6 @@
             </span>
 
         </button>
-
 
     </div>
 
@@ -969,7 +1475,7 @@
 
 <!-- =========================
      TOAST
-========================= -->
+========================== -->
 
 <div
     id="toast"
@@ -1034,10 +1540,8 @@ function fallbackCopy(text) {
     textarea.style.position =
         "fixed";
 
-
     textarea.style.top =
         "-9999px";
-
 
     textarea.style.opacity =
         "0";
@@ -1172,4 +1676,4 @@ async function sharePage() {
 
 </body>
 
-        </html>
+</html>

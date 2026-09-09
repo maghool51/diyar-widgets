@@ -2102,7 +2102,7 @@ function rubikaFooter(){
 
 
 /* =========================================================
-   BUILD RUBIKA TEXT FROM NEWS LIST
+   BUILD RUBIKA TEXT FROM NEWS LIST (تغییر کرده)
 ========================================================= */
 
 function buildRubikaTextFromNews(newsList){
@@ -2113,31 +2113,25 @@ function buildRubikaTextFromNews(newsList){
 
     newsList.forEach(item => {
 
-        const lines = [];
+        // ساخت یک خط کامل برای هر خبر
+        let line = "🔴 " + (item.title || "");
 
-        if(item.title){
-            lines.push("🔴 " + item.title);
+        // اگر URL معتبر داشت، داخل پرانتز اضافه می‌شود
+        if (item.url && normalizeUrl(item.url)) {
+            line += " (" + item.url + ")";
         }
 
-        if(item.source){
-            lines.push("📰 " + item.source);
+        // منبع (اگر وجود داشت)
+        if (item.source) {
+            line += " 📰 " + item.source;
         }
 
-        if(item.summary){
-            lines.push("📝 " + item.summary);
+        // خلاصه (اگر وجود داشت)
+        if (item.summary) {
+            line += " 📝 " + item.summary;
         }
 
-        /*
-           فقط در صورتی که url معتبر باشد (نه خالی و با پروتکل http/https)
-           خط لینک اضافه می‌شود.
-        */
-        if(item.url && normalizeUrl(item.url)){
-            lines.push("🔗 مشاهده خبر: (" + item.url + ")");
-        }
-
-        parts.push(
-            lines.join("\n")
-        );
+        parts.push(line);
 
     });
 
@@ -2884,4 +2878,4 @@ setInterval(
 </script>
 
 </body>
-    </html>
+             </html>

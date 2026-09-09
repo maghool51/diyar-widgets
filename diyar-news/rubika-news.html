@@ -1064,9 +1064,15 @@ function saveSelectedSettings(){
    DATE
 ========================================================= */
 
-function updateHeaderDate(){
+/*
+   ترتیب طبیعی فارسی برای نمایش تاریخ/ساعت: نام روز هفته،
+   سپس روز-ماه-سال، سپس ساعت. formatter.format() پیش‌فرض ICU
+   ترتیب غربی (سال-ماه-روز) می‌دهد، پس اجزا را جدا گرفته و
+   خودمان به ترتیب فارسی می‌چینیم. این تابع مشترک هم در
+   هدر صفحه و هم در متن پیام روبیکا استفاده می‌شود.
+*/
 
-    const now = new Date();
+function formatPersianHeaderDate(now){
 
     const formatter =
         new Intl.DateTimeFormat(
@@ -1081,10 +1087,52 @@ function updateHeaderDate(){
             }
         );
 
+    const parts =
+        formatter.formatToParts(now);
+
+    const getPart = (type) => {
+
+        const found =
+            parts.find(
+                p => p.type === type
+            );
+
+        return found
+            ? found.value
+            : "";
+    };
+
+    const weekday = getPart("weekday");
+    const day = getPart("day");
+    const month = getPart("month");
+    const year = getPart("year");
+    const hour = getPart("hour");
+    const minute = getPart("minute");
+
+    return (
+        weekday +
+        "، " +
+        day +
+        " " +
+        month +
+        " " +
+        year +
+        " - ساعت " +
+        hour +
+        ":" +
+        minute
+    );
+}
+
+
+function updateHeaderDate(){
+
+    const now = new Date();
+
     document.getElementById(
         "headerDate"
     ).textContent =
-        "📅 " + formatter.format(now);
+        "📅 " + formatPersianHeaderDate(now);
 }
 
 
@@ -1988,23 +2036,13 @@ function rubikaHeader(){
     const now =
         new Date();
 
-    const formatter =
-        new Intl.DateTimeFormat(
-            "fa-IR-u-ca-persian",
-            {
-                year:"numeric",
-                month:"long",
-                day:"numeric",
-                weekday:"long",
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        );
+    const dateLine =
+        formatPersianHeaderDate(now);
 
     return [
         "━━━━━━━━━━━━━━━━━━━━━━━━━━",
         "🌸🕌💫 اخبار دیار قدمگاه 💫🕌🌸",
-        "📅 " + formatter.format(now),
+        "📅 " + dateLine,
         "━━━━━━━━━━━━━━━━━━━━━━━━━━"
     ].join("\n");
 }

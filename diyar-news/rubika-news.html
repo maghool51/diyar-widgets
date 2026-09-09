@@ -2102,7 +2102,7 @@ function rubikaFooter(){
 
 
 /* =========================================================
-   BUILD RUBIKA TEXT FROM NEWS LIST (تغییر کرده)
+   BUILD RUBIKA TEXT FROM NEWS LIST
 ========================================================= */
 
 function buildRubikaTextFromNews(newsList){
@@ -2113,20 +2113,16 @@ function buildRubikaTextFromNews(newsList){
 
     newsList.forEach(item => {
 
-        // ساخت یک خط کامل برای هر خبر
         let line = "🔴 " + (item.title || "");
 
-        // اگر URL معتبر داشت، داخل پرانتز اضافه می‌شود
         if (item.url && normalizeUrl(item.url)) {
             line += " (" + item.url + ")";
         }
 
-        // منبع (اگر وجود داشت)
         if (item.source) {
             line += " 📰 " + item.source;
         }
 
-        // خلاصه (اگر وجود داشت)
         if (item.summary) {
             line += " 📝 " + item.summary;
         }
@@ -2305,14 +2301,6 @@ function calculateMinimumNewsToRemove(){
 
     }
 
-    /*
-       از آخرین خبرها حذف فرضی می‌کنیم
-       تا مشخص شود حداقل چند خبر لازم است
-       حذف شود.
-
-       ترتیب واقعی انتخاب‌ها تغییر نمی‌کند.
-    */
-
     let count = 0;
 
     const testNews =
@@ -2460,7 +2448,7 @@ function renderAll(){
 
 
 /* =========================================================
-   COPY
+   COPY (اصلاح شده با پشتیبانی از text/html)
 ========================================================= */
 
 async function copyText(){
@@ -2502,17 +2490,46 @@ async function copyText(){
 
     try{
 
-        if(
+        // تولید نسخه HTML با لینک‌های واقعی
+        const htmlContent = text
+            .replace(
+                /\((https?:\/\/[^\s)]+)\)/g,
+                (match, url) => `<a href="${url}">${url}</a>`
+            )
+            .replace(
+                /(https?:\/\/[^\s]+)/g,
+                (match) => `<a href="${match}">${match}</a>`
+            )
+            .replace(/\n/g, '<br>');
+
+        const blobPlain = new Blob(
+            [text],
+            { type: "text/plain" }
+        );
+
+        const blobHtml = new Blob(
+            [`<meta charset="UTF-8">${htmlContent}`],
+            { type: "text/html" }
+        );
+
+        if (
             navigator.clipboard &&
-            window.isSecureContext
-        ){
+            window.isSecureContext &&
+            typeof ClipboardItem === "function"
+        ) {
 
-            await navigator.clipboard.writeText(
-                text
-            );
+            const clipboardItem = new ClipboardItem({
+                "text/plain": blobPlain,
+                "text/html": blobHtml
+            });
 
-        }else{
+            await navigator.clipboard.write([
+                clipboardItem
+            ]);
 
+        } else {
+
+            // fallback برای مرورگرهای قدیمی
             fallbackCopy(text);
 
         }
@@ -2521,7 +2538,7 @@ async function copyText(){
             "✅ متن پیام با موفقیت کپی شد."
         );
 
-    }catch(error){
+    } catch(error){
 
         console.error(error);
 
@@ -2533,7 +2550,7 @@ async function copyText(){
                 "✅ متن پیام کپی شد."
             );
 
-        }catch(e){
+        } catch(e){
 
             showToast(
                 "❌ کپی متن انجام نشد."
@@ -2878,4 +2895,4 @@ setInterval(
 </script>
 
 </body>
-        </html>
+    </html>

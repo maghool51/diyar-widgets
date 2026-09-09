@@ -2102,14 +2102,58 @@ function rubikaFooter(){
 
 
 /* =========================================================
-   CREATE RUBIKA TEXT
+   BUILD RUBIKA TEXT FROM NEWS LIST
+========================================================= */
+
+function buildRubikaTextFromNews(newsList){
+
+    const parts = [
+        rubikaHeader()
+    ];
+
+    newsList.forEach(item => {
+
+        const lines = [];
+
+        if(item.title){
+            lines.push("🔴 " + item.title);
+        }
+
+        if(item.source){
+            lines.push("📰 " + item.source);
+        }
+
+        if(item.summary){
+            lines.push("📝 " + item.summary);
+        }
+
+        /*
+           فقط در صورتی که url معتبر باشد (نه خالی و با پروتکل http/https)
+           خط لینک اضافه می‌شود.
+        */
+        if(item.url && normalizeUrl(item.url)){
+            lines.push("🔗 مشاهده خبر: (" + item.url + ")");
+        }
+
+        parts.push(
+            lines.join("\n")
+        );
+
+    });
+
+    parts.push(
+        rubikaFooter()
+    );
+
+    return parts.join("\n\n");
+}
+
+
+/* =========================================================
+   CREATE RUBIKA TEXT (selected only)
 ========================================================= */
 
 function createRubikaText(){
-
-    /*
-       فقط خبرهای انتخاب‌شده وارد پیام می‌شوند.
-    */
 
     const selectedNews =
         allNews.filter(
@@ -2119,73 +2163,7 @@ function createRubikaText(){
                 )
         );
 
-    const parts = [
-        rubikaHeader()
-    ];
-
-    selectedNews.forEach(
-        (item, index) => {
-
-            const lines = [];
-
-            /*
-               عنوان
-            */
-
-            if(item.title){
-
-                lines.push(
-                    "🔴 " +
-                    item.title
-                );
-
-            }
-
-            /*
-               منبع
-            */
-
-            if(item.source){
-
-                lines.push(
-                    "📰 " +
-                    item.source
-                );
-
-            }
-
-            /*
-               خلاصه فقط در صورت وجود واقعی
-            */
-
-            if(item.summary){
-
-                lines.push(
-                    "📝 " +
-                    item.summary
-                );
-
-            }
-
-            parts.push(
-                lines.join("\n")
-            );
-
-        }
-    );
-
-    /*
-       حتی اگر هیچ خبری انتخاب نشده باشد،
-       Footer نمایش داده می‌شود.
-    */
-
-    parts.push(
-        rubikaFooter()
-    );
-
-    return parts.join(
-        "\n\n"
-    );
+    return buildRubikaTextFromNews(selectedNews);
 }
 
 
@@ -2356,42 +2334,10 @@ function calculateMinimumNewsToRemove(){
 
         count++;
 
-        const parts = [
-            rubikaHeader()
-        ];
-
-        testNews.forEach(item => {
-
-            const lines = [
-                "🔴 " + item.title
-            ];
-
-            if(item.source){
-                lines.push(
-                    "📰 " +
-                    item.source
-                );
-            }
-
-            if(item.summary){
-                lines.push(
-                    "📝 " +
-                    item.summary
-                );
-            }
-
-            parts.push(
-                lines.join("\n")
-            );
-
-        });
-
-        parts.push(
-            rubikaFooter()
-        );
-
         text =
-            parts.join("\n\n");
+            buildRubikaTextFromNews(
+                testNews
+            );
 
     }
 

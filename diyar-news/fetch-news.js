@@ -963,13 +963,7 @@ function scoreCategory(
    دسته‌بندی هوشمند
 ========================================================= */
 
-function detectCategory(title = "") {
-  const text = normalizeText(title);
-
-  if (!text) {
-    return "متفرقه";
-  }
-
+function scoreAllCategories(text) {
 
   /* -------------------------------------------------------
      امتیاز پایه
@@ -1433,11 +1427,61 @@ function detectCategory(title = "") {
   ------------------------------------------------------- */
 
   if (bestScore < 7) {
-    return "متفرقه";
+    return {
+      category: "متفرقه",
+      score: bestScore
+    };
   }
 
 
-  return bestCategory;
+  return {
+    category: bestCategory,
+    score: bestScore
+  };
+}
+
+
+/* =========================================================
+   دسته‌بندی نهایی (عنوان + rssDescription اختیاری)
+   ---------------------------------------------------------
+   اولویت همیشه با عنوان است:
+   ۱. ابتدا فقط عنوان امتیازدهی می‌شود (scoreAllCategories
+      دقیقاً همان منطق قبلی را، بدون کوچک‌ترین تغییر در
+      آستانه/وزن‌ها/کلیدواژه‌ها، اجرا می‌کند).
+   ۲. اگر عنوان به‌تنهایی دسته‌ی مشخصی پیدا کرد (غیر از
+      «متفرقه»، یعنی امتیاز ≥ ۷)، همان نتیجه بازگردانده
+      می‌شود و rssDescription اصلاً بررسی نمی‌شود — یعنی یک
+      کلیدواژه‌ی قوی در عنوان هرگز توسط RSS override نمی‌شود.
+   ۳. فقط وقتی عنوان به «متفرقه» رسید، rssDescription (در
+      صورت وجود و معتبر بودن) به‌عنوان متن کمکی به همان عنوان
+      اضافه می‌شود و دوباره با همان تابع/آستانه/وزن‌ها
+      امتیازدهی می‌شود.
+========================================================= */
+
+function detectCategory(title = "", rssDescription = "") {
+  const titleText = normalizeText(title);
+
+  if (!titleText) {
+    return "متفرقه";
+  }
+
+  const titleResult = scoreAllCategories(titleText);
+
+  if (titleResult.category !== "متفرقه") {
+    return titleResult.category;
+  }
+
+  const rssText = normalizeText(rssDescription || "");
+
+  if (!rssText) {
+    return titleResult.category;
+  }
+
+  const combinedText = titleText + " " + rssText;
+
+  const combinedResult = scoreAllCategories(combinedText);
+
+  return combinedResult.category;
 }
 
 
@@ -1611,9 +1655,6 @@ async function fetchAllNews() {
           : dateObject;
 
 
-        const category = detectCategory(title);
-
-
         /*
           rssDescription: توضیح/خلاصه‌ای که خودِ فید RSS برای این خبر
           می‌فرستد (contentSnippet یا content در rss-parser). این فقط
@@ -1623,6 +1664,10 @@ async function fetchAllNews() {
           کامل و ...) در generate-summaries.js انجام می‌شود؛ این‌جا فقط
           یک فیلتر سبک برای رد کردن مقدارهای خالی/بی‌فایده اعمال می‌شود
           تا رکورد سایر منابع بی‌دلیل تغییر نکند.
+
+          این مقدار همچنین به detectCategory() به‌عنوان سیگنال کمکی
+          داده می‌شود (فقط وقتی عنوان به‌تنهایی کافی نبود) — جلوتر از
+          محاسبه‌ی category قرار گرفته چون category به آن نیاز دارد.
         */
 
         const rawRssDescription = String(
@@ -1635,6 +1680,14 @@ async function fetchAllNews() {
 
         const hasValidRssDescription =
           rawRssDescription.length >= 20;
+
+
+        const category = detectCategory(
+          title,
+          hasValidRssDescription
+            ? rawRssDescription
+            : ""
+        );
 
 
         /*

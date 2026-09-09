@@ -803,6 +803,15 @@ const FALLBACK_URL =
 const RUBIKA_PAGE_URL =
     "https://maghool51.github.io/diyar-widgets/diyar-news/news.html";
 
+/*
+   لینک وبلاگ: بخش پایانی پیام روبیکا («🏡 دیار قدمگاه / ✍️ .../
+   🔗 روبیکا: .../ 🔗 وبلاگ: ...») باید ثابت و مستقل از اخبار
+   انتخاب‌شده باشد، پس این آدرس به‌عنوان یک ثابت (نه یک تنظیم
+   قابل‌تغییر) در نظر گرفته شده است.
+*/
+const BLOG_URL =
+    "https://diyareghadamgah.blogfa.com/";
+
 const RUBIKA_MAX_LENGTH = 4000;
 
 const DEFAULT_NEWS_COUNT = 10;
@@ -827,9 +836,10 @@ let newsCountSetting =
 
 let selectedKeys = new Set();
 
-let publisherName = "ادمین";
+let publisherName = "معقول";
 
-let publisherRubika = "";
+let publisherRubika =
+    "https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE";
 
 let searchQuery = "";
 
@@ -955,7 +965,7 @@ function loadPublisherSettings(){
         if(data && typeof data === "object"){
 
             publisherName =
-                cleanText(data.name) || "ادمین";
+                cleanText(data.name) || "معقول";
 
             publisherRubika =
                 normalizeRubikaUrl(data.rubika);
@@ -980,7 +990,7 @@ function savePublisherSettings(){
             document.getElementById(
                 "publisherName"
             ).value
-        ) || "ادمین";
+        ) || "معقول";
 
     publisherRubika =
         normalizeRubikaUrl(
@@ -2036,6 +2046,16 @@ function rubikaFooter(){
         );
 
     }
+
+    /*
+       لینک وبلاگ دقیقاً بعد از لینک روبیکا، همیشه ثابت و
+       مستقل از اخبار انتخاب‌شده.
+    */
+    lines.push(
+        "",
+        "🔗 وبلاگ:",
+        BLOG_URL
+    );
 
     return lines.join("\n");
 }

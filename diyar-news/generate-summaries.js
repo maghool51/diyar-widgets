@@ -269,75 +269,6 @@ function detectSite(url) {
 
 
 /* ========================================================
-   🔎 DIAGNOSTIC LOGGING (TEMPORARY — برای عیب‌یابی مشکل ایسنا)
-   این بخش هیچ رفتاری را تغییر نمی‌دهد؛ فقط لاگ چاپ می‌کند.
-   بعد از رفع مشکل، این تابع و فراخوانی آن باید حذف شوند.
-======================================================== */
-
-function isDiagnosticTarget(url) {
-
-    try {
-        return new URL(url).hostname.toLowerCase().includes("isna.ir");
-    } catch {
-        return false;
-    }
-}
-
-
-function logIsnaDiagnostics(url, status, headers, buffer, html) {
-
-    try {
-
-        const collapsedHtml =
-            html.replace(/\s+/g, " ").trim();
-
-        const markers = [
-            "challenge",
-            "captcha",
-            "cloudflare",
-            "arvan",
-            "access denied",
-            "verify",
-            "isna",
-            "<title",
-            "description",
-            "application/ld+json"
-        ];
-
-        const lowerHtml = html.toLowerCase();
-
-        const markerReport = markers
-            .map(m => m + "=" + lowerHtml.includes(m))
-            .join(", ");
-
-        console.log("");
-        console.log("🔎🔎🔎 ISNA DIAGNOSTIC START 🔎🔎🔎");
-        console.log("URL:", url);
-        console.log("HTTP status:", status);
-        console.log("content-type:", headers["content-type"] || "(none)");
-        console.log("content-encoding:", headers["content-encoding"] || "(none)");
-        console.log("content-length (header):", headers["content-length"] || "(none)");
-        console.log("transfer-encoding:", headers["transfer-encoding"] || "(none)");
-        console.log("User-Agent used:", USER_AGENT);
-        console.log("Actual buffer length (bytes):", buffer.length);
-        console.log("HTML length after toString('utf8'):", html.length);
-        console.log("Markers found:", markerReport);
-        console.log("--- first 500 chars (raw decoded) ---");
-        console.log(html.slice(0, 500));
-        console.log("--- first 500 chars (collapsed whitespace) ---");
-        console.log(collapsedHtml.slice(0, 500));
-        console.log("🔎🔎🔎 ISNA DIAGNOSTIC END 🔎🔎🔎");
-        console.log("");
-
-    } catch (diagError) {
-
-        console.log("⚠️ خطا در چاپ لاگ تشخیصی ایسنا:", diagError.message);
-    }
-
-}
-
-
-/* ========================================================
    REQUEST
 ======================================================== */
 
@@ -492,27 +423,12 @@ function requestPage(url, redirectCount = 0) {
                                     ] || ""
                                 );
 
-                            const html =
-                                buffer.toString("utf8");
-
-                            /* 🔎 TEMPORARY DIAGNOSTIC — فقط برای isna.ir */
-                            if (isDiagnosticTarget(url)) {
-
-                                logIsnaDiagnostics(
-                                    url,
-                                    status,
-                                    response.headers,
-                                    buffer,
-                                    html
-                                );
-
-                            }
-
                             resolve({
                                 url,
                                 status,
                                 contentType,
-                                html
+                                html:
+                                    buffer.toString("utf8")
                             });
 
                         }
@@ -1890,6 +1806,73 @@ function chooseSummary(
 
 
 /* ========================================================
+   RSS FALLBACK
+   ------------------------------------------------------------
+   وقتی دریافت مستقیم صفحه‌ی خبر خلاصه‌ای پیدا نکند (status
+   "not-found" — یعنی صفحه واقعاً بارگذاری شد ولی هیچ کاندید
+   قابل‌استفاده‌ای در آن یافت نشد؛ مثلاً به‌خاطر صفحه‌ی محافظتی/
+   Cloudflare)، اگر fetch-news.js یک rssDescription معتبر برای
+   همین خبر ذخیره کرده باشد، از همان به‌عنوان کاندید استفاده
+   می‌کنیم — دقیقاً با همان pipeline پاک‌سازی/کوتاه‌سازی/
+   اعتبارسنجی موجود (cleanCandidate → shortenNaturally →
+   isUsefulSummary)، بدون هیچ منطق حدسی جدید.
+======================================================== */
+
+function buildSummaryFromRssDescription(
+    item
+) {
+
+    const raw =
+        item &&
+        typeof item.rssDescription === "string"
+            ? item.rssDescription
+            : "";
+
+    if (!raw) {
+        return null;
+    }
+
+    const cleaned =
+        cleanCandidate(
+            raw
+        );
+
+    if (!cleaned) {
+        return null;
+    }
+
+    let summary =
+        cleaned;
+
+    if (
+        summary.length >
+        MAX_SUMMARY_LENGTH
+    ) {
+
+        summary =
+            shortenNaturally(
+                summary,
+                MAX_SUMMARY_LENGTH
+            );
+    }
+
+    if (
+        !isUsefulSummary(
+            summary
+        )
+    ) {
+
+        return null;
+    }
+
+    return {
+        summary,
+        status:"found-rss-fallback"
+    };
+}
+
+
+/* ========================================================
    EXTRACT SUMMARY FROM PAGE
 ======================================================== */
 
@@ -1917,6 +1900,8 @@ async function generateSummary(
             url
         );
 
+    let primaryResult;
+
     try {
 
         const response =
@@ -1929,87 +1914,110 @@ async function generateSummary(
 
         if (!html) {
 
-            return {
+            primaryResult = {
                 summary:"",
                 status:"empty-response"
             };
-        }
 
-        const candidates =
-            buildCandidates(
-                html,
-                site
-            );
+        } else {
 
-        let summary =
-            chooseSummary(
-                candidates,
-                site
-            );
-
-        /*
-           اگر هیچ خلاصه‌ای پیدا نشد،
-           یک بار فقط پاراگراف‌ها را
-           با سخت‌گیری کمتر بررسی می‌کنیم.
-        */
-
-        if (!summary) {
-
-            const paragraphs =
-                extractParagraphs(
-                    html
+            const candidates =
+                buildCandidates(
+                    html,
+                    site
                 );
 
-            for (
-                const paragraph of paragraphs
-            ) {
+            let summary =
+                chooseSummary(
+                    candidates,
+                    site
+                );
 
-                const cleaned =
-                    cleanCandidate(
-                        paragraph
+            /*
+               اگر هیچ خلاصه‌ای پیدا نشد،
+               یک بار فقط پاراگراف‌ها را
+               با سخت‌گیری کمتر بررسی می‌کنیم.
+            */
+
+            if (!summary) {
+
+                const paragraphs =
+                    extractParagraphs(
+                        html
                     );
 
-                const shortened =
-                    shortenNaturally(
-                        cleaned
-                    );
-
-                if (
-                    isUsefulSummary(
-                        shortened
-                    )
+                for (
+                    const paragraph of paragraphs
                 ) {
 
-                    summary =
-                        shortened;
+                    const cleaned =
+                        cleanCandidate(
+                            paragraph
+                        );
 
-                    break;
+                    const shortened =
+                        shortenNaturally(
+                            cleaned
+                        );
+
+                    if (
+                        isUsefulSummary(
+                            shortened
+                        )
+                    ) {
+
+                        summary =
+                            shortened;
+
+                        break;
+                    }
                 }
             }
+
+            primaryResult = summary
+                ? {
+                    summary,
+                    status:"found"
+                }
+                : {
+                    summary:"",
+                    status:"not-found"
+                };
         }
-
-        if (!summary) {
-
-            return {
-                summary:"",
-                status:"not-found"
-            };
-        }
-
-        return {
-            summary,
-            status:"found"
-        };
 
     } catch (error) {
 
-        return {
+        primaryResult = {
             summary:"",
             status:"fetch-failed",
             error:
                 error.message
         };
     }
+
+    /*
+       fallback فقط دقیقاً وقتی اجرا می‌شود که مسیر اصلی
+       "not-found" شده باشد — نه fetch-failed، نه empty-response،
+       نه no-url. اولویت همیشه با خلاصه‌ی استخراج‌شده از خودِ
+       صفحه است؛ RSS فقط برای همین یک حالت خاص fallback است.
+    */
+
+    if (
+        primaryResult.status ===
+        "not-found"
+    ) {
+
+        const rssFallback =
+            buildSummaryFromRssDescription(
+                item
+            );
+
+        if (rssFallback) {
+            return rssFallback;
+        }
+    }
+
+    return primaryResult;
 }
 
 

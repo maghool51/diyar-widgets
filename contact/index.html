@@ -1,1383 +1,1009 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
+    <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color"
+          content="#0b3d2e">
 
-<title>ارتباط با ما | دیار قدمگاه</title>
+    <meta name="description"
+          content="راه‌های ارتباطی با دیار قدمگاه">
 
-<meta name="description"
-      content="راه‌های ارتباطی با دیار قدمگاه">
+    <title>ارتباط با ما | دیار قدمگاه</title>
 
-<meta name="theme-color"
-      content="#263238">
+    <!-- Vazirmatn -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
 
-<style>
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
 
-/* =========================================================
-   RESET
-========================================================= */
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
 
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
+    <style>
 
-html{
-    scroll-behavior:smooth;
-}
+        :root {
+            --green: #0b3d2e;
+            --green-dark: #063224;
+            --gold: #f0c040;
+            --gold-dark: #d9b34b;
+            --text: #18352c;
+            --muted: #6b7e76;
+            --light: #f4f8f5;
+            --border: #e0eae5;
+            --white: #ffffff;
+        }
 
-body{
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    direction:rtl;
+        html {
+            scroll-behavior: smooth;
+        }
 
-    font-family:
-        Tahoma,
-        Arial,
-        sans-serif;
+        body {
+            font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
 
-    background:
-        linear-gradient(
-            180deg,
-            #eef2f3 0%,
-            #f8f9fa 100%
-        );
+            background:
+                linear-gradient(
+                    180deg,
+                    #edf5f1 0%,
+                    #ffffff 38%,
+                    #f3f8f5 100%
+                );
 
-    color:#263238;
+            color: var(--text);
 
-    min-height:100vh;
+            min-height: 100vh;
 
-    padding:12px;
+            line-height: 1.8;
+        }
 
-}
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
 
+        button {
+            font-family: inherit;
+        }
 
-.container{
+        .page {
+            width: 100%;
+            max-width: 680px;
 
-    width:100%;
+            margin: auto;
 
-    max-width:620px;
+            padding:
+                18px 14px 30px;
+        }
 
-    margin:0 auto;
+        /* =========================
+           HEADER
+        ========================= */
 
-}
+        .header {
+            text-align: center;
 
+            padding:
+                10px 0 20px;
+        }
 
-/* =========================================================
-   HEADER
-========================================================= */
+        .logo {
+            display: block;
 
-.header{
+            width: 145px;
+            height: 145px;
 
-    position:relative;
+            object-fit: contain;
 
-    overflow:hidden;
+            margin:
+                0 auto 12px;
 
-    background:
-        linear-gradient(
-            135deg,
-            #263238 0%,
-            #37474f 55%,
-            #455a64 100%
-        );
+            background: transparent;
 
-    color:#fff;
+            border: 0;
+        }
 
-    border-radius:24px;
+        .title {
+            color: var(--green);
 
-    padding:
-        30px
-        20px
-        27px;
+            font-size: 25px;
 
-    text-align:center;
+            font-weight: 800;
 
-    box-shadow:
-        0 9px 28px
-        rgba(38,50,56,.18);
+            margin-bottom: 5px;
+        }
 
-}
+        .subtitle {
+            color: var(--muted);
 
+            font-size: 13px;
 
-.header::before{
+            line-height: 2;
+        }
 
-    content:"";
+        /* =========================
+           INTRO
+        ========================= */
 
-    position:absolute;
+        .intro {
+            background: var(--white);
 
-    top:0;
-    right:0;
+            border:
+                1px solid var(--border);
 
-    width:100%;
-    height:4px;
+            border-radius: 22px;
 
-    background:
-        linear-gradient(
-            90deg,
-            #ef5350,
-            #ff7043,
-            #ef5350
-        );
+            padding:
+                18px 18px 17px;
 
-}
+            text-align: center;
 
+            box-shadow:
+                0 8px 25px rgba(11, 61, 46, 0.07);
 
-.header::after{
+            margin-bottom: 16px;
+        }
 
-    content:"";
+        .intro-title {
+            color: var(--green);
 
-    position:absolute;
+            font-size: 16px;
 
-    width:190px;
-    height:190px;
+            font-weight: 800;
 
-    left:-90px;
-    bottom:-120px;
+            margin-bottom: 5px;
+        }
 
-    border-radius:50%;
+        .intro-text {
+            color: #50665d;
 
-    background:
-        rgba(255,255,255,.04);
+            font-size: 13px;
 
-}
+            line-height: 2;
+        }
 
+        /* =========================
+           CONTACT LIST
+        ========================= */
 
-.logo{
+        .contacts {
+            display: flex;
 
-    width:78px;
+            flex-direction: column;
 
-    height:78px;
+            gap: 11px;
+        }
 
-    margin:
-        0 auto
-        12px;
+        .contact-card {
+            position: relative;
 
-    border-radius:23px;
+            display: flex;
 
-    display:flex;
+            align-items: center;
 
-    align-items:center;
+            gap: 14px;
 
-    justify-content:center;
+            width: 100%;
 
-    background:
-        rgba(255,255,255,.10);
+            background: var(--white);
 
-    border:
-        1px solid
-        rgba(255,255,255,.15);
+            border:
+                1px solid var(--border);
 
-    font-size:41px;
+            border-radius: 19px;
 
-    box-shadow:
-        0 5px 18px
-        rgba(0,0,0,.12);
+            padding:
+                13px 14px;
 
-}
+            min-height: 82px;
 
+            box-shadow:
+                0 5px 18px rgba(11, 61, 46, 0.055);
 
-.title{
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease,
+                border-color .18s ease;
+        }
 
-    font-size:25px;
+        .contact-card:hover {
+            transform: translateY(-2px);
 
-    font-weight:bold;
+            border-color:
+                rgba(11, 61, 46, .22);
 
-    line-height:1.6;
+            box-shadow:
+                0 10px 25px rgba(11, 61, 46, .10);
+        }
 
-}
+        .contact-card:active {
+            transform: scale(.985);
+        }
 
+        /* ICON */
 
-.subtitle{
+        .contact-icon {
+            width: 52px;
+            height: 52px;
 
-    margin-top:7px;
+            flex: 0 0 52px;
 
-    color:#eceff1;
+            display: flex;
 
-    font-size:12px;
+            align-items: center;
+            justify-content: center;
 
-    line-height:1.9;
+            border-radius: 15px;
 
-}
+            background:
+                #f0f5f2;
 
+            border:
+                1px solid #e0eae5;
 
-.online{
+            overflow: hidden;
+        }
 
-    display:inline-flex;
+        .contact-icon img {
+            width: 34px;
+            height: 34px;
 
-    align-items:center;
+            object-fit: contain;
+        }
 
-    gap:5px;
+        .emoji-icon {
+            font-size: 25px;
 
-    margin-top:13px;
+            line-height: 1;
+        }
 
-    padding:
-        5px
-        12px;
+        /* TEXT */
 
-    border-radius:20px;
+        .contact-content {
+            min-width: 0;
 
-    background:
-        rgba(255,255,255,.10);
+            flex: 1;
+        }
 
-    color:#cfd8dc;
+        .contact-title {
+            display: block;
 
-    font-size:9px;
+            color: var(--green);
 
-}
+            font-size: 15px;
 
+            font-weight: 800;
 
-.online-dot{
+            margin-bottom: 2px;
+        }
 
-    width:7px;
+        .contact-description {
+            display: block;
 
-    height:7px;
+            color: var(--muted);
 
-    border-radius:50%;
+            font-size: 11px;
 
-    background:#66bb6a;
+            white-space: nowrap;
 
-    box-shadow:
-        0 0 0 4px
-        rgba(102,187,106,.12);
+            overflow: hidden;
 
-}
+            text-overflow: ellipsis;
+        }
 
+        .contact-arrow {
+            color: var(--gold-dark);
 
-/* =========================================================
-   INTRO
-========================================================= */
+            font-size: 19px;
 
-.intro{
+            flex: 0 0 auto;
+        }
 
-    background:#fff;
+        /* =========================
+           RUBIKA SPECIAL
+        ========================= */
 
-    margin-top:13px;
+        .rubika-card {
+            border:
+                2px solid rgba(11, 61, 46, .13);
 
-    padding:
-        17px
-        16px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff 0%,
+                    #f5faf7 100%
+                );
+        }
 
-    border-radius:18px;
+        .rubika-badge {
+            position: absolute;
 
-    text-align:center;
+            top: 9px;
 
-    box-shadow:
-        0 3px 14px
-        rgba(38,50,56,.07);
+            left: 11px;
 
-}
+            font-size: 9px;
 
+            color: var(--green);
 
-.intro-title{
+            background:
+                #edf5f1;
 
-    font-size:13px;
+            border-radius: 20px;
 
-    font-weight:bold;
+            padding:
+                1px 7px;
+        }
 
-    color:#455a64;
+        /* =========================
+           SHARE
+        ========================= */
 
-    margin-bottom:6px;
+        .share-box {
+            margin-top: 17px;
+        }
 
-}
+        .share-button {
+            width: 100%;
 
+            display: flex;
 
-.intro-text{
+            align-items: center;
+            justify-content: center;
 
-    color:#78909c;
+            gap: 8px;
 
-    font-size:11px;
+            border: 0;
 
-    line-height:2;
+            border-radius: 17px;
 
-}
+            padding:
+                13px 16px;
 
+            color: white;
 
-/* =========================================================
-   SECTION TITLE
-========================================================= */
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green),
+                    var(--green-dark)
+                );
 
-.section-title{
+            font-size: 14px;
 
-    text-align:center;
+            font-weight: 700;
 
-    margin:
-        19px
-        0
-        11px;
+            cursor: pointer;
 
-    color:#455a64;
+            box-shadow:
+                0 8px 20px rgba(11, 61, 46, .18);
 
-    font-size:13px;
+            transition:
+                transform .15s ease;
+        }
 
-    font-weight:bold;
+        .share-button:active {
+            transform: scale(.98);
+        }
 
-}
+        /* =========================
+           FOOTER
+        ========================= */
 
+        .footer {
+            text-align: center;
 
-/* =========================================================
-   CONTACT LIST
-========================================================= */
+            padding:
+                22px 5px 4px;
 
-.contact-list{
+            color: var(--muted);
 
-    display:flex;
+            font-size: 11px;
 
-    flex-direction:column;
+            line-height: 2;
+        }
 
-    gap:9px;
+        .footer-main {
+            display: block;
 
-}
+            color: var(--green);
 
+            font-size: 14px;
 
-.contact-card{
+            font-weight: 800;
+        }
 
-    display:flex;
+        .footer-author {
+            display: block;
 
-    align-items:center;
+            color: #9a7722;
 
-    gap:13px;
+            margin-top: 1px;
+        }
 
-    background:#fff;
+        /* =========================
+           TOAST
+        ========================= */
 
-    color:#263238;
+        .toast {
+            position: fixed;
 
-    text-decoration:none;
+            right: 50%;
 
-    border-radius:17px;
+            bottom: 22px;
 
-    padding:
-        12px
-        14px;
+            transform:
+                translateX(50%)
+                translateY(20px);
 
-    min-height:76px;
+            background:
+                var(--green-dark);
 
-    box-shadow:
-        0 3px 12px
-        rgba(38,50,56,.07);
+            color: #ffffff;
 
-    transition:
-        transform .20s ease,
-        box-shadow .20s ease,
-        background .20s ease;
+            padding:
+                9px 16px;
 
-}
+            border-radius: 12px;
 
+            font-size: 12px;
 
-.contact-card:hover{
+            opacity: 0;
 
-    transform:
-        translateY(-2px);
+            pointer-events: none;
 
-    background:#fafbfb;
+            transition:
+                opacity .25s ease,
+                transform .25s ease;
 
-    box-shadow:
-        0 7px 18px
-        rgba(38,50,56,.11);
+            z-index: 1000;
 
-}
+            box-shadow:
+                0 7px 25px rgba(0,0,0,.18);
 
+            white-space: nowrap;
+        }
 
-.contact-card:active{
+        .toast.show {
+            opacity: 1;
 
-    transform:
-        scale(.985);
+            transform:
+                translateX(50%)
+                translateY(0);
+        }
 
-}
+        /* =========================
+           MOBILE
+        ========================= */
 
+        @media (max-width: 480px) {
 
-.contact-icon{
+            .page {
+                padding:
+                    12px 11px 25px;
+            }
 
-    width:50px;
+            .logo {
+                width: 125px;
+                height: 125px;
+            }
 
-    height:50px;
+            .title {
+                font-size: 22px;
+            }
 
-    flex:none;
+            .subtitle {
+                font-size: 12px;
+            }
 
-    display:flex;
+            .intro {
+                padding:
+                    15px 14px;
+            }
 
-    align-items:center;
+            .intro-title {
+                font-size: 15px;
+            }
 
-    justify-content:center;
+            .contact-card {
+                min-height: 78px;
 
-    border-radius:15px;
+                padding:
+                    11px 12px;
+            }
 
-    background:#f1f4f5;
+            .contact-icon {
+                width: 48px;
+                height: 48px;
 
-}
+                flex-basis: 48px;
+            }
 
+            .contact-icon img {
+                width: 31px;
+                height: 31px;
+            }
 
-.contact-icon img{
+        }
 
-    width:31px;
-
-    height:31px;
-
-    object-fit:contain;
-
-}
-
-
-.contact-info{
-
-    min-width:0;
-
-    flex:1;
-
-}
-
-
-.contact-name{
-
-    display:block;
-
-    font-size:13px;
-
-    font-weight:bold;
-
-    color:#37474f;
-
-    margin-bottom:4px;
-
-}
-
-
-.contact-description{
-
-    display:block;
-
-    color:#90a4ae;
-
-    font-size:9px;
-
-    line-height:1.7;
-
-}
-
-
-.contact-arrow{
-
-    flex:none;
-
-    color:#b0bec5;
-
-    font-size:20px;
-
-    line-height:1;
-
-}
-
-
-/* =========================================================
-   CARD COLORS
-========================================================= */
-
-.news-card{
-
-    border-right:
-        4px solid #ef5350;
-
-}
-
-
-.news-card .contact-icon{
-
-    background:#fff1f0;
-
-}
-
-
-.rubika-card{
-
-    border-right:
-        4px solid #7e57c2;
-
-}
-
-
-.rubika-card .contact-icon{
-
-    background:#f3effa;
-
-}
-
-
-.blog-card{
-
-    border-right:
-        4px solid #607d8b;
-
-}
-
-
-.blog-card .contact-icon{
-
-    background:#eef2f4;
-
-}
-
-
-.instagram-card{
-
-    border-right:
-        4px solid #e91e63;
-
-}
-
-
-.instagram-card .contact-icon{
-
-    background:#fceff4;
-
-}
-
-
-.email-card{
-
-    border-right:
-        4px solid #4285f4;
-
-}
-
-
-.email-card .contact-icon{
-
-    background:#edf4ff;
-
-}
-
-
-/* =========================================================
-   SHARE
-========================================================= */
-
-.share-box{
-
-    margin-top:14px;
-
-    padding:
-        16px
-        14px;
-
-    background:#fff;
-
-    border-radius:18px;
-
-    text-align:center;
-
-    box-shadow:
-        0 3px 13px
-        rgba(38,50,56,.07);
-
-}
-
-
-.share-title{
-
-    font-size:12px;
-
-    font-weight:bold;
-
-    color:#455a64;
-
-}
-
-
-.share-text{
-
-    margin-top:5px;
-
-    color:#90a4ae;
-
-    font-size:9px;
-
-    line-height:1.9;
-
-}
-
-
-.share-button{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:6px;
-
-    margin-top:10px;
-
-    padding:
-        10px
-        20px;
-
-    border:0;
-
-    border-radius:13px;
-
-    background:#37474f;
-
-    color:#fff;
-
-    font-family:inherit;
-
-    font-size:10px;
-
-    cursor:pointer;
-
-}
-
-
-.share-button:active{
-
-    transform:
-        scale(.97);
-
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer{
-
-    text-align:center;
-
-    margin-top:15px;
-
-    padding:
-        17px
-        10px;
-
-    color:#90a4ae;
-
-    font-size:9px;
-
-    line-height:2;
-
-}
-
-
-.footer strong{
-
-    color:#546e7a;
-
-    font-size:11px;
-
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-.toast{
-
-    position:fixed;
-
-    left:50%;
-
-    bottom:20px;
-
-    z-index:5000;
-
-    transform:
-        translate(-50%,20px);
-
-    background:#263238;
-
-    color:#fff;
-
-    padding:
-        9px
-        16px;
-
-    border-radius:22px;
-
-    font-size:10px;
-
-    opacity:0;
-
-    pointer-events:none;
-
-    transition:
-        opacity .25s ease,
-        transform .25s ease;
-
-}
-
-
-.toast.show{
-
-    opacity:1;
-
-    transform:
-        translate(-50%,0);
-
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:420px){
-
-    body{
-
-        padding:7px;
-
-    }
-
-
-    .header{
-
-        padding:
-            25px
-            15px
-            23px;
-
-        border-radius:20px;
-
-    }
-
-
-    .logo{
-
-        width:68px;
-
-        height:68px;
-
-        border-radius:20px;
-
-        font-size:35px;
-
-    }
-
-
-    .title{
-
-        font-size:22px;
-
-    }
-
-
-    .subtitle{
-
-        font-size:11px;
-
-    }
-
-
-    .contact-card{
-
-        min-height:72px;
-
-        padding:
-            10px
-            11px;
-
-        gap:11px;
-
-    }
-
-
-    .contact-icon{
-
-        width:46px;
-
-        height:46px;
-
-        border-radius:13px;
-
-    }
-
-
-    .contact-icon img{
-
-        width:28px;
-
-        height:28px;
-
-    }
-
-
-    .contact-name{
-
-        font-size:12px;
-
-    }
-
-
-    .contact-description{
-
-        font-size:8px;
-
-    }
-
-}
-
-
-@media(prefers-reduced-motion:reduce){
-
-    *{
-
-        transition:none !important;
-
-    }
-
-}
-
-</style>
-
+    </style>
 </head>
-
 
 <body>
 
+<div class="page">
 
-<div class="container">
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="header">
+
+        <!-- لوگوی اصلی دیار قدمگاه -->
+
+        <img
+            class="logo"
+            src="https://cdn.imgurl.ir/uploads/q751484_de9630bd-5d33-40ce-beed-7729e121c01f.webp"
+            alt="لوگوی دیار قدمگاه"
+        >
+
+        <h1 class="title">
+            📞 ارتباط با ما
+        </h1>
+
+        <p class="subtitle">
+            راه‌های ارتباطی رسمی دیار قدمگاه
+        </p>
+
+    </header>
 
 
-<!-- =======================================================
-     HEADER
-======================================================= -->
+    <!-- =========================
+         INTRO
+    ========================== -->
 
-<header class="header">
+    <section class="intro">
+
+        <div class="intro-title">
+            🌿 همراه «دیار قدمگاه» باشید
+        </div>
+
+        <p class="intro-text">
+            برای دنبال کردن اخبار، مطالب فرهنگی،
+            تاریخی و گردشگری منطقه و ارتباط با ما،
+            یکی از گزینه‌های زیر را انتخاب کنید.
+        </p>
+
+    </section>
 
 
-    <div class="logo">
+    <!-- =========================
+         CONTACTS
+    ========================== -->
 
-        🏡
+    <main class="contacts">
+
+
+        <!-- NEWS -->
+
+        <a
+            class="contact-card"
+            href="https://maghool51.github.io/diyar-widgets/diyar-news/news.html"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+                <span class="emoji-icon">📰</span>
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title">
+                    اخبار دیار قدمگاه
+                </span>
+
+                <span class="contact-description">
+                    آخرین اخبار و مطالب منتخب
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- RUBIKA -->
+
+        <a
+            class="contact-card rubika-card"
+            href="https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="rubika-badge">
+                ارتباط مستقیم
+            </span>
+
+            <span class="contact-icon">
+
+                <!-- لوگوی اصلی روبیکا -->
+
+                <img
+                    src="https://cdn.simpleicons.org/rubika"
+                    alt="لوگوی روبیکا"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title">
+                    روبیکا
+                </span>
+
+                <span class="contact-description">
+                    عضویت در گروه دیار قدمگاه
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- BLOG -->
+
+        <a
+            class="contact-card"
+            href="https://diyareghadamgah.blogfa.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+                <span class="emoji-icon">🌐</span>
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title">
+                    وبلاگ دیار قدمگاه
+                </span>
+
+                <span class="contact-description">
+                    فرهنگ، تاریخ، طبیعت و گردشگری منطقه
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- INSTAGRAM -->
+
+        <a
+            class="contact-card"
+            href="https://www.instagram.com/diyareghadamgah"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="https://cdn.simpleicons.org/instagram"
+                    alt="Instagram"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title">
+                    اینستاگرام
+                </span>
+
+                <span class="contact-description">
+                    @diyareghadamgah
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+        <!-- EMAIL -->
+
+        <a
+            class="contact-card"
+            href="mailto:diyareghadamgah@gmail.com"
+        >
+
+            <span class="contact-icon">
+
+                <img
+                    src="https://cdn.simpleicons.org/gmail"
+                    alt="Gmail"
+                >
+
+            </span>
+
+            <span class="contact-content">
+
+                <span class="contact-title">
+                    ایمیل
+                </span>
+
+                <span class="contact-description">
+                    diyareghadamgah@gmail.com
+                </span>
+
+            </span>
+
+            <span class="contact-arrow">
+                ‹
+            </span>
+
+        </a>
+
+
+    </main>
+
+
+    <!-- =========================
+         SHARE
+    ========================== -->
+
+    <div class="share-box">
+
+        <button
+            class="share-button"
+            type="button"
+            onclick="sharePage()"
+        >
+
+            <span>
+                📤
+            </span>
+
+            <span>
+                اشتراک‌گذاری صفحه
+            </span>
+
+        </button>
 
     </div>
 
 
-    <div class="title">
+    <!-- =========================
+         FOOTER
+    ========================== -->
 
-        دیار قدمگاه
+    <footer class="footer">
 
-    </div>
+        <span class="footer-main">
+            🏡 دیار قدمگاه
+        </span>
 
+        <span class="footer-author">
+            ✍️ معقول
+        </span>
 
-    <div class="subtitle">
-
-        راه‌های ارتباطی با ما
-
-        <br>
-
-        اخبار، مطالب و محتوای دیار قدمگاه
-
-    </div>
-
-
-    <div class="online">
-
-        <span class="online-dot"></span>
-
-        در خدمت شما هستیم
-
-    </div>
-
-
-</header>
-
-
-
-<!-- =======================================================
-     INTRO
-======================================================= -->
-
-<section class="intro">
-
-
-    <div class="intro-title">
-
-        🌿 با ما در ارتباط باشید
-
-    </div>
-
-
-    <div class="intro-text">
-
-        برای مشاهده اخبار و مطالب جدید،
-        عضویت در روبیکا، وبلاگ و اینستاگرام
-        می‌توانید از گزینه‌های زیر استفاده کنید.
-
-    </div>
-
-
-</section>
-
-
-
-<!-- =======================================================
-     CONTACT TITLE
-======================================================= -->
-
-<div class="section-title">
-
-    📞 راه‌های ارتباطی
+    </footer>
 
 </div>
 
 
-
-<!-- =======================================================
-     CONTACT CARDS
-======================================================= -->
-
-<div class="contact-list">
-
-
-    <!-- صفحه اخبار -->
-
-    <a
-        class="contact-card news-card"
-        href="https://maghool51.github.io/diyar-widgets/diyar-news/news.html"
-        target="_blank"
-        rel="noopener noreferrer">
-
-
-        <div class="contact-icon">
-
-            <img
-                src="https://cdn.simpleicons.org/googlechrome"
-                alt="صفحه اخبار">
-
-        </div>
-
-
-        <div class="contact-info">
-
-            <span class="contact-name">
-
-                📰 صفحه اخبار
-
-            </span>
-
-
-            <span class="contact-description">
-
-                مشاهده آخرین اخبار ایران و جهان
-
-            </span>
-
-        </div>
-
-
-        <div class="contact-arrow">
-
-            ‹
-
-        </div>
-
-
-    </a>
-
-
-
-    <!-- روبیکا -->
-
-    <a
-        class="contact-card rubika-card"
-        href="https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE"
-        target="_blank"
-        rel="noopener noreferrer">
-
-
-        <div class="contact-icon">
-
-            <img
-                src="https://cdn.simpleicons.org/rubika"
-                alt="روبیکا">
-
-        </div>
-
-
-        <div class="contact-info">
-
-            <span class="contact-name">
-
-                🟣 روبیکا
-
-            </span>
-
-
-            <span class="contact-description">
-
-                عضویت و دنبال کردن مطالب دیار قدمگاه
-
-            </span>
-
-        </div>
-
-
-        <div class="contact-arrow">
-
-            ‹
-
-        </div>
-
-
-    </a>
-
-
-
-    <!-- وبلاگ -->
-
-    <a
-        class="contact-card blog-card"
-        href="https://diyareghadamgah.blogfa.com/"
-        target="_blank"
-        rel="noopener noreferrer">
-
-
-        <div class="contact-icon">
-
-            <img
-                src="https://cdn.simpleicons.org/blogger"
-                alt="وبلاگ">
-
-        </div>
-
-
-        <div class="contact-info">
-
-            <span class="contact-name">
-
-                🌐 وبلاگ دیار قدمگاه
-
-            </span>
-
-
-            <span class="contact-description">
-
-                مطالب، داستان‌ها و نوشته‌های دیار قدمگاه
-
-            </span>
-
-        </div>
-
-
-        <div class="contact-arrow">
-
-            ‹
-
-        </div>
-
-
-    </a>
-
-
-
-    <!-- اینستاگرام -->
-
-    <a
-        class="contact-card instagram-card"
-        href="https://www.instagram.com/diyareghadamgah"
-        target="_blank"
-        rel="noopener noreferrer">
-
-
-        <div class="contact-icon">
-
-            <img
-                src="https://cdn.simpleicons.org/instagram"
-                alt="اینستاگرام">
-
-        </div>
-
-
-        <div class="contact-info">
-
-            <span class="contact-name">
-
-                📸 اینستاگرام
-
-            </span>
-
-
-            <span class="contact-description">
-
-                دنبال کردن صفحه رسمی دیار قدمگاه
-
-            </span>
-
-        </div>
-
-
-        <div class="contact-arrow">
-
-            ‹
-
-        </div>
-
-
-    </a>
-
-
-
-    <!-- ایمیل -->
-
-    <a
-        class="contact-card email-card"
-        href="mailto:diyareghadamgah@gmail.com">
-
-
-        <div class="contact-icon">
-
-            <img
-                src="https://cdn.simpleicons.org/gmail"
-                alt="ایمیل">
-
-        </div>
-
-
-        <div class="contact-info">
-
-            <span class="contact-name">
-
-                📧 ایمیل
-
-            </span>
-
-
-            <span class="contact-description">
-
-                diyareghadamgah@gmail.com
-
-            </span>
-
-        </div>
-
-
-        <div class="contact-arrow">
-
-            ‹
-
-        </div>
-
-
-    </a>
-
-
-</div>
-
-
-
-<!-- =======================================================
-     SHARE
-======================================================= -->
-
-<section class="share-box">
-
-
-    <div class="share-title">
-
-        📤 معرفی دیار قدمگاه
-
-    </div>
-
-
-    <div class="share-text">
-
-        این صفحه را با دوستان خود به اشتراک بگذارید
-        تا به مطالب و اخبار دیار قدمگاه دسترسی داشته باشند.
-
-    </div>
-
-
-    <button
-        class="share-button"
-        id="shareButton">
-
-        📤 اشتراک‌گذاری صفحه
-
-    </button>
-
-
-</section>
-
-
-
-<!-- =======================================================
-     FOOTER
-======================================================= -->
-
-<footer class="footer">
-
-    <strong>
-
-        🏡 دیار قدمگاه
-
-    </strong>
-
-    <br>
-
-    همراه شما در خبر، فرهنگ و دانستنی‌ها
-
-    <br>
-
-    ✍️ معقول
-
-</footer>
-
-
-</div>
-
-
-
-<!-- =======================================================
-     TOAST
-======================================================= -->
+<!-- TOAST -->
 
 <div
+    id="toast"
     class="toast"
-    id="toast">
-</div>
-
+    role="status"
+    aria-live="polite"
+></div>
 
 
 <script>
 
-/* =========================================================
-   SHARE
-========================================================= */
-
-const shareButton =
-    document.getElementById(
-        "shareButton"
-    );
+    "use strict";
 
 
-const toast =
-    document.getElementById(
-        "toast"
-    );
+    const PAGE_URL =
+        "https://maghool51.github.io/diyar-widgets/contact/";
+
+    const PAGE_TITLE =
+        "📞 ارتباط با ما | دیار قدمگاه";
+
+    const PAGE_TEXT =
+        "راه‌های ارتباطی با دیار قدمگاه";
 
 
-let toastTimer;
+    function showToast(message) {
+
+        const toast =
+            document.getElementById("toast");
+
+        toast.textContent =
+            message;
+
+        toast.classList.add("show");
+
+        window.setTimeout(function () {
+
+            toast.classList.remove("show");
+
+        }, 2200);
+
+    }
 
 
-function showToast(message){
+    function fallbackCopy(text) {
 
-    toast.textContent =
-        message;
+        const textarea =
+            document.createElement("textarea");
 
+        textarea.value =
+            text;
 
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-
-            function(){
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-
-            2500
-
+        textarea.setAttribute(
+            "readonly",
+            ""
         );
 
-}
+        textarea.style.position =
+            "fixed";
 
+        textarea.style.top =
+            "-9999px";
 
-shareButton.addEventListener(
+        textarea.style.opacity =
+            "0";
 
-    "click",
+        document.body.appendChild(
+            textarea
+        );
 
-    async function(){
+        textarea.focus();
 
-        const shareData = {
+        textarea.select();
 
-            title:
-                "ارتباط با ما | دیار قدمگاه",
+        let copied = false;
 
-            text:
-                "راه‌های ارتباطی با دیار قدمگاه",
+        try {
 
-            url:
-                window.location.href
-
-        };
-
-
-        try{
-
-            if(
-                navigator.share
-            ){
-
-                await navigator.share(
-                    shareData
+            copied =
+                document.execCommand(
+                    "copy"
                 );
 
-            }
+        } catch (error) {
 
-            else if(
-                navigator.clipboard
-            ){
-
-                await navigator.clipboard.writeText(
-                    window.location.href
-                );
-
-                showToast(
-                    "🔗 لینک صفحه کپی شد"
-                );
-
-            }
-
-            else{
-
-                showToast(
-                    "🔗 لینک صفحه کپی نشد"
-                );
-
-            }
+            copied = false;
 
         }
 
-        catch(error){
+        document.body.removeChild(
+            textarea
+        );
 
-            if(
-                error.name !==
-                "AbortError"
-            ){
+        if (copied) {
 
-                showToast(
-                    "امکان اشتراک‌گذاری وجود ندارد"
-                );
+            showToast(
+                "🔗 لینک صفحه کپی شد."
+            );
 
-            }
+        } else {
+
+            showToast(
+                "لینک صفحه: " + text
+            );
 
         }
 
     }
 
-);
+
+    async function sharePage() {
+
+        if (
+            navigator.share
+        ) {
+
+            try {
+
+                await navigator.share({
+
+                    title:
+                        PAGE_TITLE,
+
+                    text:
+                        PAGE_TEXT,
+
+                    url:
+                        PAGE_URL
+
+                });
+
+                return;
+
+            } catch (error) {
+
+                if (
+                    error &&
+                    error.name ===
+                    "AbortError"
+                ) {
+
+                    return;
+
+                }
+
+            }
+
+        }
+
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    PAGE_URL
+                );
+
+                showToast(
+                    "🔗 لینک صفحه کپی شد."
+                );
+
+                return;
+
+            } catch (error) {
+
+                /* fallback */
+
+            }
+
+        }
+
+
+        fallbackCopy(
+            PAGE_URL
+        );
+
+    }
+
 
 </script>
 
-
 </body>
-
 </html>

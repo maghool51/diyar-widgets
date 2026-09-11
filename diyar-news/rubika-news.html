@@ -2658,6 +2658,43 @@ function parseDate(value){
 }
 
 
+function formatPersianDate(value){
+
+    if(!value){
+        return "";
+    }
+
+    const date =
+        new Date(value);
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+        return "";
+    }
+
+    try{
+
+        return new Intl.DateTimeFormat(
+            "fa-IR-u-ca-persian",
+            {
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        ).format(date);
+
+    }catch{
+
+        return "";
+
+    }
+
+}
+
+
 function formatPersianHeaderDate(){
 
     const now = new Date();
@@ -5056,4 +5093,4 @@ init();
 
 </body>
 
-    </html>
+</html>

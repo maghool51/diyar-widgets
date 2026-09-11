@@ -74,6 +74,8 @@ body{
 
     line-height:1.8;
 
+    padding-bottom:110px;
+
 }
 
 button,
@@ -302,70 +304,6 @@ body.dark .top-header{
 .card-body{
 
     padding:16px;
-
-}
-
-
-/* ============================================================
-   NOTICE
-   ============================================================ */
-
-.news-notice{
-
-    margin:
-        14px 0;
-
-    padding:
-        13px 15px;
-
-    border:
-        1px solid
-        rgba(217,130,0,.35);
-
-    border-right:
-        4px solid
-        var(--warning);
-
-    border-radius:14px;
-
-    background:
-        var(--soft-warning);
-
-    color:var(--text);
-
-    font-size:13px;
-
-    line-height:2;
-
-}
-
-.news-notice-title{
-
-    font-weight:900;
-
-    color:
-        var(--warning);
-
-}
-
-.news-notice a{
-
-    color:
-        var(--primary);
-
-    font-weight:900;
-
-    text-decoration:none;
-
-    border-bottom:
-        1px dashed
-        var(--primary);
-
-}
-
-.news-notice a:hover{
-
-    text-decoration:underline;
 
 }
 
@@ -1055,105 +993,6 @@ body.dark .top-header{
 
 
 /* ============================================================
-   BUTTONS
-   ============================================================ */
-
-.btn{
-
-    min-height:44px;
-
-    border:0;
-
-    border-radius:12px;
-
-    padding:
-        9px 13px;
-
-    cursor:pointer;
-
-    font-size:13px;
-
-    font-weight:800;
-
-}
-
-.btn-primary{
-
-    background:
-        var(--primary);
-
-    color:#fff;
-
-}
-
-.btn-primary:hover{
-
-    background:
-        var(--primary-dark);
-
-}
-
-.btn-success{
-
-    background:
-        var(--soft-success);
-
-    color:
-        var(--success);
-
-}
-
-.btn-warning{
-
-    background:
-        var(--warning);
-
-    color:#fff;
-
-}
-
-.btn-secondary{
-
-    background:
-        rgba(127,127,127,.12);
-
-    color:var(--text);
-
-}
-
-
-/* ============================================================
-   PREVIEW ACTIONS
-   ============================================================ */
-
-.preview-actions{
-
-    display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:8px;
-
-    margin-top:10px;
-
-}
-
-
-/*
-   وقتی پیام بیشتر از ۴۰۰۰ کاراکتر است،
-   سه دکمه اصلی در کنار هم قرار می‌گیرند.
-*/
-
-.preview-actions.over-limit{
-
-    grid-template-columns:
-        1.25fr 1fr 1fr;
-
-}
-
-
-/* ============================================================
    CONTACTS
    ============================================================ */
 
@@ -1259,7 +1098,7 @@ body.dark .top-header{
 
 
 /* ============================================================
-   FLOATING COPY BAR
+   FLOATING FOOTER
    ============================================================ */
 
 .copy-bar{
@@ -1276,7 +1115,7 @@ body.dark .top-header{
         9px 12px;
 
     background:
-        rgba(255,255,255,.92);
+        rgba(255,255,255,.94);
 
     border-top:
         1px solid var(--border);
@@ -1289,7 +1128,7 @@ body.dark .top-header{
 body.dark .copy-bar{
 
     background:
-        rgba(33,30,36,.94);
+        rgba(33,30,36,.96);
 
 }
 
@@ -1297,48 +1136,77 @@ body.dark .copy-bar{
 
     width:
         min(
-            700px,
+            900px,
             100%
         );
 
     margin:auto;
 
-    display:flex;
+    display:grid;
+
+    grid-template-columns:
+        minmax(160px,1fr)
+        repeat(3,1fr);
 
     align-items:center;
 
-    gap:10px;
+    gap:8px;
 
 }
 
 .copy-info{
 
-    flex:1;
-
     color:var(--muted);
 
     font-size:11px;
+
+    line-height:1.6;
 
 }
 
 .copy-btn{
 
-    min-width:180px;
+    width:100%;
 
     min-height:46px;
 
     border:0;
 
-    border-radius:14px;
-
-    background:
-        var(--primary);
+    border-radius:13px;
 
     color:#fff;
 
     font-weight:900;
 
     cursor:pointer;
+
+    padding:
+        8px 10px;
+
+}
+
+#floatingCopyBtn{
+
+    background:
+        var(--primary);
+
+}
+
+#floatingReduceBtn{
+
+    background:
+        var(--warning);
+
+    display:none;
+
+}
+
+#floatingForceBtn{
+
+    background:
+        var(--success);
+
+    display:none;
 
 }
 
@@ -1492,6 +1360,55 @@ body.dark .copy-bar{
 
 
 /* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn{
+
+    min-height:44px;
+
+    border:0;
+
+    border-radius:12px;
+
+    padding:
+        9px 13px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    font-weight:800;
+
+}
+
+.btn-primary{
+
+    background:
+        var(--primary);
+
+    color:#fff;
+
+}
+
+.btn-primary:hover{
+
+    background:
+        var(--primary-dark);
+
+}
+
+.btn-secondary{
+
+    background:
+        rgba(127,127,127,.12);
+
+    color:var(--text);
+
+}
+
+
+/* ============================================================
    TOAST
    ============================================================ */
 
@@ -1501,7 +1418,7 @@ body.dark .copy-bar{
 
     left:50%;
 
-    bottom:80px;
+    bottom:82px;
 
     z-index:2000;
 
@@ -1548,7 +1465,7 @@ body.dark .copy-bar{
 
 .footer{
 
-    height:90px;
+    height:20px;
 
 }
 
@@ -1558,6 +1475,12 @@ body.dark .copy-bar{
    ============================================================ */
 
 @media(max-width:760px){
+
+    body{
+
+        padding-bottom:145px;
+
+    }
 
     .container{
 
@@ -1665,34 +1588,6 @@ body.dark .copy-bar{
 
     }
 
-    .preview-actions{
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-    /*
-       در موبایل هم دکمه‌های کنترل حجم
-       دقیقاً کنار بخش کپی قرار دارند،
-       ولی برای خوانایی به دو ردیف مرتب می‌شوند.
-    */
-
-    .preview-actions.over-limit{
-
-        grid-template-columns:
-            1fr 1fr;
-
-    }
-
-    .preview-actions.over-limit
-    #copyBtn{
-
-        grid-column:
-            1 / -1;
-
-    }
-
     .contact-links{
 
         grid-template-columns:
@@ -1702,30 +1597,34 @@ body.dark .copy-bar{
 
     .copy-inner{
 
-        justify-content:center;
+        grid-template-columns:
+            1fr 1fr;
+
+        gap:7px;
 
     }
 
     .copy-info{
 
-        display:none;
+        grid-column:
+            1 / -1;
+
+        text-align:center;
+
+        font-size:10px;
+
+        line-height:1.4;
 
     }
 
     .copy-btn{
 
-        width:100%;
+        min-height:44px;
 
-        min-width:0;
-
-    }
-
-    .news-notice{
-
-        font-size:12px;
+        font-size:11px;
 
         padding:
-            11px 12px;
+            7px 5px;
 
     }
 
@@ -1752,13 +1651,9 @@ body.dark .copy-bar{
 
     }
 
-    .preview-actions.over-limit
-    .btn{
+    .copy-btn{
 
-        font-size:11px;
-
-        padding:
-            8px 7px;
+        font-size:10px;
 
     }
 
@@ -1836,32 +1731,6 @@ body.dark .copy-bar{
      ============================================================ -->
 
 <main class="container">
-
-
-<!-- ============================================================
-     NOTICE
-     ============================================================ -->
-
-<div class="news-notice">
-
-    <span class="news-notice-title">
-        ⚠️ توجه:
-    </span>
-
-    خبرهای این صفحه به‌صورت خلاصه نمایش داده می‌شوند.
-    در صورت نیاز به مشاهده متن کامل خبر، لطفاً به
-
-    <a
-        href="https://maghool51.github.io/diyar-widgets/diyar-news/news.html"
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        صفحه اخبار
-    </a>
-
-    مراجعه نمایید.
-
-</div>
 
 
 <!-- ============================================================
@@ -2215,33 +2084,6 @@ body.dark .copy-bar{
 
         </div>
 
-
-        <!-- COPY ACTIONS -->
-
-        <div
-            id="previewActions"
-            class="preview-actions"
-        >
-
-            <button
-                type="button"
-                id="copyBtn"
-                class="btn btn-success"
-            >
-                📋 کپی پیام روبیکا
-            </button>
-
-
-            <button
-                type="button"
-                id="copyPreviewBtn"
-                class="btn btn-primary"
-            >
-                📋 کپی پیش‌نمایش
-            </button>
-
-        </div>
-
     </div>
 
 </section>
@@ -2437,7 +2279,7 @@ body.dark .copy-bar{
 
 
 <!-- ============================================================
-     FLOATING COPY
+     FLOATING COPY FOOTER
      ============================================================ -->
 
 <div class="copy-bar">
@@ -2458,6 +2300,24 @@ body.dark .copy-bar{
             class="copy-btn"
         >
             📋 کپی پیام روبیکا
+        </button>
+
+
+        <button
+            type="button"
+            id="floatingReduceBtn"
+            class="copy-btn"
+        >
+            ✂️ کاهش پیام
+        </button>
+
+
+        <button
+            type="button"
+            id="floatingForceBtn"
+            class="copy-btn"
+        >
+            📋 کپی کامل
         </button>
 
     </div>
@@ -2659,11 +2519,6 @@ function cleanText(value){
 }
 
 
-/*
-   خلاصه خبر را در یک اندازه منطقی نگه می‌دارد
-   تا متن ناگهان قطع نشود.
-*/
-
 function truncateSummary(
     value,
     maxLength = 280
@@ -2754,38 +2609,6 @@ function normalizeRubikaUrl(value){
     }
 
     return normalizeUrl(text);
-
-}
-
-
-function escapeHtml(value){
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
 
 }
 
@@ -3823,11 +3646,6 @@ function renderNews(){
                 "news-summary";
 
 
-            /*
-               خلاصه در کارت هم با ...
-               تمام می‌شود.
-            */
-
             summary.textContent =
                 truncateSummary(
                     item._summary,
@@ -3999,6 +3817,29 @@ function rubikaHeader(){
 
 
 /* ============================================================
+   RUBIKA NOTICE
+   ============================================================ */
+
+function rubikaNotice(){
+
+    return [
+
+        "⚠️ توجه:",
+
+        "خبرهای منتشرشده در این پیام به‌صورت خلاصه هستند.",
+
+        "در صورت نیاز به مشاهده متن کامل هر خبر، لطفاً به صفحه اخبار دیار قدمگاه مراجعه نمایید:",
+
+        RUBIKA_PAGE_URL,
+
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    ].join("\n");
+
+}
+
+
+/* ============================================================
    RUBIKA FOOTER
    ============================================================ */
 
@@ -4086,12 +3927,6 @@ function buildNewsLine(item){
         item._summary
     ){
 
-        /*
-           خلاصه خبر در پیام روبیکا
-           حداکثر ۲۸۰ کاراکتر و با ...
-           تمام می‌شود.
-        */
-
         const summary =
             truncateSummary(
                 item._summary,
@@ -4140,6 +3975,10 @@ function createRubikaText(){
     const parts = [
 
         rubikaHeader(),
+
+        "",
+
+        rubikaNotice(),
 
         ""
 
@@ -4208,6 +4047,46 @@ function createRubikaText(){
 
 
 /* ============================================================
+   FOOTER BUTTON STATE
+   ============================================================ */
+
+function updateFooterButtons(text){
+
+    const reduceButton =
+        document.getElementById(
+            "floatingReduceBtn"
+        );
+
+
+    const forceButton =
+        document.getElementById(
+            "floatingForceBtn"
+        );
+
+
+    const tooLong =
+        Boolean(
+            text &&
+            text.length >
+            RUBIKA_MAX_LENGTH
+        );
+
+
+    reduceButton.style.display =
+        tooLong
+        ? "block"
+        : "none";
+
+
+    forceButton.style.display =
+        tooLong
+        ? "block"
+        : "none";
+
+}
+
+
+/* ============================================================
    PREVIEW
    ============================================================ */
 
@@ -4244,12 +4123,6 @@ function updatePreview(){
         );
 
 
-    const previewActions =
-        document.getElementById(
-            "previewActions"
-        );
-
-
     if(!text){
 
         preview.value =
@@ -4259,12 +4132,10 @@ function updatePreview(){
             "show"
         );
 
-        previewActions.classList.remove(
-            "over-limit"
-        );
-
         copyInfo.textContent =
             "برای ساخت پیام، خبرها را انتخاب کنید.";
+
+        updateFooterButtons("");
 
         updateLength(0);
 
@@ -4300,145 +4171,14 @@ function updatePreview(){
             " کاراکتر از سقف ۴۰۰۰ بیشتر شده است.";
 
 
-        /*
-           حالت سه‌دکمه‌ای:
-           کپی / کاهش / در هر حال کپی
-        */
-
-        previewActions.classList.add(
-            "over-limit"
-        );
-
-
-        /*
-           دکمه کاهش پیام
-        */
-
-        const reduceButton =
-            document.getElementById(
-                "reduceMessageBtn"
-            );
-
-        if(
-            !reduceButton
-        ){
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-            button.type =
-                "button";
-
-            button.id =
-                "reduceMessageBtn";
-
-            button.className =
-                "btn btn-warning";
-
-            button.textContent =
-                "✂️ کاهش پیام";
-
-            button.addEventListener(
-                "click",
-                reduceMessage
-            );
-
-            previewActions.appendChild(
-                button
-            );
-
-        }
-
-
-        /*
-           دکمه در هر حال کپی
-        */
-
-        const forceButton =
-            document.getElementById(
-                "forceCopyBtn"
-            );
-
-        if(
-            !forceButton
-        ){
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-            button.type =
-                "button";
-
-            button.id =
-                "forceCopyBtn";
-
-            button.className =
-                "btn btn-primary";
-
-            button.textContent =
-                "📋 در هر حال کپی شود";
-
-            button.addEventListener(
-                "click",
-                forceCopy
-            );
-
-            previewActions.appendChild(
-                button
-            );
-
-        }
-
-
         copyInfo.textContent =
-            "⚠️ پیام بزرگ‌تر از ۴۰۰۰ کاراکتر است؛ می‌توانید کاهش دهید یا در هر حال کپی کنید.";
+            "⚠️ پیام بزرگ‌تر از ۴۰۰۰ کاراکتر است؛ از دکمه‌های پایین صفحه استفاده کنید.";
 
     }else{
 
         warning.classList.remove(
             "show"
         );
-
-        previewActions.classList.remove(
-            "over-limit"
-        );
-
-
-        /*
-           اگر پیام دوباره زیر ۴۰۰۰ آمد،
-           دکمه‌های اضافی حذف می‌شوند.
-        */
-
-        const reduceButton =
-            document.getElementById(
-                "reduceMessageBtn"
-            );
-
-        if(
-            reduceButton
-        ){
-
-            reduceButton.remove();
-
-        }
-
-
-        const forceButton =
-            document.getElementById(
-                "forceCopyBtn"
-            );
-
-        if(
-            forceButton
-        ){
-
-            forceButton.remove();
-
-        }
 
 
         copyInfo.textContent =
@@ -4449,6 +4189,8 @@ function updatePreview(){
 
     }
 
+
+    updateFooterButtons(text);
 
     updateLength(
         text.length
@@ -4656,12 +4398,6 @@ function reduceMessage(){
         0;
 
 
-    /*
-       از انتهای فهرست انتخاب‌شده‌ها
-       خبر حذف می‌شود تا پیام به
-       محدوده مجاز برسد.
-    */
-
     for(
         let i =
             selected.length - 1;
@@ -4731,11 +4467,6 @@ async function copyText(text){
     }
 
 
-    /*
-       روش اول:
-       Clipboard API
-    */
-
     try{
 
         if(
@@ -4760,11 +4491,6 @@ async function copyText(text){
 
     }
 
-
-    /*
-       روش دوم:
-       execCommand
-    */
 
     try{
 
@@ -4966,11 +4692,6 @@ async function copyRubikaMessage(){
 
     }
 
-
-    /*
-       حتی اگر بیشتر از ۴۰۰۰ باشد،
-       باز هم تلاش برای کپی انجام می‌شود.
-    */
 
     const success =
         await copyText(
@@ -5201,13 +4922,7 @@ document.getElementById(
 );
 
 
-document.getElementById(
-    "copyBtn"
-).addEventListener(
-    "click",
-    copyRubikaMessage
-);
-
+/* کپی اصلی در فوتر */
 
 document.getElementById(
     "floatingCopyBtn"
@@ -5217,50 +4932,23 @@ document.getElementById(
 );
 
 
+/* کاهش پیام در فوتر */
+
 document.getElementById(
-    "copyPreviewBtn"
+    "floatingReduceBtn"
 ).addEventListener(
     "click",
-    async () => {
-
-        const text =
-            document.getElementById(
-                "previewMessage"
-            ).value;
+    reduceMessage
+);
 
 
-        if(!text){
+/* کپی کامل در فوتر */
 
-            showToast(
-                "⚠️ پیش‌نمایشی برای کپی وجود ندارد."
-            );
-
-            return;
-
-        }
-
-
-        const success =
-            await copyText(
-                text
-            );
-
-
-        if(success){
-
-            showToast(
-                "✅ پیش‌نمایش کپی شد."
-            );
-
-        }else{
-
-            openManualCopy(
-                text
-            );
-
-        }
-
-    }
+document.getElementById(
+    "floatingForceBtn"
+).addEventListener(
+    "click",
+    forceCopy
 );
 
 

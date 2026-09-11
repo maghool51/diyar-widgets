@@ -20,6 +20,7 @@
    - پشتیبانی بهتر از سایت‌های خبری
    - جلوگیری از قطع شدن جمله
    - اضافه کردن ... در پایان خلاصه‌های کوتاه‌شده
+   - استانداردسازی سه‌نقطه‌های خراب
    - حذف متن‌های تبلیغاتی
    - عدم تولید خلاصه حدسی
 =========================================================
@@ -167,19 +168,133 @@ function stripHtml(html) {
 
 function normalizePersianText(text) {
 
-    return cleanText(text)
-        .replace(/ي/g, "ی")
-        .replace(/ى/g, "ی")
-        .replace(/ك/g, "ک")
-        .replace(/ۀ/g, "ه")
-        .replace(/ة/g, "ه")
-        .replace(/\u0640+/g, "")
-        .replace(/[“”]/g, '"')
-        .replace(/[‘’]/g, "'")
-        .replace(/[ ]+([،؛:!؟,.])/g, "$1")
-        .replace(/([،؛:!؟,.])([^\s])/g, "$1 $2")
-        .replace(/\s{2,}/g, " ")
-        .trim();
+    if (!text) {
+        return "";
+    }
+
+    let value =
+        cleanText(text)
+            .replace(/ي/g, "ی")
+            .replace(/ى/g, "ی")
+            .replace(/ك/g, "ک")
+            .replace(/ۀ/g, "ه")
+            .replace(/ة/g, "ه")
+            .replace(/\u0640+/g, "")
+            .replace(/[“”]/g, '"')
+            .replace(/[‘’]/g, "'");
+
+    /*
+       استانداردسازی سه‌نقطه‌های خراب در پایان متن.
+
+       نمونه‌های خراب:
+         . ..
+         .. .
+         ... ..
+         ....
+         …..
+         .…
+         … .
+    */
+
+    value =
+        value
+            .replace(
+                /(?:\s*[.]{1,}\s*){2,}$/g,
+                "..."
+            )
+            .replace(
+                /(?:\s*…\s*){2,}$/g,
+                "..."
+            )
+            .replace(
+                /(?:\s*[.]?\s*…\s*)$/g,
+                "..."
+            );
+
+    /*
+       اگر پایان متن ترکیبی از نقطه و سه‌نقطه باشد،
+       آن را به یک ... استاندارد تبدیل می‌کنیم.
+    */
+
+    if (
+        /(?:\.|\s|…)+$/.test(value) &&
+        /(?:\.{2,}|…)/.test(value.slice(-6))
+    ) {
+
+        value =
+            value
+                .replace(
+                    /[\s.…]+$/,
+                    "..."
+                );
+    }
+
+    value =
+        value
+            .replace(/[ ]+([،؛:!؟,.])/g, "$1")
+            .replace(/([،؛:!؟,.])([^\s])/g, "$1 $2")
+            .replace(/\s{2,}/g, " ")
+            .trim();
+
+    return value;
+}
+
+
+/* ========================================================
+   ELLIPSIS HELPERS
+======================================================== */
+
+function hasEllipsisEnding(text) {
+
+    if (!text) {
+        return false;
+    }
+
+    const value =
+        cleanText(text);
+
+    return (
+        value.endsWith("...") ||
+        value.endsWith("…")
+    );
+}
+
+
+function normalizeEllipsisEnding(text) {
+
+    if (!text) {
+        return "";
+    }
+
+    let value =
+        cleanText(text);
+
+    /*
+       هر نوع سه‌نقطه یا نقطه‌های پشت سر هم
+       در انتهای متن به ... تبدیل می‌شود.
+    */
+
+    if (
+        /(?:\.|\s|…)+$/.test(value)
+    ) {
+
+        const tail =
+            value.slice(-8);
+
+        if (
+            /(?:\.{2,}|…)/.test(tail)
+        ) {
+
+            value =
+                value
+                    .replace(
+                        /[\s.…]+$/,
+                        "..."
+                    );
+        }
+    }
+
+    return value.trim();
 }
 
 
@@ -322,10 +437,6 @@ function requestPage(url, redirectCount = 0) {
 
                     const status =
                         response.statusCode || 0;
-
-                    /*
-                       Redirect
-                    */
 
                     if (
                         [301,302,303,307,308]
@@ -1008,10 +1119,16 @@ function removeTrailingIncomplete(text) {
     let value =
         normalizePersianText(text);
 
+    /*
+       سه‌نقطه معتبر را حذف نمی‌کنیم
+       تا بتوانیم تشخیص دهیم که خلاصه
+       عمداً کوتاه شده است.
+
+       فقط علائم ناقص معمول حذف می‌شوند.
+    */
+
     value =
         value
-            .replace(/\.{2,}$/g, "")
-            .replace(/…+$/g, "")
             .replace(/,+$/g, "")
             .replace(/،+$/g, "")
             .replace(/[:؛]+$/g, "")
@@ -1027,8 +1144,17 @@ function hasStrongEnding(text) {
         return false;
     }
 
+    const value =
+        cleanText(text);
+
+    if (
+        hasEllipsisEnding(value)
+    ) {
+        return true;
+    }
+
     return /[.!؟،؛]$/.test(
-        text.trim()
+        value
     );
 }
 
@@ -1059,6 +1185,19 @@ function findSentenceEndings(text) {
         }
 
         if (char === ".") {
+
+            /*
+               اگر این نقطه بخشی از
+               سه‌نقطه باشد، آن را
+               پایان جمله مستقل حساب نکن.
+            */
+
+            if (
+                text[i + 1] === "." ||
+                text[i - 1] === "."
+            ) {
+                continue;
+            }
 
             const next =
                 text[i + 1] || "";
@@ -1115,9 +1254,23 @@ function shortenNaturally(
     }
 
     /*
-       اگر متن از قبل سه‌نقطه دارد،
-       برای پردازش مجدد آن را حذف می‌کنیم.
+       اگر متن قبلاً با ... تمام شده،
+       آن را فقط برای پیدا کردن طول
+       واقعی متن حذف می‌کنیم.
     */
+
+    if (
+        hasEllipsisEnding(value)
+    ) {
+
+        value =
+            value
+                .replace(
+                    /(?:\s*\.{3}|\s*…)$/,
+                    ""
+                )
+                .trim();
+    }
 
     value =
         removeTrailingIncomplete(
@@ -1129,9 +1282,9 @@ function shortenNaturally(
     }
 
     /*
-       اگر متن داخل محدوده است
-       و پایان مناسبی دارد، بدون تغییر
-       برگردانده می‌شود.
+       اگر متن داخل محدوده است و پایان
+       مناسبی دارد، بدون سه‌نقطه برگردانده
+       می‌شود.
     */
 
     if (
@@ -1139,7 +1292,9 @@ function shortenNaturally(
         hasStrongEnding(value)
     ) {
 
-        return value;
+        return normalizeEllipsisEnding(
+            value
+        );
     }
 
     /*
@@ -1179,7 +1334,10 @@ function shortenNaturally(
     */
 
     if (best) {
-        return best;
+
+        return normalizeEllipsisEnding(
+            best
+        );
     }
 
     /*
@@ -1264,13 +1422,26 @@ function shortenNaturally(
 
     /*
        اگر واقعاً متن بریده شده،
-       سه نقطه به انتهای آن اضافه می‌کنیم.
+       سه نقطه استاندارد اضافه می‌کنیم.
     */
 
     if (
         needsEllipsis &&
         result
     ) {
+
+        /*
+           اگر خود result به هر دلیلی
+           سه‌نقطه داشت، دوباره اضافه نکن.
+        */
+
+        result =
+            result
+                .replace(
+                    /[\s.…]+$/,
+                    ""
+                )
+                .trim();
 
         return (
             result +
@@ -1279,6 +1450,134 @@ function shortenNaturally(
     }
 
     return result;
+}
+
+
+/* ========================================================
+   FINAL SUMMARY NORMALIZER
+======================================================== */
+
+function finalizeSummary(
+    text,
+    maxLength = MAX_SUMMARY_LENGTH
+) {
+
+    if (!text) {
+        return "";
+    }
+
+    let value =
+        normalizePersianText(text);
+
+    if (!value) {
+        return "";
+    }
+
+    /*
+       استانداردسازی پایان‌های خراب
+       مانند:
+       . ..
+       .. .
+       ... ..
+       .....
+    */
+
+    value =
+        normalizeEllipsisEnding(
+            value
+        );
+
+    /*
+       اگر طول مناسب است،
+       سه‌نقطه را دست‌کاری نمی‌کنیم.
+    */
+
+    if (
+        value.length <= maxLength
+    ) {
+
+        return value;
+    }
+
+    /*
+       متن بیش از سقف است؛
+       کوتاه‌سازی نهایی حتماً با ...
+       انجام می‌شود.
+    */
+
+    let result =
+        shortenNaturally(
+            value,
+            maxLength
+        );
+
+    if (!result) {
+        return "";
+    }
+
+    /*
+       محافظ نهایی:
+       اگر متن هنوز بیش از سقف بود،
+       مستقیماً آن را به اندازه مجاز
+       با ... محدود می‌کنیم.
+    */
+
+    if (
+        result.length >
+        maxLength
+    ) {
+
+        const suffix = "...";
+
+        const limit =
+            maxLength -
+            suffix.length;
+
+        let cut =
+            result
+                .slice(
+                    0,
+                    limit
+                )
+                .trim();
+
+        const space =
+            cut.lastIndexOf(" ");
+
+        if (
+            space >=
+            MIN_SUMMARY_LENGTH
+        ) {
+
+            cut =
+                cut
+                    .slice(
+                        0,
+                        space
+                    )
+                    .trim();
+        }
+
+        cut =
+            cut
+                .replace(
+                    /[\s.…]+$/,
+                    ""
+                )
+                .replace(
+                    /[،:؛]+$/,
+                    ""
+                )
+                .trim();
+
+        result =
+            cut +
+            suffix;
+    }
+
+    return normalizeEllipsisEnding(
+        result
+    );
 }
 
 
@@ -1305,15 +1604,21 @@ function isIncompleteSummary(text) {
 
     /*
        سه‌نقطه پایان معتبر یک خلاصه
-       کوتاه‌شده است و نباید به‌عنوان
-       متن ناقص رد شود.
+       کوتاه‌شده است.
+
+       برای بررسی ناقص بودن، آن را
+       موقتاً حذف می‌کنیم.
     */
 
     const validationValue =
-        value
-            .replace(/\.{3}$/g, "")
-            .replace(/…$/g, "")
-            .trim();
+        hasEllipsisEnding(value)
+            ? value
+                .replace(
+                    /(?:\.{3}|…)$/,
+                    ""
+                )
+                .trim()
+            : value;
 
     if (
         /[،:؛]$/.test(
@@ -1394,6 +1699,14 @@ function isUsefulSummary(text) {
     if (
         value.length <
         MIN_SUMMARY_LENGTH
+    ) {
+
+        return false;
+    }
+
+    if (
+        value.length >
+        MAX_SUMMARY_LENGTH
     ) {
 
         return false;
@@ -1708,11 +2021,6 @@ function buildCandidates(
     jsonld.forEach(
         text => {
 
-            /*
-               articleBodyهای خیلی طولانی
-               بعداً برای خلاصه استفاده می‌شوند.
-            */
-
             candidates.push({
                 text,
                 type:
@@ -1817,11 +2125,6 @@ function chooseSummary(
             continue;
         }
 
-        /*
-           برای متن‌های خیلی طولانی،
-           ابتدای متن را بررسی می‌کنیم.
-        */
-
         let summary =
             cleaned;
 
@@ -1838,9 +2141,13 @@ function chooseSummary(
         }
 
         /*
-           اگر کوتاه‌سازی باعث شد
-           خلاصه ناقص شود، کاندید را کنار می‌گذاریم.
+           آخرین استانداردسازی قبل از اعتبارسنجی
         */
+
+        summary =
+            finalizeSummary(
+                summary
+            );
 
         if (
             !isUsefulSummary(
@@ -1918,6 +2225,11 @@ function buildSummaryFromRssDescription(
                 MAX_SUMMARY_LENGTH
             );
     }
+
+    summary =
+        finalizeSummary(
+            summary
+        );
 
     if (
         !isUsefulSummary(
@@ -2023,14 +2335,19 @@ async function generateSummary(
                             cleaned
                         );
 
+                    const finalized =
+                        finalizeSummary(
+                            shortened
+                        );
+
                     if (
                         isUsefulSummary(
-                            shortened
+                            finalized
                         )
                     ) {
 
                         summary =
-                            shortened;
+                            finalized;
 
                         break;
                     }
@@ -2039,7 +2356,10 @@ async function generateSummary(
 
             primaryResult = summary
                 ? {
-                    summary,
+                    summary:
+                        finalizeSummary(
+                            summary
+                        ),
                     status:"found"
                 }
                 : {
@@ -2216,6 +2536,30 @@ function isValidPreviousSummary(
         return false;
     }
 
+    const normalized =
+        normalizePersianText(
+            summary
+        );
+
+    if (!normalized) {
+        return false;
+    }
+
+    /*
+       خلاصه‌های خیلی قدیمی که
+       پایان خراب مثل . .. دارند،
+       نباید reuse شوند.
+    */
+
+    if (
+        /(?:[\s.]*\.\s*\.)$/.test(
+            normalized
+        )
+    ) {
+
+        return false;
+    }
+
     /*
        خلاصه‌های ناقص قبلی عمداً
        معتبر محسوب نمی‌شوند.
@@ -2223,7 +2567,7 @@ function isValidPreviousSummary(
 
     if (
         isIncompleteSummary(
-            summary
+            normalized
         )
     ) {
 
@@ -2232,17 +2576,12 @@ function isValidPreviousSummary(
 
     if (
         !isUsefulSummary(
-            summary
+            normalized
         )
     ) {
 
         return false;
     }
-
-    const normalized =
-        normalizePersianText(
-            summary
-        );
 
     /*
        خلاصه‌های قدیمی که تقریباً به سقف
@@ -2258,8 +2597,7 @@ function isValidPreviousSummary(
     if (
         normalized.length >=
             MAX_SUMMARY_LENGTH - 3 &&
-        !normalized.endsWith("...") &&
-        !normalized.endsWith("…") &&
+        !hasEllipsisEnding(normalized) &&
         !hasStrongEnding(normalized)
     ) {
 
@@ -2282,8 +2620,13 @@ function isValidPreviousSummary(
                 normalized
             );
 
+        const finalized =
+            finalizeSummary(
+                shortened
+            );
+
         return isUsefulSummary(
-            shortened
+            finalized
         );
     }
 
@@ -2577,6 +2920,11 @@ async function main() {
                             );
                     }
 
+                    summary =
+                        finalizeSummary(
+                            summary
+                        );
+
                     if (
                         isUsefulSummary(
                             summary
@@ -2788,16 +3136,10 @@ async function main() {
                         summary
                     );
 
-                if (
-                    summary.length >
-                    MAX_SUMMARY_LENGTH
-                ) {
-
-                    summary =
-                        shortenNaturally(
-                            summary
-                        );
-                }
+                summary =
+                    finalizeSummary(
+                        summary
+                    );
 
                 /*
                    اگر خلاصه نهایی معتبر نیست،

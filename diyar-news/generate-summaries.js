@@ -19,6 +19,7 @@
    - استخراج از OG / Meta / JSON-LD / Article / Paragraph
    - پشتیبانی بهتر از سایت‌های خبری
    - جلوگیری از قطع شدن جمله
+   - اضافه کردن ... در پایان خلاصه‌های کوتاه‌شده
    - حذف متن‌های تبلیغاتی
    - عدم تولید خلاصه حدسی
 =========================================================
@@ -938,7 +939,7 @@ const BAD_PHRASES = [
     "اینجا کلیک",
 
     "منبع:",
-    
+
     "ارسال نظر",
 
     "نظرات",
@@ -1097,6 +1098,10 @@ function findSentenceEndings(text) {
 }
 
 
+/* ========================================================
+   NATURAL SHORTENING
+======================================================== */
+
 function shortenNaturally(
     text,
     maxLength = MAX_SUMMARY_LENGTH
@@ -1109,10 +1114,25 @@ function shortenNaturally(
         return "";
     }
 
+    /*
+       اگر متن از قبل سه‌نقطه دارد،
+       برای پردازش مجدد آن را حذف می‌کنیم.
+    */
+
     value =
         removeTrailingIncomplete(
             value
         );
+
+    if (!value) {
+        return "";
+    }
+
+    /*
+       اگر متن داخل محدوده است
+       و پایان مناسبی دارد، بدون تغییر
+       برگردانده می‌شود.
+    */
 
     if (
         value.length <= maxLength &&
@@ -1123,7 +1143,7 @@ function shortenNaturally(
     }
 
     /*
-       ابتدا تلاش می‌کنیم جمله کامل
+       ابتدا تلاش می‌کنیم یک جمله کامل
        قبل از سقف پیدا کنیم.
     */
 
@@ -1153,34 +1173,64 @@ function shortenNaturally(
         }
     }
 
+    /*
+       اگر جمله کامل پیدا شد،
+       نیازی به ... نیست.
+    */
+
     if (best) {
         return best;
     }
 
     /*
-       اگر جمله کاملی در محدوده نبود،
-       آخرین فاصله مناسب را پیدا می‌کنیم.
+       اگر متن از سقف عبور کرده و
+       جمله کاملی در محدوده وجود ندارد،
+       سه کاراکتر برای ... رزرو می‌کنیم.
     */
+
+    const needsEllipsis =
+        value.length > maxLength;
+
+    const suffix =
+        needsEllipsis
+            ? "..."
+            : "";
+
+    const availableLength =
+        Math.max(
+            MIN_SUMMARY_LENGTH,
+            maxLength -
+                suffix.length
+        );
 
     let cut =
         Math.min(
-            maxLength,
+            availableLength,
             value.length
         );
 
-    const candidate =
+    let candidate =
         value.slice(
             0,
             cut
         );
 
+    /*
+       آخرین فاصله مناسب را پیدا می‌کنیم
+       تا کلمه نصفه نشود.
+    */
+
     let space =
         candidate.lastIndexOf(" ");
 
     if (
-        space <
+        space >=
         MIN_SUMMARY_LENGTH
     ) {
+
+        cut = space;
+
+    } else {
 
         space = cut;
     }
@@ -1212,6 +1262,22 @@ function shortenNaturally(
             .replace(/[،:؛]+$/g, "")
             .trim();
 
+    /*
+       اگر واقعاً متن بریده شده،
+       سه نقطه به انتهای آن اضافه می‌کنیم.
+    */
+
+    if (
+        needsEllipsis &&
+        result
+    ) {
+
+        return (
+            result +
+            suffix
+        );
+    }
+
     return result;
 }
 
@@ -1237,16 +1303,22 @@ function isIncompleteSummary(text) {
         return true;
     }
 
-    if (
-        value.endsWith("...") ||
-        value.endsWith("…")
-    ) {
+    /*
+       سه‌نقطه پایان معتبر یک خلاصه
+       کوتاه‌شده است و نباید به‌عنوان
+       متن ناقص رد شود.
+    */
 
-        return true;
-    }
+    const validationValue =
+        value
+            .replace(/\.{3}$/g, "")
+            .replace(/…$/g, "")
+            .trim();
 
     if (
-        /[،:؛]$/.test(value)
+        /[،:؛]$/.test(
+            validationValue
+        )
     ) {
 
         return true;
@@ -1297,7 +1369,7 @@ function isIncompleteSummary(text) {
     ) {
 
         if (
-            value.endsWith(
+            validationValue.endsWith(
                 ending
             )
         ) {
@@ -1807,15 +1879,6 @@ function chooseSummary(
 
 /* ========================================================
    RSS FALLBACK
-   ------------------------------------------------------------
-   وقتی دریافت مستقیم صفحه‌ی خبر خلاصه‌ای پیدا نکند (status
-   "not-found" — یعنی صفحه واقعاً بارگذاری شد ولی هیچ کاندید
-   قابل‌استفاده‌ای در آن یافت نشد؛ مثلاً به‌خاطر صفحه‌ی محافظتی/
-   Cloudflare)، اگر fetch-news.js یک rssDescription معتبر برای
-   همین خبر ذخیره کرده باشد، از همان به‌عنوان کاندید استفاده
-   می‌کنیم — دقیقاً با همان pipeline پاک‌سازی/کوتاه‌سازی/
-   اعتبارسنجی موجود (cleanCandidate → shortenNaturally →
-   isUsefulSummary)، بدون هیچ منطق حدسی جدید.
 ======================================================== */
 
 function buildSummaryFromRssDescription(
@@ -1997,9 +2060,7 @@ async function generateSummary(
 
     /*
        fallback فقط دقیقاً وقتی اجرا می‌شود که مسیر اصلی
-       "not-found" شده باشد — نه fetch-failed، نه empty-response،
-       نه no-url. اولویت همیشه با خلاصه‌ی استخراج‌شده از خودِ
-       صفحه است؛ RSS فقط برای همین یک حالت خاص fallback است.
+       "not-found" شده باشد.
     */
 
     if (
@@ -2178,16 +2239,38 @@ function isValidPreviousSummary(
         return false;
     }
 
+    const normalized =
+        normalizePersianText(
+            summary
+        );
+
+    /*
+       خلاصه‌های قدیمی که تقریباً به سقف
+       ۲۲۰ کاراکتر رسیده‌اند ولی با ...
+       تمام نمی‌شوند و پایان جمله قوی هم
+       ندارند، احتمالاً در اجرای قبلی
+       وسط متن بریده شده‌اند.
+
+       این موارد باید دوباره از صفحه
+       اصلی خبر استخراج شوند.
+    */
+
+    if (
+        normalized.length >=
+            MAX_SUMMARY_LENGTH - 3 &&
+        !normalized.endsWith("...") &&
+        !normalized.endsWith("…") &&
+        !hasStrongEnding(normalized)
+    ) {
+
+        return false;
+    }
+
     /*
        خلاصه‌های قدیمی ممکن است
        بیشتر از حد مجاز باشند.
        آن‌ها را طبیعی کوتاه می‌کنیم.
     */
-
-    const normalized =
-        normalizePersianText(
-            summary
-        );
 
     if (
         normalized.length >

@@ -2658,44 +2658,82 @@ function parseDate(value){
 }
 
 
-function formatPersianDate(value){
+function formatPersianHeaderDate(){
 
-    if(!value){
-        return "";
-    }
-
-    const date =
-        new Date(value);
-
-    if(
-        Number.isNaN(
-            date.getTime()
-        )
-    ){
-        return "";
-    }
+    const now = new Date();
 
     try{
 
-        return new Intl.DateTimeFormat(
-            "fa-IR-u-ca-persian",
-            {
-                year:"numeric",
-                month:"long",
-                day:"numeric"
+        const formatter =
+            new Intl.DateTimeFormat(
+                "fa-IR-u-ca-persian",
+                {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                }
+            );
+
+        const parts =
+            formatter.formatToParts(now);
+
+        let weekday = "";
+        let year = "";
+        let month = "";
+        let day = "";
+
+        for(const part of parts){
+
+            if(part.type === "weekday"){
+                weekday = part.value;
             }
-        ).format(date);
 
-    }catch{
+            if(part.type === "year"){
+                year = part.value;
+            }
 
-        return "";
+            if(part.type === "month"){
+                month = part.value;
+            }
+
+            if(part.type === "day"){
+                day = part.value;
+            }
+
+        }
+
+        const time =
+            new Intl.DateTimeFormat(
+                "fa-IR",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false
+                }
+            ).format(now);
+
+        return (
+            weekday +
+            "، " +
+            day +
+            " " +
+            month +
+            " " +
+            year +
+            " - ساعت " +
+            time
+        );
+
+    }catch(error){
+
+        return now.toLocaleString(
+            "fa-IR-u-ca-persian"
+        );
 
     }
 
 }
-
-
-Maghool51
 
 
 /* ============================================================

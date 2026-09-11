@@ -1,38 +1,54 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>سازنده اخبار روبیکا | دیار قدمگاه</title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-<meta name="theme-color" content="#6750a4">
+<title>اخبار روبیکا | دیار قدمگاه</title>
 
 <style>
 
+/* ============================================================
+   ROOT
+   ============================================================ */
+
 :root{
+
+    --bg:#f6f4fb;
+    --card:#ffffff;
+    --text:#25212b;
+    --muted:#77717f;
+    --border:#e6e0ed;
+
     --primary:#6750a4;
-    --primary-dark:#4f378b;
-    --primary-light:#eaddff;
+    --primary-dark:#523d89;
 
-    --background:#f8f7fb;
-    --surface:#ffffff;
-    --surface-2:#f2f0f7;
+    --success:#18864b;
+    --warning:#d98200;
+    --danger:#d93025;
 
-    --text:#242329;
-    --text-secondary:#6d6975;
-
-    --border:#e4e0ea;
-
-    --success:#2e7d32;
-    --danger:#c62828;
-    --warning:#ef6c00;
+    --soft-primary:#eee8fa;
+    --soft-success:#e2f5ea;
+    --soft-warning:#fff2d9;
+    --soft-danger:#fde8e7;
 
     --shadow:
-        0 4px 18px rgba(0,0,0,.07);
+        0 4px 18px rgba(42,32,58,.07);
 
-    --radius:18px;
+    --radius:16px;
+
 }
+
+
+/* ============================================================
+   RESET
+   ============================================================ */
 
 *{
     box-sizing:border-box;
@@ -43,33 +59,30 @@ html{
 }
 
 body{
-    margin:0;
-    font-family:
-        Tahoma,
-        "Segoe UI",
-        Arial,
-        sans-serif;
 
-    background:var(--background);
+    margin:0;
+
+    background:var(--bg);
+
     color:var(--text);
 
-    transition:
-        background .25s,
-        color .25s;
+    font-family:
+        Tahoma,
+        Arial,
+        "Segoe UI",
+        sans-serif;
+
+    line-height:1.8;
+
 }
 
 button,
 input,
-select{
+select,
+textarea{
+
     font-family:inherit;
-}
 
-button{
-    cursor:pointer;
-}
-
-a{
-    color:inherit;
 }
 
 
@@ -79,19 +92,35 @@ a{
 
 body.dark{
 
-    --background:#121116;
-    --surface:#1d1b20;
-    --surface-2:#27242b;
+    --bg:#151318;
+    --card:#211e24;
+    --text:#f4eff8;
+    --muted:#aaa2b0;
+    --border:#37323b;
 
-    --text:#f4eff7;
-    --text-secondary:#bdb8c4;
+    --soft-primary:#302640;
+    --soft-success:#193426;
+    --soft-warning:#3c2e18;
+    --soft-danger:#422322;
 
-    --border:#39353e;
+}
 
-    --primary-light:#3d3450;
 
-    --shadow:
-        0 4px 18px rgba(0,0,0,.30);
+/* ============================================================
+   CONTAINER
+   ============================================================ */
+
+.container{
+
+    width:
+        min(
+            1100px,
+            calc(100% - 24px)
+        );
+
+    margin:
+        0 auto;
+
 }
 
 
@@ -101,117 +130,179 @@ body.dark{
 
 .top-header{
 
+    position:sticky;
+
+    top:0;
+
+    z-index:50;
+
     background:
-        linear-gradient(
-            135deg,
-            #6750a4,
-            #7e57c2,
-            #9c6ade
-        );
+        rgba(255,255,255,.92);
 
-    color:#fff;
+    border-bottom:
+        1px solid var(--border);
 
-    padding:
-        22px
-        16px
-        28px;
+    backdrop-filter:
+        blur(14px);
 
-    box-shadow:
-        0 4px 18px rgba(0,0,0,.15);
+}
+
+body.dark .top-header{
+
+    background:
+        rgba(33,30,36,.94);
+
 }
 
 .header-inner{
 
-    max-width:1100px;
+    width:
+        min(
+            1100px,
+            calc(100% - 24px)
+        );
+
     margin:auto;
 
+    min-height:72px;
+
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
 
-    gap:15px;
+    gap:12px;
+
 }
 
 .brand{
 
     display:flex;
+
     align-items:center;
 
-    gap:12px;
+    gap:10px;
+
+    min-width:0;
+
 }
 
 .brand-icon{
 
-    width:54px;
-    height:54px;
+    width:46px;
 
-    border-radius:16px;
+    height:46px;
 
-    background:rgba(255,255,255,.18);
+    flex:none;
 
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
-    font-size:28px;
+    border-radius:14px;
+
+    background:
+        var(--soft-primary);
+
+    font-size:24px;
+
+}
+
+.brand-text{
+
+    min-width:0;
+
 }
 
 .brand-text h1{
 
     margin:0;
 
-    font-size:22px;
-    font-weight:800;
+    font-size:19px;
+
+    font-weight:900;
+
 }
 
 .brand-text p{
 
-    margin:5px 0 0;
+    margin:0;
 
-    font-size:13px;
+    color:var(--muted);
 
-    opacity:.9;
+    font-size:11px;
+
 }
 
 .theme-btn{
 
-    border:none;
+    border:1px solid var(--border);
 
-    background:rgba(255,255,255,.16);
+    background:var(--card);
 
-    color:#fff;
+    color:var(--text);
+
+    border-radius:12px;
 
     padding:
-        10px
-        14px;
+        9px 13px;
 
-    border-radius:14px;
+    cursor:pointer;
 
-    font-size:14px;
+    white-space:nowrap;
 
-    backdrop-filter:blur(8px);
-}
-
-.theme-btn:hover{
-
-    background:rgba(255,255,255,.25);
 }
 
 
 /* ============================================================
-   MAIN
+   CARDS
    ============================================================ */
 
-.container{
+.card{
 
-    max-width:1100px;
+    background:var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
 
     margin:
-        20px auto
-        110px;
+        14px 0;
+
+    overflow:hidden;
+
+}
+
+.card-header{
 
     padding:
-        0 14px;
+        16px 18px;
+
+    border-bottom:
+        1px solid var(--border);
+
+}
+
+.card-title{
+
+    margin:0;
+
+    font-size:16px;
+
+    font-weight:900;
+
+}
+
+.card-body{
+
+    padding:16px;
+
 }
 
 
@@ -226,177 +317,85 @@ body.dark{
     grid-template-columns:
         repeat(4,1fr);
 
-    gap:12px;
+    gap:10px;
 
-    margin-bottom:18px;
+    margin-top:14px;
+
 }
 
 .stat-card{
 
-    background:var(--surface);
+    background:var(--card);
 
     border:
         1px solid var(--border);
 
-    border-radius:var(--radius);
+    border-radius:14px;
 
-    padding:16px;
+    padding:
+        14px 8px;
+
+    text-align:center;
 
     box-shadow:var(--shadow);
 
-    text-align:center;
 }
 
 .stat-number{
 
     display:block;
 
-    font-size:24px;
+    font-size:23px;
 
-    font-weight:800;
+    font-weight:900;
 
     color:var(--primary);
+
 }
 
 .stat-label{
 
     display:block;
 
-    margin-top:4px;
-
-    font-size:12px;
-
-    color:var(--text-secondary);
-}
-
-
-/* ============================================================
-   CARD
-   ============================================================ */
-
-.card{
-
-    background:var(--surface);
-
-    border:
-        1px solid var(--border);
-
-    border-radius:var(--radius);
-
-    box-shadow:var(--shadow);
-
-    margin-bottom:18px;
-
-    overflow:hidden;
-}
-
-.card-header{
-
-    padding:
-        16px 18px;
-
-    background:var(--surface-2);
-
-    border-bottom:
-        1px solid var(--border);
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:10px;
-}
-
-.card-title{
-
-    margin:0;
-
-    font-size:16px;
-
-    font-weight:800;
-}
-
-.card-body{
-
-    padding:18px;
-}
-
-
-/* ============================================================
-   FORM
-   ============================================================ */
-
-.form-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,1fr);
-
-    gap:14px;
-}
-
-.form-group{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:7px;
-}
-
-.form-group.full{
-
-    grid-column:
-        1 / -1;
-}
-
-.form-label{
-
-    font-size:13px;
-
-    font-weight:700;
-}
-
-.form-input{
-
-    width:100%;
-
-    border:
-        1px solid var(--border);
-
-    background:var(--surface);
-
-    color:var(--text);
-
-    border-radius:13px;
-
-    padding:
-        12px 13px;
-
-    outline:none;
-
-    transition:.2s;
-}
-
-.form-input:focus{
-
-    border-color:var(--primary);
-
-    box-shadow:
-        0 0 0 3px
-        rgba(103,80,164,.12);
-}
-
-.hint{
+    color:var(--muted);
 
     font-size:11px;
 
-    color:var(--text-secondary);
+}
 
-    line-height:1.7;
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+.status{
+
+    margin-top:14px;
+
+    padding:
+        11px 14px;
+
+    background:var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:13px;
+
+    font-size:13px;
+
+}
+
+.status.loading{
+    color:var(--primary);
+}
+
+.status.success{
+    color:var(--success);
+}
+
+.status.error{
+    color:var(--danger);
 }
 
 
@@ -406,147 +405,192 @@ body.dark{
 
 .filter-bar{
 
-    display:flex;
+    display:grid;
 
-    flex-wrap:wrap;
+    grid-template-columns:
+        1fr auto auto;
 
-    gap:10px;
+    gap:9px;
 
-    margin-bottom:15px;
 }
 
 .search-box{
 
     position:relative;
 
-    flex:
-        1 1 280px;
-}
-
-.search-box input{
-
-    padding-right:42px;
 }
 
 .search-icon{
 
     position:absolute;
 
-    right:14px;
+    right:12px;
 
     top:50%;
 
     transform:
         translateY(-50%);
 
-    color:var(--text-secondary);
-
     pointer-events:none;
+
 }
+
+.form-input{
+
+    width:100%;
+
+    min-height:44px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:
+        8px 38px 8px 12px;
+
+    background:var(--card);
+
+    color:var(--text);
+
+    outline:none;
+
+}
+
+.form-input:focus{
+
+    border-color:
+        var(--primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(103,80,164,.12);
+
+}
+
+.small-btn{
+
+    min-height:44px;
+
+    border:
+        1px solid var(--border);
+
+    background:var(--card);
+
+    color:var(--text);
+
+    border-radius:12px;
+
+    padding:
+        8px 13px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    white-space:nowrap;
+
+}
+
+.small-btn:hover{
+
+    border-color:
+        var(--primary);
+
+}
+
+
+/* ============================================================
+   CATEGORY
+   ============================================================ */
 
 .category-list{
 
     display:flex;
 
-    flex-wrap:wrap;
-
     gap:8px;
+
+    overflow-x:auto;
+
+    padding:
+        2px 1px 8px;
+
+    scrollbar-width:none;
+
+}
+
+.category-list::-webkit-scrollbar{
+    display:none;
 }
 
 .category-btn{
 
+    flex:
+        0 0 auto;
+
     border:
         1px solid var(--border);
 
-    background:var(--surface);
+    background:var(--card);
 
     color:var(--text);
 
-    border-radius:50px;
+    border-radius:999px;
 
     padding:
-        9px 14px;
+        8px 14px;
 
-    font-size:12px;
+    cursor:pointer;
 
-    transition:.2s;
-}
+    white-space:nowrap;
 
-.category-btn:hover{
-
-    border-color:var(--primary);
 }
 
 .category-btn.active{
 
-    background:var(--primary);
+    background:
+        var(--primary);
 
     color:#fff;
 
-    border-color:var(--primary);
+    border-color:
+        var(--primary);
+
 }
 
 
 /* ============================================================
-   SORT / ACTION
+   TOOLBAR
    ============================================================ */
 
 .toolbar{
 
     display:flex;
 
-    justify-content:space-between;
-
     align-items:center;
 
-    flex-wrap:wrap;
+    justify-content:space-between;
 
     gap:10px;
 
-    margin-bottom:15px;
+    margin-top:13px;
+
 }
 
-.toolbar-left,
 .toolbar-right{
 
     display:flex;
 
-    align-items:center;
-
     gap:8px;
 
-    flex-wrap:wrap;
 }
 
-.small-btn{
+.hint{
 
-    border:
-        1px solid var(--border);
-
-    background:var(--surface);
-
-    color:var(--text);
-
-    padding:
-        9px 12px;
-
-    border-radius:11px;
+    color:var(--muted);
 
     font-size:12px;
-}
 
-.small-btn:hover{
-
-    border-color:var(--primary);
-}
-
-.small-btn.primary{
-
-    background:var(--primary);
-
-    border-color:var(--primary);
-
-    color:#fff;
 }
 
 
@@ -561,100 +605,85 @@ body.dark{
     flex-direction:column;
 
     gap:10px;
+
 }
 
-.news-card{
-
-    position:relative;
-
-    background:var(--surface);
+.news-item{
 
     border:
         1px solid var(--border);
 
-    border-radius:16px;
+    border-radius:14px;
 
-    padding:
-        15px 48px 15px 15px;
+    padding:13px;
 
     cursor:pointer;
 
     transition:
-        transform .18s,
-        border-color .18s,
-        box-shadow .18s;
+        .18s;
 
-    user-select:none;
 }
 
-.news-card:hover{
-
-    transform:
-        translateY(-1px);
-
-    box-shadow:var(--shadow);
+.news-item:hover{
 
     border-color:
-        rgba(103,80,164,.45);
+        var(--primary);
+
 }
 
-.news-card.selected{
-
-    border:
-        2px solid var(--primary);
+.news-item.selected{
 
     background:
-        linear-gradient(
-            90deg,
-            rgba(103,80,164,.07),
-            var(--surface)
-        );
+        var(--soft-primary);
+
+    border-color:
+        var(--primary);
+
 }
 
-.check-box{
-
-    position:absolute;
-
-    right:14px;
-
-    top:17px;
-
-    width:25px;
-    height:25px;
-
-    border-radius:8px;
-
-    border:
-        2px solid #bbb5c4;
+.news-head{
 
     display:flex;
 
-    align-items:center;
-    justify-content:center;
+    align-items:flex-start;
 
-    color:transparent;
+    gap:10px;
 
-    transition:.2s;
 }
 
-.news-card.selected .check-box{
+.news-check{
 
-    background:var(--primary);
+    width:21px;
 
-    border-color:var(--primary);
+    height:21px;
 
-    color:#fff;
+    margin-top:3px;
+
+    flex:none;
+
+    accent-color:
+        var(--primary);
+
+}
+
+.news-content{
+
+    flex:1;
+
+    min-width:0;
+
 }
 
 .news-title{
 
-    font-size:14px;
+    margin:0;
 
-    font-weight:800;
+    font-size:14px;
 
     line-height:1.8;
 
-    margin-bottom:7px;
+    font-weight:900;
+
 }
 
 .news-meta{
@@ -663,11 +692,10 @@ body.dark{
 
     flex-wrap:wrap;
 
-    gap:7px;
+    gap:6px;
 
-    align-items:center;
+    margin-top:6px;
 
-    margin-bottom:8px;
 }
 
 .badge{
@@ -676,77 +704,77 @@ body.dark{
 
     align-items:center;
 
-    border-radius:50px;
-
     padding:
-        4px 9px;
+        2px 8px;
+
+    background:
+        rgba(127,127,127,.09);
+
+    border-radius:8px;
+
+    color:var(--muted);
 
     font-size:10px;
 
-    background:var(--surface-2);
-
-    color:var(--text-secondary);
-}
-
-.badge.source{
-
-    color:var(--primary);
-
-    background:
-        rgba(103,80,164,.10);
 }
 
 .news-summary{
 
+    margin-top:9px;
+
+    padding-top:9px;
+
+    border-top:
+        1px dashed var(--border);
+
     font-size:12px;
 
-    line-height:1.9;
+    color:
+        var(--muted);
 
-    color:var(--text-secondary);
 }
-
-
-/*
-   لینک خبرها عمداً در کارت نمایش داده نمی‌شود.
-   لینک فقط برای شناسایی خبر داخل JSON استفاده می‌شود.
-*/
-
-
-/* ============================================================
-   EMPTY / LOADING
-   ============================================================ */
 
 .state-box{
 
     text-align:center;
 
     padding:
-        45px 20px;
+        38px 15px;
 
-    color:var(--text-secondary);
+    color:var(--muted);
+
 }
 
 .state-icon{
 
-    font-size:42px;
+    font-size:30px;
 
-    margin-bottom:10px;
+    margin-bottom:6px;
+
 }
 
 .state-title{
 
-    font-weight:800;
+    font-weight:900;
 
     color:var(--text);
 
-    margin-bottom:6px;
 }
 
-.state-text{
 
-    font-size:12px;
+/* ============================================================
+   PUBLISHER
+   ============================================================ */
 
-    line-height:1.8;
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:10px;
+
 }
 
 
@@ -756,28 +784,29 @@ body.dark{
 
 .preview-box{
 
-    background:
-        #f0f0f0;
+    width:100%;
 
-    border-radius:16px;
+}
+
+.preview{
+
+    width:100%;
+
+    min-height:320px;
+
+    resize:vertical;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:13px;
 
     padding:14px;
 
-    max-height:650px;
+    background:
+        var(--bg);
 
-    overflow:auto;
-}
-
-body.dark .preview-box{
-
-    background:#111;
-}
-
-.preview-message{
-
-    white-space:pre-wrap;
-
-    word-break:break-word;
+    color:var(--text);
 
     font-family:
         Tahoma,
@@ -786,19 +815,14 @@ body.dark .preview-box{
 
     font-size:13px;
 
-    line-height:2;
-
-    background:var(--surface);
-
-    color:var(--text);
-
-    border-radius:14px;
-
-    padding:17px;
+    line-height:1.9;
 
     direction:rtl;
 
     text-align:right;
+
+    outline:none;
+
 }
 
 
@@ -806,66 +830,257 @@ body.dark .preview-box{
    LENGTH
    ============================================================ */
 
-.length-wrapper{
+.message-length{
 
-    margin-top:14px;
+    margin-top:12px;
+
+    padding:12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:13px;
+
+    background:
+        var(--bg);
+
 }
 
-.length-top{
+.length-row{
 
     display:flex;
 
+    align-items:center;
+
     justify-content:space-between;
 
-    align-items:center;
+    gap:10px;
 
     font-size:12px;
 
-    margin-bottom:6px;
 }
 
 .length-number{
 
-    font-weight:800;
+    font-weight:900;
 
-    color:var(--primary);
 }
 
 .progress{
 
     height:8px;
 
-    background:var(--surface-2);
+    margin-top:8px;
 
-    border-radius:20px;
+    background:
+        rgba(127,127,127,.15);
+
+    border-radius:99px;
 
     overflow:hidden;
+
 }
 
 .progress-bar{
 
+    width:0;
+
     height:100%;
 
-    width:0%;
+    background:
+        var(--success);
 
-    background:var(--primary);
+    transition:.25s;
 
-    transition:.2s;
 }
 
 .progress-bar.warning{
 
-    background:var(--warning);
+    background:
+        var(--warning);
+
 }
 
 .progress-bar.danger{
 
-    background:var(--danger);
+    background:
+        var(--danger);
+
+}
+
+.length-message{
+
+    margin-top:7px;
+
+    font-size:11px;
+
+    color:var(--muted);
+
+}
+
+.message-length.warning
+.length-message{
+
+    color:
+        var(--warning);
+
+    font-weight:bold;
+
+}
+
+.message-length.danger
+.length-message{
+
+    color:
+        var(--danger);
+
+    font-weight:bold;
+
 }
 
 
 /* ============================================================
-   CONTACT / SOCIAL LINKS
+   WARNING BOX
+   ============================================================ */
+
+.copy-warning{
+
+    display:none;
+
+    margin-top:12px;
+
+    padding:14px;
+
+    border:
+        1px solid
+        rgba(217,130,0,.35);
+
+    background:
+        var(--soft-warning);
+
+    border-radius:14px;
+
+}
+
+.copy-warning.show{
+
+    display:block;
+
+}
+
+.warning-title{
+
+    font-size:14px;
+
+    font-weight:900;
+
+    color:
+        var(--warning);
+
+}
+
+.warning-text{
+
+    margin-top:4px;
+
+    font-size:12px;
+
+    color:var(--text);
+
+}
+
+.warning-actions{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:8px;
+
+    margin-top:11px;
+
+}
+
+.btn{
+
+    min-height:44px;
+
+    border:0;
+
+    border-radius:12px;
+
+    padding:
+        9px 13px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    font-weight:800;
+
+}
+
+.btn-primary{
+
+    background:
+        var(--primary);
+
+    color:#fff;
+
+}
+
+.btn-primary:hover{
+
+    background:
+        var(--primary-dark);
+
+}
+
+.btn-success{
+
+    background:
+        var(--soft-success);
+
+    color:
+        var(--success);
+
+}
+
+.btn-warning{
+
+    background:
+        var(--warning);
+
+    color:#fff;
+
+}
+
+.btn-secondary{
+
+    background:
+        rgba(127,127,127,.12);
+
+    color:var(--text);
+
+}
+
+.preview-actions{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:8px;
+
+    margin-top:10px;
+
+}
+
+
+/* ============================================================
+   CONTACTS
    ============================================================ */
 
 .contact-links{
@@ -875,9 +1090,8 @@ body.dark .preview-box{
     grid-template-columns:
         repeat(3,1fr);
 
-    gap:12px;
+    gap:9px;
 
-    margin-top:4px;
 }
 
 .contact-link{
@@ -886,45 +1100,37 @@ body.dark .preview-box{
 
     align-items:center;
 
-    gap:11px;
+    gap:9px;
 
-    text-decoration:none;
-
-    background:var(--surface-2);
+    padding:10px;
 
     border:
         1px solid var(--border);
 
-    border-radius:16px;
+    border-radius:13px;
 
-    padding:12px;
+    text-decoration:none;
 
-    transition:
-        transform .18s,
-        border-color .18s,
-        box-shadow .18s;
+    color:var(--text);
+
+    background:var(--card);
+
 }
 
 .contact-link:hover{
 
-    transform:
-        translateY(-2px);
-
     border-color:
-        rgba(103,80,164,.45);
+        var(--primary);
 
-    box-shadow:var(--shadow);
 }
 
 .contact-logo{
 
-    width:43px;
-    height:43px;
+    width:38px;
 
-    flex:
-        0 0 43px;
+    height:38px;
 
-    border-radius:13px;
+    flex:none;
 
     display:flex;
 
@@ -932,60 +1138,49 @@ body.dark .preview-box{
 
     justify-content:center;
 
-    background:#fff;
+    border-radius:11px;
 
-    border:
-        1px solid rgba(0,0,0,.06);
+    background:
+        var(--soft-primary);
 
-    box-shadow:
-        0 2px 7px rgba(0,0,0,.08);
+    font-size:19px;
 
-    overflow:hidden;
-}
-
-.contact-logo svg{
-
-    width:28px;
-    height:28px;
-
-    display:block;
 }
 
 .contact-info{
 
     min-width:0;
 
-    display:flex;
-
-    flex-direction:column;
-
-    gap:4px;
 }
 
 .contact-name{
 
+    display:block;
+
     font-size:12px;
 
-    font-weight:800;
+    font-weight:900;
 
-    color:var(--text);
 }
 
 .contact-url{
+
+    display:block;
 
     direction:ltr;
 
     text-align:right;
 
-    font-size:9px;
+    color:var(--muted);
 
-    color:var(--text-secondary);
+    font-size:9px;
 
     white-space:nowrap;
 
     overflow:hidden;
 
     text-overflow:ellipsis;
+
 }
 
 
@@ -1004,29 +1199,137 @@ body.dark .preview-box{
     z-index:100;
 
     padding:
-        10px 14px;
+        9px 12px;
 
     background:
-        rgba(255,255,255,.90);
+        rgba(255,255,255,.92);
 
     border-top:
         1px solid var(--border);
 
     backdrop-filter:
         blur(14px);
+
 }
 
 body.dark .copy-bar{
 
     background:
-        rgba(29,27,32,.92);
+        rgba(33,30,36,.94);
+
 }
 
 .copy-inner{
 
-    max-width:1100px;
+    width:
+        min(
+            700px,
+            100%
+        );
 
     margin:auto;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.copy-info{
+
+    flex:1;
+
+    color:var(--muted);
+
+    font-size:11px;
+
+}
+
+.copy-btn{
+
+    min-width:180px;
+
+    min-height:46px;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:
+        var(--primary);
+
+    color:#fff;
+
+    font-weight:900;
+
+    cursor:pointer;
+
+}
+
+
+/* ============================================================
+   MANUAL COPY MODAL
+   ============================================================ */
+
+.modal{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:1000;
+
+    background:
+        rgba(0,0,0,.55);
+
+    padding:18px;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.modal.show{
+
+    display:flex;
+
+}
+
+.modal-box{
+
+    width:
+        min(
+            700px,
+            100%
+        );
+
+    max-height:
+        90vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    background:var(--card);
+
+    color:var(--text);
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 15px 50px
+        rgba(0,0,0,.3);
+
+}
+
+.modal-header{
 
     display:flex;
 
@@ -1035,49 +1338,82 @@ body.dark .copy-bar{
     justify-content:space-between;
 
     gap:10px;
+
+    padding:14px 16px;
+
+    border-bottom:
+        1px solid var(--border);
+
 }
 
-.copy-info{
+.modal-title{
 
-    font-size:12px;
+    font-weight:900;
 
-    color:var(--text-secondary);
 }
 
-.copy-btn{
+.modal-close{
 
-    border:none;
+    width:38px;
 
-    background:var(--primary);
+    height:38px;
 
-    color:#fff;
+    border:0;
 
-    border-radius:15px;
+    border-radius:10px;
 
-    padding:
-        13px 20px;
+    background:
+        var(--soft-danger);
 
-    font-size:14px;
+    color:
+        var(--danger);
 
-    font-weight:800;
+    cursor:pointer;
 
-    box-shadow:
-        0 5px 15px
-        rgba(103,80,164,.28);
+    font-size:18px;
 
-    min-width:145px;
 }
 
-.copy-btn:hover{
+.manual-copy{
 
-    background:var(--primary-dark);
+    width:100%;
+
+    min-height:300px;
+
+    resize:none;
+
+    border:0;
+
+    outline:none;
+
+    padding:14px;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    font-family:
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-size:13px;
+
+    line-height:1.9;
+
 }
 
-.copy-btn:disabled{
+.modal-actions{
 
-    opacity:.45;
+    display:flex;
 
-    cursor:not-allowed;
+    gap:8px;
+
+    padding:12px;
+
+    border-top:
+        1px solid var(--border);
+
 }
 
 
@@ -1091,7 +1427,9 @@ body.dark .copy-bar{
 
     left:50%;
 
-    bottom:82px;
+    bottom:80px;
+
+    z-index:2000;
 
     transform:
         translate(-50%,20px);
@@ -1105,18 +1443,19 @@ body.dark .copy-bar{
     color:#fff;
 
     padding:
-        11px 17px;
+        10px 16px;
 
     border-radius:12px;
 
     font-size:12px;
 
-    z-index:200;
-
     transition:.25s;
 
-    box-shadow:
-        0 5px 20px rgba(0,0,0,.22);
+    max-width:
+        calc(100% - 30px);
+
+    text-align:center;
+
 }
 
 .toast.show{
@@ -1125,118 +1464,195 @@ body.dark .copy-bar{
 
     transform:
         translate(-50%,0);
+
 }
 
 
 /* ============================================================
-   RESPONSIVE
+   FOOTER
+   ============================================================ */
+
+.footer{
+
+    height:90px;
+
+}
+
+
+/* ============================================================
+   MOBILE
    ============================================================ */
 
 @media(max-width:760px){
+
+    .container{
+
+        width:
+            calc(100% - 14px);
+
+    }
+
+    .header-inner{
+
+        width:
+            calc(100% - 14px);
+
+        min-height:66px;
+
+    }
+
+    .brand-text h1{
+
+        font-size:16px;
+
+    }
+
+    .brand-text p{
+
+        font-size:10px;
+
+    }
+
+    .theme-btn{
+
+        padding:
+            8px 9px;
+
+        font-size:10px;
+
+    }
 
     .stats{
 
         grid-template-columns:
             repeat(2,1fr);
+
+        gap:7px;
+
+    }
+
+    .stat-card{
+
+        padding:
+            11px 5px;
+
+    }
+
+    .stat-number{
+
+        font-size:20px;
+
+    }
+
+    .filter-bar{
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+    .search-box{
+
+        grid-column:
+            1 / -1;
+
+    }
+
+    .small-btn{
+
+        width:100%;
+
+        min-height:44px;
+
+    }
+
+    .toolbar{
+
+        display:grid;
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+    .toolbar-right{
+
+        display:grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
     }
 
     .form-grid{
 
         grid-template-columns:
             1fr;
+
     }
 
-    .form-group.full{
+    .preview-actions{
 
-        grid-column:auto;
+        grid-template-columns:
+            1fr;
+
     }
 
-    .header-inner{
+    .warning-actions{
 
-        align-items:flex-start;
-    }
+        grid-template-columns:
+            1fr;
 
-    .brand-text h1{
-
-        font-size:18px;
-    }
-
-    .brand-text p{
-
-        font-size:11px;
-    }
-
-    .theme-btn{
-
-        padding:
-            9px 11px;
-
-        font-size:11px;
-    }
-
-    .card-header{
-
-        padding:
-            14px;
-    }
-
-    .card-body{
-
-        padding:
-            14px;
-    }
-
-    .news-title{
-
-        font-size:13px;
-    }
-
-    .copy-info{
-
-        display:none;
-    }
-
-    .copy-inner{
-
-        justify-content:center;
-    }
-
-    .copy-btn{
-
-        width:100%;
-
-        max-width:500px;
     }
 
     .contact-links{
 
         grid-template-columns:
             1fr;
+
+    }
+
+    .copy-inner{
+
+        justify-content:center;
+
+    }
+
+    .copy-info{
+
+        display:none;
+
+    }
+
+    .copy-btn{
+
+        width:100%;
+
+        min-width:0;
+
     }
 
 }
 
 @media(max-width:420px){
 
-    .stats{
+    .card-header,
+    .card-body{
 
-        gap:8px;
+        padding:13px;
+
     }
 
-    .stat-card{
+    .news-title{
 
-        padding:12px 8px;
+        font-size:13px;
+
     }
 
-    .stat-number{
+    .news-summary{
 
-        font-size:20px;
-    }
+        font-size:11px;
 
-    .container{
-
-        padding:
-            0 10px;
     }
 
 }
@@ -1250,27 +1666,18 @@ body.dark .copy-bar{
 
     .top-header,
     .copy-bar,
-    .theme-btn,
-    .filter-bar,
-    .toolbar{
+    .theme-btn{
 
         display:none !important;
-    }
 
-    .container{
-
-        margin:0;
-    }
-
-    .card{
-
-        box-shadow:none;
     }
 
 }
 
 </style>
+
 </head>
+
 
 <body>
 
@@ -1303,6 +1710,7 @@ body.dark .copy-bar{
 
         </div>
 
+
         <button
             type="button"
             class="theme-btn"
@@ -1323,649 +1731,599 @@ body.dark .copy-bar{
 <main class="container">
 
 
-    <!-- ========================================================
-         STATS
-         ======================================================== -->
+<!-- ============================================================
+     STATS
+     ============================================================ -->
 
-    <section class="stats">
+<section class="stats">
 
-        <div class="stat-card">
+    <div class="stat-card">
 
-            <span
-                class="stat-number"
-                id="totalCount"
-            >
-                ۰
-            </span>
+        <span
+            id="totalCount"
+            class="stat-number"
+        >
+            ۰
+        </span>
 
-            <span class="stat-label">
-                کل اخبار
-            </span>
+        <span class="stat-label">
+            کل اخبار
+        </span>
 
-        </div>
-
-
-        <div class="stat-card">
-
-            <span
-                class="stat-number"
-                id="selectedCount"
-            >
-                ۰
-            </span>
-
-            <span class="stat-label">
-                انتخاب‌شده
-            </span>
-
-        </div>
+    </div>
 
 
-        <div class="stat-card">
+    <div class="stat-card">
 
-            <span
-                class="stat-number"
-                id="visibleCount"
-            >
-                ۰
-            </span>
+        <span
+            id="selectedCount"
+            class="stat-number"
+        >
+            ۰
+        </span>
 
-            <span class="stat-label">
-                نمایش داده‌شده
-            </span>
+        <span class="stat-label">
+            انتخاب‌شده
+        </span>
 
-        </div>
-
-
-        <div class="stat-card">
-
-            <span
-                class="stat-number"
-                id="messageLength"
-            >
-                ۰
-            </span>
-
-            <span class="stat-label">
-                کاراکتر پیام
-            </span>
-
-        </div>
-
-    </section>
+    </div>
 
 
-    <!-- ========================================================
-         PUBLISHER
-         ======================================================== -->
+    <div class="stat-card">
 
-    <section class="card">
+        <span
+            id="visibleCount"
+            class="stat-number"
+        >
+            ۰
+        </span>
 
-        <div class="card-header">
+        <span class="stat-label">
+            نمایش داده‌شده
+        </span>
 
-            <h2 class="card-title">
-                ⚙️ مشخصات پیام
-            </h2>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="form-grid">
+    </div>
 
 
-                <div class="form-group">
+    <div class="stat-card">
 
-                    <label
-                        class="form-label"
-                        for="publisherName"
-                    >
-                        ✍️ نام منتشرکننده
-                    </label>
+        <span
+            id="messageLength"
+            class="stat-number"
+        >
+            ۰
+        </span>
 
-                    <input
-                        id="publisherName"
-                        class="form-input"
-                        type="text"
-                        placeholder="مثلاً معقول"
-                        autocomplete="off"
-                    >
+        <span class="stat-label">
+            کاراکتر پیام
+        </span>
 
-                </div>
+    </div>
+
+</section>
 
 
-                <div class="form-group">
+<!-- ============================================================
+     STATUS
+     ============================================================ -->
 
-                    <label
-                        class="form-label"
-                        for="publisherRubika"
-                    >
-                        🔗 لینک روبیکا
-                    </label>
+<div
+    id="statusBox"
+    class="status loading"
+>
+    ⏳ در حال دریافت اخبار...
+</div>
 
-                    <input
-                        id="publisherRubika"
-                        class="form-input"
-                        type="text"
-                        dir="ltr"
-                        placeholder="https://rubika.ir/..."
-                        autocomplete="off"
-                    >
 
-                    <div class="hint">
+<!-- ============================================================
+     NEWS SELECTOR
+     ============================================================ -->
 
-                        اگر خالی باشد، لینک اصلی گروه
-                        «دیار قدمگاه» استفاده می‌شود.
+<section class="card">
 
-                    </div>
+    <div class="card-header">
 
-                </div>
+        <h2 class="card-title">
+            📰 انتخاب اخبار
+        </h2>
 
+    </div>
+
+
+    <div class="card-body">
+
+
+        <!-- FILTER -->
+
+        <div class="filter-bar">
+
+
+            <div class="search-box">
+
+                <span class="search-icon">
+                    🔎
+                </span>
+
+                <input
+                    id="searchInput"
+                    class="form-input"
+                    type="search"
+                    placeholder="جستجو در عنوان، خلاصه یا منبع..."
+                    autocomplete="off"
+                >
 
             </div>
 
+
+            <button
+                type="button"
+                class="small-btn"
+                id="selectVisibleBtn"
+            >
+                ☑️ انتخاب نمایش‌داده‌شده‌ها
+            </button>
+
+
+            <button
+                type="button"
+                class="small-btn"
+                id="clearSelectionBtn"
+            >
+                🗑️ پاک کردن انتخاب‌ها
+            </button>
+
         </div>
 
-    </section>
+
+        <!-- CATEGORIES -->
+
+        <div
+            id="categoryList"
+            class="category-list"
+            style="margin-top:13px;"
+        ></div>
 
 
-    <!-- ========================================================
-         FILTER
-         ======================================================== -->
+        <!-- SORT -->
 
-    <section class="card">
+        <div class="toolbar">
 
-        <div class="card-header">
+            <div>
 
-            <h2 class="card-title">
-                📰 انتخاب اخبار
-            </h2>
+                <span
+                    id="filterInfo"
+                    class="hint"
+                >
+                    در حال بارگذاری...
+                </span>
 
-        </div>
-
-        <div class="card-body">
-
-
-            <div class="filter-bar">
+            </div>
 
 
-                <div class="search-box">
-
-                    <span class="search-icon">
-                        🔎
-                    </span>
-
-                    <input
-                        id="searchInput"
-                        class="form-input"
-                        type="search"
-                        placeholder="جستجو در عنوان، خلاصه یا منبع..."
-                        autocomplete="off"
-                    >
-
-                </div>
-
+            <div class="toolbar-right">
 
                 <button
                     type="button"
                     class="small-btn"
-                    id="selectVisibleBtn"
+                    id="sortNewestBtn"
                 >
-                    ☑️ انتخاب نمایش‌داده‌شده‌ها
+                    🕒 جدیدترین
                 </button>
-
 
                 <button
                     type="button"
                     class="small-btn"
-                    id="clearSelectionBtn"
+                    id="sortOldestBtn"
                 >
-                    🗑️ پاک کردن انتخاب‌ها
+                    🕰️ قدیمی‌ترین
                 </button>
 
             </div>
 
-
-            <div
-                class="category-list"
-                id="categoryList"
-            ></div>
+        </div>
 
 
-            <div
-                class="toolbar"
-                style="margin-top:15px;"
-            >
+        <!-- NEWS -->
 
-                <div class="toolbar-left">
+        <div
+            id="newsList"
+            class="news-list"
+            style="margin-top:13px;"
+        >
 
-                    <span
-                        class="hint"
-                        id="filterInfo"
-                    >
-                        در حال بارگذاری...
-                    </span>
+            <div class="state-box">
 
+                <div class="state-icon">
+                    ⏳
                 </div>
 
+                <div class="state-title">
+                    در حال دریافت اخبار...
+                </div>
 
-                <div class="toolbar-right">
-
-                    <button
-                        type="button"
-                        class="small-btn"
-                        id="sortNewestBtn"
-                    >
-                        🕒 جدیدترین
-                    </button>
-
-                    <button
-                        type="button"
-                        class="small-btn"
-                        id="sortOldestBtn"
-                    >
-                        🕰️ قدیمی‌ترین
-                    </button>
-
+                <div>
+                    لطفاً چند لحظه صبر کنید.
                 </div>
 
             </div>
 
+        </div>
 
-            <div
-                class="news-list"
-                id="newsList"
+    </div>
+
+</section>
+
+
+<!-- ============================================================
+     PUBLISHER
+     ============================================================ -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <h2 class="card-title">
+            ✍️ مشخصات منتشرکننده
+        </h2>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="form-grid">
+
+            <input
+                id="publisherName"
+                class="form-input"
+                type="text"
+                placeholder="نام منتشرکننده"
             >
 
-                <div class="state-box">
+            <input
+                id="publisherRubika"
+                class="form-input"
+                type="text"
+                placeholder="لینک روبیکا"
+            >
 
-                    <div class="state-icon">
-                        ⏳
-                    </div>
+        </div>
 
-                    <div class="state-title">
-                        در حال دریافت اخبار...
-                    </div>
+    </div>
 
-                    <div class="state-text">
-                        لطفاً چند لحظه صبر کنید.
-                    </div>
+</section>
 
-                </div>
+
+<!-- ============================================================
+     PREVIEW
+     ============================================================ -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <h2 class="card-title">
+            👁️ پیش‌نمایش پیام روبیکا
+        </h2>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <textarea
+            id="previewMessage"
+            class="preview"
+            readonly
+            spellcheck="false"
+        ></textarea>
+
+
+        <!-- LENGTH -->
+
+        <div
+            id="messageLengthBox"
+            class="message-length"
+        >
+
+            <div class="length-row">
+
+                <span>
+                    📏 طول پیام
+                </span>
+
+                <span
+                    id="lengthText"
+                    class="length-number"
+                >
+                    ۰ / ۴۰۰۰
+                </span>
 
             </div>
 
 
-        </div>
-
-    </section>
-
-
-    <!-- ========================================================
-         PREVIEW
-         ======================================================== -->
-
-    <section class="card">
-
-        <div class="card-header">
-
-            <h2 class="card-title">
-                👁️ پیش‌نمایش پیام روبیکا
-            </h2>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="preview-box">
+            <div class="progress">
 
                 <div
-                    class="preview-message"
-                    id="previewMessage"
-                >
-                    هنوز خبری انتخاب نشده است.
-                </div>
+                    id="lengthBar"
+                    class="progress-bar"
+                ></div>
 
             </div>
 
 
-            <div class="length-wrapper">
+            <div
+                id="lengthMessage"
+                class="length-message"
+            >
+                طول پیام مناسب است.
+            </div>
 
-                <div class="length-top">
+        </div>
 
-                    <span>
-                        طول پیام
+
+        <!-- WARNING -->
+
+        <div
+            id="copyWarning"
+            class="copy-warning"
+        >
+
+            <div class="warning-title">
+                ⚠️ هشدار حجم پیام
+            </div>
+
+            <div
+                id="copyWarningText"
+                class="warning-text"
+            >
+                طول پیام از ۴۰۰۰ کاراکتر بیشتر شده است.
+            </div>
+
+
+            <div class="warning-actions">
+
+                <button
+                    type="button"
+                    id="reduceMessageBtn"
+                    class="btn btn-warning"
+                >
+                    ✂️ کاهش پیام
+                </button>
+
+
+                <button
+                    type="button"
+                    id="forceCopyBtn"
+                    class="btn btn-primary"
+                >
+                    📋 در هر حال کپی شود
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- NORMAL COPY -->
+
+        <div class="preview-actions">
+
+            <button
+                type="button"
+                id="copyBtn"
+                class="btn btn-success"
+            >
+                📋 کپی پیام روبیکا
+            </button>
+
+
+            <button
+                type="button"
+                id="copyPreviewBtn"
+                class="btn btn-primary"
+            >
+                📋 کپی پیش‌نمایش
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ============================================================
+     CONTACTS
+     ============================================================ -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <h2 class="card-title">
+            📞 ارتباط با ما
+        </h2>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="contact-links">
+
+
+            <a
+                class="contact-link"
+                href="https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <div class="contact-logo">
+                    🟣
+                </div>
+
+                <div class="contact-info">
+
+                    <span class="contact-name">
+                        روبیکا
                     </span>
 
-                    <span
-                        class="length-number"
-                        id="lengthText"
-                    >
-                        ۰ / ۴۰۰۰
+                    <span class="contact-url">
+                        rubika.ir
                     </span>
 
                 </div>
 
-                <div class="progress">
+            </a>
 
-                    <div
-                        class="progress-bar"
-                        id="lengthBar"
-                    ></div>
+
+            <a
+                class="contact-link"
+                href="https://diyareghadamgah.blogfa.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <div class="contact-logo">
+                    📝
+                </div>
+
+                <div class="contact-info">
+
+                    <span class="contact-name">
+                        وبلاگ دیار قدمگاه
+                    </span>
+
+                    <span class="contact-url">
+                        diyareghadamgah.blogfa.com
+                    </span>
 
                 </div>
 
-            </div>
+            </a>
+
+
+            <a
+                class="contact-link"
+                href="https://www.instagram.com/diyareghadamgah"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <div class="contact-logo">
+                    📸
+                </div>
+
+                <div class="contact-info">
+
+                    <span class="contact-name">
+                        اینستاگرام
+                    </span>
+
+                    <span class="contact-url">
+                        instagram.com/diyareghadamgah
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                class="contact-link"
+                href="mailto:diyareghadamgah@gmail.com"
+            >
+
+                <div class="contact-logo">
+                    📧
+                </div>
+
+                <div class="contact-info">
+
+                    <span class="contact-name">
+                        ایمیل
+                    </span>
+
+                    <span class="contact-url">
+                        diyareghadamgah@gmail.com
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                class="contact-link"
+                href="https://maghool51.github.io/diyar-widgets/diyar-news/news.html"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <div class="contact-logo">
+                    📰
+                </div>
+
+                <div class="contact-info">
+
+                    <span class="contact-name">
+                        صفحه اخبار
+                    </span>
+
+                    <span class="contact-url">
+                        مشاهده اخبار دیار قدمگاه
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                class="contact-link"
+                href="https://maghool51.github.io/diyar-widgets/contact/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+
+                <div class="contact-logo">
+                    📞
+                </div>
+
+                <div class="contact-info">
+
+                    <span class="contact-name">
+                        صفحه ارتباط با ما
+                    </span>
+
+                    <span class="contact-url">
+                        تماس با دیار قدمگاه
+                    </span>
+
+                </div>
+
+            </a>
 
 
         </div>
 
-    </section>
+    </div>
 
+</section>
 
-    <!-- ========================================================
-         CONTACT LINKS
-         ======================================================== -->
 
-    <section class="card">
-
-        <div class="card-header">
-
-            <h2 class="card-title">
-                📞 ارتباط با ما
-            </h2>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="contact-links">
-
-
-                <!-- RUBIKA -->
-
-                <a
-                    class="contact-link"
-                    href="https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-
-                    <div class="contact-logo">
-
-                        <!-- Rubika style logo -->
-
-                        <svg
-                            viewBox="0 0 48 48"
-                            aria-hidden="true"
-                        >
-
-                            <rect
-                                x="3"
-                                y="3"
-                                width="42"
-                                height="42"
-                                rx="12"
-                                fill="#ffffff"
-                            />
-
-                            <path
-                                d="M14 15
-                                   C14 12.8 15.8 11 18 11
-                                   H30
-                                   C32.2 11 34 12.8 34 15
-                                   V28
-                                   C34 30.2 32.2 32 30 32
-                                   H24
-                                   L19 37
-                                   V32
-                                   H18
-                                   C15.8 32 14 30.2 14 28
-                                   Z"
-                                fill="#7B1FA2"
-                            />
-
-                            <circle
-                                cx="21"
-                                cy="21"
-                                r="2"
-                                fill="#ffffff"
-                            />
-
-                            <circle
-                                cx="27"
-                                cy="21"
-                                r="2"
-                                fill="#ffffff"
-                            />
-
-                            <path
-                                d="M19 26
-                                   C21 28
-                                   27 28
-                                   29 26"
-                                fill="none"
-                                stroke="#ffffff"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                            />
-
-                        </svg>
-
-                    </div>
-
-                    <div class="contact-info">
-
-                        <span class="contact-name">
-                            روبیکا
-                        </span>
-
-                        <span class="contact-url">
-                            rubika.ir/joing/...
-                        </span>
-
-                    </div>
-
-                </a>
-
-
-                <!-- BLOGFA -->
-
-                <a
-                    class="contact-link"
-                    href="https://diyareghadamgah.blogfa.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-
-                    <div class="contact-logo">
-
-                        <!-- Blogfa style logo -->
-
-                        <svg
-                            viewBox="0 0 48 48"
-                            aria-hidden="true"
-                        >
-
-                            <rect
-                                x="4"
-                                y="4"
-                                width="40"
-                                height="40"
-                                rx="10"
-                                fill="#ffffff"
-                            />
-
-                            <path
-                                d="M13 15
-                                   H35
-                                   C36.7 15 38 16.3 38 18
-                                   V29
-                                   C38 30.7 36.7 32 35 32
-                                   H24
-                                   L18 36
-                                   V32
-                                   H13
-                                   C11.3 32 10 30.7 10 29
-                                   V18
-                                   C10 16.3 11.3 15 13 15Z"
-                                fill="#1976D2"
-                            />
-
-                            <path
-                                d="M16 21
-                                   H32"
-                                stroke="#ffffff"
-                                stroke-width="2.4"
-                                stroke-linecap="round"
-                            />
-
-                            <path
-                                d="M16 26
-                                   H28"
-                                stroke="#ffffff"
-                                stroke-width="2.4"
-                                stroke-linecap="round"
-                            />
-
-                        </svg>
-
-                    </div>
-
-                    <div class="contact-info">
-
-                        <span class="contact-name">
-                            وبلاگ دیار قدمگاه
-                        </span>
-
-                        <span class="contact-url">
-                            diyareghadamgah.blogfa.com
-                        </span>
-
-                    </div>
-
-                </a>
-
-
-                <!-- INSTAGRAM -->
-
-                <a
-                    class="contact-link"
-                    href="https://www.instagram.com/diyareghadamgah"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-
-                    <div class="contact-logo">
-
-                        <!-- Instagram logo -->
-
-                        <svg
-                            viewBox="0 0 48 48"
-                            aria-hidden="true"
-                        >
-
-                            <defs>
-
-                                <linearGradient
-                                    id="instagramGradient"
-                                    x1="0%"
-                                    y1="100%"
-                                    x2="100%"
-                                    y2="0%"
-                                >
-
-                                    <stop
-                                        offset="0%"
-                                        stop-color="#F58529"
-                                    />
-
-                                    <stop
-                                        offset="45%"
-                                        stop-color="#DD2A7B"
-                                    />
-
-                                    <stop
-                                        offset="75%"
-                                        stop-color="#8134AF"
-                                    />
-
-                                    <stop
-                                        offset="100%"
-                                        stop-color="#515BD4"
-                                    />
-
-                                </linearGradient>
-
-                            </defs>
-
-                            <rect
-                                x="5"
-                                y="5"
-                                width="38"
-                                height="38"
-                                rx="11"
-                                fill="url(#instagramGradient)"
-                            />
-
-                            <rect
-                                x="13"
-                                y="13"
-                                width="22"
-                                height="22"
-                                rx="7"
-                                fill="none"
-                                stroke="#ffffff"
-                                stroke-width="3"
-                            />
-
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="5"
-                                fill="none"
-                                stroke="#ffffff"
-                                stroke-width="3"
-                            />
-
-                            <circle
-                                cx="32"
-                                cy="16"
-                                r="2"
-                                fill="#ffffff"
-                            />
-
-                        </svg>
-
-                    </div>
-
-                    <div class="contact-info">
-
-                        <span class="contact-name">
-                            اینستاگرام
-                        </span>
-
-                        <span class="contact-url">
-                            instagram.com/diyareghadamgah
-                        </span>
-
-                    </div>
-
-                </a>
-
-
-            </div>
-
-        </div>
-
-    </section>
+<div class="footer">
+    🏡 دیار قدمگاه
+</div>
 
 
 </main>
 
 
 <!-- ============================================================
-     FLOATING COPY BAR
+     FLOATING COPY
      ============================================================ -->
 
 <div class="copy-bar">
@@ -1973,20 +2331,85 @@ body.dark .copy-bar{
     <div class="copy-inner">
 
         <div
-            class="copy-info"
             id="copyInfo"
+            class="copy-info"
         >
             برای ساخت پیام، خبرها را انتخاب کنید.
         </div>
 
+
         <button
             type="button"
+            id="floatingCopyBtn"
             class="copy-btn"
-            id="copyBtn"
-            disabled
         >
             📋 کپی پیام روبیکا
         </button>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     MANUAL COPY MODAL
+     ============================================================ -->
+
+<div
+    id="manualCopyModal"
+    class="modal"
+    aria-hidden="true"
+>
+
+    <div class="modal-box">
+
+
+        <div class="modal-header">
+
+            <div class="modal-title">
+                📋 کپی دستی پیام
+            </div>
+
+
+            <button
+                type="button"
+                id="closeModalBtn"
+                class="modal-close"
+                aria-label="بستن"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <textarea
+            id="manualCopyText"
+            class="manual-copy"
+            spellcheck="false"
+        ></textarea>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                id="manualCopyBtn"
+                class="btn btn-primary"
+            >
+                📋 تلاش برای کپی دوباره
+            </button>
+
+
+            <button
+                type="button"
+                id="closeModalBtn2"
+                class="btn btn-secondary"
+            >
+                بستن
+            </button>
+
+        </div>
 
     </div>
 
@@ -1998,79 +2421,101 @@ body.dark .copy-bar{
      ============================================================ -->
 
 <div
-    class="toast"
     id="toast"
+    class="toast"
 ></div>
 
 
 <script>
 
+"use strict";
+
 
 /* ============================================================
-   تنظیمات اصلی
+   CONFIG
    ============================================================ */
 
 const SUMMARY_URL =
     "./news-summary.json";
 
+
 const SUMMARY_FALLBACK_URL =
     "https://raw.githubusercontent.com/maghool51/diyar-widgets/main/diyar-news/news-summary.json";
+
 
 const RUBIKA_PAGE_URL =
     "https://maghool51.github.io/diyar-widgets/diyar-news/news.html";
 
+
 const BLOG_URL =
     "https://diyareghadamgah.blogfa.com/";
+
 
 const DEFAULT_RUBIKA_URL =
     "https://rubika.ir/joing/DDGHEGHI0FHOABUYCBLDJBEDEBMGYQVE";
 
-const INSTAGRAM_URL =
-    "https://www.instagram.com/diyareghadamgah";
 
 const RUBIKA_MAX_LENGTH =
     4000;
 
 
-/* ============================================================
-   Local Storage
-   ============================================================ */
-
 const STORAGE_SELECTED =
-    "diyar_rubika_selected_v3";
+    "diyarRubikaSelectedNewsV2";
+
 
 const STORAGE_PUBLISHER =
-    "diyar_rubika_publisher_v3";
+    "diyarRubikaPublisherV2";
+
 
 const STORAGE_THEME =
-    "diyar_rubika_theme_v3";
+    "diyarRubikaThemeV2";
 
 
 /* ============================================================
-   وضعیت برنامه
+   STATE
    ============================================================ */
 
 let allNews = [];
 
 let filteredNews = [];
 
-let selectedIds = new Set();
+let selectedIds =
+    new Set();
 
-let activeCategory = "همه";
+let activeCategory =
+    "همه";
 
-let searchTerm = "";
+let searchTerm =
+    "";
 
-let sortMode = "newest";
+let sortMode =
+    "newest";
 
-let publisherName = "معقول";
+let publisherName =
+    "معقول";
 
 let publisherRubika =
     DEFAULT_RUBIKA_URL;
 
+let toastTimer =
+    null;
+
 
 /* ============================================================
-   ابزارهای عمومی
+   HELPERS
    ============================================================ */
+
+function faNumber(value){
+
+    return String(value)
+        .replace(
+            /\d/g,
+            digit =>
+                "۰۱۲۳۴۵۶۷۸۹"[digit]
+        );
+
+}
+
 
 function cleanText(value){
 
@@ -2078,76 +2523,21 @@ function cleanText(value){
         value === null ||
         value === undefined
     ){
-
         return "";
-
     }
 
     return String(value)
 
+        .replace(/\r/g,"")
+
         .replace(
-            /<script[\s\S]*?<\/script>/gi,
+            /[ \t]+/g,
             " "
         )
 
         .replace(
-            /<style[\s\S]*?<\/style>/gi,
-            " "
-        )
-
-        .replace(
-            /<[^>]+>/g,
-            " "
-        )
-
-        .replace(
-            /&nbsp;/gi,
-            " "
-        )
-
-        .replace(
-            /&amp;/gi,
-            "&"
-        )
-
-        .replace(
-            /&quot;/gi,
-            '"'
-        )
-
-        .replace(
-            /&#39;/gi,
-            "'"
-        )
-
-        .replace(
-            /&#039;/gi,
-            "'"
-        )
-
-        .replace(
-            /&lt;/gi,
-            "<"
-        )
-
-        .replace(
-            /&gt;/gi,
-            ">"
-        )
-
-        .replace(
-            /[\u0000-\u001F\u007F]/g,
-            " "
-        )
-
-        .replace(
-            /\u200f|\u200e/g,
-            ""
-        )
-
-        .replace(
-            /\s+/g,
-            " "
+            /\n{3,}/g,
+            "\n\n"
         )
 
         .trim();
@@ -2155,44 +2545,92 @@ function cleanText(value){
 }
 
 
-/* ============================================================
-   URL
-   ============================================================ */
-
 function normalizeUrl(value){
 
-    if(!value){
+    const text =
+        cleanText(value);
 
+    if(!text){
         return "";
-
     }
 
-    let url =
-        String(value).trim();
+    if(
+        /^https?:\/\//i.test(text)
+    ){
+        return text;
+    }
 
     if(
-        !/^https?:\/\//i.test(url)
+        /^www\./i.test(text)
+    ){
+        return "https://" + text;
+    }
+
+    return "";
+
+}
+
+
+function normalizeRubikaUrl(value){
+
+    let text =
+        cleanText(value);
+
+    if(!text){
+        return "";
+    }
+
+    if(
+        !/^https?:\/\//i.test(text)
     ){
 
         if(
-            /^www\./i.test(url)
+            /^rubika\.ir\//i.test(text)
         ){
 
-            url =
-                "https://" + url;
+            text =
+                "https://" + text;
 
         }
 
     }
 
-    return url;
+    return normalizeUrl(text);
 
 }
 
 
-/* ============================================================
-   ID خبر
-   ============================================================ */
+function escapeHtml(value){
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
 
 function getNewsId(item,index){
 
@@ -2223,62 +2661,10 @@ function getNewsId(item,index){
 }
 
 
-/* ============================================================
-   استخراج آرایه اخبار
-   ============================================================ */
-
-function extractNewsArray(data){
-
-    if(
-        Array.isArray(data)
-    ){
-
-        return data;
-
-    }
-
-    if(
-        data &&
-        Array.isArray(data.news)
-    ){
-
-        return data.news;
-
-    }
-
-    if(
-        data &&
-        Array.isArray(data.items)
-    ){
-
-        return data.items;
-
-    }
-
-    if(
-        data &&
-        Array.isArray(data.data)
-    ){
-
-        return data.data;
-
-    }
-
-    return [];
-
-}
-
-
-/* ============================================================
-   تاریخ
-   ============================================================ */
-
 function parseDate(value){
 
     if(!value){
-
         return 0;
-
     }
 
     const time =
@@ -2294,9 +2680,7 @@ function parseDate(value){
 function formatPersianDate(value){
 
     if(!value){
-
         return "";
-
     }
 
     const date =
@@ -2307,9 +2691,7 @@ function formatPersianDate(value){
             date.getTime()
         )
     ){
-
         return "";
-
     }
 
     try{
@@ -2332,88 +2714,90 @@ function formatPersianDate(value){
 }
 
 
-/* ============================================================
-   ساعت و تاریخ سربرگ
-   ============================================================ */
-
 function formatPersianHeaderDate(){
 
     const now =
         new Date();
 
-    const weekdays = [
-
-        "یکشنبه",
-        "دوشنبه",
-        "سه‌شنبه",
-        "چهارشنبه",
-        "پنجشنبه",
-        "جمعه",
-        "شنبه"
-
-    ];
-
-    const weekday =
-        weekdays[now.getDay()];
-
-    let dateText = "";
-
     try{
 
-        dateText =
+        const date =
             new Intl.DateTimeFormat(
                 "fa-IR-u-ca-persian",
                 {
+                    weekday:"long",
                     year:"numeric",
                     month:"long",
                     day:"numeric"
                 }
             ).format(now);
 
+        const time =
+            new Intl.DateTimeFormat(
+                "fa-IR",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit"
+                }
+            ).format(now);
+
+        return (
+            date +
+            " - ساعت " +
+            time
+        );
+
     }catch{
 
-        dateText = "";
+        return now.toLocaleString(
+            "fa-IR"
+        );
 
     }
 
-    const time =
-        now.toLocaleTimeString(
-            "fa-IR",
-            {
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        );
-
-    return (
-        weekday +
-        "، " +
-        dateText +
-        " - ساعت " +
-        time
-    );
-
 }
 
 
 /* ============================================================
-   عدد فارسی
+   EXTRACT NEWS
    ============================================================ */
 
-function faNumber(value){
+function extractNewsArray(data){
 
-    return String(value)
-        .replace(
-            /\d/g,
-            d =>
-                "۰۱۲۳۴۵۶۷۸۹"[d]
-        );
+    if(
+        Array.isArray(data)
+    ){
+        return data;
+    }
+
+    if(
+        data &&
+        Array.isArray(data.news)
+    ){
+        return data.news;
+    }
+
+    if(
+        data &&
+        Array.isArray(data.items)
+    ){
+        return data.items;
+    }
+
+    if(
+        data &&
+        Array.isArray(data.data)
+    ){
+        return data.data;
+    }
+
+    return [];
 
 }
 
 
 /* ============================================================
-   ذخیره منتشرکننده
+   PUBLISHER
    ============================================================ */
 
 function loadPublisher(){
@@ -2425,13 +2809,22 @@ function loadPublisher(){
                 STORAGE_PUBLISHER
             );
 
-        if(raw){
+        if(!raw){
+            return;
+        }
 
-            const data =
-                JSON.parse(raw);
+        const data =
+            JSON.parse(raw);
+
+        if(
+            data &&
+            typeof data === "object"
+        ){
 
             publisherName =
-                data.name ||
+                cleanText(
+                    data.name
+                ) ||
                 "معقول";
 
             publisherRubika =
@@ -2442,26 +2835,14 @@ function loadPublisher(){
 
         }
 
-    }catch{
+    }catch(error){
 
-        publisherName =
-            "معقول";
-
-        publisherRubika =
-            DEFAULT_RUBIKA_URL;
+        console.warn(
+            "خطا در خواندن منتشرکننده:",
+            error
+        );
 
     }
-
-
-    document.getElementById(
-        "publisherName"
-    ).value =
-        publisherName;
-
-    document.getElementById(
-        "publisherRubika"
-    ).value =
-        publisherRubika;
 
 }
 
@@ -2489,8 +2870,10 @@ function savePublisher(){
     localStorage.setItem(
         STORAGE_PUBLISHER,
         JSON.stringify({
-            name:publisherName,
-            rubika:publisherRubika
+            name:
+                publisherName,
+            rubika:
+                publisherRubika
         })
     );
 
@@ -2498,42 +2881,7 @@ function savePublisher(){
 
 
 /* ============================================================
-   لینک روبیکا
-   ============================================================ */
-
-function normalizeRubikaUrl(value){
-
-    if(!value){
-
-        return "";
-
-    }
-
-    let url =
-        String(value).trim();
-
-    if(
-        !/^https?:\/\//i.test(url)
-    ){
-
-        if(
-            /^rubika\.ir\//i.test(url)
-        ){
-
-            url =
-                "https://" + url;
-
-        }
-
-    }
-
-    return url;
-
-}
-
-
-/* ============================================================
-   انتخاب‌ها
+   SELECTED
    ============================================================ */
 
 function loadSelected(){
@@ -2545,21 +2893,23 @@ function loadSelected(){
                 STORAGE_SELECTED
             );
 
-        if(raw){
+        if(!raw){
+            return;
+        }
 
-            const array =
-                JSON.parse(raw);
+        const array =
+            JSON.parse(raw);
 
-            if(
-                Array.isArray(array)
-            ){
+        if(
+            Array.isArray(array)
+        ){
 
-                selectedIds =
-                    new Set(
-                        array.map(String)
-                    );
-
-            }
+            selectedIds =
+                new Set(
+                    array.map(
+                        String
+                    )
+                );
 
         }
 
@@ -2578,7 +2928,9 @@ function saveSelected(){
     localStorage.setItem(
         STORAGE_SELECTED,
         JSON.stringify(
-            Array.from(selectedIds)
+            Array.from(
+                selectedIds
+            )
         )
     );
 
@@ -2586,7 +2938,7 @@ function saveSelected(){
 
 
 /* ============================================================
-   حالت شب
+   THEME
    ============================================================ */
 
 function loadTheme(){
@@ -2645,7 +2997,6 @@ function toggleTheme(){
 
     localStorage.setItem(
         STORAGE_THEME,
-
         document.body.classList.contains(
             "dark"
         )
@@ -2659,7 +3010,7 @@ function toggleTheme(){
 
 
 /* ============================================================
-   دریافت اخبار
+   FETCH NEWS
    ============================================================ */
 
 async function fetchNews(){
@@ -2674,6 +3025,7 @@ async function fetchNews(){
 
     let lastError =
         null;
+
 
     for(
         const url of urls
@@ -2696,6 +3048,7 @@ async function fetchNews(){
                     }
                 );
 
+
             if(
                 !response.ok
             ){
@@ -2707,11 +3060,16 @@ async function fetchNews(){
 
             }
 
+
             const data =
                 await response.json();
 
+
             const items =
-                extractNewsArray(data);
+                extractNewsArray(
+                    data
+                );
+
 
             if(
                 !items.length
@@ -2723,82 +3081,85 @@ async function fetchNews(){
 
             }
 
+
             allNews =
                 items.map(
                     (item,index) => {
 
-                        const normalized =
-                            {
+                        return {
 
-                                ...item,
+                            ...item,
 
-                                _id:
-                                    getNewsId(
-                                        item,
-                                        index
-                                    ),
+                            _id:
+                                getNewsId(
+                                    item,
+                                    index
+                                ),
 
-                                _title:
-                                    cleanText(
-                                        item.title ||
-                                        item.name ||
-                                        ""
-                                    ),
-
-                                _summary:
-                                    cleanText(
-                                        item.summary ||
-                                        item.description ||
-                                        item.excerpt ||
-                                        ""
-                                    ),
-
-                                _source:
-                                    cleanText(
-                                        item.source ||
-                                        item.publisher ||
-                                        "خبرگزاری"
-                                    ),
-
-                                _category:
-                                    cleanText(
-                                        item.category ||
-                                        "متفرقه"
-                                    ),
-
-                                _url:
-                                    normalizeUrl(
-                                        item.url ||
-                                        item.link ||
-                                        item.guid ||
-                                        ""
-                                    ),
-
-                                _date:
-                                    item.date ||
-                                    item.pubDate ||
-                                    item.published ||
-                                    item.created_at ||
+                            _title:
+                                cleanText(
+                                    item.title ||
+                                    item.name ||
                                     ""
+                                ),
 
-                            };
+                            _summary:
+                                cleanText(
+                                    item.summary ||
+                                    item.description ||
+                                    ""
+                                ),
 
-                        return normalized;
+                            _source:
+                                cleanText(
+                                    item.source ||
+                                    item.publisher ||
+                                    item.site ||
+                                    ""
+                                ),
+
+                            _category:
+                                cleanText(
+                                    item.category ||
+                                    item._category ||
+                                    "متفرقه"
+                                ),
+
+                            _date:
+                                item.date ||
+                                item.pubDate ||
+                                item.publishedAt ||
+                                item.createdAt ||
+                                "",
+
+                            _url:
+                                normalizeUrl(
+                                    item.url ||
+                                    item.link ||
+                                    ""
+                                )
+
+                        };
 
                     }
                 );
 
-            allNews =
-                allNews.filter(
-                    item =>
-                        item._title
-                );
+
+            setStatus(
+                "success",
+                "✅ اخبار با موفقیت دریافت شد."
+            );
+
 
             renderCategories();
 
             applyFilters();
 
-            return;
+            updatePreview();
+
+            updateStats();
+
+            return true;
 
         }catch(error){
 
@@ -2809,50 +3170,57 @@ async function fetchNews(){
 
     }
 
-    showError(
+
+    allNews = [];
+
+    filteredNews = [];
+
+    renderCategories();
+
+    renderNews();
+
+    updateStats();
+
+    setStatus(
+        "error",
+        "❌ دریافت اخبار انجام نشد."
+    );
+
+    console.error(
         lastError
     );
 
+    return false;
+
 }
 
 
 /* ============================================================
-   نمایش خطا
+   STATUS
    ============================================================ */
 
-function showError(error){
+function setStatus(
+    type,
+    text
+){
 
-    console.error(error);
+    const box =
+        document.getElementById(
+            "statusBox"
+        );
 
-    document.getElementById(
-        "newsList"
-    ).innerHTML = `
+    box.className =
+        "status " +
+        type;
 
-        <div class="state-box">
-
-            <div class="state-icon">
-                ⚠️
-            </div>
-
-            <div class="state-title">
-                دریافت اخبار ناموفق بود
-            </div>
-
-            <div class="state-text">
-                فایل news-summary.json در دسترس نیست.
-                <br>
-                لطفاً اتصال اینترنت یا فایل JSON را بررسی کنید.
-            </div>
-
-        </div>
-
-    `;
+    box.textContent =
+        text;
 
 }
 
 
 /* ============================================================
-   دسته‌بندی‌ها
+   CATEGORIES
    ============================================================ */
 
 function renderCategories(){
@@ -2862,31 +3230,8 @@ function renderCategories(){
             "categoryList"
         );
 
-    const categories =
-        new Set();
-
-    allNews.forEach(
-        item => {
-
-            categories.add(
-                item._category ||
-                "متفرقه"
-            );
-
-        }
-    );
-
-    const list =
-        Array.from(categories)
-            .sort(
-                (a,b) =>
-                    a.localeCompare(
-                        b,
-                        "fa"
-                    )
-            );
-
     container.innerHTML = "";
+
 
     const allButton =
         document.createElement(
@@ -2906,8 +3251,11 @@ function renderCategories(){
 
     allButton.textContent =
         "همه (" +
-        faNumber(allNews.length) +
+        faNumber(
+            allNews.length
+        ) +
         ")";
+
 
     allButton.addEventListener(
         "click",
@@ -2923,12 +3271,32 @@ function renderCategories(){
         }
     );
 
+
     container.appendChild(
         allButton
     );
 
 
-    list.forEach(
+    const categories =
+        Array.from(
+            new Set(
+                allNews.map(
+                    item =>
+                        item._category
+                )
+            )
+        )
+        .filter(Boolean)
+        .sort(
+            (a,b) =>
+                a.localeCompare(
+                    b,
+                    "fa"
+                )
+        );
+
+
+    categories.forEach(
         category => {
 
             const count =
@@ -2937,6 +3305,7 @@ function renderCategories(){
                         item._category ===
                         category
                 ).length;
+
 
             const button =
                 document.createElement(
@@ -2960,6 +3329,7 @@ function renderCategories(){
                 faNumber(count) +
                 ")";
 
+
             button.addEventListener(
                 "click",
                 () => {
@@ -2974,6 +3344,7 @@ function renderCategories(){
                 }
             );
 
+
             container.appendChild(
                 button
             );
@@ -2985,49 +3356,51 @@ function renderCategories(){
 
 
 /* ============================================================
-   فیلتر و مرتب‌سازی
+   FILTERS
    ============================================================ */
 
 function applyFilters(){
 
     const query =
-        searchTerm
-            .trim()
-            .toLowerCase();
+        cleanText(
+            searchTerm
+        ).toLowerCase();
+
 
     filteredNews =
         allNews.filter(
             item => {
 
                 const categoryOK =
-                    activeCategory ===
-                    "همه" ||
+                    activeCategory === "همه" ||
                     item._category ===
                     activeCategory;
 
+
                 if(!categoryOK){
-
                     return false;
-
                 }
+
 
                 if(!query){
-
                     return true;
-
                 }
 
-                const haystack =
-                    [
 
-                        item._title,
-                        item._summary,
-                        item._source,
-                        item._category
+                const haystack = [
 
-                    ]
-                    .join(" ")
-                    .toLowerCase();
+                    item._title,
+
+                    item._summary,
+
+                    item._source,
+
+                    item._category
+
+                ]
+                .join(" ")
+                .toLowerCase();
+
 
                 return haystack.includes(
                     query
@@ -3050,9 +3423,11 @@ function applyFilters(){
                     b._date
                 );
 
-            return sortMode ===
-                "newest"
+
+            return sortMode === "newest"
+
                 ? db - da
+
                 : da - db;
 
         }
@@ -3067,7 +3442,7 @@ function applyFilters(){
 
 
 /* ============================================================
-   نمایش اخبار
+   RENDER NEWS
    ============================================================ */
 
 function renderNews(){
@@ -3076,6 +3451,10 @@ function renderNews(){
         document.getElementById(
             "newsList"
         );
+
+
+    container.innerHTML = "";
+
 
     if(
         !filteredNews.length
@@ -3093,7 +3472,7 @@ function renderNews(){
                     خبری پیدا نشد
                 </div>
 
-                <div class="state-text">
+                <div>
                     عبارت جستجو یا دسته‌بندی را تغییر دهید.
                 </div>
 
@@ -3108,43 +3487,82 @@ function renderNews(){
     }
 
 
-    container.innerHTML = "";
-
-
     filteredNews.forEach(
         item => {
 
             const card =
                 document.createElement(
-                    "article"
+                    "div"
                 );
+
 
             card.className =
-                "news-card";
-
-            if(
-                selectedIds.has(
-                    String(item._id)
-                )
-            ){
-
-                card.classList.add(
-                    "selected"
+                "news-item " +
+                (
+                    selectedIds.has(
+                        String(
+                            item._id
+                        )
+                    )
+                    ? "selected"
+                    : ""
                 );
 
-            }
 
-
-            const check =
+            const head =
                 document.createElement(
                     "div"
                 );
 
-            check.className =
-                "check-box";
+            head.className =
+                "news-head";
 
-            check.textContent =
-                "✓";
+
+            const check =
+                document.createElement(
+                    "input"
+                );
+
+            check.type =
+                "checkbox";
+
+            check.className =
+                "news-check";
+
+            check.checked =
+                selectedIds.has(
+                    String(
+                        item._id
+                    )
+                );
+
+
+            check.addEventListener(
+                "click",
+                event =>
+                    event.stopPropagation()
+            );
+
+
+            check.addEventListener(
+                "change",
+                () => {
+
+                    toggleSelection(
+                        item._id
+                    );
+
+                }
+            );
+
+
+            const content =
+                document.createElement(
+                    "div"
+                );
+
+            content.className =
+                "news-content";
 
 
             const title =
@@ -3156,8 +3574,8 @@ function renderNews(){
                 "news-title";
 
             title.textContent =
-                "🔴 " +
-                item._title;
+                item._title ||
+                "بدون عنوان";
 
 
             const meta =
@@ -3169,9 +3587,28 @@ function renderNews(){
                 "news-meta";
 
 
-            if(
-                item._category
-            ){
+            if(item._source){
+
+                const source =
+                    document.createElement(
+                        "span"
+                    );
+
+                source.className =
+                    "badge";
+
+                source.textContent =
+                    "📰 " +
+                    item._source;
+
+                meta.appendChild(
+                    source
+                );
+
+            }
+
+
+            if(item._category){
 
                 const category =
                     document.createElement(
@@ -3192,57 +3629,29 @@ function renderNews(){
             }
 
 
-            if(
-                item._source
-            ){
+            const dateText =
+                formatPersianDate(
+                    item._date
+                );
 
-                const source =
+
+            if(dateText){
+
+                const date =
                     document.createElement(
                         "span"
                     );
 
-                source.className =
-                    "badge source";
+                date.className =
+                    "badge";
 
-                source.textContent =
-                    "📰 " +
-                    item._source;
+                date.textContent =
+                    "📅 " +
+                    dateText;
 
                 meta.appendChild(
-                    source
+                    date
                 );
-
-            }
-
-
-            if(
-                item._date
-            ){
-
-                const dateText =
-                    formatPersianDate(
-                        item._date
-                    );
-
-                if(dateText){
-
-                    const date =
-                        document.createElement(
-                            "span"
-                        );
-
-                    date.className =
-                        "badge";
-
-                    date.textContent =
-                        "📅 " +
-                        dateText;
-
-                    meta.appendChild(
-                        date
-                    );
-
-                }
 
             }
 
@@ -3260,27 +3669,30 @@ function renderNews(){
                 "بدون خلاصه";
 
 
-            /*
-               لینک خبر عمداً از کارت حذف شده است.
-               item._url همچنان در داده نگهداری می‌شود
-               تا شناسه خبر و پردازش JSON دچار مشکل نشود.
-            */
-
-
-            card.appendChild(
-                check
-            );
-
-            card.appendChild(
+            content.appendChild(
                 title
             );
 
-            card.appendChild(
+            content.appendChild(
                 meta
             );
 
-            card.appendChild(
+            content.appendChild(
                 summary
+            );
+
+
+            head.appendChild(
+                check
+            );
+
+            head.appendChild(
+                content
+            );
+
+
+            card.appendChild(
+                head
             );
 
 
@@ -3309,18 +3721,11 @@ function renderNews(){
 }
 
 
-/* ============================================================
-   اطلاعات فیلتر
-   ============================================================ */
-
 function updateFilterInfo(){
 
-    const element =
-        document.getElementById(
-            "filterInfo"
-        );
-
-    element.textContent =
+    document.getElementById(
+        "filterInfo"
+    ).textContent =
         faNumber(
             filteredNews.length
         ) +
@@ -3330,13 +3735,14 @@ function updateFilterInfo(){
 
 
 /* ============================================================
-   انتخاب / لغو انتخاب
+   SELECTION
    ============================================================ */
 
 function toggleSelection(id){
 
     id =
         String(id);
+
 
     if(
         selectedIds.has(id)
@@ -3350,20 +3756,17 @@ function toggleSelection(id){
 
     }
 
+
     saveSelected();
 
     renderNews();
 
-    updateStats();
-
     updatePreview();
+
+    updateStats();
 
 }
 
-
-/* ============================================================
-   انتخاب همه اخبار قابل نمایش
-   ============================================================ */
 
 function selectVisible(){
 
@@ -3371,26 +3774,25 @@ function selectVisible(){
         item => {
 
             selectedIds.add(
-                String(item._id)
+                String(
+                    item._id
+                )
             );
 
         }
     );
 
+
     saveSelected();
 
     renderNews();
 
-    updateStats();
-
     updatePreview();
+
+    updateStats();
 
 }
 
-
-/* ============================================================
-   پاک کردن انتخاب‌ها
-   ============================================================ */
 
 function clearSelection(){
 
@@ -3400,15 +3802,15 @@ function clearSelection(){
 
     renderNews();
 
-    updateStats();
-
     updatePreview();
+
+    updateStats();
 
 }
 
 
 /* ============================================================
-   ساخت سربرگ
+   RUBIKA HEADER
    ============================================================ */
 
 function rubikaHeader(){
@@ -3430,34 +3832,17 @@ function rubikaHeader(){
 
 
 /* ============================================================
-   ساخت فوتر
+   RUBIKA FOOTER
    ============================================================ */
 
 function rubikaFooter(){
 
-    const lines = [
-
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━",
-
-        "📖 متن کامل اخبار:",
-
-        "🔗 مشاهده و مطالعه خبرها:",
-
-        RUBIKA_PAGE_URL,
-
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━",
-
-        "",
+    return [
 
         "🏡 دیار قدمگاه",
 
         "✍️ " +
-        (
-            publisherName ||
-            "معقول"
-        ),
-
-        "",
+        publisherName,
 
         "",
 
@@ -3467,7 +3852,6 @@ function rubikaFooter(){
 
         "🔗 روبیکا:",
 
-        publisherRubika ||
         DEFAULT_RUBIKA_URL,
 
         "",
@@ -3480,26 +3864,36 @@ function rubikaFooter(){
 
         "📸 اینستاگرام:",
 
-        INSTAGRAM_URL
+        "https://www.instagram.com/diyareghadamgah",
 
-    ];
+        "",
 
-    return lines.join("\n");
+        "📧 ایمیل:",
+
+        "diyareghadamgah@gmail.com",
+
+        "",
+
+        "🔗 صفحه اخبار:",
+
+        RUBIKA_PAGE_URL,
+
+        "",
+
+        "🔗 صفحه ارتباط با ما:",
+
+        "https://maghool51.github.io/diyar-widgets/contact/"
+
+    ].join("\n");
 
 }
 
 
 /* ============================================================
-   ساخت خط خبر
+   NEWS LINE
    ============================================================ */
 
 function buildNewsLine(item){
-
-    /*
-       مهم:
-       لینک تک‌تک خبرها عمداً حذف شده است.
-       هیچ URL، Markdown یا HTML برای خبر وارد پیام نمی‌شود.
-    */
 
     let line =
         "🔴 " +
@@ -3540,7 +3934,7 @@ function buildNewsLine(item){
 
 
 /* ============================================================
-   ساخت پیام
+   CREATE RUBIKA MESSAGE
    ============================================================ */
 
 function createRubikaText(){
@@ -3549,7 +3943,9 @@ function createRubikaText(){
         allNews.filter(
             item =>
                 selectedIds.has(
-                    String(item._id)
+                    String(
+                        item._id
+                    )
                 )
         );
 
@@ -3581,15 +3977,20 @@ function createRubikaText(){
                 )
             );
 
+
             if(
                 index <
                 selected.length - 1
             ){
 
                 parts.push(
+
                     "",
+
                     "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+
                     ""
+
                 );
 
             }
@@ -3599,36 +4000,65 @@ function createRubikaText(){
 
 
     parts.push(
+
         "",
+
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+
+        "",
+
+        "📖 متن کامل اخبار:",
+
+        "🔗 مشاهده و مطالعه خبرها:",
+
+        RUBIKA_PAGE_URL,
+
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+
+        "",
+
         rubikaFooter()
+
     );
 
 
-    return parts.join("\n");
+    return parts.join(
+        "\n"
+    );
 
 }
 
 
 /* ============================================================
-   پیش‌نمایش
+   PREVIEW
    ============================================================ */
 
 function updatePreview(){
 
     savePublisher();
 
+
     const text =
         createRubikaText();
+
 
     const preview =
         document.getElementById(
             "previewMessage"
         );
 
-    const copyBtn =
+
+    const warning =
         document.getElementById(
-            "copyBtn"
+            "copyWarning"
         );
+
+
+    const warningText =
+        document.getElementById(
+            "copyWarningText"
+        );
+
 
     const copyInfo =
         document.getElementById(
@@ -3638,11 +4068,12 @@ function updatePreview(){
 
     if(!text){
 
-        preview.textContent =
+        preview.value =
             "هنوز خبری انتخاب نشده است.";
 
-        copyBtn.disabled =
-            true;
+        warning.classList.remove(
+            "show"
+        );
 
         copyInfo.textContent =
             "برای ساخت پیام، خبرها را انتخاب کنید.";
@@ -3654,13 +4085,8 @@ function updatePreview(){
     }
 
 
-    preview.textContent =
+    preview.value =
         text;
-
-
-    copyBtn.disabled =
-        text.length >
-        RUBIKA_MAX_LENGTH;
 
 
     if(
@@ -3668,10 +4094,31 @@ function updatePreview(){
         RUBIKA_MAX_LENGTH
     ){
 
+        warning.classList.add(
+            "show"
+        );
+
+
+        warningText.textContent =
+            "پیام شما " +
+            faNumber(
+                text.length
+            ) +
+            " کاراکتر است و " +
+            faNumber(
+                text.length -
+                RUBIKA_MAX_LENGTH
+            ) +
+            " کاراکتر از سقف ۴۰۰۰ بیشتر شده است.";
+
         copyInfo.textContent =
-            "⚠️ پیام بیش از حد مجاز است؛ تعدادی خبر را حذف کنید.";
+            "⚠️ پیام بزرگ‌تر از ۴۰۰۰ کاراکتر است؛ می‌توانید کاهش دهید یا در هر حال کپی کنید.";
 
     }else{
+
+        warning.classList.remove(
+            "show"
+        );
 
         copyInfo.textContent =
             faNumber(
@@ -3690,7 +4137,7 @@ function updatePreview(){
 
 
 /* ============================================================
-   طول پیام
+   LENGTH
    ============================================================ */
 
 function updateLength(length){
@@ -3700,16 +4147,31 @@ function updateLength(length){
             "lengthText"
         );
 
+
     const bar =
         document.getElementById(
             "lengthBar"
         );
 
 
+    const box =
+        document.getElementById(
+            "messageLengthBox"
+        );
+
+
+    const message =
+        document.getElementById(
+            "lengthMessage"
+        );
+
+
     text.textContent =
         faNumber(length) +
         " / " +
-        faNumber(RUBIKA_MAX_LENGTH);
+        faNumber(
+            RUBIKA_MAX_LENGTH
+        );
 
 
     const percentage =
@@ -3734,25 +4196,56 @@ function updateLength(length){
     );
 
 
+    box.classList.remove(
+        "warning",
+        "danger"
+    );
+
+
     if(
-        percentage >= 90 &&
-        percentage < 100
+        length >= 3600 &&
+        length <= RUBIKA_MAX_LENGTH
     ){
 
         bar.classList.add(
             "warning"
         );
 
+        box.classList.add(
+            "warning"
+        );
+
+        message.textContent =
+            "⚠️ پیام به سقف مجاز نزدیک شده است.";
+
     }
 
 
     if(
-        percentage >= 100
+        length >
+        RUBIKA_MAX_LENGTH
     ){
 
         bar.classList.add(
             "danger"
         );
+
+        box.classList.add(
+            "danger"
+        );
+
+        message.textContent =
+            "❌ پیام از سقف ۴۰۰۰ کاراکتر بیشتر است.";
+
+    }
+
+
+    if(
+        length < 3600
+    ){
+
+        message.textContent =
+            "طول پیام مناسب است.";
 
     }
 
@@ -3760,7 +4253,7 @@ function updateLength(length){
 
 
 /* ============================================================
-   آمار
+   STATS
    ============================================================ */
 
 function updateStats(){
@@ -3804,59 +4297,123 @@ function updateStats(){
 
 
 /* ============================================================
-   Toast
+   REDUCE MESSAGE
    ============================================================ */
 
-let toastTimer = null;
+function reduceMessage(){
+
+    let text =
+        createRubikaText();
 
 
-function showToast(message){
+    if(
+        !text ||
+        text.length <= RUBIKA_MAX_LENGTH
+    ){
 
-    const toast =
-        document.getElementById(
-            "toast"
+        showToast(
+            "ℹ️ پیام در محدوده ۴۰۰۰ کاراکتر است."
         );
 
-    toast.textContent =
-        message;
+        return;
 
-    toast.classList.add(
-        "show"
-    );
+    }
 
 
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2500
+    const selected =
+        allNews.filter(
+            item =>
+                selectedIds.has(
+                    String(
+                        item._id
+                    )
+                )
         );
+
+
+    let removed =
+        0;
+
+
+    /*
+       از انتهای فهرست انتخاب‌شده‌ها
+       خبر حذف می‌شود تا پیام به
+       محدوده مجاز برسد.
+    */
+
+    for(
+        let i =
+            selected.length - 1;
+
+        i >= 0 &&
+        text.length >
+            RUBIKA_MAX_LENGTH;
+
+        i--
+    ){
+
+        selectedIds.delete(
+            String(
+                selected[i]._id
+            )
+        );
+
+
+        removed++;
+
+
+        text =
+            createRubikaText();
+
+    }
+
+
+    saveSelected();
+
+    renderNews();
+
+    updatePreview();
+
+    updateStats();
+
+
+    if(
+        text.length <=
+        RUBIKA_MAX_LENGTH
+    ){
+
+        showToast(
+            "✂️ " +
+            faNumber(removed) +
+            " خبر حذف شد و پیام در محدوده ۴۰۰۰ قرار گرفت."
+        );
+
+    }else{
+
+        showToast(
+            "⚠️ حتی پس از حذف خبرها، پیام هنوز بیش از ۴۰۰۰ کاراکتر است."
+        );
+
+    }
 
 }
 
 
 /* ============================================================
-   کپی امن و بدون Markdown
+   COPY
    ============================================================ */
 
 async function copyText(text){
 
     if(!text){
-
         return false;
-
     }
 
+
+    /*
+       روش اول:
+       Clipboard API
+    */
 
     try{
 
@@ -3883,6 +4440,11 @@ async function copyText(text){
     }
 
 
+    /*
+       روش دوم:
+       execCommand
+    */
+
     try{
 
         const textarea =
@@ -3890,33 +4452,39 @@ async function copyText(text){
                 "textarea"
             );
 
+
         textarea.value =
             text;
+
 
         textarea.setAttribute(
             "readonly",
             ""
         );
 
+
         textarea.style.position =
             "fixed";
-
-        textarea.style.left =
-            "-9999px";
 
         textarea.style.top =
             "0";
 
+        textarea.style.left =
+            "-9999px";
+
         textarea.style.opacity =
             "0";
+
 
         document.body.appendChild(
             textarea
         );
 
+
         textarea.focus();
 
         textarea.select();
+
 
         textarea.setSelectionRange(
             0,
@@ -3931,6 +4499,7 @@ async function copyText(text){
 
 
         textarea.remove();
+
 
         return success;
 
@@ -3948,12 +4517,119 @@ async function copyText(text){
 
 
 /* ============================================================
-   کپی پیام روبیکا
+   MANUAL COPY MODAL
+   ============================================================ */
+
+function openManualCopy(text){
+
+    const modal =
+        document.getElementById(
+            "manualCopyModal"
+        );
+
+
+    const textarea =
+        document.getElementById(
+            "manualCopyText"
+        );
+
+
+    textarea.value =
+        text;
+
+
+    modal.classList.add(
+        "show"
+    );
+
+
+    modal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    setTimeout(
+        () => {
+
+            textarea.focus();
+
+            textarea.select();
+
+        },
+        100
+    );
+
+}
+
+
+function closeManualCopy(){
+
+    const modal =
+        document.getElementById(
+            "manualCopyModal"
+        );
+
+
+    modal.classList.remove(
+        "show"
+    );
+
+
+    modal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+}
+
+
+async function retryManualCopy(){
+
+    const textarea =
+        document.getElementById(
+            "manualCopyText"
+        );
+
+
+    textarea.focus();
+
+    textarea.select();
+
+
+    const success =
+        await copyText(
+            textarea.value
+        );
+
+
+    if(success){
+
+        showToast(
+            "✅ متن کپی شد."
+        );
+
+        closeManualCopy();
+
+    }else{
+
+        showToast(
+            "⚠️ متن انتخاب شده است؛ روی متن نگه دارید و گزینه «کپی» را بزنید."
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   NORMAL COPY
    ============================================================ */
 
 async function copyRubikaMessage(){
 
     savePublisher();
+
 
     const text =
         createRubikaText();
@@ -3970,23 +4646,10 @@ async function copyRubikaMessage(){
     }
 
 
-    if(
-        text.length >
-        RUBIKA_MAX_LENGTH
-    ){
-
-        showToast(
-            "⚠️ طول پیام بیشتر از ۴۰۰۰ کاراکتر است."
-        );
-
-        return;
-
-    }
-
-
     /*
-       فقط متن ساده کپی می‌شود.
-       هیچ HTML یا Markdown تولید نمی‌شود.
+       نکته مهم:
+       حتی اگر بیشتر از ۴۰۰۰ باشد
+       باز هم تلاش برای کپی انجام می‌شود.
     */
 
     const success =
@@ -3997,14 +4660,74 @@ async function copyRubikaMessage(){
 
     if(success){
 
+        if(
+            text.length >
+            RUBIKA_MAX_LENGTH
+        ){
+
+            showToast(
+                "⚠️ پیام بزرگ‌تر از ۴۰۰۰ کاراکتر بود، ولی کامل کپی شد."
+            );
+
+        }else{
+
+            showToast(
+                "✅ پیام با موفقیت کپی شد."
+            );
+
+        }
+
+    }else{
+
+        openManualCopy(
+            text
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   FORCE COPY
+   ============================================================ */
+
+async function forceCopy(){
+
+    savePublisher();
+
+
+    const text =
+        createRubikaText();
+
+
+    if(!text){
+
         showToast(
-            "✅ پیام به‌صورت متن ساده کپی شد."
+            "⚠️ ابتدا حداقل یک خبر را انتخاب کنید."
+        );
+
+        return;
+
+    }
+
+
+    const success =
+        await copyText(
+            text
+        );
+
+
+    if(success){
+
+        showToast(
+            "✅ کل پیام، حتی با حجم بیشتر از ۴۰۰۰، کپی شد."
         );
 
     }else{
 
-        showToast(
-            "❌ کپی خودکار انجام نشد؛ متن را از پیش‌نمایش انتخاب کنید."
+        openManualCopy(
+            text
         );
 
     }
@@ -4013,77 +4736,48 @@ async function copyRubikaMessage(){
 
 
 /* ============================================================
-   حذف خبر برای قرار گرفتن در محدوده ۴۰۰۰
+   TOAST
    ============================================================ */
 
-function calculateMinimumNewsToRemove(){
+function showToast(message){
 
-    let text =
-        createRubikaText();
-
-    if(
-        text.length <=
-        RUBIKA_MAX_LENGTH
-    ){
-
-        return 0;
-
-    }
-
-
-    const selected =
-        allNews.filter(
-            item =>
-                selectedIds.has(
-                    String(item._id)
-                )
+    const toast =
+        document.getElementById(
+            "toast"
         );
 
 
-    let count =
-        selected.length;
+    toast.textContent =
+        message;
 
 
-    while(
-        text.length >
-            RUBIKA_MAX_LENGTH &&
-        count > 0
-    ){
+    toast.classList.add(
+        "show"
+    );
 
-        const last =
-            selected[count - 1];
 
-        selectedIds.delete(
-            String(
-                last._id
-            )
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            3000
         );
-
-        count--;
-
-        text =
-            createRubikaText();
-
-    }
-
-
-    saveSelected();
-
-    renderNews();
-
-    updatePreview();
-
-    updateStats();
-
-
-    return selected.length -
-        count;
 
 }
 
 
 /* ============================================================
-   رویدادها
+   EVENTS
    ============================================================ */
 
 document.getElementById(
@@ -4195,8 +4889,122 @@ document.getElementById(
 );
 
 
+document.getElementById(
+    "floatingCopyBtn"
+).addEventListener(
+    "click",
+    copyRubikaMessage
+);
+
+
+document.getElementById(
+    "copyPreviewBtn"
+).addEventListener(
+    "click",
+    async () => {
+
+        const text =
+            document.getElementById(
+                "previewMessage"
+            ).value;
+
+
+        if(!text){
+
+            showToast(
+                "⚠️ پیش‌نمایشی برای کپی وجود ندارد."
+            );
+
+            return;
+
+        }
+
+
+        const success =
+            await copyText(
+                text
+            );
+
+
+        if(success){
+
+            showToast(
+                "✅ پیش‌نمایش کپی شد."
+            );
+
+        }else{
+
+            openManualCopy(
+                text
+            );
+
+        }
+
+    }
+);
+
+
+document.getElementById(
+    "reduceMessageBtn"
+).addEventListener(
+    "click",
+    reduceMessage
+);
+
+
+document.getElementById(
+    "forceCopyBtn"
+).addEventListener(
+    "click",
+    forceCopy
+);
+
+
+document.getElementById(
+    "closeModalBtn"
+).addEventListener(
+    "click",
+    closeManualCopy
+);
+
+
+document.getElementById(
+    "closeModalBtn2"
+).addEventListener(
+    "click",
+    closeManualCopy
+);
+
+
+document.getElementById(
+    "manualCopyBtn"
+).addEventListener(
+    "click",
+    retryManualCopy
+);
+
+
+document.getElementById(
+    "manualCopyModal"
+).addEventListener(
+    "click",
+    event => {
+
+        if(
+            event.target.id ===
+            "manualCopyModal"
+        ){
+
+            closeManualCopy();
+
+        }
+
+    }
+);
+
+
 /* ============================================================
-   راه‌اندازی
+   INIT
    ============================================================ */
 
 async function init(){
@@ -4207,7 +5015,21 @@ async function init(){
 
     loadSelected();
 
+
+    document.getElementById(
+        "publisherName"
+    ).value =
+        publisherName;
+
+
+    document.getElementById(
+        "publisherRubika"
+    ).value =
+        publisherRubika;
+
+
     await fetchNews();
+
 
     updatePreview();
 
@@ -4217,7 +5039,7 @@ async function init(){
 
 
 /* ============================================================
-   بروزرسانی خودکار اخبار
+   AUTO REFRESH
    ============================================================ */
 
 setInterval(
@@ -4235,12 +5057,14 @@ setInterval(
 
 
 /* ============================================================
-   شروع
+   START
    ============================================================ */
 
 init();
 
 </script>
 
+
 </body>
+
     </html>

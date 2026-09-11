@@ -2695,48 +2695,7 @@ function formatPersianDate(value){
 }
 
 
-function formatPersianHeaderDate(){
-
-    const now =
-        new Date();
-
-    try{
-
-        const date =
-            new Intl.DateTimeFormat(
-                "fa-IR-u-ca-persian",
-                {
-                    weekday:"long",
-                    year:"numeric",
-                    month:"long",
-                    day:"numeric"
-                }
-            ).format(now);
-
-        const time =
-            new Intl.DateTimeFormat(
-                "fa-IR",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit"
-                }
-            ).format(now);
-
-        return (
-            date +
-            " - ساعت " +
-            time
-        );
-
-    }catch{
-
-        return now.toLocaleString(
-            "fa-IR"
-        );
-
-    }
-
-}
+Maghool51
 
 
 /* ============================================================

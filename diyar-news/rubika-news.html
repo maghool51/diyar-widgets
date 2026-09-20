@@ -796,6 +796,12 @@ body.dark .top-header{
 
     min-height:320px;
 
+    max-height:70vh;
+
+    overflow-y:auto;
+
+    -webkit-overflow-scrolling:touch;
+
     resize:vertical;
 
     border:
@@ -1628,6 +1634,12 @@ body.dark .copy-bar{
 
     }
 
+    .preview{
+
+        max-height:55vh;
+
+    }
+
 }
 
 @media(max-width:420px){
@@ -2016,7 +2028,6 @@ body.dark .copy-bar{
         <textarea
             id="previewMessage"
             class="preview"
-            readonly
             spellcheck="false"
         ></textarea>
 
@@ -2473,6 +2484,12 @@ let publisherRubika =
 
 let toastTimer =
     null;
+
+let previewEdited =
+    false;
+
+let previewText =
+    "";
 
 
 /* ============================================================
@@ -3170,7 +3187,7 @@ async function fetchNews(){
 
             applyFilters();
 
-            updatePreview();
+            syncPreviewFromSelection();
 
             updateStats();
 
@@ -3780,7 +3797,7 @@ function toggleSelection(id){
 
     renderNews();
 
-    updatePreview();
+    syncPreviewFromSelection();
 
     updateStats();
 
@@ -3806,7 +3823,7 @@ function selectVisible(){
 
     renderNews();
 
-    updatePreview();
+    syncPreviewFromSelection();
 
     updateStats();
 
@@ -3821,7 +3838,7 @@ function clearSelection(){
 
     renderNews();
 
-    updatePreview();
+    syncPreviewFromSelection();
 
     updateStats();
 
@@ -4081,6 +4098,49 @@ function createRubikaText(){
 
 
 /* ============================================================
+   PREVIEW <-> SELECTION SYNC
+   ============================================================
+   previewMessage اکنون قابل‌ویرایش است. دو منبع داده داریم:
+
+     ۱) متنی که از انتخاب فعلی خبرها ساخته می‌شود
+        (createRubikaText)
+
+     ۲) متنی که کاربر ممکن است دستی در Preview تغییر داده باشد
+        (previewText / previewEdited)
+
+   این تابع فقط زمانی محتوای Preview را از روی انتخاب خبرها
+   بازسازی می‌کند که کاربر Preview را دستی ویرایش نکرده باشد.
+   اگر previewEdited === true باشد، تغییر انتخاب خبرها دیگر
+   متن کاربر را پاک نمی‌کند؛ فقط آمار/دکمه‌ها بر اساس همان متنِ
+   فعلیِ کاربر به‌روزرسانی می‌شوند.
+   ============================================================ */
+
+function syncPreviewFromSelection(){
+
+    if(
+        !previewEdited
+    ){
+
+        previewText =
+            createRubikaText();
+
+
+        const preview =
+            document.getElementById(
+                "previewMessage"
+            );
+
+        preview.value =
+            previewText;
+
+    }
+
+    refreshPreviewUI();
+
+}
+
+
+/* ============================================================
    FOOTER BUTTON STATE
    ============================================================ */
 
@@ -4121,17 +4181,15 @@ function updateFooterButtons(text){
 
 
 /* ============================================================
-   PREVIEW
+   REFRESH PREVIEW UI
+   ============================================================
+   برخلاف نسخه قبلی (updatePreview) که همیشه متن Preview را از
+   createRubikaText() بازتولید می‌کرد، این تابع فقط بر اساس
+   محتوای *فعلیِ* textarea (چه ویرایش‌شده باشد چه نه) آمار،
+   نوار پیشرفت، هشدارها و دکمه‌های پایین صفحه را به‌روز می‌کند.
    ============================================================ */
 
-function updatePreview(){
-
-    savePublisher();
-
-
-    const text =
-        createRubikaText();
-
+function refreshPreviewUI(){
 
     const preview =
         document.getElementById(
@@ -4157,17 +4215,25 @@ function updatePreview(){
         );
 
 
-    if(!text){
+    const text =
+        preview.value;
 
-        preview.value =
-            "هنوز خبری انتخاب نشده است.";
+
+    if(
+        !text ||
+        !text.trim()
+    ){
 
         warning.classList.remove(
             "show"
         );
 
         copyInfo.textContent =
-            "برای ساخت پیام، خبرها را انتخاب کنید.";
+            selectedIds.size
+
+            ? "برای ساخت پیام، متن Preview خالی است."
+
+            : "برای ساخت پیام، خبرها را انتخاب کنید.";
 
         updateFooterButtons("");
 
@@ -4176,10 +4242,6 @@ function updatePreview(){
         return;
 
     }
-
-
-    preview.value =
-        text;
 
 
     if(
@@ -4219,7 +4281,11 @@ function updatePreview(){
             faNumber(
                 selectedIds.size
             ) +
-            " خبر آماده کپی است.";
+            " خبر انتخاب شده — " +
+            faNumber(
+                text.length
+            ) +
+            " کاراکتر آماده کپی است.";
 
     }
 
@@ -4379,15 +4445,20 @@ function updateStats(){
         );
 
 
-    const text =
-        createRubikaText();
+    const preview =
+        document.getElementById(
+            "previewMessage"
+        );
 
 
     document.getElementById(
         "messageLength"
     ).textContent =
         faNumber(
-            text.length
+            (
+                preview.value ||
+                ""
+            ).length
         );
 
 }
@@ -4399,8 +4470,15 @@ function updateStats(){
 
 function reduceMessage(){
 
+    const preview =
+        document.getElementById(
+            "previewMessage"
+        );
+
+
     let text =
-        createRubikaText();
+        preview.value ||
+        "";
 
 
     if(
@@ -4417,6 +4495,19 @@ function reduceMessage(){
     }
 
 
+    /*
+    کاهش پیام همیشه بر اساس فهرست خبرهای *انتخاب‌شده* کار
+    می‌کند (نه صرفاً متن آزاد Preview)، چون باید بداند کدام
+    خبر را از انتها حذف کند و چک‌باکس‌ها را هم هماهنگ نگه دارد.
+    برای همین ابتدا ویرایش دستی کاربر را کنار می‌گذاریم و به
+    حالت «تولیدشده از انتخاب‌ها» برمی‌گردیم، سپس از انتها
+    خبر حذف می‌کنیم تا زیر سقف ۴۰۰۰ برسیم.
+    */
+
+    previewEdited =
+        false;
+
+
     const selected =
         allNews.filter(
             item =>
@@ -4430,6 +4521,10 @@ function reduceMessage(){
 
     let removed =
         0;
+
+
+    text =
+        createRubikaText();
 
 
     for(
@@ -4463,7 +4558,7 @@ function reduceMessage(){
 
     renderNews();
 
-    updatePreview();
+    syncPreviewFromSelection();
 
     updateStats();
 
@@ -4705,21 +4800,32 @@ async function retryManualCopy(){
 
 /* ============================================================
    NORMAL COPY
+   ============================================================
+   هر دو دکمه «کپی پیام روبیکا» و «کپی کامل» اکنون متنِ *فعلیِ*
+   textarea را کپی می‌کنند (چه از انتخاب خبرها ساخته شده باشد
+   چه کاربر دستی آن را ویرایش کرده باشد)، نه یک متنِ از نو
+   بازسازی‌شده.
    ============================================================ */
 
 async function copyRubikaMessage(){
 
-    savePublisher();
+    const preview =
+        document.getElementById(
+            "previewMessage"
+        );
 
 
     const text =
-        createRubikaText();
+        preview.value ||
+        "";
 
 
-    if(!text){
+    if(
+        !text.trim()
+    ){
 
         showToast(
-            "⚠️ ابتدا حداقل یک خبر را انتخاب کنید."
+            "⚠️ ابتدا حداقل یک خبر را انتخاب کنید یا متنی در Preview بنویسید."
         );
 
         return;
@@ -4769,17 +4875,23 @@ async function copyRubikaMessage(){
 
 async function forceCopy(){
 
-    savePublisher();
+    const preview =
+        document.getElementById(
+            "previewMessage"
+        );
 
 
     const text =
-        createRubikaText();
+        preview.value ||
+        "";
 
 
-    if(!text){
+    if(
+        !text.trim()
+    ){
 
         showToast(
-            "⚠️ ابتدا حداقل یک خبر را انتخاب کنید."
+            "⚠️ ابتدا حداقل یک خبر را انتخاب کنید یا متنی در Preview بنویسید."
         );
 
         return;
@@ -4871,7 +4983,7 @@ document.getElementById(
 
         savePublisher();
 
-        updatePreview();
+        syncPreviewFromSelection();
 
         updateStats();
 
@@ -4887,7 +4999,7 @@ document.getElementById(
 
         savePublisher();
 
-        updatePreview();
+        syncPreviewFromSelection();
 
         updateStats();
 
@@ -4951,6 +5063,30 @@ document.getElementById(
             "oldest";
 
         applyFilters();
+
+    }
+);
+
+
+/* پیش‌نمایش: تشخیص ویرایش دستی کاربر */
+
+document.getElementById(
+    "previewMessage"
+).addEventListener(
+    "input",
+    () => {
+
+        previewEdited =
+            true;
+
+        previewText =
+            document.getElementById(
+                "previewMessage"
+            ).value;
+
+        refreshPreviewUI();
+
+        updateStats();
 
     }
 );
@@ -5057,7 +5193,7 @@ async function init(){
     await fetchNews();
 
 
-    updatePreview();
+    syncPreviewFromSelection();
 
     updateStats();
 
@@ -5073,7 +5209,13 @@ setInterval(
 
         await fetchNews();
 
-        updatePreview();
+        if(
+            !previewEdited
+        ){
+
+            syncPreviewFromSelection();
+
+        }
 
         updateStats();
 

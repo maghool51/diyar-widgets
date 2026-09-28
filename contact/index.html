@@ -1175,8 +1175,8 @@
 
         <a
             class="contact-card"
-            href="https://www.instagram.com/diyareghadamgah"
-            target="_blank"
+            href="https://www.instagram.com/diyareghadamgah/"
+            id="instagramLink"
             rel="noopener noreferrer"
         >
 
@@ -1195,7 +1195,7 @@
             <span class="contact-content">
 
                 <span class="contact-title">
-                    اینستاگرام
+                    اینستاگرام دیار قدمگاه
                 </span>
 
                 <span class="contact-description">
@@ -1834,6 +1834,108 @@ managerToggle.addEventListener(
 
 
 /* =========================
+   INSTAGRAM APP / WEB
+========================= */
+
+const instagramLink =
+    document.getElementById(
+        "instagramLink"
+    );
+
+
+if (instagramLink) {
+
+    instagramLink.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+
+            const webUrl =
+                "https://www.instagram.com/diyareghadamgah/";
+
+
+            /*
+             * تلاش برای باز کردن
+             * پروفایل در اپلیکیشن اینستاگرام
+             */
+
+            const appUrl =
+                "instagram://user?username=diyareghadamgah";
+
+
+            let fallbackTimer = null;
+
+
+            const onVisibilityChange =
+                function () {
+
+                    if (document.hidden) {
+
+                        if (fallbackTimer) {
+
+                            window.clearTimeout(
+                                fallbackTimer
+                            );
+
+                            fallbackTimer = null;
+
+                        }
+
+                        document.removeEventListener(
+                            "visibilitychange",
+                            onVisibilityChange
+                        );
+
+                    }
+
+                };
+
+
+            document.addEventListener(
+                "visibilitychange",
+                onVisibilityChange
+            );
+
+
+            /*
+             * باز کردن اپ
+             */
+
+            window.location.href =
+                appUrl;
+
+
+            /*
+             * اگر اپ باز نشد،
+             * نسخه وب باز می‌شود.
+             */
+
+            fallbackTimer =
+                window.setTimeout(
+                    function () {
+
+                        document.removeEventListener(
+                            "visibilitychange",
+                            onVisibilityChange
+                        );
+
+
+                        window.location.href =
+                            webUrl;
+
+                    },
+                    1200
+                );
+
+        }
+    );
+
+}
+
+
+/* =========================
    TOAST
 ========================= */
 
@@ -2040,4 +2142,4 @@ document
 
 </body>
 
-    </html>
+                    </html>
